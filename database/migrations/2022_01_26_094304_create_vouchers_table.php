@@ -19,7 +19,8 @@ class CreateVouchersTable extends Migration
             $table->double('in', 10,  2)->default(0);
             $table->double('out', 10,  2)->default(0);
             $table->string('type', 20);
-            $table->foreignId('merchant_id')->nullable();
+            $table->bigInteger('account_id')->unsigned();
+            $table->bigInteger('merchant_id')->nullable();
 
             $table->timestamps();
         });

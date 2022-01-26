@@ -16,7 +16,8 @@ class CreateSubscriptionsTable extends Migration
         Schema::create('subscriptions', function (Blueprint $table) {
             $table->id();
 
-            $table->float('amount');
+            $table->double('amount');
+            $table->integer('duration');
             $table->boolean('active')->default(true);
             $table->bigInteger('account_id')->unsigned();
             $table->foreignId('subscription_type_id')->constrained()->cascadeOnDelete();

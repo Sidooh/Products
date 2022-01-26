@@ -15,6 +15,11 @@ class CreateVoucherTransactionsTable extends Migration
     {
         Schema::create('voucher_transactions', function (Blueprint $table) {
             $table->id();
+
+            $table->foreignId('voucher_id')->constrained();
+            $table->string('type');
+            $table->string('description');
+
             $table->timestamps();
         });
     }

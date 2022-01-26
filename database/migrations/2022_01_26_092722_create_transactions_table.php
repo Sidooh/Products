@@ -16,7 +16,7 @@ class CreateTransactionsTable extends Migration
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
 
-            $table->string('type', 10); // Payment or Withdrawal : Transfer? (P2P, B2B)
+            $table->string('type', 10); // PAYMENT or WITHDRAWAL : TRANSFER? (P2P, B2B)
             $table->float('amount');
             $table->string('status', 10)->default('pending');
             $table->string('destination')->nullable();
