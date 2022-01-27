@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Enums\Initiator;
+use App\Enums\PaymentMethod;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -30,6 +31,7 @@ class ProductRequest extends FormRequest
         return [
             'product'    => 'required|in:airtime,utility,subscription,voucher',
             'initiator'  => ['required', new Enum(Initiator::class)],
+            'method'     => ["required_if:initiator,CONSUMER", new Enum(PaymentMethod::class)],
             'amount'     => 'required|numeric',
             'account_id' => 'numeric',
             'phone'      => 'phone:KE',

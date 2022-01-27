@@ -2,16 +2,25 @@
 
 namespace App\Http\Controllers\API\V1;
 
+use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductRequest;
+use App\Repositories\ProductRepository;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
+use JetBrains\PhpStorm\Pure;
 
 class ProductController extends Controller
 {
     use ApiResponse;
 
     private array $data;
+
+    /**
+     * @param ProductRepository $repo
+     */
+    #[Pure]
+    public function __construct(private ProductRepository $repo = new ProductRepository()) {}
 
     /**
      * Handle the incoming request.
@@ -35,7 +44,12 @@ class ProductController extends Controller
 
     public function airtimePurchase()
     {
-        return $this->data['product'];
+        $this->data['type'] = TransactionType::PAYMENT;
+        $this->data['description'] = "Airtime Purchase";
+        $transaction = $this->repo->createTransaction($this->data);
+        $provider = $this->repo->initiatePayment($transaction, $this->data);
+
+        return $transaction->getPayment();
     }
 
     public function utilityPurchase()
