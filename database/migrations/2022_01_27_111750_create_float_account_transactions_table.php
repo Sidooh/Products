@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateSubscriptionTypesTable extends Migration
+class CreateFloatAccountTransactionsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,13 @@ class CreateSubscriptionTypesTable extends Migration
      */
     public function up()
     {
-        Schema::create('subscription_types', function (Blueprint $table) {
+        Schema::create('float_account_transactions', function (Blueprint $table) {
             $table->id();
 
-            $table->string('title', 32);
-            $table->double('price', 5, 0);
-            $table->boolean('active')->default(true);
+            $table->string('type', 20); // DEBIT or CREDIT
+            $table->double('amount');
+            $table->string('description');
+            $table->foreignId('float_account_id')->constrained();
 
             $table->timestamps();
         });
@@ -31,6 +32,6 @@ class CreateSubscriptionTypesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('subscription_types');
+        Schema::dropIfExists('float_account_transactions');
     }
 }

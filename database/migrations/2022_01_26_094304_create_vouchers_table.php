@@ -16,11 +16,10 @@ class CreateVouchersTable extends Migration
         Schema::create('vouchers', function (Blueprint $table) {
             $table->id();
 
-            $table->double('in', 10,  2)->default(0);
-            $table->double('out', 10,  2)->default(0);
             $table->string('type', 20);
-            $table->bigInteger('account_id')->unsigned();
-            $table->bigInteger('merchant_id')->nullable();
+            $table->double('balance', 10,  2)->default(0);
+            $table->foreignId('account_id')->unsigned();
+            $table->foreignId('enterprise_id')->nullable()->constrained();
 
             $table->timestamps();
         });

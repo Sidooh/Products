@@ -16,11 +16,12 @@ class CreateTransactionsTable extends Migration
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
 
-            $table->string('type', 10); // PAYMENT or WITHDRAWAL : TRANSFER? (P2P, B2B)
+            $table->string('initiator', 20);
+            $table->string('type', 20); // PAYMENT or WITHDRAWAL : TRANSFER? (P2P, B2B)
             $table->float('amount');
-            $table->string('status', 10)->default('pending');
+            $table->string('status', 20)->default('PENDING'); //    Use enums
             $table->string('destination')->nullable();
-            $table->string('description')->nullable();
+            $table->string('description');
 
             $table->timestamps();
         });

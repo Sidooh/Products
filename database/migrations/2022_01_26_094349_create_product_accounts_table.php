@@ -16,10 +16,10 @@ class CreateProductAccountsTable extends Migration
         Schema::create('product_accounts', function (Blueprint $table) {
             $table->id();
 
-            $table->bigInteger('account_id')->unsigned();
             $table->string('provider');
             $table->string('account_number');
 
+            $table->foreignId('account_id')->unsigned();
             $table->index(['account_id', 'provider']);
             $table->unique(['account_id', 'provider', 'account_number']);
 

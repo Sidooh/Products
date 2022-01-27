@@ -18,10 +18,10 @@ class CreatePaymentsTable extends Migration
 
             $table->morphs('payable');
             $table->float('amount');
-            $table->string('status', 10); // PENDING or COMPLETE
+            $table->string('status', 15); // PENDING or COMPLETE
             $table->string('type', 15); // ['MOBILE', 'SIDOOH', 'BANK', 'PAYPAL', 'OTHER'] payment methods?
             $table->string('subtype', 15); // 'STK', 'C2B', 'CBA', 'WALLET', 'BONUS'
-            $table->morphs('payment');
+            $table->morphs('provider');
 
             $table->timestamps();
         });
