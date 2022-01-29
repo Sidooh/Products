@@ -8,6 +8,7 @@ use App\Enums\Status;
 use App\Enums\VoucherType;
 use App\Helpers\Sidooh\USSD\Entities\MpesaReferences;
 use App\Models\Payment;
+use App\Models\SubscriptionType;
 use App\Models\Transaction;
 use App\Models\Voucher;
 use App\Services\SidoohAccounts;
@@ -17,8 +18,7 @@ use Propaganistas\LaravelPhone\PhoneNumber;
 
 class PaymentRepository
 {
-    private $amount;
-    private $phone;
+    private $amount, $product, $phone;
 
     public function mpesa($targetNumber = null, $mpesaNumber = null)
     {
@@ -84,33 +84,49 @@ class PaymentRepository
         if($voucher) {
             $bal = $voucher->balance;
 
-            if($bal === 0 || $bal < (int)$this->amount) {
-                return;
-            }
+            if($bal === 0 || $bal < (int)$this->amount) return;
         }
 
         $voucher->balance -= $this->amount;
         $voucher->save();
 
-        return [
+        $paymentData = [
             'amount'        => $this->amount,
-            'status'        => Status::COMPLETED,
             'type'          => PaymentType::SIDOOH,
             'subtype'       => PaymentSubtype::VOUCHER,
             'provider_id'   => $voucher->id,
+            'status' => Status::COMPLETED,
             'provider_type' => $voucher->getMorphClass(),
             'phone'         => $targetNumber
                 ? PhoneNumber::make($targetNumber, 'KE')->formatE164()
                 : $this->phone,
         ];
+
+        if($this->product === 'subscription') {
+            $paymentData['amount'] = SubscriptionType::wherePrice($this->amount)->firstOrFail();
+            $paymentData['status'] = Status::PENDING;
+        }
+
+        return $paymentData;
     }
 
     /**
      * @param mixed $amount
+     * @return PaymentRepository
      */
-    public function setAmount($amount): void
+    public function setAmount(mixed $amount): static
     {
         $this->amount = $amount;
+
+        return $this;
+    }
+
+    /**
+     * @param mixed $product
+     */
+    public function setProduct($product): void
+    {
+        $this->product = $product;
     }
 
     /**

@@ -17,7 +17,8 @@
         "laravel/sanctum": "^2.14",
         "laravel/tinker": "^2.7",
         "nabcellent/laravel-kyanda": "dev-master",
-        "propaganistas/laravel-phone": "^4.3"
+        "propaganistas/laravel-phone": "^4.3",
+        "ext-intl": "*"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.12",

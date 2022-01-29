@@ -18,7 +18,7 @@ return new class extends Migration
 
             $table->string('phone', 12);
             $table->string('message');
-            $table->double('amount');
+            $table->decimal('amount');
             $table->string('status', 15)->default('SENT');
             $table->string('request_id')->index();
             $table->string('discount');

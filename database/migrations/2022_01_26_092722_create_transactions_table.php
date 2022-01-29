@@ -18,7 +18,7 @@ class CreateTransactionsTable extends Migration
 
             $table->string('initiator', 20);
             $table->string('type', 20); // PAYMENT or WITHDRAWAL : TRANSFER? (P2P, B2B)
-            $table->float('amount');
+            $table->decimal('amount');
             $table->string('status', 20)->default('PENDING'); //    Use enums
             $table->string('destination')->nullable();
             $table->string('description');

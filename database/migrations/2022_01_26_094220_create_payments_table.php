@@ -17,7 +17,7 @@ class CreatePaymentsTable extends Migration
             $table->id();
 
             $table->morphs('payable');
-            $table->float('amount');
+            $table->decimal('amount');
             $table->string('status', 15); // PENDING or COMPLETED
             $table->string('type', 15); // ['MOBILE', 'SIDOOH', 'BANK', 'PAYPAL', 'OTHER'] payment methods?
             $table->string('subtype', 15); // 'STK', 'C2B', 'CBA', 'WALLET', 'BONUS'

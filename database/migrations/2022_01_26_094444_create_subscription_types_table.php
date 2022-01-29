@@ -17,7 +17,9 @@ class CreateSubscriptionTypesTable extends Migration
             $table->id();
 
             $table->string('title', 32);
-            $table->double('price', 5, 0);
+            $table->decimal('price', 5, 0);
+            $table->integer('level_limit')->default(2);
+            $table->integer('duration')->default(1);
             $table->boolean('active')->default(true);
 
             $table->timestamps();

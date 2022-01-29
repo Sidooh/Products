@@ -16,7 +16,7 @@ class CreateCashbacksTable extends Migration
         Schema::create('cashbacks', function (Blueprint $table) {
             $table->id();
 
-            $table->double('amount',7,4);
+            $table->decimal('amount',7,4);
             $table->string('type'); //SELF / REFERRAL / SYSTEM
             $table->foreignId('account_id')->unsigned()->nullable();
             $table->foreignId('transaction_id')->constrained()->cascadeOnDelete();

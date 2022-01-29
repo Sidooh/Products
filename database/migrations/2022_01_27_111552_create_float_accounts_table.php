@@ -17,7 +17,7 @@ class CreateFloatAccountsTable extends Migration
             $table->id();
 
             $table->string('type', 20);
-            $table->double('balance', 10,  2)->default(0);
+            $table->decimal('balance', 10)->default(0);
             $table->morphs('accountable');
             $table->foreignId('account_id')->unsigned();
 

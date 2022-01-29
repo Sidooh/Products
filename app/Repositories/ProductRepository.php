@@ -35,9 +35,8 @@ class ProductRepository implements ProductRepositoryInterface
 
     public function createTransaction(array $transactionData): ProductRepository
     {
-        // TODO: Implement createTransaction() method.
         $this->transaction = Transaction::create($transactionData);
-        $this->paymentRepo->setAmount($this->transaction->amount);
+        $this->paymentRepo->setAmount($this->transaction->amount)->setProduct($transactionData['product']);
 
         return $this;
     }
@@ -59,7 +58,7 @@ class ProductRepository implements ProductRepositoryInterface
      */
     public function initiatePayment($initiatorPhone, $targetNumber = null, $mpesaNumber = null): static
     {
-        Log::info("====== Airtime Purchase ({$this->paymentMethod->value}) ======");
+        Log::info("====== Product Purchase ({$this->paymentMethod->value}) ======");
         $targetNumber = $targetNumber
             ? ltrim(PhoneNumber::make($targetNumber, 'KE')->formatE164(), '+')
             : $initiatorPhone;
@@ -86,9 +85,10 @@ class ProductRepository implements ProductRepositoryInterface
     {
         if(empty($productData)) $productData = $this->paymentData;
 
-        match($product) {
+        match ($product) {
             'airtime' => (new Purchase)->airtime($this->transaction, $productData),
-            'utility' => (new Purchase)->utility($this->transaction, $productData, '')
+            'utility' => (new Purchase)->utility($this->transaction, $productData, ''),
+            'subscription' => (new Purchase)->subscription($this->transaction, $productData['amount'])
         };
     }
 

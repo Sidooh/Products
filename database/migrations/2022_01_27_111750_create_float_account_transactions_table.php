@@ -17,7 +17,7 @@ class CreateFloatAccountTransactionsTable extends Migration
             $table->id();
 
             $table->string('type', 20); // DEBIT or CREDIT
-            $table->double('amount');
+            $table->decimal('amount');
             $table->string('description');
             $table->foreignId('float_account_id')->constrained();
 

@@ -69,8 +69,17 @@ class ProductController extends Controller
         return $this->data['product'];
     }
 
+    /**
+     * @throws Exception
+     */
     public function subscriptionPurchase()
     {
+        $this->data['type'] = TransactionType::PAYMENT;
+        $this->data['description'] = "Subscription Purchase";
+
+        $this->repo->createTransaction($this->data)->getTransaction();
+        $this->repo->initiatePayment($this->data['phone'])->createPayment();
+
         return $this->data['product'];
     }
 

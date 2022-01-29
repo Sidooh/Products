@@ -16,7 +16,7 @@ class CreateSubscriptionsTable extends Migration
         Schema::create('subscriptions', function (Blueprint $table) {
             $table->id();
 
-            $table->double('amount');
+            $table->decimal('amount');
             $table->timestamp('start_date');
             $table->timestamp('end_date');
             $table->string('status')->default('PENDING'); // PENDING / ACTIVE / EXPIRED

@@ -17,7 +17,7 @@ class CreateVoucherTransactionsTable extends Migration
             $table->id();
 
             $table->string('type', 20); // DEBIT or CREDIT
-            $table->double('amount');
+            $table->decimal('amount');
             $table->string('description');
             $table->foreignId('voucher_id')->constrained();
 

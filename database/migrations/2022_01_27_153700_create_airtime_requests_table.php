@@ -18,7 +18,7 @@ return new class extends Migration
 
             $table->string('message');
             $table->smallInteger('num_sent');
-            $table->double('amount');
+            $table->decimal('amount');
             $table->string('discount');
             $table->string('description');
 
