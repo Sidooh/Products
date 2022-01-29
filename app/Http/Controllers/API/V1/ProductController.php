@@ -70,7 +70,7 @@ class ProductController extends Controller
     }
 
     /**
-     * @throws Exception
+     * @throws Exception|Throwable
      */
     public function subscriptionPurchase()
     {
@@ -79,6 +79,7 @@ class ProductController extends Controller
 
         $this->repo->createTransaction($this->data)->getTransaction();
         $this->repo->initiatePayment($this->data['phone'])->createPayment();
+        $this->repo->requestPurchase($this->data['product']);
 
         return $this->data['product'];
     }

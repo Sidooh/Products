@@ -73,7 +73,7 @@ class PaymentRepository
     /**
      * @throws Exception
      */
-    public function voucher($targetNumber = null)
+    public function voucher($targetNumber = null): array
     {
         $account = SidoohAccounts::findOrCreate($this->phone);
         $voucher = Voucher::firstOrCreate(['account_id' => $account['id']], [
@@ -84,7 +84,7 @@ class PaymentRepository
         if($voucher) {
             $bal = $voucher->balance;
 
-            if($bal === 0 || $bal < (int)$this->amount) return;
+            if($bal < (int)$this->amount) throw new Exception("Insufficient voucher balance!");
         }
 
         $voucher->balance -= $this->amount;
@@ -103,7 +103,7 @@ class PaymentRepository
         ];
 
         if($this->product === 'subscription') {
-            $paymentData['amount'] = SubscriptionType::wherePrice($this->amount)->firstOrFail();
+            $paymentData['amount'] = SubscriptionType::wherePrice($this->amount)->firstOrFail()->value('price');
             $paymentData['status'] = Status::PENDING;
         }
 
