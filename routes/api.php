@@ -1,7 +1,8 @@
 <?php
 
 use App\Http\Controllers\API\V1\ProductController;
-use App\Models\Transaction;
+use App\Http\Controllers\API\V1\TransactionController;
+use App\Http\Controllers\API\V1\VoucherController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -22,7 +23,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::prefix('/v1')->name('api.')->group(function() {
     Route::post('/products/utility-purchase', ProductController::class);
-    Route::get('/transactions', function() {
-        return response()->json(['transactions' => Transaction::all()]);
-    });
+
+    Route::get('/transactions', [TransactionController::class, 'index']);
+    Route::get('/vouchers', [VoucherController::class, 'index']);
 });

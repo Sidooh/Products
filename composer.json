@@ -2,15 +2,21 @@
     "name": "laravel/laravel",
     "type": "project",
     "description": "The Laravel Framework.",
-    "keywords": ["framework", "laravel"],
+    "keywords": [
+        "framework",
+        "laravel"
+    ],
     "license": "MIT",
     "require": {
         "php": "^8.1",
+        "africastalking/africastalking": "^3.0",
+        "drh/laravel-tanda": "dev-master",
         "fruitcake/laravel-cors": "^2.0.5",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^9.0",
         "laravel/sanctum": "^2.14",
         "laravel/tinker": "^2.7",
+        "nabcellent/laravel-kyanda": "dev-master",
         "propaganistas/laravel-phone": "^4.3"
     },
     "require-dev": {
@@ -49,6 +55,16 @@
             "@php artisan key:generate --ansi"
         ]
     },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../../Libraries/laravel-kyanda"
+        },
+        {
+            "type": "path",
+            "url": "../../Libraries/laravel-tanda"
+        }
+    ],
     "extra": {
         "laravel": {
             "dont-discover": []

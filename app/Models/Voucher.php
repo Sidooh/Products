@@ -11,4 +11,9 @@ use Illuminate\Database\Eloquent\Model;
 class Voucher extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'account_id',
+        'type'
+    ];
 }

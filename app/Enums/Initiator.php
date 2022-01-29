@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-Enum Initiator: string
+enum Initiator: string
 {
     case CONSUMER = 'CONSUMER';
     case AGENT = 'AGENT';

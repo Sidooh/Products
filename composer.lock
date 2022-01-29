@@ -4,8 +4,64 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "63495ed06693dd1a7a2cec60d40bb740",
+    "content-hash": "5852853efc8a02363fe60c226bb78be9",
     "packages": [
+        {
+            "name": "africastalking/africastalking",
+            "version": "v3.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/AfricasTalkingLtd/africastalking-php.git",
+                "reference": "94e17a13eaaf782cf7697bfc7da020398a2b6f13"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/AfricasTalkingLtd/africastalking-php/zipball/94e17a13eaaf782cf7697bfc7da020398a2b6f13",
+                "reference": "94e17a13eaaf782cf7697bfc7da020398a2b6f13",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "^6.0 || ^7.0",
+                "php": ">=7.1"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.3"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "AfricasTalking\\SDK\\": "src/",
+                    "AfricasTalking\\SDK\\Tests\\": "tests"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Africas's Talking",
+                    "email": "support@africastalking.com",
+                    "homepage": "https://www.africastalking.com"
+                }
+            ],
+            "description": "Official Africa's Talking PHP SDK",
+            "homepage": "http://github.com/AfricasTalkingLtd/africastalking-php",
+            "keywords": [
+                "Africastalking",
+                "airtime",
+                "api",
+                "sms",
+                "text message",
+                "ussd",
+                "voice"
+            ],
+            "support": {
+                "issues": "https://github.com/AfricasTalkingLtd/africastalking-php/issues",
+                "source": "https://github.com/AfricasTalkingLtd/africastalking-php/tree/v3.0.0"
+            },
+            "time": "2020-10-11T00:52:15+00:00"
+        },
         {
             "name": "asm89/stack-cors",
             "version": "v2.1.1",
@@ -424,6 +480,89 @@
                 }
             ],
             "time": "2022-01-18T15:43:28+00:00"
+        },
+        {
+            "name": "drh/laravel-tanda",
+            "version": "dev-master",
+            "dist": {
+                "type": "path",
+                "url": "../../Libraries/laravel-tanda",
+                "reference": "208e4a10f375b4baa0980abc19a421134a5418e1"
+            },
+            "require": {
+                "guzzlehttp/guzzle": "^7.0",
+                "illuminate/support": "^8.0|^9.0",
+                "php": "^8.0"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^6.23",
+                "phpstan/phpstan": "^0.12.99",
+                "phpunit/phpunit": "^9.5"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "DrH\\Tanda\\TandaServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "DrH\\Tanda\\": "src",
+                    "DrH\\Tanda\\Database\\Factories\\": "database/factories"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "DrH\\Tanda\\Tests\\": "tests"
+                }
+            },
+            "scripts": {
+                "test": [
+                    "phpunit --testdox"
+                ],
+                "test-coverage": [
+                    "phpunit --coverage-clover coverage.xml"
+                ],
+                "test-coverage-html": [
+                    "phpunit --coverage-html coverage"
+                ],
+                "check-style": [
+                    "phpcs -p --standard=PSR12 --runtime-set ignore_errors_on_exit 1 --runtime-set ignore_warnings_on_exit 1 src"
+                ],
+                "fix-style": [
+                    "phpcbf -p --standard=PSR12 --runtime-set ignore_errors_on_exit 1 --runtime-set ignore_warnings_on_exit 1 src"
+                ],
+                "run-csa": [
+                    "phpstan analyse src --level=4 --no-progress"
+                ],
+                "post-autoload-dump": [
+                    "@php ./vendor/bin/testbench package:discover --ansi"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Dr H",
+                    "email": "jmnabangi@gmail.com"
+                }
+            ],
+            "description": "Tanda API Library",
+            "keywords": [
+                "Bank",
+                "Library",
+                "Mobile Money",
+                "Payment Collections",
+                "Payments",
+                "Tanda",
+                "Utility Payments"
+            ],
+            "transport-options": {
+                "relative": true
+            }
         },
         {
             "name": "egulias/email-validator",
@@ -1941,6 +2080,97 @@
                 }
             ],
             "time": "2021-10-01T21:08:31+00:00"
+        },
+        {
+            "name": "nabcellent/laravel-kyanda",
+            "version": "dev-master",
+            "dist": {
+                "type": "path",
+                "url": "../../Libraries/laravel-kyanda",
+                "reference": "050e73af412d2cb5ef780b88a25d2d895cd25940"
+            },
+            "require": {
+                "ext-json": "*",
+                "ext-openssl": "*",
+                "guzzlehttp/guzzle": "^6.0|^7.0",
+                "illuminate/support": "^8.0|^9.0",
+                "php": "^8.0"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^6.21",
+                "phpstan/phpstan": "^0.12.99",
+                "phpunit/phpunit": "^9.5"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Nabcellent\\Kyanda\\KyandaServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Nabcellent\\Kyanda\\": "src",
+                    "Nabcellent\\Kyanda\\Database\\Factories\\": "database/factories"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Nabcellent\\Kyanda\\Tests\\": "tests"
+                }
+            },
+            "scripts": {
+                "test": [
+                    "phpunit --testdox"
+                ],
+                "test-coverage": [
+                    "phpunit --coverage-clover coverage.xml"
+                ],
+                "test-coverage-html": [
+                    "phpunit --coverage-html coverage"
+                ],
+                "check-style": [
+                    "phpcs -p --standard=PSR12 --runtime-set ignore_errors_on_exit 1 --runtime-set ignore_warnings_on_exit 1 src"
+                ],
+                "fix-style": [
+                    "phpcbf -p --standard=PSR12 --runtime-set ignore_errors_on_exit 1 --runtime-set ignore_warnings_on_exit 1 src"
+                ],
+                "run-csa": [
+                    "phpstan analyse src --level=4 --no-progress"
+                ],
+                "post-autoload-dump": [
+                    "@php ./vendor/bin/testbench package:discover --ansi"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Dr H",
+                    "email": "jmnabangi@gmail.com",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Lil Nabz",
+                    "email": "nabcellent.dev@gmail.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Kyanda API Library",
+            "keywords": [
+                "Bank",
+                "Kyanda",
+                "Library",
+                "Mobile Money",
+                "Payment Collections",
+                "Payments",
+                "Utility Payments"
+            ],
+            "transport-options": {
+                "relative": true
+            }
         },
         {
             "name": "nesbot/carbon",
@@ -9418,7 +9648,10 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": [],
+    "stability-flags": {
+        "drh/laravel-tanda": 20,
+        "nabcellent/laravel-kyanda": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

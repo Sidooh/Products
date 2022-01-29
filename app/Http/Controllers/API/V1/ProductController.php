@@ -2,37 +2,43 @@
 
 namespace App\Http\Controllers\API\V1;
 
+use App\Enums\PaymentMethod;
 use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductRequest;
+use App\Models\Payment;
 use App\Repositories\ProductRepository;
 use App\Traits\ApiResponse;
+use Exception;
 use Illuminate\Http\JsonResponse;
-use JetBrains\PhpStorm\Pure;
+use Throwable;
 
 class ProductController extends Controller
 {
     use ApiResponse;
 
     private array $data;
-
-    /**
-     * @param ProductRepository $repo
-     */
-    #[Pure]
-    public function __construct(private ProductRepository $repo = new ProductRepository()) {}
+    private ProductRepository $repo;
 
     /**
      * Handle the incoming request.
      *
      * @param ProductRequest $request
      * @return JsonResponse
+     * @throws Exception|Throwable
      */
     public function __invoke(ProductRequest $request): JsonResponse
     {
+        $this->repo = new ProductRepository();
         $this->data = $request->all();
 
-        $response = match($this->data['product']) {
+        $paymentMethod = PaymentMethod::tryFrom($this->data['method']);
+
+        if(!$paymentMethod) throw new Exception('Invalid payment method!');
+
+        $this->repo->setPaymentMethod($paymentMethod);
+
+        $response = match ($this->data['product']) {
             'airtime' => $this->airtimePurchase(),
             'utility' => $this->utilityPurchase(),
             'subscription' => $this->subscriptionPurchase(),
@@ -42,14 +48,20 @@ class ProductController extends Controller
         return $this->successResponse($response, 'Request successful');
     }
 
-    public function airtimePurchase()
+    /**
+     * @throws Exception
+     * @throws Throwable
+     */
+    public function airtimePurchase(): Payment
     {
         $this->data['type'] = TransactionType::PAYMENT;
         $this->data['description'] = "Airtime Purchase";
-        $transaction = $this->repo->createTransaction($this->data);
-        $provider = $this->repo->initiatePayment($transaction, $this->data);
 
-        return $transaction->getPayment();
+        $this->repo->createTransaction($this->data)->getTransaction();
+        $this->repo->initiatePayment($this->data['phone'])->createPayment();
+        $this->repo->requestPurchase($this->data['product']);
+
+        return $this->repo->getPayment();
     }
 
     public function utilityPurchase()

@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-Enum PaymentSubtype: string
+enum PaymentSubtype: string
 {
     case STK = "STK";
     case C2B = "C2B";

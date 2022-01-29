@@ -18,6 +18,8 @@ class Payment extends Model
         'status',
         'type',
         'subtype',
+        'provider_type',
+        'provider_id',
     ];
 
     /**

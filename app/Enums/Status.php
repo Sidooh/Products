@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-Enum Status: string
+enum Status: string
 {
     case COMPLETED = 'COMPLETED';
     case FAILED = 'FAILED';
