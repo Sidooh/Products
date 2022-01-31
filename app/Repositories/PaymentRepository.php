@@ -54,13 +54,14 @@ class PaymentRepository
      * @throws Exception
      */
     #[ArrayShape([
-        'amount'        => "mixed",
-        'type'          => "\App\Enums\PaymentType",
-        'subtype'       => "\App\Enums\PaymentSubtype",
-        'status'        => "\App\Enums\Status",
-        'provider_id'   => "mixed",
-        'provider_type' => "mixed",
-        'phone'         => "string"
+        'amount'         => "mixed",
+        'type'           => "\App\Enums\PaymentType",
+        'subtype'        => "\App\Enums\PaymentSubtype",
+        'status'         => "\App\Enums\Status",
+        'provider_id'    => "mixed",
+        'provider_type'  => "mixed",
+        'phone'          => "string",
+        'account_number' => "mixed|null"
     ])]
     public function voucher($account, $destination = null): array
     {
@@ -113,9 +114,9 @@ class PaymentRepository
     }
 
     /**
-     * @param mixed $product
+     * @param string $product
      */
-    public function setProduct($product): void
+    public function setProduct(string $product): void
     {
         $this->product = $product;
     }

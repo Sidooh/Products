@@ -41,6 +41,8 @@ class ProductController extends Controller
         $this->repo->setPaymentMethod($paymentMethod);
         $this->repo->setAccount($this->account);
 
+        $this->data['type'] = TransactionType::PAYMENT;
+
         $response = match ($this->data['product']) {
             'airtime' => $this->airtimePurchase(),
             'utility' => $this->utilityPurchase(),
@@ -56,7 +58,6 @@ class ProductController extends Controller
      */
     public function airtimePurchase(): Payment
     {
-        $this->data['type'] = TransactionType::PAYMENT;
         $this->data['description'] = "Airtime Purchase";
 
         $this->repo->createTransaction($this->data);
@@ -76,7 +77,6 @@ class ProductController extends Controller
      */
     public function utilityPurchase(): Payment
     {
-        $this->data['type'] = TransactionType::PAYMENT;
         $this->data['destination'] = $this->data['account_number'];
         $this->data['description'] = "{$this->data['utility_provider']} Payment";
 
@@ -96,7 +96,6 @@ class ProductController extends Controller
      */
     public function subscriptionPurchase()
     {
-        $this->data['type'] = TransactionType::PAYMENT;
         $this->data['description'] = "Subscription Purchase";
 
         $this->repo->createTransaction($this->data)->getTransaction();
@@ -111,7 +110,6 @@ class ProductController extends Controller
      */
     public function voucherTransaction()
     {
-        $this->data['type'] = TransactionType::PAYMENT;
         $this->data['description'] = "Voucher Purchase";
 
         $this->repo->createTransaction($this->data)->getTransaction();

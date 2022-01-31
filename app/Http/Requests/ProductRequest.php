@@ -36,7 +36,8 @@ class ProductRequest extends FormRequest
             'method'           => ["required_if:initiator,CONSUMER", new Enum(PaymentMethod::class)],
             'account_number'   => ["required_if:product,utility", 'integer'],
             'utility_provider' => ["required_if:product,utility"],
-            'phone'            => 'phone:KE',
+            'target_number'    => 'phone:KE',
+            'mpesa_number'     => 'phone:KE',
         ];
     }
 
