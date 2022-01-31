@@ -22,7 +22,8 @@ class ProductRepository implements ProductRepositoryInterface
     private Transaction $transaction;
     private Payment|Model $payment;
     private PaymentMethod $paymentMethod;
-    private array $paymentData, $account;
+    public array $paymentData, $account;
+    private string $product;
 
     /**
      * @param PaymentRepository $paymentRepo
@@ -37,6 +38,7 @@ class ProductRepository implements ProductRepositoryInterface
      */
     public function createTransaction(array $transactionData): ProductRepository
     {
+        $this->product = $transactionData['product'];
         $this->transaction = Transaction::create($transactionData);
         $this->paymentRepo->setAmount($this->transaction->amount)->setProduct($transactionData['product']);
         $this->paymentRepo->setAccountId($this->transaction->account_id)->setProduct($transactionData['product']);
@@ -58,20 +60,22 @@ class ProductRepository implements ProductRepositoryInterface
     /**
      * @throws Exception
      */
-    public function initiatePayment($initiatorPhone, $targetNumber = null, $mpesaNumber = null): static
+    public function initiatePayment($destination = null, $mpesaNumber = null): static
     {
         Log::info("====== Product Purchase ({$this->paymentMethod->value}) ======");
-        $targetNumber = $targetNumber
-            ? ltrim(PhoneNumber::make($targetNumber, 'KE')->formatE164(), '+')
-            : $initiatorPhone;
-        $mpesaNumber = $mpesaNumber
-            ? ltrim(PhoneNumber::make($mpesaNumber, 'KE')->formatE164(), '+')
-            : $initiatorPhone;
-        Log::info("$targetNumber - $mpesaNumber");
+        if($this->product === 'airtime') {
+            $destination = $destination
+                ? ltrim(PhoneNumber::make($destination, 'KE')->formatE164(), '+')
+                : $this->account['phone'];
+            $mpesaNumber = $mpesaNumber
+                ? ltrim(PhoneNumber::make($mpesaNumber, 'KE')->formatE164(), '+')
+                : $this->account['phone'];
+        }
+        Log::info("$destination - $mpesaNumber");
 
         $this->paymentData = match ($this->paymentMethod) {
-            PaymentMethod::MPESA => $this->paymentRepo->mpesa($targetNumber, $mpesaNumber),
-            PaymentMethod::VOUCHER => $this->paymentRepo->voucher($this->account, $targetNumber),
+            PaymentMethod::MPESA => $this->paymentRepo->mpesa($destination, $mpesaNumber),
+            PaymentMethod::VOUCHER => $this->paymentRepo->voucher($this->account, $destination),
             default => throw new Exception('Unexpected match value')
         };
 
@@ -81,14 +85,14 @@ class ProductRepository implements ProductRepositoryInterface
     /**
      * @throws Throwable
      */
-    public function requestPurchase($product, $productData = [])
+    public function requestPurchase($purchaseData = [])
     {
-        if(empty($productData)) $productData = $this->paymentData;
+        if(empty($purchaseData)) $purchaseData = $this->paymentData;
 
-        match ($product) {
-            'airtime' => (new Purchase)->airtime($this->transaction, $productData),
-            'utility' => (new Purchase)->utility($this->transaction, $productData, ''),
-            'subscription' => (new Purchase)->subscription($this->transaction, $productData['amount'])
+        match ($this->product) {
+            'airtime' => (new Purchase)->airtime($this->transaction, $purchaseData),
+            'utility' => (new Purchase)->utility($this->transaction, $purchaseData, $purchaseData['provider']),
+            'subscription' => (new Purchase)->subscription($this->transaction, $purchaseData['amount'])
         };
     }
 

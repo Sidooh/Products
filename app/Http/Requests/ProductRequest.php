@@ -29,12 +29,14 @@ class ProductRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'product'    => 'required|in:airtime,utility,subscription,voucher',
-            'initiator'  => ['required', new Enum(Initiator::class)],
-            'account_id' => 'integer',
-            'amount'     => 'required|numeric',
-            'method'     => ["required_if:initiator,CONSUMER", new Enum(PaymentMethod::class)],
-            'phone'      => 'phone:KE',
+            'product'          => 'required|in:airtime,utility,subscription,voucher',
+            'initiator'        => ['required', new Enum(Initiator::class)],
+            'account_id'       => 'integer',
+            'amount'           => 'required|numeric',
+            'method'           => ["required_if:initiator,CONSUMER", new Enum(PaymentMethod::class)],
+            'account_number'   => ["required_if:product,utility", 'integer'],
+            'utility_provider' => ["required_if:product,utility"],
+            'phone'            => 'phone:KE',
         ];
     }
 

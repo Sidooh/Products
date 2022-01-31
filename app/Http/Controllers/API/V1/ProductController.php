@@ -52,8 +52,7 @@ class ProductController extends Controller
     }
 
     /**
-     * @throws Exception
-     * @throws Throwable
+     * @throws Exception|Throwable
      */
     public function airtimePurchase(): Payment
     {
@@ -66,13 +65,27 @@ class ProductController extends Controller
         $mpesaNumber = $this->data['mpesa_number'] ?? null;
 
         $this->repo->initiatePayment($this->account['phone'], $targetNumber, $mpesaNumber)->createPayment();
-        $this->repo->requestPurchase($this->data['product']);
+        $this->repo->requestPurchase();
 
         return $this->repo->getPayment();
     }
 
+    /**
+     * @throws Exception|Throwable
+     */
     public function utilityPurchase()
     {
+        $this->data['type'] = TransactionType::PAYMENT;
+        $this->data['destination'] = $this->data['account_number'];
+        $this->data['description'] = "{$this->data['utility_provider']} Payment";
+
+        $mpesaNumber = $this->data['mpesa_number'] ?? null;
+
+        $this->repo->createTransaction($this->data);
+        $this->repo->initiatePayment(destination: $this->data['destination'], mpesaNumber: $mpesaNumber)->createPayment();
+        $this->repo->paymentData['provider'] = $this->data['utility_provider'];
+        $this->repo->requestPurchase();
+
         return $this->data['product'];
     }
 
@@ -86,7 +99,7 @@ class ProductController extends Controller
 
         $this->repo->createTransaction($this->data)->getTransaction();
         $this->repo->initiatePayment($this->data['phone'])->createPayment();
-        $this->repo->requestPurchase($this->data['product']);
+        $this->repo->requestPurchase();
 
         return $this->data['product'];
     }

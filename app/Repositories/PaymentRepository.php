@@ -59,7 +59,7 @@ class PaymentRepository
         'provider_type' => "mixed",
         'phone'         => "string"
     ])]
-    public function voucher($account, $targetNumber = null): array
+    public function voucher($account, $destination = null): array
     {
         $voucher = Voucher::firstOrCreate(['account_id' => $account['id']], [
             ...$account,
@@ -82,14 +82,17 @@ class PaymentRepository
             'status'        => Status::COMPLETED,
             'provider_id'   => $voucher->id,
             'provider_type' => $voucher->getMorphClass(),
-            'phone'         => $targetNumber
-                ? PhoneNumber::make($targetNumber, 'KE')->formatE164()
-                : $this->phone,
         ];
 
         if($this->product === 'subscription') {
             $paymentData['amount'] = SubscriptionType::wherePrice($this->amount)->firstOrFail()->value('price');
             $paymentData['status'] = Status::PENDING;
+        } else if($this->product === 'airtime') {
+            $paymentData['phone'] = $destination
+                ? PhoneNumber::make($destination, 'KE')->formatE164()
+                : $this->phone;
+        } else if($this->product === 'utility') {
+            $paymentData['account_number'] = $destination;
         }
 
         return $paymentData;

@@ -21,7 +21,8 @@ class Transaction extends Model
         'initiator',
         'type',
         'amount',
-        'description'
+        'destination',
+        'description',
     ];
 
     /**

@@ -21,9 +21,8 @@ class TandaApi
     public static function bill(Transaction $transaction, array $array, string $provider): void
     {
         try {
-            Utility::billPayment($array['account'], $array['amount'], $provider, $transaction->id);
+            Utility::billPayment($array['account_number'], $array['amount'], $provider, $transaction->id);
         } catch (TandaException $e) {
-
             Log::error("TandaError: " . $e->getMessage(), [$transaction]);
         }
     }
