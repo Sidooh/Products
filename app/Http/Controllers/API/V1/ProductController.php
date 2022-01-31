@@ -47,8 +47,10 @@ class ProductController extends Controller
             'airtime' => $this->airtimePurchase(),
             'utility' => $this->utilityPurchase(),
             'subscription' => $this->subscriptionPurchase(),
-            'voucher' => $this->voucherTransaction()
+            'voucher' => $this->voucherPurchase()
         };
+
+        $this->repo->requestPurchase();
 
         return $this->successResponse($response, 'Request successful');
     }
@@ -66,8 +68,7 @@ class ProductController extends Controller
         $mpesaNumber = $this->data['mpesa_number'] ?? null;
 
         $this->repo->initiatePayment($targetNumber, $mpesaNumber)
-            ->createPayment()
-            ->requestPurchase();
+            ->createPayment();
 
         return $this->repo->getPayment();
     }
@@ -86,7 +87,6 @@ class ProductController extends Controller
         $this->repo->initiatePayment(destination: $this->data['destination'], mpesaNumber: $mpesaNumber)
             ->createPayment();
         $this->repo->paymentData['provider'] = $this->data['utility_provider'];
-        $this->repo->requestPurchase();
 
         return $this->repo->getPayment();
     }
@@ -100,7 +100,6 @@ class ProductController extends Controller
 
         $this->repo->createTransaction($this->data)->getTransaction();
         $this->repo->initiatePayment($this->account['phone'])->createPayment();
-        $this->repo->requestPurchase();
 
         return $this->data['product'];
     }
@@ -108,7 +107,7 @@ class ProductController extends Controller
     /**
      * @throws Exception|Throwable
      */
-    public function voucherTransaction()
+    public function voucherPurchase()
     {
         $this->data['description'] = "Voucher Purchase";
 
@@ -117,8 +116,7 @@ class ProductController extends Controller
         $mpesaNumber = $this->data['mpesa_number'] ?? null;
 
         $this->repo->initiatePayment($targetNumber, $mpesaNumber)
-            ->createPayment()
-            ->requestPurchase();
+            ->createPayment();
 
         return $this->data['product'];
     }
