@@ -63,7 +63,7 @@ class ProductRepository implements ProductRepositoryInterface
     public function initiatePayment($destination = null, $mpesaNumber = null): static
     {
         Log::info("====== Product Purchase ({$this->paymentMethod->value}) ======");
-        if($this->product === 'airtime') {
+        if($this->product === 'airtime' || 'voucher') {
             $destination = $destination
                 ? ltrim(PhoneNumber::make($destination, 'KE')->formatE164(), '+')
                 : $this->account['phone'];
@@ -89,10 +89,13 @@ class ProductRepository implements ProductRepositoryInterface
     {
         if(empty($purchaseData)) $purchaseData = $this->paymentData;
 
+        $purchase = new Purchase;
+
         match ($this->product) {
-            'airtime' => (new Purchase)->airtime($this->transaction, $purchaseData),
-            'utility' => (new Purchase)->utility($this->transaction, $purchaseData, $purchaseData['provider']),
-            'subscription' => (new Purchase)->subscription($this->transaction, $purchaseData['amount'])
+            'airtime' => $purchase->airtime($this->transaction, $purchaseData),
+            'utility' => $purchase->utility($this->transaction, $purchaseData, $purchaseData['provider']),
+            'subscription' => $purchase->subscription($this->transaction, $purchaseData['amount']),
+            'voucher' => $purchase->voucher($this->transaction)
         };
     }
 

@@ -19,11 +19,14 @@ class PaymentRepository
 {
     private $amount, $product, $phone;
 
-    public function mpesa($targetNumber = null, $mpesaNumber = null)
+    public function mpesa($targetNumber = null, $mpesaNumber = null): ?array
     {
+        $purchaseDesc = "Airtime Purchase";
+        if($this->product === 'voucher') $purchaseDesc = "Voucher Purchase";
+
         $description = $targetNumber
-            ? "Airtime Purchase - $targetNumber"
-            : "Airtime Purchase";
+            ? "$purchaseDesc - $targetNumber"
+            : $purchaseDesc;
         $number = $mpesaNumber ?? $this->phone;
 
         try {

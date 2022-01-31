@@ -5,13 +5,17 @@ namespace App\Helpers\Product;
 use App\Enums\Status;
 use App\Events\SubscriptionPurchaseEvent;
 use App\Events\SubscriptionPurchaseFailedEvent;
+use App\Events\VoucherPurchaseEvent;
 use App\Helpers\AfricasTalking\AfricasTalkingApi;
 use App\Helpers\Kyanda\KyandaApi;
 use App\Helpers\Tanda\TandaApi;
 use App\Models\Subscription;
 use App\Models\SubscriptionType;
 use App\Models\Transaction;
+use App\Models\Voucher;
 use Exception;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 use function config;
@@ -65,7 +69,7 @@ class Purchase
             'active'     => true,
             'account_id' => $transaction->account_id,
             'start_date' => now(),
-            'end_date' => now()->addMonths($type->duration),
+            'end_date'   => now()->addMonths($type->duration),
         ];
 
         return DB::transaction(function() use ($type, $subscription, $amount, $transaction) {
@@ -78,5 +82,20 @@ class Purchase
 
             return $sub;
         });
+    }
+
+    public function voucher(Transaction $transaction): Model|Builder|Voucher
+    {
+        $voucher = Voucher::whereAccountId($transaction->account_id)->firstOrFail();
+
+        $voucher->balance += (double)$transaction->amount;
+        $voucher->save();
+
+        $transaction->status = Status::COMPLETED;
+        $transaction->save();
+
+        VoucherPurchaseEvent::dispatch($voucher, $transaction);
+
+        return $voucher;
     }
 }

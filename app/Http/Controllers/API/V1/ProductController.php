@@ -64,7 +64,7 @@ class ProductController extends Controller
         $targetNumber = $this->data['target_number'] ?? null;
         $mpesaNumber = $this->data['mpesa_number'] ?? null;
 
-        $this->repo->initiatePayment($this->account['phone'], $targetNumber, $mpesaNumber)
+        $this->repo->initiatePayment($targetNumber, $mpesaNumber)
             ->createPayment()
             ->requestPurchase();
 
@@ -106,8 +106,22 @@ class ProductController extends Controller
         return $this->data['product'];
     }
 
+    /**
+     * @throws Exception|Throwable
+     */
     public function voucherTransaction()
     {
+        $this->data['type'] = TransactionType::PAYMENT;
+        $this->data['description'] = "Voucher Purchase";
+
+        $this->repo->createTransaction($this->data)->getTransaction();
+        $targetNumber = $this->data['target_number'] ?? null;
+        $mpesaNumber = $this->data['mpesa_number'] ?? null;
+
+        $this->repo->initiatePayment($targetNumber, $mpesaNumber)
+            ->createPayment()
+            ->requestPurchase();
+
         return $this->data['product'];
     }
 }
