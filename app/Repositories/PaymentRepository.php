@@ -28,7 +28,6 @@ class PaymentRepository
 
         try {
             $stkResponse = mpesa_request($number, $this->amount, MpesaReference::AIRTIME, $description);
-            dd($stkResponse);
         } catch (MpesaException $e) {
 //            TODO: Inform customer of issue?
             Log::critical($e);
@@ -42,6 +41,9 @@ class PaymentRepository
             'subtype'       => PaymentSubtype::STK,
             'provider_id'   => $stkResponse->id,
             'provider_type' => $stkResponse->getMorphClass(),
+            'phone'         => $targetNumber
+                ? PhoneNumber::make($targetNumber, 'KE')->formatE164()
+                : $this->phone,
         ];
     }
 

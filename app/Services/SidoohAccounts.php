@@ -7,6 +7,7 @@ use App\Repositories\ReferralRepository;
 use Exception;
 use GuzzleHttp\Promise\PromiseInterface;
 use Illuminate\Http\Client\Response;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use function env;
@@ -26,29 +27,33 @@ class SidoohAccounts
      */
     public static function find($id): array
     {
-        $acc = self::fetch($id);
+        $acc = Cache::get($id, function() use ($id) {
+            $acc = self::fetch($id);
+
+            Cache::put($acc['id'], $acc);
+
+            return $acc;
+        });
 
         if(!$acc) throw new Exception("Account doesn't exist!");
 
         return $acc;
     }
 
+    /**
+     * @throws Exception
+     */
     public static function fetch($id): ?array
     {
         Log::info('----------------- Sidooh find Account', ['id' => $id]);
 
-        try {
-            $url = env('SIDOOH_ACCOUNT_URL') . "/accounts/$id";
+        $url = env('SIDOOH_ACCOUNT_URL') . "/accounts/$id";
 
-            $response = self::sendRequest($url, 'GET');
+        $response = self::sendRequest($url, 'GET');
 
-            Log::info('----------------- Sidooh find Account by phone sent', ['id' => $response->json()['id']]);
+        Log::info('----------------- Sidooh find Account by phone sent', ['id' => $response->json()['id']]);
 
-            return $response->json();
-        } catch (Exception $err) {
-            Log::error($err);
-            return null;
-        }
+        return $response->json();
     }
 
     /**

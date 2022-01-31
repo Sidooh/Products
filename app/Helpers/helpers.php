@@ -1,5 +1,7 @@
 <?php
 
+use JetBrains\PhpStorm\NoReturn;
+
 if(!function_exists('object_to_array')) {
     function object_to_array($obj)
     {
@@ -17,5 +19,12 @@ if(!function_exists('object_to_array')) {
             //  otherwise, (i.e. for scalar values) return without modification
             return $obj;
         }
+    }
+}
+
+if(!function_exists('dump_json')) {
+    #[NoReturn]
+    function dump_json(...$vars) {
+        echo "<pre>"; print_r($vars); die;
     }
 }
