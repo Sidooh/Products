@@ -41,7 +41,7 @@ class ProductRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'product.in' => 'Invalid product. Allowed product values are: airtime, utility, subscription, voucher'
+            'product.in' => 'Invalid product. Allowed product values are: airtime, utility, subscription, voucher',
         ];
     }
 

@@ -4,7 +4,6 @@ namespace App\Repositories;
 
 use App\Enums\PaymentMethod;
 use App\Helpers\Product\Purchase;
-use App\Helpers\Sidooh\USSD\Entities\PaymentMethods;
 use App\Interfaces\ProductRepositoryInterface;
 use App\Models\Payment;
 use App\Models\Transaction;
@@ -23,7 +22,7 @@ class ProductRepository implements ProductRepositoryInterface
     private Transaction $transaction;
     private Payment|Model $payment;
     private PaymentMethod $paymentMethod;
-    private array $paymentData;
+    private array $paymentData, $account;
 
     /**
      * @param PaymentRepository $paymentRepo
@@ -33,17 +32,20 @@ class ProductRepository implements ProductRepositoryInterface
     {
     }
 
+    /**
+     * @throws Exception
+     */
     public function createTransaction(array $transactionData): ProductRepository
     {
         $this->transaction = Transaction::create($transactionData);
         $this->paymentRepo->setAmount($this->transaction->amount)->setProduct($transactionData['product']);
+        $this->paymentRepo->setAccountId($this->transaction->account_id)->setProduct($transactionData['product']);
 
         return $this;
     }
 
     public function createPayment(array $paymentData = null): ProductRepository
     {
-        // TODO: Implement createPayment() method.
         if(isset($this->transaction)) {
             $this->payment = $this->transaction->payment()->create($this->paymentData);
         } else if(isset($paymentData) || isset($this->paymentData)) {
@@ -64,14 +66,12 @@ class ProductRepository implements ProductRepositoryInterface
             : $initiatorPhone;
         $mpesaNumber = $mpesaNumber
             ? ltrim(PhoneNumber::make($mpesaNumber, 'KE')->formatE164(), '+')
-            : '';
+            : $initiatorPhone;
         Log::info("$targetNumber - $mpesaNumber");
-
-        $this->paymentRepo->setPhone($initiatorPhone);
 
         $this->paymentData = match ($this->paymentMethod) {
             PaymentMethod::MPESA => $this->paymentRepo->mpesa($targetNumber, $mpesaNumber),
-            PaymentMethod::VOUCHER => $this->paymentRepo->voucher($targetNumber),
+            PaymentMethod::VOUCHER => $this->paymentRepo->voucher($this->account, $targetNumber),
             default => throw new Exception('Unexpected match value')
         };
 
@@ -102,6 +102,7 @@ class ProductRepository implements ProductRepositoryInterface
         // TODO: Implement notify() method.
     }
 
+
     /**
      * @return Transaction
      */
@@ -116,6 +117,14 @@ class ProductRepository implements ProductRepositoryInterface
     public function getPayment(): Payment
     {
         return $this->payment;
+    }
+
+    /**
+     * @param array $account
+     */
+    public function setAccount(array $account): void
+    {
+        $this->account = $account;
     }
 
     /**

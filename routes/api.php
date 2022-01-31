@@ -22,7 +22,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::prefix('/v1')->name('api.')->group(function() {
-    Route::post('/products/utility-purchase', ProductController::class);
+    Route::post('/products', ProductController::class);
 
     Route::get('/transactions', [TransactionController::class, 'index']);
     Route::get('/vouchers', [VoucherController::class, 'index']);

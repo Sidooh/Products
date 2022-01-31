@@ -2,18 +2,17 @@
 
 namespace App\Repositories;
 
+use App\Enums\MpesaReference;
 use App\Enums\PaymentSubtype;
 use App\Enums\PaymentType;
 use App\Enums\Status;
 use App\Enums\VoucherType;
-use App\Helpers\Sidooh\USSD\Entities\MpesaReferences;
-use App\Models\Payment;
 use App\Models\SubscriptionType;
-use App\Models\Transaction;
 use App\Models\Voucher;
-use App\Services\SidoohAccounts;
+use DrH\Mpesa\Exceptions\MpesaException;
 use Exception;
 use Illuminate\Support\Facades\Log;
+use JetBrains\PhpStorm\ArrayShape;
 use Propaganistas\LaravelPhone\PhoneNumber;
 
 class PaymentRepository
@@ -28,54 +27,38 @@ class PaymentRepository
         $number = $mpesaNumber ?? $this->phone;
 
         try {
-            $stkResponse = mpesa_request($number, $this->amount, MpesaReferences::AIRTIME, $description);
+            $stkResponse = mpesa_request($number, $this->amount, MpesaReference::AIRTIME, $description);
+            dd($stkResponse);
         } catch (MpesaException $e) {
 //            TODO: Inform customer of issue?
             Log::critical($e);
-            return;
+            return null;
         }
 
-//        error_log(json_encode($stkResponse));
-
-        $accountRep = new AccountRepository();
-        $account = $accountRep->create([
-            'phone' => $this->phone
-        ]);
-
-        $productRep = new ProductRepository();
-        $product = $productRep->store(['name' => 'Airtime']);
-
-        $transaction = new Transaction();
-
-        $transaction->amount = $this->amount;
-        $transaction->type = 'PAYMENT';
-        $transaction->description = $targetNumber
-            ? "Airtime Purchase - $targetNumber"
-            : "Airtime Purchase";
-        $transaction->account_id = $account->id;
-        $transaction->product_id = $product->id;
-
-        $transaction->save();
-
-        $payment = new Payment([
-            'amount'     => $this->amount,
-            'status'     => 'Pending',
-            'type'       => 'MPESA',
-            'subtype'    => 'STK',
-            'payment_id' => $stkResponse->id
-        ]);
-
-        $transaction->payment()->save($payment);
-
-        return $stkResponse;
+        return [
+            'amount'        => $this->amount,
+            'status'        => Status::PENDING,
+            'type'          => PaymentType::MOBILE,
+            'subtype'       => PaymentSubtype::STK,
+            'provider_id'   => $stkResponse->id,
+            'provider_type' => $stkResponse->getMorphClass(),
+        ];
     }
 
     /**
      * @throws Exception
      */
-    public function voucher($targetNumber = null): array
+    #[ArrayShape([
+        'amount'        => "mixed",
+        'type'          => "\App\Enums\PaymentType",
+        'subtype'       => "\App\Enums\PaymentSubtype",
+        'status'        => "\App\Enums\Status",
+        'provider_id'   => "mixed",
+        'provider_type' => "mixed",
+        'phone'         => "string"
+    ])]
+    public function voucher($account, $targetNumber = null): array
     {
-        $account = SidoohAccounts::findOrCreate($this->phone);
         $voucher = Voucher::firstOrCreate(['account_id' => $account['id']], [
             ...$account,
             'type' => VoucherType::SIDOOH
@@ -94,8 +77,8 @@ class PaymentRepository
             'amount'        => $this->amount,
             'type'          => PaymentType::SIDOOH,
             'subtype'       => PaymentSubtype::VOUCHER,
+            'status'        => Status::COMPLETED,
             'provider_id'   => $voucher->id,
-            'status' => Status::COMPLETED,
             'provider_type' => $voucher->getMorphClass(),
             'phone'         => $targetNumber
                 ? PhoneNumber::make($targetNumber, 'KE')->formatE164()
@@ -131,9 +114,12 @@ class PaymentRepository
 
     /**
      * @param string $phone
+     * @return PaymentRepository
      */
-    public function setPhone(string $phone): void
+    public function setAccountId(string $phone): static
     {
         $this->phone = $phone;
+
+        return $this;
     }
 }

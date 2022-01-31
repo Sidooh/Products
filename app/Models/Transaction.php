@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\Status;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -16,6 +17,7 @@ class Transaction extends Model
     use HasFactory;
 
     protected $fillable = [
+        'account_id',
         'initiator',
         'type',
         'amount',
@@ -38,5 +40,12 @@ class Transaction extends Model
     public function kyandaTransaction(): HasOne
     {
         return $this->hasOne(KyandaRequest::class, 'relation_id');
+    }
+
+
+    public static function updateStatus(self $transaction, Status $status = Status::PENDING)
+    {
+        $transaction->status = $status;
+        $transaction->save();
     }
 }

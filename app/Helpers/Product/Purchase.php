@@ -53,7 +53,7 @@ class Purchase
     public function subscription(Transaction $transaction, int $amount): Subscription
     {
         if($transaction->account->active_subscription) {
-            event(new SubscriptionPurchaseFailedEvent($transaction));
+            SubscriptionPurchaseFailedEvent::dispatch($transaction);
 
             return $transaction->account->active_subscription;
         }

@@ -23,6 +23,8 @@ class CreateTransactionsTable extends Migration
             $table->string('destination')->nullable();
             $table->string('description');
 
+            $table->foreignId('account_id')->unsigned();
+
             $table->timestamps();
         });
     }

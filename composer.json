@@ -9,16 +9,17 @@
     "license": "MIT",
     "require": {
         "php": "^8.1",
+        "ext-intl": "*",
         "africastalking/africastalking": "^3.0",
         "drh/laravel-tanda": "dev-master",
+        "drh/mpesa": "dev-main",
         "fruitcake/laravel-cors": "^2.0.5",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^9.0",
         "laravel/sanctum": "^2.14",
         "laravel/tinker": "^2.7",
         "nabcellent/laravel-kyanda": "dev-master",
-        "propaganistas/laravel-phone": "^4.3",
-        "ext-intl": "*"
+        "propaganistas/laravel-phone": "^4.3"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.12",

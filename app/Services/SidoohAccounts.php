@@ -9,7 +9,6 @@ use GuzzleHttp\Promise\PromiseInterface;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Propaganistas\LaravelPhone\PhoneNumber;
 use function env;
 
 class SidoohAccounts
@@ -25,23 +24,21 @@ class SidoohAccounts
     /**
      * @throws Exception
      */
-    public static function findOrCreate($phone)
+    public static function find($id): array
     {
-        $phone = ltrim(PhoneNumber::make($phone, 'KE')->formatE164(), '+');
+        $acc = self::fetch($id);
 
-        $acc = self::findByPhone($phone);
-
-        if(!$acc) $acc = self::create($phone);
+        if(!$acc) throw new Exception("Account doesn't exist!");
 
         return $acc;
     }
 
-    public static function findByPhone($phone): ?array
+    public static function fetch($id): ?array
     {
-        Log::info('----------------- Sidooh find Account', ['phone' => $phone,]);
+        Log::info('----------------- Sidooh find Account', ['id' => $id]);
 
         try {
-            $url = env('SIDOOH_ACCOUNT_URL') . "/accounts/phone/$phone";
+            $url = env('SIDOOH_ACCOUNT_URL') . "/accounts/$id";
 
             $response = self::sendRequest($url, 'GET');
 
@@ -52,24 +49,6 @@ class SidoohAccounts
             Log::error($err);
             return null;
         }
-    }
-
-    /**
-     * @throws Exception
-     */
-    public static function create($phone)
-    {
-        Log::info('----------------- Sidooh create Account', ['phone' => $phone,]);
-
-        $url = env('SIDOOH_ACCOUNT_URL') . "/accounts";
-
-        $response = self::sendRequest($url, 'POST', [
-            'phone' => $phone
-        ]);
-
-        Log::info('----------------- Sidooh create Account sent', ['id' => $response->json()['id']]);
-
-        return $response->json();
     }
 
     /**

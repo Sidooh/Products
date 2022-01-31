@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductRequest;
 use App\Models\Payment;
 use App\Repositories\ProductRepository;
+use App\Services\SidoohAccounts;
 use App\Traits\ApiResponse;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -17,7 +18,7 @@ class ProductController extends Controller
 {
     use ApiResponse;
 
-    private array $data;
+    private array $data, $account;
     private ProductRepository $repo;
 
     /**
@@ -29,14 +30,16 @@ class ProductController extends Controller
      */
     public function __invoke(ProductRequest $request): JsonResponse
     {
-        $this->repo = new ProductRepository();
         $this->data = $request->all();
+        $this->repo = new ProductRepository();
+        $this->account = SidoohAccounts::find($this->data['account_id']);
 
         $paymentMethod = PaymentMethod::tryFrom($this->data['method']);
 
         if(!$paymentMethod) throw new Exception('Invalid payment method!');
 
         $this->repo->setPaymentMethod($paymentMethod);
+        $this->repo->setAccount($this->account);
 
         $response = match ($this->data['product']) {
             'airtime' => $this->airtimePurchase(),
@@ -57,8 +60,12 @@ class ProductController extends Controller
         $this->data['type'] = TransactionType::PAYMENT;
         $this->data['description'] = "Airtime Purchase";
 
-        $this->repo->createTransaction($this->data)->getTransaction();
-        $this->repo->initiatePayment($this->data['phone'])->createPayment();
+        $this->repo->createTransaction($this->data);
+
+        $targetNumber = $this->data['target_number'] ?? null;
+        $mpesaNumber = $this->data['mpesa_number'] ?? null;
+
+        $this->repo->initiatePayment($this->account['phone'], $targetNumber, $mpesaNumber)->createPayment();
         $this->repo->requestPurchase($this->data['product']);
 
         return $this->repo->getPayment();
