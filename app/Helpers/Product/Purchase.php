@@ -50,30 +50,29 @@ class Purchase
     /**
      * @throws Throwable
      */
-    public function subscription(Transaction $transaction, int $amount): Subscription
+    public function subscription(Transaction $transaction, int $amount): ?Subscription
     {
-        if($transaction->account->active_subscription) {
+        if(Subscription::active($transaction->account_id)) {
             SubscriptionPurchaseFailedEvent::dispatch($transaction);
 
-            return $transaction->account->active_subscription;
+            return null;
         }
 
         $type = SubscriptionType::wherePrice($transaction->amount)->firstOrFail();
 
         $subscription = [
-            'amount'               => $amount,
-            'active'               => true,
-            'account_id'           => $transaction->account->id,
-            'subscription_type_id' => $type->id
+            'amount'     => $amount,
+            'active'     => true,
+            'account_id' => $transaction->account_id,
+            'start_date' => now(),
+            'end_date' => now()->addMonths($type->duration),
         ];
 
-        return DB::transaction(function() use ($subscription, $amount, $transaction) {
-            $sub = Subscription::create($subscription);
+        return DB::transaction(function() use ($type, $subscription, $amount, $transaction) {
+            $sub = $type->subscription()->create($subscription);
 
             $transaction->status = Status::COMPLETED;
             $transaction->save();
-
-            $sub->save();
 
             SubscriptionPurchaseEvent::dispatch($sub, $transaction);
 

@@ -64,8 +64,9 @@ class ProductController extends Controller
         $targetNumber = $this->data['target_number'] ?? null;
         $mpesaNumber = $this->data['mpesa_number'] ?? null;
 
-        $this->repo->initiatePayment($this->account['phone'], $targetNumber, $mpesaNumber)->createPayment();
-        $this->repo->requestPurchase();
+        $this->repo->initiatePayment($this->account['phone'], $targetNumber, $mpesaNumber)
+            ->createPayment()
+            ->requestPurchase();
 
         return $this->repo->getPayment();
     }
@@ -73,7 +74,7 @@ class ProductController extends Controller
     /**
      * @throws Exception|Throwable
      */
-    public function utilityPurchase()
+    public function utilityPurchase(): Payment
     {
         $this->data['type'] = TransactionType::PAYMENT;
         $this->data['destination'] = $this->data['account_number'];
@@ -82,11 +83,12 @@ class ProductController extends Controller
         $mpesaNumber = $this->data['mpesa_number'] ?? null;
 
         $this->repo->createTransaction($this->data);
-        $this->repo->initiatePayment(destination: $this->data['destination'], mpesaNumber: $mpesaNumber)->createPayment();
+        $this->repo->initiatePayment(destination: $this->data['destination'], mpesaNumber: $mpesaNumber)
+            ->createPayment();
         $this->repo->paymentData['provider'] = $this->data['utility_provider'];
         $this->repo->requestPurchase();
 
-        return $this->data['product'];
+        return $this->repo->getPayment();
     }
 
     /**
@@ -98,7 +100,7 @@ class ProductController extends Controller
         $this->data['description'] = "Subscription Purchase";
 
         $this->repo->createTransaction($this->data)->getTransaction();
-        $this->repo->initiatePayment($this->data['phone'])->createPayment();
+        $this->repo->initiatePayment($this->account['phone'])->createPayment();
         $this->repo->requestPurchase();
 
         return $this->data['product'];

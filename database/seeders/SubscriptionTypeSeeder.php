@@ -17,7 +17,7 @@ class SubscriptionTypeSeeder extends Seeder
         $types = [
             [
                 'title'       => 'Sidooh Aspiring Agent',
-                'price'      => 475,
+                'price'      => 365,
                 'active'      => 1,
                 'level_limit' => 3,
                 'created_at'  => now(),

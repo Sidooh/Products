@@ -6,7 +6,9 @@ use App\Enums\EventType;
 use App\Events\SubscriptionPurchaseEvent;
 use App\Helpers\SidoohNotify\EventTypes;
 use App\Repositories\NotificationRepository;
+use App\Services\SidoohAccounts;
 use App\Services\SidoohNotify;
+use Exception;
 use Illuminate\Support\Facades\Log;
 use NumberFormatter;
 
@@ -28,14 +30,15 @@ class SubscriptionPurchaseSuccess
      *
      * @param SubscriptionPurchaseEvent $event
      * @return void
+     * @throws Exception
      */
     public function handle(SubscriptionPurchaseEvent $event)
     {
         Log::info('----------------- Subscription Purchase Success');
 
         $type = $event->subscription->subscriptionType;
-        $account = $event->subscription->account;
-        $phone = ltrim($account->phone, '+');
+        $account = SidoohAccounts::find($event->transaction->account_id);
+        $phone = ltrim($account['phone'], '+');
 
         $date = $event->subscription->created_at->timezone('Africa/Nairobi')
             ->format(config("settings.sms_date_time_format"));
@@ -45,8 +48,6 @@ class SubscriptionPurchaseSuccess
 
         $nf = new NumberFormatter('en', NumberFormatter::ORDINAL);
         $limit = $nf->format($type->level_limit);
-
-//        $type->title = "Sidooh Agent";
 
         switch($type->duration) {
             case 1:
