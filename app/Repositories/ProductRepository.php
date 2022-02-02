@@ -19,39 +19,43 @@ class ProductRepository implements ProductRepositoryInterface
 {
     use ApiResponse;
 
-    private Transaction $transaction;
     private Payment|Model $payment;
-    private PaymentMethod $paymentMethod;
-    public array $paymentData, $account;
-    private string $product;
+    public array $data;
+    private PaymentRepository $paymentRepo;
 
     /**
-     * @param PaymentRepository $paymentRepo
+     * @param Transaction $transaction
      */
     #[Pure]
-    public function __construct(private PaymentRepository $paymentRepo = new PaymentRepository())
+    public function __construct(public Transaction $transaction)
     {
+        $this->paymentRepo = new PaymentRepository();
     }
 
     /**
      * @throws Exception
+     * @throws Throwable
      */
-    public function createTransaction(array $transactionData): ProductRepository
+    public function init($data)
     {
-        $this->product = $transactionData['product'];
-        $this->transaction = Transaction::create($transactionData);
-        $this->paymentRepo->setAmount($this->transaction->amount)->setProduct($transactionData['product']);
-        $this->paymentRepo->setAccountId($this->transaction->account_id)->setProduct($transactionData['product']);
+//        dump_json($data);
+        $this->data = $data;
 
-        return $this;
+        $this->paymentRepo->setData($this->data);
+
+        $targetNumber = $data['target_number'] ?? null;
+        $mpesaNumber = $data['mpesa_number'] ?? null;
+
+        $this->data += $this->initiatePayment($targetNumber, $mpesaNumber);
+        $this->createPayment()->requestPurchase();
     }
 
-    public function createPayment(array $paymentData = null): ProductRepository
+    public function createPayment(): ProductRepository
     {
         if(isset($this->transaction)) {
-            $this->payment = $this->transaction->payment()->create($this->paymentData);
+            $this->payment = $this->transaction->payment()->create($this->data);
         } else if(isset($paymentData) || isset($this->paymentData)) {
-            $this->payment = Payment::create($paymentData ?? $this->paymentData);
+            $this->payment = Payment::create($paymentData ?? $this->data);
         }
 
         return $this;
@@ -60,55 +64,42 @@ class ProductRepository implements ProductRepositoryInterface
     /**
      * @throws Exception
      */
-    public function initiatePayment($destination = null, $mpesaNumber = null): static
+    public function initiatePayment($destination = null, $mpesaNumber = null): ?array
     {
-        Log::info("====== Product Purchase ({$this->paymentMethod->value}) ======");
-        if($this->product === 'airtime' || 'voucher') {
+        $paymentMethod = PaymentMethod::tryFrom($this->data['method']);
+
+        Log::info("====== Product Purchase ({$paymentMethod->value}) ======");
+        if($this->data['product'] === 'airtime' || 'voucher') {
             $destination = $destination
                 ? ltrim(PhoneNumber::make($destination, 'KE')->formatE164(), '+')
-                : $this->account['phone'];
+                : $this->data['account']['phone'];
             $mpesaNumber = $mpesaNumber
                 ? ltrim(PhoneNumber::make($mpesaNumber, 'KE')->formatE164(), '+')
-                : $this->account['phone'];
+                : $this->data['account']['phone'];
         }
         Log::info("$destination - $mpesaNumber");
 
-        $this->paymentData = match ($this->paymentMethod) {
+        return match ($paymentMethod) {
             PaymentMethod::MPESA => $this->paymentRepo->mpesa($destination, $mpesaNumber),
-            PaymentMethod::VOUCHER => $this->paymentRepo->voucher($this->account, $destination),
+            PaymentMethod::VOUCHER => $this->paymentRepo->voucher($this->data['account'], $destination),
             default => throw new Exception('Unexpected match value')
         };
-
-        return $this;
     }
 
     /**
      * @throws Throwable
      */
-    public function requestPurchase($purchaseData = [])
+    public function requestPurchase()
     {
-        if(empty($purchaseData)) $purchaseData = $this->paymentData;
-
         $purchase = new Purchase;
 
-        match ($this->product) {
-            'airtime' => $purchase->airtime($this->transaction, $purchaseData),
-            'utility' => $purchase->utility($this->transaction, $purchaseData, $purchaseData['provider']),
-            'subscription' => $purchase->subscription($this->transaction, $purchaseData['amount']),
+        match ($this->data['product']) {
+            'airtime' => $purchase->airtime($this->transaction, $this->data),
+            'utility' => $purchase->utility($this->transaction, $this->data, $this->data['provider']),
+            'subscription' => $purchase->subscription($this->transaction, $this->data['amount']),
             'voucher' => $purchase->voucher($this->transaction)
         };
     }
-
-    public function finalizeTransaction()
-    {
-        // TODO: Implement finalizeTransaction() method.
-    }
-
-    public function notify(): Payment
-    {
-        // TODO: Implement notify() method.
-    }
-
 
     /**
      * @return Transaction
@@ -116,29 +107,5 @@ class ProductRepository implements ProductRepositoryInterface
     public function getTransaction(): Transaction
     {
         return $this->transaction;
-    }
-
-    /**
-     * @return Payment
-     */
-    public function getPayment(): Payment
-    {
-        return $this->payment;
-    }
-
-    /**
-     * @param array $account
-     */
-    public function setAccount(array $account): void
-    {
-        $this->account = $account;
-    }
-
-    /**
-     * @param PaymentMethod $paymentMethod
-     */
-    public function setPaymentMethod(PaymentMethod $paymentMethod): void
-    {
-        $this->paymentMethod = $paymentMethod;
     }
 }

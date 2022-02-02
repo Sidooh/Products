@@ -24,7 +24,17 @@ if(!function_exists('object_to_array')) {
 
 if(!function_exists('dump_json')) {
     #[NoReturn]
-    function dump_json(...$vars) {
-        echo "<pre>"; print_r($vars); die;
+    function dump_json(...$vars)
+    {
+        echo "<pre>";
+        print_r($vars);
+        die;
+    }
+}
+
+if(!function_exists('base_64_url_encode')) {
+    function base_64_url_encode($text): array|string
+    {
+        return str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($text));
     }
 }

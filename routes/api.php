@@ -1,7 +1,9 @@
 <?php
 
-use App\Http\Controllers\API\V1\ProductController;
+use App\Http\Controllers\API\V1\AirtimeController;
+use App\Http\Controllers\API\V1\SubscriptionController;
 use App\Http\Controllers\API\V1\TransactionController;
+use App\Http\Controllers\API\V1\UtilityController;
 use App\Http\Controllers\API\V1\VoucherController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -17,13 +19,18 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+Route::middleware('auth:sanctum')->get('/user', function(Request $request) {
     return $request->user();
 });
 
-Route::prefix('/v1')->name('api.')->group(function() {
-    Route::post('/products', ProductController::class);
+Route::/*middleware('auth.jwt')->*/ prefix('/v1')->name('api.')->group(function() {
+    Route::post('/products/airtime', AirtimeController::class);
+    Route::post('/products/utility', UtilityController::class);
+    Route::post('/products/subscription', SubscriptionController::class);
+    Route::prefix('/products/voucher')->group(function() {
+        Route::post('/top-up', [VoucherController::class, 'topUp']);
+        Route::post('/disburse', [VoucherController::class, 'disburse']);
+    });
 
     Route::get('/transactions', [TransactionController::class, 'index']);
-    Route::get('/vouchers', [VoucherController::class, 'index']);
 });

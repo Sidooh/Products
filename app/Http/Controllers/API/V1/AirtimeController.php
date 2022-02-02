@@ -4,41 +4,36 @@ namespace App\Http\Controllers\API\V1;
 
 use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\VoucherRequest;
+use App\Http\Requests\ProductRequest;
 use App\Models\Transaction;
 use App\Services\SidoohAccounts;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use Throwable;
 
-class VoucherController extends Controller
+class AirtimeController extends Controller
 {
     /**
      * Handle the incoming request.
      *
      * @param Request $request
-     * @return Response
-     * @throws Exception
+     * @return JsonResponse
+     * @throws Throwable
      */
-    public function topUp(VoucherRequest $request): JsonResponse
+    public function __invoke(ProductRequest $request): JsonResponse
     {
         $data = $request->all();
         $account = SidoohAccounts::find($data['account_id']);
 
         $data['account'] = SidoohAccounts::find($data['account_id']);
-        $data['product'] = 'voucher';
+        $data['product'] = 'airtime';
         $data['type'] = TransactionType::PAYMENT;
-        $data['description'] = "Voucher Purchase";
+        $data['description'] = "Airtime Purchase";
 
         $transaction = $this->init($data, $account);
 
-        return $this->successResponse(['transaction_id' => $transaction->id], 'Voucher Request Successful');
-    }
-
-    public function disburse(VoucherRequest $request): JsonResponse
-    {
-        return $this->successResponse(['']);
+        return $this->successResponse(['transaction_id' => $transaction->id], 'Airtime Request Successful');
     }
 
     /**
@@ -46,7 +41,7 @@ class VoucherController extends Controller
      */
     public function init($data, $account): Transaction
     {
-        $data['destination'] = $destination ?? $account['phone'];
+        $data['destination'] = $data['target_number'] ?? $account['phone'];
 
         return $this->createTransaction($data);
     }

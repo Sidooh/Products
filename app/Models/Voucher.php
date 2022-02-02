@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @mixin IdeHelperVoucher
@@ -16,4 +17,12 @@ class Voucher extends Model
         'account_id',
         'type'
     ];
+
+    /**
+     * ---------------------------------------- Relationships ----------------------------------------
+     */
+    public function voucherTransaction(): HasMany
+    {
+        return $this->hasMany(VoucherTransaction::class);
+    }
 }

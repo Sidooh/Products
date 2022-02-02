@@ -6,6 +6,7 @@ use App\Events\ReferralJoinedEvent;
 use App\Repositories\ReferralRepository;
 use Exception;
 use GuzzleHttp\Promise\PromiseInterface;
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
@@ -57,12 +58,14 @@ class SidoohAccounts
     }
 
     /**
-     * @throws Exception
+     * @throws RequestException
      */
     public static function sendRequest($url, $method = 'POST', $data = []): Response
     {
         $authCookie = self::authenticate()->cookies();
+        $token = $authCookie->getCookieByName('jwt')->getValue();
 
-        return Http::send($method, $url, ['cookies' => $authCookie, 'json' => $data]);
+//        dd(JWT::verify($token));
+        return Http::send($method, $url, ['cookies' => $authCookie, 'json' => $data])->throw();
     }
 }

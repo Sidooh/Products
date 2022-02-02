@@ -6,6 +6,7 @@ use App\Enums\MpesaReference;
 use App\Enums\PaymentSubtype;
 use App\Enums\PaymentType;
 use App\Enums\Status;
+use App\Enums\VoucherTransactionType;
 use App\Enums\VoucherType;
 use App\Models\SubscriptionType;
 use App\Models\Voucher;
@@ -17,20 +18,14 @@ use Propaganistas\LaravelPhone\PhoneNumber;
 
 class PaymentRepository
 {
-    private $amount, $product, $phone;
+    private array $data;
 
     public function mpesa($targetNumber = null, $mpesaNumber = null): ?array
     {
-        $purchaseDesc = "Airtime Purchase";
-        if($this->product === 'voucher') $purchaseDesc = "Voucher Purchase";
-
-        $description = $targetNumber
-            ? "$purchaseDesc - $targetNumber"
-            : $purchaseDesc;
-        $number = $mpesaNumber ?? $this->phone;
+        $number = $mpesaNumber ?? $this->data['phone'];
 
         try {
-            $stkResponse = mpesa_request($number, $this->amount, MpesaReference::AIRTIME, $description);
+            $stkResponse = mpesa_request($number, $this->data['amount'], MpesaReference::AIRTIME, $this->data['description']);
         } catch (MpesaException $e) {
 //            TODO: Inform customer of issue?
             Log::critical($e);
@@ -38,15 +33,13 @@ class PaymentRepository
         }
 
         return [
-            'amount'        => $this->amount,
+            'amount'        => $this->data['amount'],
             'status'        => Status::PENDING,
             'type'          => PaymentType::MOBILE,
             'subtype'       => PaymentSubtype::STK,
             'provider_id'   => $stkResponse->id,
             'provider_type' => $stkResponse->getMorphClass(),
-            'phone'         => $targetNumber
-                ? PhoneNumber::make($targetNumber, 'KE')->formatE164()
-                : $this->phone,
+            'phone'         => PhoneNumber::make($targetNumber, 'KE')->formatE164()
         ];
     }
 
@@ -63,7 +56,7 @@ class PaymentRepository
         'phone'          => "string",
         'account_number' => "mixed|null"
     ])]
-    public function voucher($account, $destination = null): array
+    public function voucher($account, $destination): array
     {
         $voucher = Voucher::firstOrCreate(['account_id' => $account['id']], [
             ...$account,
@@ -73,14 +66,14 @@ class PaymentRepository
         if($voucher) {
             $bal = $voucher->balance;
 
-            if($bal < (int)$this->amount) throw new Exception("Insufficient voucher balance!");
+            if($bal < (int)$this->data['amount']) throw new Exception("Insufficient voucher balance!");
         }
 
-        $voucher->balance -= $this->amount;
+        $voucher->balance -= $this->data['amount'];
         $voucher->save();
 
         $paymentData = [
-            'amount'        => $this->amount,
+            'amount'        => $this->data['amount'],
             'type'          => PaymentType::SIDOOH,
             'subtype'       => PaymentSubtype::VOUCHER,
             'status'        => Status::COMPLETED,
@@ -88,47 +81,30 @@ class PaymentRepository
             'provider_type' => $voucher->getMorphClass(),
         ];
 
-        if($this->product === 'subscription') {
-            $paymentData['amount'] = SubscriptionType::wherePrice($this->amount)->firstOrFail()->value('price');
+        if($this->data['product'] === 'subscription') {
+            $paymentData['amount'] = SubscriptionType::wherePrice($this->data['amount'])->firstOrFail()->value('price');
             $paymentData['status'] = Status::PENDING;
-        } else if($this->product === 'airtime') {
-            $paymentData['phone'] = $destination
-                ? PhoneNumber::make($destination, 'KE')->formatE164()
-                : $this->phone;
-        } else if($this->product === 'utility') {
+        } else if($this->data['product'] === 'airtime') {
+            $paymentData['phone'] = PhoneNumber::make($destination, 'KE')->formatE164();
+        } else if($this->data['product'] === 'utility') {
             $paymentData['account_number'] = $destination;
         }
+
+        $voucher->voucherTransaction()->create([
+            'amount' => $this->data['amount'],
+            'type'   => VoucherTransactionType::DEBIT,
+            'description' => $this->data['description']
+        ]);
 
         return $paymentData;
     }
 
-    /**
-     * @param mixed $amount
-     * @return PaymentRepository
-     */
-    public function setAmount(mixed $amount): static
-    {
-        $this->amount = $amount;
-
-        return $this;
-    }
 
     /**
-     * @param string $product
+     * @param array $data
      */
-    public function setProduct(string $product): void
+    public function setData(array $data): void
     {
-        $this->product = $product;
-    }
-
-    /**
-     * @param string $phone
-     * @return PaymentRepository
-     */
-    public function setAccountId(string $phone): static
-    {
-        $this->phone = $phone;
-
-        return $this;
+        $this->data = $data;
     }
 }
