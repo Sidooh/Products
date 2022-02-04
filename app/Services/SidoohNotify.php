@@ -9,7 +9,7 @@ use function env;
 
 class SidoohNotify
 {
-    public static function sendSMSNotification(array $to, string $message, EventType $eventType): array
+    public static function notify(array $to, string $message, EventType $eventType): array
     {
         Log::info('----------------- Sidooh SMS Notification', [
             'eventType' => $eventType,

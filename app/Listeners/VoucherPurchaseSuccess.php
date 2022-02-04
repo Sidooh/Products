@@ -45,7 +45,7 @@ class VoucherPurchaseSuccess
         $message .= "worth Ksh{$amount} on {$date}.\n\n";
         $message .= config('services.sidooh.tagline');
 
-        SidoohNotify::sendSMSNotification([$phone], $message, EventType::VOUCHER_PURCHASE);
+        SidoohNotify::notify([$phone], $message, EventType::VOUCHER_PURCHASE);
 
     }
 }

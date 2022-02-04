@@ -28,6 +28,7 @@ class VoucherController extends Controller
 
         $data['account'] = SidoohAccounts::find($data['account_id']);
         $data['product'] = 'voucher';
+        $data['method'] = 'MPESA';
         $data['type'] = TransactionType::PAYMENT;
         $data['description'] = "Voucher Purchase";
 

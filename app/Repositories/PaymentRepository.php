@@ -9,18 +9,21 @@ use App\Enums\Status;
 use App\Enums\VoucherTransactionType;
 use App\Enums\VoucherType;
 use App\Models\SubscriptionType;
+use App\Models\Transaction;
 use App\Models\Voucher;
 use DrH\Mpesa\Exceptions\MpesaException;
 use Exception;
 use Illuminate\Support\Facades\Log;
 use JetBrains\PhpStorm\ArrayShape;
 use Propaganistas\LaravelPhone\PhoneNumber;
+use Throwable;
 
 class PaymentRepository
 {
     private array $data;
+    private Transaction $transaction;
 
-    public function mpesa($targetNumber = null, $mpesaNumber = null): ?array
+    public function mpesa($targetNumber = null, $mpesaNumber = null)
     {
         $number = $mpesaNumber ?? $this->data['phone'];
 
@@ -32,7 +35,7 @@ class PaymentRepository
             return null;
         }
 
-        return [
+        $this->transaction->payment()->create([
             'amount'        => $this->data['amount'],
             'status'        => Status::PENDING,
             'type'          => PaymentType::MOBILE,
@@ -40,11 +43,12 @@ class PaymentRepository
             'provider_id'   => $stkResponse->id,
             'provider_type' => $stkResponse->getMorphClass(),
             'phone'         => PhoneNumber::make($targetNumber, 'KE')->formatE164()
-        ];
+        ]);
     }
 
     /**
      * @throws Exception
+     * @throws Throwable
      */
     #[ArrayShape([
         'amount'         => "mixed",
@@ -56,7 +60,7 @@ class PaymentRepository
         'phone'          => "string",
         'account_number' => "mixed|null"
     ])]
-    public function voucher($account, $destination): array
+    public function voucher($account, $destination)
     {
         $voucher = Voucher::firstOrCreate(['account_id' => $account['id']], [
             ...$account,
@@ -91,12 +95,16 @@ class PaymentRepository
         }
 
         $voucher->voucherTransaction()->create([
-            'amount' => $this->data['amount'],
-            'type'   => VoucherTransactionType::DEBIT,
+            'amount'      => $this->data['amount'],
+            'type'        => VoucherTransactionType::DEBIT,
             'description' => $this->data['description']
         ]);
 
-        return $paymentData;
+        $this->data += $paymentData;
+
+        $this->transaction->payment()->create($this->data);
+
+        ProductRepository::requestPurchase($this->transaction, $this->data);
     }
 
 
@@ -106,5 +114,13 @@ class PaymentRepository
     public function setData(array $data): void
     {
         $this->data = $data;
+    }
+
+    /**
+     * @param Transaction $transaction
+     */
+    public function setTransaction(Transaction $transaction): void
+    {
+        $this->transaction = $transaction;
     }
 }

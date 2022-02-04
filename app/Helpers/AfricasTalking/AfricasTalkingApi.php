@@ -84,7 +84,7 @@ class AfricasTalkingApi
 
             $message = "Sorry! We could not complete your airtime purchase for {$phone} worth {$amount} on {$date}. We have credited your voucher {$amount} and your balance is now {$voucher->balance}.";
 
-            SidoohNotify::sendSMSNotification([$phone], $message, EventType::AIRTIME_PURCHASE_FAILURE);
+            SidoohNotify::notify([$phone], $message, EventType::AIRTIME_PURCHASE_FAILURE);
         }
     }
 

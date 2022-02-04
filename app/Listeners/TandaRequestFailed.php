@@ -64,6 +64,6 @@ class TandaRequestFailed
             Providers::KPLC_POSTPAID, Providers::NAIROBI_WTR, Providers::KPLC_PREPAID, Providers::DSTV, Providers::GOTV, Providers::ZUKU, Providers::STARTIMES => "Sorry! We could not complete your payment to {$provider} of KES{$amount} for {$destination} on {$date}. We have added KES{$amount} to your voucher account. New Voucher balance is {$voucher->balance}."
         };
 
-        SidoohNotify::sendSMSNotification([$sender], $message, EventType::AIRTIME_PURCHASE_FAILURE);
+        SidoohNotify::notify([$sender], $message, EventType::AIRTIME_PURCHASE_FAILURE);
     }
 }

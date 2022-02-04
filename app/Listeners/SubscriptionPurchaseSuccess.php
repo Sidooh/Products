@@ -63,6 +63,6 @@ class SubscriptionPurchaseSuccess
 
         $message .= config('services.sidooh.tagline');
 
-        SidoohNotify::sendSMSNotification([$phone], $message, EventType::SUBSCRIPTION_PAYMENT);
+        SidoohNotify::notify([$phone], $message, EventType::SUBSCRIPTION_PAYMENT);
     }
 }
