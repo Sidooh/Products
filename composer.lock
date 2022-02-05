@@ -917,12 +917,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/DrH97/mpesa.git",
-                "reference": "ae5e0676ae351c8d5b85971bb863d638e0f816e1"
+                "reference": "b8e170775e3f543724b0b07b04daf16544bfbb06"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DrH97/mpesa/zipball/ae5e0676ae351c8d5b85971bb863d638e0f816e1",
-                "reference": "ae5e0676ae351c8d5b85971bb863d638e0f816e1",
+                "url": "https://api.github.com/repos/DrH97/mpesa/zipball/b8e170775e3f543724b0b07b04daf16544bfbb06",
+                "reference": "b8e170775e3f543724b0b07b04daf16544bfbb06",
                 "shasum": ""
             },
             "require": {
@@ -983,7 +983,7 @@
                 "issues": "https://github.com/DrH97/mpesa/issues",
                 "source": "https://github.com/DrH97/mpesa/tree/main"
             },
-            "time": "2022-01-31T10:46:45+00:00"
+            "time": "2022-02-03T19:38:08+00:00"
         },
         {
             "name": "egulias/email-validator",
@@ -6323,12 +6323,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/composer.git",
-                "reference": "3ae111140facdba8ae82adcd1085e4adfc7d715c"
+                "reference": "ac8fb8cc574467cda36ab89f6a8930917276d972"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/composer/zipball/3ae111140facdba8ae82adcd1085e4adfc7d715c",
-                "reference": "3ae111140facdba8ae82adcd1085e4adfc7d715c",
+                "url": "https://api.github.com/repos/composer/composer/zipball/ac8fb8cc574467cda36ab89f6a8930917276d972",
+                "reference": "ac8fb8cc574467cda36ab89f6a8930917276d972",
                 "shasum": ""
             },
             "require": {
@@ -6418,7 +6418,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-01-21T16:39:57+00:00"
+            "time": "2022-02-04T16:01:51+00:00"
         },
         {
             "name": "composer/metadata-minifier",
@@ -6562,23 +6562,23 @@
         },
         {
             "name": "composer/semver",
-            "version": "3.2.7",
+            "version": "3.2.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/semver.git",
-                "reference": "deac27056b57e46faf136fae7b449eeaa71661ee"
+                "reference": "a951f614bd64dcd26137bc9b7b2637ddcfc57649"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/semver/zipball/deac27056b57e46faf136fae7b449eeaa71661ee",
-                "reference": "deac27056b57e46faf136fae7b449eeaa71661ee",
+                "url": "https://api.github.com/repos/composer/semver/zipball/a951f614bd64dcd26137bc9b7b2637ddcfc57649",
+                "reference": "a951f614bd64dcd26137bc9b7b2637ddcfc57649",
                 "shasum": ""
             },
             "require": {
                 "php": "^5.3.2 || ^7.0 || ^8.0"
             },
             "require-dev": {
-                "phpstan/phpstan": "^0.12.54",
+                "phpstan/phpstan": "^1.4",
                 "symfony/phpunit-bridge": "^4.2 || ^5"
             },
             "type": "library",
@@ -6623,7 +6623,7 @@
             "support": {
                 "irc": "irc://irc.freenode.org/composer",
                 "issues": "https://github.com/composer/semver/issues",
-                "source": "https://github.com/composer/semver/tree/3.2.7"
+                "source": "https://github.com/composer/semver/tree/3.2.9"
             },
             "funding": [
                 {
@@ -6639,7 +6639,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-01-04T09:57:54+00:00"
+            "time": "2022-02-04T13:58:43+00:00"
         },
         {
             "name": "composer/spdx-licenses",
@@ -8223,12 +8223,12 @@
             },
             "type": "library",
             "autoload": {
-                "psr-4": {
-                    "React\\Promise\\": "src/"
-                },
                 "files": [
                     "src/functions_include.php"
-                ]
+                ],
+                "psr-4": {
+                    "React\\Promise\\": "src/"
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -9390,16 +9390,16 @@
         },
         {
             "name": "spatie/flare-client-php",
-            "version": "1.0.0",
+            "version": "1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/flare-client-php.git",
-                "reference": "5350ab76934585ec30cde47520d2f7e9136cc928"
+                "reference": "c8d9d1c639e217cb9ada5db8fea869a7f1b0c85a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/flare-client-php/zipball/5350ab76934585ec30cde47520d2f7e9136cc928",
-                "reference": "5350ab76934585ec30cde47520d2f7e9136cc928",
+                "url": "https://api.github.com/repos/spatie/flare-client-php/zipball/c8d9d1c639e217cb9ada5db8fea869a7f1b0c85a",
+                "reference": "c8d9d1c639e217cb9ada5db8fea869a7f1b0c85a",
                 "shasum": ""
             },
             "require": {
@@ -9421,12 +9421,12 @@
             },
             "type": "library",
             "autoload": {
-                "psr-4": {
-                    "Spatie\\FlareClient\\": "src"
-                },
                 "files": [
                     "src/helpers.php"
-                ]
+                ],
+                "psr-4": {
+                    "Spatie\\FlareClient\\": "src"
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -9442,7 +9442,7 @@
             ],
             "support": {
                 "issues": "https://github.com/spatie/flare-client-php/issues",
-                "source": "https://github.com/spatie/flare-client-php/tree/1.0.0"
+                "source": "https://github.com/spatie/flare-client-php/tree/1.0.1"
             },
             "funding": [
                 {
@@ -9450,7 +9450,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-01-16T14:06:29+00:00"
+            "time": "2022-02-04T15:21:00+00:00"
         },
         {
             "name": "spatie/ignition",
@@ -9525,16 +9525,16 @@
         },
         {
             "name": "spatie/laravel-ignition",
-            "version": "1.0.2",
+            "version": "1.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/laravel-ignition.git",
-                "reference": "50e296b0f7e270c54e451aaf16ba75027103a624"
+                "reference": "68250225a9f83b086462c2af1b1139dfde48fbd2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/laravel-ignition/zipball/50e296b0f7e270c54e451aaf16ba75027103a624",
-                "reference": "50e296b0f7e270c54e451aaf16ba75027103a624",
+                "url": "https://api.github.com/repos/spatie/laravel-ignition/zipball/68250225a9f83b086462c2af1b1139dfde48fbd2",
+                "reference": "68250225a9f83b086462c2af1b1139dfde48fbd2",
                 "shasum": ""
             },
             "require": {
@@ -9544,6 +9544,7 @@
                 "illuminate/support": "^8.77|^9.0",
                 "monolog/monolog": "^2.3",
                 "php": "^8.0",
+                "spatie/flare-client-php": "^1.0.1",
                 "spatie/ignition": "^1.0",
                 "symfony/console": "^5.0|^6.0",
                 "symfony/var-dumper": "^5.0|^6.0"
@@ -9607,7 +9608,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-01-20T09:56:23+00:00"
+            "time": "2022-02-04T15:25:56+00:00"
         },
         {
             "name": "symfony/filesystem",

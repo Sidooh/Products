@@ -11,4 +11,10 @@ use Illuminate\Database\Eloquent\Model;
 class ProductAccount extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'account_id',
+        'provider',
+        'account_number'
+    ];
 }

@@ -2,8 +2,7 @@
 
 namespace App\Services;
 
-use App\Events\ReferralJoinedEvent;
-use App\Repositories\ReferralRepository;
+use App\Models\ProductAccount;
 use Exception;
 use GuzzleHttp\Promise\PromiseInterface;
 use Illuminate\Http\Client\RequestException;
@@ -44,6 +43,14 @@ class SidoohAccounts
     /**
      * @throws Exception
      */
+    public static function findPhone($accountId)
+    {
+        return self::find($accountId)['phone'];
+    }
+
+    /**
+     * @throws Exception
+     */
     public static function fetch($id): ?array
     {
         Log::info('----------------- Sidooh find Account', ['id' => $id]);
@@ -67,5 +74,24 @@ class SidoohAccounts
 
 //        dd(JWT::verify($token));
         return Http::send($method, $url, ['cookies' => $authCookie, 'json' => $data])->throw();
+    }
+
+    static function syncUtilityAccounts(int $accountId, string $provider, string $number, $product = 'airtime')
+    {
+        //        TODO: How and when should we limit and to what number the users churches. Does it affect church user counts?
+        $uA = ProductAccount::whereAccountId($accountId);
+        if($product === 'utility') $uA = $uA->whereProvider($provider);
+        $uA = $uA->latest()->take(3)->get();
+        if(count($uA) >= 3) return null;
+
+        $exists = $uA->firstWhere('account_number', $number);
+
+        if($exists) return null;
+
+        return ProductAccount::create([
+            'account_id'     => $accountId,
+            'account_number' => $number,
+            'provider'       => $provider
+        ]);
     }
 }

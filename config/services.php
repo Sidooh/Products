@@ -39,6 +39,9 @@ return [
             'key'      => '89770c2faea7f33dce6ca5605a0cd7b9e810a999af8ea0c051a5e504d2380928',
             'username' => 'sidooh_airtime',
         ],
+        'ussd'     => [
+            'code' => '*384*99#',
+        ],
     ],
 
     'sidooh' => [
