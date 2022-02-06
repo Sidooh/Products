@@ -16,10 +16,8 @@ class CreateFloatAccountsTable extends Migration
         Schema::create('float_accounts', function (Blueprint $table) {
             $table->id();
 
-            $table->string('type', 20);
             $table->decimal('balance', 10)->default(0);
             $table->morphs('accountable');
-            $table->foreignId('account_id')->unsigned();
 
             $table->timestamps();
         });

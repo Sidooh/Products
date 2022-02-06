@@ -5,6 +5,8 @@ namespace App\Http\Requests;
 use App\Enums\Initiator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
+use JetBrains\PhpStorm\ArrayShape;
+use JetBrains\PhpStorm\Pure;
 
 class VoucherRequest extends FormRequest
 {
@@ -23,12 +25,40 @@ class VoucherRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    #[Pure]
+    #[ArrayShape([
+        'initiator'     => "array",
+        'disburse_type' => "string[]",
+        'account_id'    => "string",
+        'enterprise_id' => "string[]",
+        'amount'        => "string[]",
+        'accounts'      => "string[]"
+    ])]
+    public function rules(): array
     {
         return [
-            'initiator'  => ['required', new Enum(Initiator::class)],
-            'account_id' => 'integer',
-            'amount'     => ['required', 'numeric',],
+            'initiator'     => [
+                'required',
+                new Enum(Initiator::class),
+                function($attribute, $value, $fail) {
+                    $isVoucherDisburse = $this->is('*/products/voucher/disburse');
+
+                    if($isVoucherDisburse && $value !== "ENTERPRISE") $fail("Unauthorized Initiator!");
+                },
+            ],
+            'disburse_type' => ['in:LUNCH,GENERAL',],
+            'account_id'    => 'integer',
+            'enterprise_id' => ['required_if:initiator,ENTERPRISE', 'exists:enterprises,id'],
+            'amount'        => ['required_unless:initiator,ENTERPRISE', 'numeric'],
+            'accounts'      => ['array'],
+        ];
+    }
+
+    #[ArrayShape(['disburse_type.in' => "string"])]
+    public function messages(): array
+    {
+        return [
+            'disburse_type.in' => 'invalid :attribute. allowed values are: [LUNCH, GENERAL]'
         ];
     }
 }

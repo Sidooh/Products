@@ -3,9 +3,10 @@
 namespace App\Listeners;
 
 use App\Helpers\SidoohNotify\EventTypes;
-use App\Repositories\EventRepository;
+use App\Repositories\EventRepositories\EventRepository;
 use App\Repositories\NotificationRepository;
 use App\Repositories\TransactionRepository;
+use Exception;
 use Illuminate\Support\Facades\Log;
 use Nabcellent\Kyanda\Events\KyandaTransactionFailedEvent;
 
@@ -26,6 +27,7 @@ class KyandaTransactionFailed
      *
      * @param KyandaTransactionFailedEvent $event
      * @return void
+     * @throws Exception
      */
     public function handle(KyandaTransactionFailedEvent $event)
     {

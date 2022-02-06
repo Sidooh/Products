@@ -6,7 +6,7 @@ use App\Enums\MpesaReference;
 use App\Enums\PaymentSubtype;
 use App\Enums\PaymentType;
 use App\Enums\Status;
-use App\Enums\VoucherTransactionType;
+use App\Enums\TransactionType;
 use App\Enums\VoucherType;
 use App\Models\SubscriptionType;
 use App\Models\Transaction;
@@ -96,12 +96,11 @@ class PaymentRepository
 
         $voucher->voucherTransaction()->create([
             'amount'      => $this->data['amount'],
-            'type'        => VoucherTransactionType::DEBIT,
+            'type'        => TransactionType::DEBIT,
             'description' => $this->data['description']
         ]);
 
         $this->data += $paymentData;
-
         $this->transaction->payment()->create($this->data);
 
         ProductRepository::requestPurchase($this->transaction, $this->data);

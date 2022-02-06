@@ -3,7 +3,7 @@
 namespace App\Listeners;
 
 use App\Helpers\SidoohNotify\EventTypes;
-use App\Repositories\EventRepository;
+use App\Repositories\EventRepositories\EventRepository;
 use App\Repositories\NotificationRepository;
 use App\Repositories\TransactionRepository;
 use Exception;

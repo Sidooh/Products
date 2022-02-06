@@ -5,12 +5,14 @@ namespace App\Http\Controllers\API\V1;
 use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\VoucherRequest;
-use App\Models\Transaction;
+use App\Models\Enterprise;
+use App\Repositories\VoucherRepository;
 use App\Services\SidoohAccounts;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Throwable;
 
 class VoucherController extends Controller
 {
@@ -31,24 +33,39 @@ class VoucherController extends Controller
         $data['method'] = 'MPESA';
         $data['type'] = TransactionType::PAYMENT;
         $data['description'] = "Voucher Purchase";
+        $data['destination'] = $destination ?? $account['phone'];
 
-        $transaction = $this->init($data, $account);
+        $transaction = $this->createTransaction($data);
 
         return $this->successResponse(['transaction_id' => $transaction->id], 'Voucher Request Successful');
     }
 
+    /**
+     * @throws Throwable
+     */
     public function disburse(VoucherRequest $request): JsonResponse
     {
-        return $this->successResponse(['']);
-    }
+        $data = $request->all();
+        $enterprise = Enterprise::find($data['enterprise_id']);
 
-    /**
-     * @throws Exception
-     */
-    public function init($data, $account): Transaction
-    {
-        $data['destination'] = $destination ?? $account['phone'];
+        if(!isset($data['amount'])) {
+            $data['amount'] = match ($data['disburse_type']) {
+                "LUNCH" => $enterprise->max_lunch,
+                "GENERAL" => $enterprise->max_general
+            };
 
-        return $this->createTransaction($data);
+            if(!isset($data['amount'])) {
+                return $this->errorResponse("Amount is required! default amount for {$data['disburse_type']} voucher not set");
+            }
+        }
+
+        if(!isset($data['accounts'])) {
+            $data['accounts'] = $enterprise->enterpriseAccounts->pluck('account_id')->toArray();
+        }
+
+        VoucherRepository::disburse($enterprise, $data);
+
+        $message = "{$data['disburse_type']} Voucher Disburse Request Successful";
+        return $this->successResponse($data, $message);
     }
 }

@@ -2,9 +2,10 @@
 
 namespace App\Listeners;
 
-use App\Repositories\EventRepository;
+use App\Repositories\EventRepositories\EventRepository;
 use DrH\Mpesa\Events\StkPushPaymentSuccessEvent;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class StkPaymentReceived
 {
@@ -20,6 +21,7 @@ class StkPaymentReceived
      *
      * @param StkPushPaymentSuccessEvent $event
      * @return void
+     * @throws Throwable
      */
     public function handle(StkPushPaymentSuccessEvent $event)
     {

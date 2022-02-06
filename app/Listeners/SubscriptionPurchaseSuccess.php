@@ -4,8 +4,6 @@ namespace App\Listeners;
 
 use App\Enums\EventType;
 use App\Events\SubscriptionPurchaseEvent;
-use App\Helpers\SidoohNotify\EventTypes;
-use App\Repositories\NotificationRepository;
 use App\Services\SidoohAccounts;
 use App\Services\SidoohNotify;
 use Exception;
@@ -14,6 +12,8 @@ use NumberFormatter;
 
 class SubscriptionPurchaseSuccess
 {
+
+    public bool $afterCommit = true;
 
     /**
      * Create the event listener.

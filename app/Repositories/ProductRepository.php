@@ -32,12 +32,10 @@ class ProductRepository
     }
 
     /**
-     * @throws Exception
-     * @throws Throwable
+     * @throws Exception|Throwable
      */
     public function init($data)
     {
-//        dump_json($data);
         $this->data = $data;
 
         $this->paymentRepo->setData($this->data);
@@ -50,7 +48,7 @@ class ProductRepository
     }
 
     /**
-     * @throws Exception
+     * @throws Exception|Throwable
      */
     public function initiatePayment($destination = null, $mpesaNumber = null)
     {

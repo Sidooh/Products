@@ -2,7 +2,7 @@
 
 namespace App\Listeners;
 
-use App\Repositories\EventRepository;
+use App\Repositories\EventRepositories\EventRepository;
 use DrH\Mpesa\Events\StkPushPaymentFailedEvent;
 use Illuminate\Support\Facades\Log;
 

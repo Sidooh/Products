@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use JetBrains\PhpStorm\ArrayShape;
 
 class EnterpriseRequest extends FormRequest
@@ -22,12 +23,14 @@ class EnterpriseRequest extends FormRequest
      *
      * @return array
      */
-    #[ArrayShape(['name' => "string", 'settings' => "string"])]
+    #[ArrayShape(['name' => "array", 'settings' => "string", 'accounts' => "string", 'enterprise_id' => "string[]"])]
     public function rules(): array
     {
         return [
-            'name'     => 'required',
-            'settings' => 'array'
+            'name'          => [Rule::requiredIf($this->is('*/enterprises'))],
+            'settings'      => 'array',
+            'accounts'      => 'array',
+            'enterprise_id' => ['exists:enterprises,id']
         ];
     }
 }

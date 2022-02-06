@@ -2,7 +2,7 @@
 
 namespace App\Listeners;
 
-use App\Repositories\EventRepository;
+use App\Repositories\EventRepositories\EventRepository;
 use Illuminate\Support\Facades\Log;
 use Nabcellent\Kyanda\Events\KyandaRequestEvent;
 use Nabcellent\Kyanda\Events\KyandaTransactionSuccessEvent;

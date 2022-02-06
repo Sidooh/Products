@@ -20,7 +20,6 @@ return new class extends Migration
             $table->smallInteger('num_sent');
             $table->decimal('amount');
             $table->string('discount');
-            $table->string('description');
 
             $table->foreignId('transaction_id')->nullable();
 

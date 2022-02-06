@@ -5,7 +5,11 @@ namespace App\Helpers\AfricasTalking;
 
 
 use App\Enums\EventType;
-use App\Models\AirtimeRequest;
+use App\Enums\Status;
+use App\Enums\VoucherType;
+use App\Models\Transaction;
+use App\Models\Voucher;
+use App\Services\SidoohAccounts;
 use App\Services\SidoohNotify;
 use Illuminate\Support\Facades\DB;
 use Throwable;
@@ -54,32 +58,36 @@ class AfricasTalkingApi
     /**
      * @throws Throwable
      */
-    public static function airtime($transaction, $airtimeData)
+    public static function airtime(Transaction $transaction, $airtimeData)
     {
         $response = (new AfricasTalkingApi)->send($airtimeData['phone'], $airtimeData['amount']);
         $response = object_to_array($response);
 
-        $req = AirtimeRequest::create($response['data']);
-        $req->transaction()->associate($transaction);
+        $req = $transaction->airtimeRequest()->create([
+            'message'  => $response['data']['errorMessage'],
+            'num_sent' => $response['data']['numSent'],
+            'amount'   => $response['data']['totalAmount'],
+            'discount' => $response['data']['totalDiscount'],
+        ]);
 
         DB::transaction(function() use ($req, $response) {
             $req->save();
 
-            $req->responses()->createMany($response['data']['responses']);
+            $req->airtimeResponses()->createMany($response['data']['responses']);
         });
 
         if($response['data']['errorMessage'] != "None") {
-            $account = $req->transaction->account;
-            $amount = $req->transaction->amount;
-            $phone = $account->phone;
-            $date = $req->updated_at->timezone('Africa/Nairobi')
-                ->format(config("settings.sms_date_time_format"));
+            $amount = $transaction->amount;
+            $phone = SidoohAccounts::findPhone($transaction->account_id);
+            $date = $req->updated_at->timezone('Africa/Nairobi')->format(config("settings.sms_date_time_format"));
 
-            $voucher = $account->voucher;
-            $voucher->balance += $amount;
+            $voucher = Voucher::whereType(VoucherType::SIDOOH)
+                ->whereAccountId($transaction->account_id)
+                ->firstOrFail();
+            $voucher->balance += (double)$amount;
             $voucher->save();
 
-            $transaction->status = 'reimbursed';
+            $transaction->status = Status::REIMBURSED;
             $transaction->save();
 
             $message = "Sorry! We could not complete your airtime purchase for {$phone} worth {$amount} on {$date}. We have credited your voucher {$amount} and your balance is now {$voucher->balance}.";
