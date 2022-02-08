@@ -31,10 +31,10 @@ return [
     ],
 
     'at' => [
-        'key'      => '24f8a51e90338e4d2a6ebb81899fb4dc66099df456338be9da55cd8b5ce196f7',
+        'key'      => 'a828e15f1db322b77d7f57787ea3d390d06f3e5ab6e9254fe80044afaf4b0d82',
         'username' => 'sandbox',
         'phone'    => NULL,
-        'env'      => 'production',
+        'env'      => 'development',
         'airtime'  => [
             'key'      => '89770c2faea7f33dce6ca5605a0cd7b9e810a999af8ea0c051a5e504d2380928',
             'username' => 'sidooh_airtime',

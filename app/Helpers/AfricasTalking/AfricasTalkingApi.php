@@ -66,14 +66,23 @@ class AfricasTalkingApi
         $req = $transaction->airtimeRequest()->create([
             'message'  => $response['data']['errorMessage'],
             'num_sent' => $response['data']['numSent'],
-            'amount'   => $response['data']['totalAmount'],
+            'amount'   => str_ireplace('KES ', '', $response['data']['totalAmount']),
             'discount' => $response['data']['totalDiscount'],
         ]);
 
         DB::transaction(function() use ($req, $response) {
             $req->save();
 
-            $req->airtimeResponses()->createMany($response['data']['responses']);
+            $responses = collect($response['data']['responses'])->map(fn(array $response) => [
+                'phone'      => str_ireplace('+', '', $response['phoneNumber']),
+                'message'    => $response['errorMessage'],
+                'amount'     => str_ireplace('KES ', '', $response['amount']),
+                'discount'   => $response['discount'],
+                'request_id' => $response['requestId'],
+                'status'     => Status::tryFrom(strtoupper($response['status'])) ?? $response['status']
+            ])->toArray();
+
+            $req->airtimeResponses()->createMany($responses);
         });
 
         if($response['data']['errorMessage'] != "None") {
@@ -81,9 +90,7 @@ class AfricasTalkingApi
             $phone = SidoohAccounts::findPhone($transaction->account_id);
             $date = $req->updated_at->timezone('Africa/Nairobi')->format(config("settings.sms_date_time_format"));
 
-            $voucher = Voucher::whereType(VoucherType::SIDOOH)
-                ->whereAccountId($transaction->account_id)
-                ->firstOrFail();
+            $voucher = Voucher::whereType(VoucherType::SIDOOH)->whereAccountId($transaction->account_id)->firstOrFail();
             $voucher->balance += (double)$amount;
             $voucher->save();
 
@@ -98,16 +105,13 @@ class AfricasTalkingApi
 
     public function send(string $to, string $amount, string $currency = 'KES'): array
     {
-        // Get airtime service
-        $airtime = $this->AT->airtime();
-
-        // Use the service
-        return $airtime->send([
+        // Get & Use the airtime service
+        return $this->AT->airtime()->send([
             'recipients' => [
                 [
-                    'phoneNumber'  => $to,
-                    'currencyCode' => $currency,
-                    'amount'       => $amount
+                    'phoneNumber'  => '+254715270660',
+                    'currencyCode' => 'KES',
+                    'amount'       => 20
                 ],
             ]
         ]);

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\API\V1\AirtimeController;
 use App\Http\Controllers\API\V1\EnterpriseController;
+use App\Http\Controllers\API\V1\MerchantController;
 use App\Http\Controllers\API\V1\SubscriptionController;
 use App\Http\Controllers\API\V1\TransactionController;
 use App\Http\Controllers\API\V1\UtilityController;
@@ -27,8 +28,10 @@ Route::middleware('auth:sanctum')->get('/user', function(Request $request) {
 Route::/*middleware('auth.jwt')->*/ prefix('/v1')->name('api.')->group(function() {
     Route::prefix('/products')->group(function() {
         Route::post('/airtime', AirtimeController::class);
+        Route::post('/airtime/status/callback', [AirtimeController::class, 'airtimeStatusCallback']);
         Route::post('/utility', UtilityController::class);
         Route::post('/subscription', SubscriptionController::class);
+        Route::post('/merchant', MerchantController::class);
 
         Route::prefix('/voucher')->group(function() {
             Route::post('/top-up', [VoucherController::class, 'topUp']);

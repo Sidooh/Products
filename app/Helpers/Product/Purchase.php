@@ -3,12 +3,14 @@
 namespace App\Helpers\Product;
 
 use App\Enums\Status;
+use App\Events\MerchantPurchaseEvent;
 use App\Events\SubscriptionPurchaseEvent;
 use App\Events\SubscriptionPurchaseFailedEvent;
 use App\Events\VoucherPurchaseEvent;
 use App\Helpers\AfricasTalking\AfricasTalkingApi;
 use App\Helpers\Kyanda\KyandaApi;
 use App\Helpers\Tanda\TandaApi;
+use App\Models\Merchant;
 use App\Models\Subscription;
 use App\Models\SubscriptionType;
 use App\Models\Transaction;
@@ -22,14 +24,17 @@ use function config;
 
 class Purchase
 {
+    public function __construct(public Transaction $transaction) { }
+
+
     /**
      * @throws Exception
      */
-    public function utility(Transaction $transaction, array $billDetails, string $provider): void
+    public function utility(array $billDetails, string $provider): void
     {
         match (config('services.sidooh.utilities_provider')) {
-            'KYANDA' => KyandaApi::bill($transaction, $billDetails, $provider),
-            'TANDA' => TandaApi::bill($transaction, $billDetails, $provider),
+            'KYANDA' => KyandaApi::bill($this->transaction, $billDetails, $provider),
+            'TANDA' => TandaApi::bill($this->transaction, $billDetails, $provider),
             default => throw new Exception('No provider provided for utility purchase')
         };
     }
@@ -39,14 +44,14 @@ class Purchase
      * @param array       $airtimeData
      * @throws Throwable
      */
-    public function airtime(Transaction $transaction, array $airtimeData): void
+    public function airtime(array $airtimeData): void
     {
-        if($transaction->airtime) exit;
+        if($this->transaction->airtime) exit;
 
         match (config('services.sidooh.utilities_provider')) {
-            'AT' => AfricasTalkingApi::airtime($transaction, $airtimeData),
-            'KYANDA' => KyandaApi::airtime($transaction, $airtimeData),
-            'TANDA' => TandaApi::airtime($transaction, $airtimeData),
+            'AT' => AfricasTalkingApi::airtime($this->transaction, $airtimeData),
+            'KYANDA' => KyandaApi::airtime($this->transaction, $airtimeData),
+            'TANDA' => TandaApi::airtime($this->transaction, $airtimeData),
             default => throw new Exception('No provider provided for airtime purchase')
         };
     }
@@ -54,48 +59,61 @@ class Purchase
     /**
      * @throws Throwable
      */
-    public function subscription(Transaction $transaction, int $amount): ?Subscription
+    public function subscription(int $amount): ?Subscription
     {
-        if(Subscription::active($transaction->account_id)) {
-            SubscriptionPurchaseFailedEvent::dispatch($transaction);
+        if(Subscription::active($this->transaction->account_id)) {
+            SubscriptionPurchaseFailedEvent::dispatch($this->transaction);
 
             return null;
         }
 
-        $type = SubscriptionType::wherePrice($transaction->amount)->firstOrFail();
+        $type = SubscriptionType::wherePrice($this->transaction->amount)->firstOrFail();
 
         $subscription = [
             'amount'     => $amount,
             'active'     => true,
-            'account_id' => $transaction->account_id,
+            'account_id' => $this->transaction->account_id,
             'start_date' => now(),
             'end_date'   => now()->addMonths($type->duration),
         ];
 
-        return DB::transaction(function() use ($type, $subscription, $amount, $transaction) {
+        return DB::transaction(function() use ($type, $subscription, $amount) {
             $sub = $type->subscription()->create($subscription);
 
-            $transaction->status = Status::COMPLETED;
-            $transaction->save();
+            $this->transaction->status = Status::COMPLETED;
+            $this->transaction->save();
 
-            SubscriptionPurchaseEvent::dispatch($sub, $transaction);
+            SubscriptionPurchaseEvent::dispatch($sub, $this->transaction);
 
             return $sub;
         });
     }
 
-    public function voucher(Transaction $transaction): Model|Builder|Voucher
+    public function voucher(): Model|Builder|Voucher
     {
-        $voucher = Voucher::whereAccountId($transaction->account_id)->firstOrFail();
+        $voucher = Voucher::whereAccountId($this->transaction->account_id)->firstOrFail();
 
-        $voucher->balance += (double)$transaction->amount;
+        $voucher->balance += (double)$this->transaction->amount;
         $voucher->save();
 
-        $transaction->status = Status::COMPLETED;
-        $transaction->save();
+        $this->transaction->status = Status::COMPLETED;
+        $this->transaction->save();
 
-        VoucherPurchaseEvent::dispatch($voucher, $transaction);
+        VoucherPurchaseEvent::dispatch($voucher, $this->transaction);
 
         return $voucher;
+    }
+
+    public function merchant($merchantCode)
+    {
+        $merchant = Merchant::whereCode($merchantCode)->firstOrFail();
+        $merchant->balance += (double)$this->transaction->amount;
+        $payment = $this->transaction->payment;
+        $payment->status = Status::COMPLETED;
+
+        $merchant->save();
+        $payment->save();
+
+        MerchantPurchaseEvent::dispatch($merchant, $this->transaction);
     }
 }

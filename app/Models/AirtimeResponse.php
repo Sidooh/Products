@@ -12,14 +12,14 @@ use Illuminate\Support\Carbon;
 /**
  * App\Models\AirtimeResponse
  *
- * @property int                             $id
- * @property string                          $phone
- * @property string                          $message
- * @property string                          $amount
- * @property string                          $status
- * @property string                          $request_id
- * @property string                          $discount
- * @property int                             $airtime_request_id
+ * @property int         $id
+ * @property string      $phone
+ * @property string      $message
+ * @property string      $amount
+ * @property string      $status
+ * @property string      $request_id
+ * @property string      $discount
+ * @property int         $airtime_request_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @method static AirtimeResponseFactory factory(...$parameters)
@@ -45,7 +45,9 @@ class AirtimeResponse extends Model
     protected $fillable = [
         'phone',
         'message',
-        'amount'
+        'amount',
+        'discount',
+        'request_id'
     ];
 
     public function airtimeRequest(): BelongsTo

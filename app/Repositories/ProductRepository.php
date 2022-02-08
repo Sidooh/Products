@@ -68,7 +68,7 @@ class ProductRepository
         match ($paymentMethod) {
             PaymentMethod::MPESA => $this->paymentRepo->mpesa($destination, $mpesaNumber),
             PaymentMethod::VOUCHER => $this->paymentRepo->voucher($this->data['account'], $destination),
-            default => throw new Exception('Unexpected match value')
+            default => throw new Exception("Unsupported payment method!")
         };
     }
 
@@ -77,13 +77,15 @@ class ProductRepository
      */
     public static function requestPurchase(Transaction $transaction, array $purchaseData)
     {
-        $purchase = new Purchase;
+        $purchase = new Purchase($transaction);
 
         match ($purchaseData['product']) {
-            'airtime' => $purchase->airtime($transaction, $purchaseData),
-            'utility' => $purchase->utility($transaction, $purchaseData, $purchaseData['provider']),
-            'subscription' => $purchase->subscription($transaction, $purchaseData['amount']),
-            'voucher' => $purchase->voucher($transaction)
+            'airtime' => $purchase->airtime( $purchaseData),
+            'utility' => $purchase->utility( $purchaseData, $purchaseData['provider']),
+            'subscription' => $purchase->subscription( $purchaseData['amount']),
+            'voucher' => $purchase->voucher(),
+            'merchant' => $purchase->merchant($purchaseData['merchant_code']),
+            default => throw new Exception("Invalid product purchase!"),
         };
     }
 

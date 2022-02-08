@@ -17,7 +17,7 @@ class Controller extends BaseController
 
     public function __construct(public ProductRepository $repo) { }
 
-    public function createTransaction(array $transactionData)
+    public function createTransaction(array $transactionData): Transaction
     {
         $transaction = Transaction::create($transactionData);
 

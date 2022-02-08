@@ -94,6 +94,8 @@ class PaymentRepository
             $paymentData['account_number'] = $destination;
         }
 
+        if($this->data['product'] === 'merchant') $paymentData['status'] = Status::PENDING;
+
         $voucher->voucherTransaction()->create([
             'amount'      => $this->data['amount'],
             'type'        => TransactionType::DEBIT,

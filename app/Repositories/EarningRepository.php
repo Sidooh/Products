@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Log;
 
 class EarningRepository
 {
-    public function calcEarnings(Transaction $transaction, float $earnings)
+    public static function calcEarnings(Transaction $transaction, float $earnings)
     {
         Log::info("----------------- Calc Earnings ($earnings)");
 

@@ -10,7 +10,7 @@
  */
 
 
-namespace App\Models{use Database\Factories\AirtimeRequestFactory;use Illuminate\Database\Eloquent\Builder;use Illuminate\Database\Eloquent\Collection;use Illuminate\Support\Carbon;
+namespace App\Models{use Illuminate\Database\Eloquent\Collection;
 /**
  * App\Models\AirtimeRequest
  *
@@ -43,18 +43,18 @@ namespace App\Models{use Database\Factories\AirtimeRequestFactory;use Illuminate
 	class IdeHelperAirtimeRequest {}
 }
 
-namespace App\Models{use Database\Factories\AirtimeResponseFactory;use Illuminate\Database\Eloquent\Builder;use Illuminate\Support\Carbon;
+namespace App\Models{use Illuminate\Database\Eloquent\Builder;
 /**
  * App\Models\AirtimeResponse
  *
- * @property int                             $id
- * @property string                          $phone
- * @property string                          $message
- * @property string                          $amount
- * @property string                          $status
- * @property string                          $request_id
- * @property string                          $discount
- * @property int                             $airtime_request_id
+ * @property int         $id
+ * @property string      $phone
+ * @property string      $message
+ * @property string      $amount
+ * @property string      $status
+ * @property string      $request_id
+ * @property string      $discount
+ * @property int         $airtime_request_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @method static AirtimeResponseFactory factory(...$parameters)
@@ -71,14 +71,14 @@ namespace App\Models{use Database\Factories\AirtimeResponseFactory;use Illuminat
  * @method static Builder|AirtimeResponse whereRequestId($value)
  * @method static Builder|AirtimeResponse whereStatus($value)
  * @method static Builder|AirtimeResponse whereUpdatedAt($value)
- * @property string $description
- * @property-read AirtimeRequest|null $airtimeResponses
+ * @property string|null $description
+ * @property-read AirtimeRequest $airtimeRequest
  * @method static Builder|AirtimeResponse whereDescription($value)
  */
 	class IdeHelperAirtimeResponse {}
 }
 
-namespace App\Models{use Database\Factories\CashbackFactory;use Illuminate\Database\Eloquent\Builder;use Illuminate\Support\Carbon;
+namespace App\Models{
 /**
  * App\Models\Cashback
  *
@@ -104,7 +104,7 @@ namespace App\Models{use Database\Factories\CashbackFactory;use Illuminate\Datab
 	class IdeHelperCashback {}
 }
 
-namespace App\Models{use Database\Factories\CommissionFactory;use Illuminate\Database\Eloquent\Builder;use Illuminate\Support\Carbon;
+namespace App\Models{
 /**
  * App\Models\Commission
  *
@@ -130,7 +130,7 @@ namespace App\Models{use Database\Factories\CommissionFactory;use Illuminate\Dat
 	class IdeHelperCommission {}
 }
 
-namespace App\Models{use Database\Factories\EarningFactory;use Illuminate\Database\Eloquent\Builder;
+namespace App\Models{
 /**
  * App\Models\Earning
  *
@@ -142,20 +142,20 @@ namespace App\Models{use Database\Factories\EarningFactory;use Illuminate\Databa
 	class IdeHelperEarning {}
 }
 
-namespace App\Models{use Database\Factories\EnterpriseFactory;use Illuminate\Database\Eloquent\Builder;use Illuminate\Database\Eloquent\Collection;use Illuminate\Support\Carbon;
+namespace App\Models{
 /**
  * App\Models\Enterprise
  *
- * @property int $id
- * @property string $name
- * @property array $settings
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
+ * @property int                                 $id
+ * @property string                              $name
+ * @property array                               $settings
+ * @property Carbon|null     $created_at
+ * @property Carbon|null     $updated_at
  * @property-read Collection|EnterpriseAccount[] $enterpriseAccounts
- * @property-read int|null $enterprise_accounts_count
- * @property-read FloatAccount|null $floatAccount
- * @property-read Collection|Voucher[] $vouchers
- * @property-read int|null $vouchers_count
+ * @property-read int|null                       $enterprise_accounts_count
+ * @property-read FloatAccount|null              $floatAccount
+ * @property-read Collection|Voucher[]           $vouchers
+ * @property-read int|null                       $vouchers_count
  * @method static EnterpriseFactory factory(...$parameters)
  * @method static Builder|Enterprise newModelQuery()
  * @method static Builder|Enterprise newQuery()
@@ -169,18 +169,18 @@ namespace App\Models{use Database\Factories\EnterpriseFactory;use Illuminate\Dat
 	class IdeHelperEnterprise {}
 }
 
-namespace App\Models{use Database\Factories\EnterpriseAccountFactory;use Illuminate\Database\Eloquent\Builder;use Illuminate\Support\Carbon;
+namespace App\Models{
 /**
  * App\Models\EnterpriseAccount
  *
- * @property int $id
- * @property string $type
- * @property int $active
- * @property int $account_id
- * @property int $enterprise_id
+ * @property int                             $id
+ * @property string                          $type
+ * @property int                             $active
+ * @property int                             $account_id
+ * @property int                             $enterprise_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property-read Enterprise $enterprise
+ * @property-read Enterprise                 $enterprise
  * @method static EnterpriseAccountFactory factory(...$parameters)
  * @method static Builder|EnterpriseAccount newModelQuery()
  * @method static Builder|EnterpriseAccount newQuery()
@@ -196,17 +196,17 @@ namespace App\Models{use Database\Factories\EnterpriseAccountFactory;use Illumin
 	class IdeHelperEnterpriseAccount {}
 }
 
-namespace App\Models{use Database\Factories\FloatAccountFactory;use Eloquent;use Illuminate\Database\Eloquent\Builder;use Illuminate\Support\Carbon;
+namespace App\Models{
 /**
  * App\Models\FloatAccount
  *
- * @property int $id
- * @property string $balance
- * @property string $accountable_type
- * @property int $accountable_id
+ * @property int                             $id
+ * @property string                          $balance
+ * @property string                          $accountable_type
+ * @property int                             $accountable_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property-read Model|Eloquent $accountable
+ * @property-read Model|Eloquent             $accountable
  * @method static FloatAccountFactory factory(...$parameters)
  * @method static Builder|FloatAccount newModelQuery()
  * @method static Builder|FloatAccount newQuery()
@@ -221,7 +221,7 @@ namespace App\Models{use Database\Factories\FloatAccountFactory;use Eloquent;use
 	class IdeHelperFloatAccount {}
 }
 
-namespace App\Models{use Database\Factories\FloatAccountTransactionFactory;use Illuminate\Database\Eloquent\Builder;use Illuminate\Support\Carbon;
+namespace App\Models{
 /**
  * App\Models\FloatAccountTransaction
  *
@@ -247,7 +247,7 @@ namespace App\Models{use Database\Factories\FloatAccountTransactionFactory;use I
 	class IdeHelperFloatAccountTransaction {}
 }
 
-namespace App\Models{use Database\Factories\FloatTransactionFactory;use Illuminate\Database\Eloquent\Builder;
+namespace App\Models{
 /**
  * App\Models\FloatTransaction
  *
@@ -259,22 +259,50 @@ namespace App\Models{use Database\Factories\FloatTransactionFactory;use Illumina
 	class IdeHelperFloatTransaction {}
 }
 
-namespace App\Models{use Database\Factories\PaymentFactory;use Eloquent;use Illuminate\Database\Eloquent\Builder;use Illuminate\Support\Carbon;
+namespace App\Models{use Database\Factories\MerchantFactory;use Illuminate\Database\Eloquent\Builder;use Illuminate\Support\Carbon;
+/**
+ * App\Models\Merchant
+ *
+ * @property int $id
+ * @property string $name
+ * @property string $code
+ * @property string $contact_name
+ * @property string $contact_phone
+ * @property string $balance
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @method static MerchantFactory factory(...$parameters)
+ * @method static Builder|Merchant newModelQuery()
+ * @method static Builder|Merchant newQuery()
+ * @method static Builder|Merchant query()
+ * @method static Builder|Merchant whereBalance($value)
+ * @method static Builder|Merchant whereCode($value)
+ * @method static Builder|Merchant whereContactName($value)
+ * @method static Builder|Merchant whereContactPhone($value)
+ * @method static Builder|Merchant whereCreatedAt($value)
+ * @method static Builder|Merchant whereId($value)
+ * @method static Builder|Merchant whereName($value)
+ * @method static Builder|Merchant whereUpdatedAt($value)
+ */
+	class IdeHelperMerchant {}
+}
+
+namespace App\Models{
 /**
  * App\Models\Payment
  *
- * @property int $id
- * @property string $payable_type
- * @property int $payable_id
- * @property string $amount
- * @property string $status
- * @property string $type
- * @property string $subtype
- * @property string $provider_type
- * @property int $provider_id
+ * @property int                             $id
+ * @property string                          $payable_type
+ * @property int                             $payable_id
+ * @property string                          $amount
+ * @property string                          $status
+ * @property string                          $type
+ * @property string                          $subtype
+ * @property string                          $provider_type
+ * @property int                             $provider_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property-read Model|Eloquent $payable
+ * @property-read Model|Eloquent             $payable
  * @method static PaymentFactory factory(...$parameters)
  * @method static Builder|Payment newModelQuery()
  * @method static Builder|Payment newQuery()
@@ -294,7 +322,7 @@ namespace App\Models{use Database\Factories\PaymentFactory;use Eloquent;use Illu
 	class IdeHelperPayment {}
 }
 
-namespace App\Models{use Database\Factories\ProductAccountFactory;use Illuminate\Database\Eloquent\Builder;use Illuminate\Support\Carbon;
+namespace App\Models{
 /**
  * App\Models\ProductAccount
  *
@@ -318,20 +346,20 @@ namespace App\Models{use Database\Factories\ProductAccountFactory;use Illuminate
 	class IdeHelperProductAccount {}
 }
 
-namespace App\Models{use Database\Factories\SubscriptionFactory;use Illuminate\Support\Carbon;
+namespace App\Models{
 /**
  * App\Models\Subscription
  *
- * @property int $id
- * @property string $amount
- * @property string $start_date
- * @property string $end_date
- * @property string $status
- * @property int $account_id
- * @property int $subscription_type_id
+ * @property int                             $id
+ * @property string                          $amount
+ * @property string                          $start_date
+ * @property string                          $end_date
+ * @property string                          $status
+ * @property int                             $account_id
+ * @property int                             $subscription_type_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property-read SubscriptionType $subscriptionType
+ * @property-read SubscriptionType           $subscriptionType
  * @method static SubscriptionFactory factory(...$parameters)
  * @method static Builder|Subscription newModelQuery()
  * @method static Builder|Subscription newQuery()
@@ -349,20 +377,20 @@ namespace App\Models{use Database\Factories\SubscriptionFactory;use Illuminate\S
 	class IdeHelperSubscription {}
 }
 
-namespace App\Models{use Database\Factories\SubscriptionTypeFactory;use Illuminate\Database\Eloquent\Builder;use Illuminate\Database\Eloquent\Collection;use Illuminate\Support\Carbon;
+namespace App\Models{
 /**
  * App\Models\SubscriptionType
  *
- * @property int $id
- * @property string $title
- * @property string $price
- * @property int $level_limit
- * @property int $duration
- * @property int $active
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
+ * @property int                                                          $id
+ * @property string                                                       $title
+ * @property string                                                       $price
+ * @property int                                                          $level_limit
+ * @property int                                                          $duration
+ * @property int                                                          $active
+ * @property Carbon|null                              $created_at
+ * @property Carbon|null                              $updated_at
  * @property-read Collection|Subscription[] $subscription
- * @property-read int|null $subscription_count
+ * @property-read int|null                                                $subscription_count
  * @method static SubscriptionTypeFactory factory(...$parameters)
  * @method static Builder|SubscriptionType newModelQuery()
  * @method static Builder|SubscriptionType newQuery()
@@ -379,7 +407,7 @@ namespace App\Models{use Database\Factories\SubscriptionTypeFactory;use Illumina
 	class IdeHelperSubscriptionType {}
 }
 
-namespace App\Models{use Database\Factories\TransactionFactory;use Illuminate\Database\Eloquent\Builder;use Illuminate\Support\Carbon;
+namespace App\Models{use Database\Factories\TransactionFactory;use Illuminate\Database\Eloquent\Builder;use Illuminate\Support\Carbon;use Nabcellent\Kyanda\Models\KyandaRequest;
 /**
  * App\Models\Transaction
  *
@@ -394,6 +422,7 @@ namespace App\Models{use Database\Factories\TransactionFactory;use Illuminate\Da
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read AirtimeRequest|null $airtime
+ * @property-read AirtimeRequest|null $airtimeRequest
  * @property-read KyandaRequest|null $kyandaTransaction
  * @property-read Payment|null $payment
  * @method static TransactionFactory factory(...$parameters)
@@ -410,25 +439,24 @@ namespace App\Models{use Database\Factories\TransactionFactory;use Illuminate\Da
  * @method static Builder|Transaction whereStatus($value)
  * @method static Builder|Transaction whereType($value)
  * @method static Builder|Transaction whereUpdatedAt($value)
- * @property-read AirtimeRequest|null $airtimeRequest
  */
 	class IdeHelperTransaction {}
 }
 
-namespace App\Models{use Database\Factories\VoucherFactory;use Illuminate\Database\Eloquent\Builder;use Illuminate\Database\Eloquent\Collection;use Illuminate\Support\Carbon;
+namespace App\Models{
 /**
  * App\Models\Voucher
  *
- * @property int                                                                            $id
- * @property string                                                                         $type
- * @property string                                                                         $balance
- * @property int                                                                            $account_id
- * @property int|null                                                                       $enterprise_id
- * @property Carbon|null                                                $created_at
- * @property Carbon|null                                                $updated_at
- * @property-read Enterprise|null                                               $enterprise
+ * @property int                                  $id
+ * @property string                               $type
+ * @property string                               $balance
+ * @property int                                  $account_id
+ * @property int|null                             $enterprise_id
+ * @property Carbon|null      $created_at
+ * @property Carbon|null      $updated_at
+ * @property-read Enterprise|null                 $enterprise
  * @property-read Collection|VoucherTransaction[] $voucherTransaction
- * @property-read int|null                                                                  $voucher_transaction_count
+ * @property-read int|null                        $voucher_transaction_count
  * @method static VoucherFactory factory(...$parameters)
  * @method static Builder|Voucher newModelQuery()
  * @method static Builder|Voucher newQuery()
@@ -444,18 +472,18 @@ namespace App\Models{use Database\Factories\VoucherFactory;use Illuminate\Databa
 	class IdeHelperVoucher {}
 }
 
-namespace App\Models{use Database\Factories\VoucherTransactionFactory;use Illuminate\Database\Eloquent\Builder;use Illuminate\Support\Carbon;
+namespace App\Models{
 /**
  * App\Models\VoucherTransaction
  *
- * @property int $id
- * @property string $type
- * @property string $amount
- * @property string $description
- * @property int $voucher_id
+ * @property int                             $id
+ * @property string                          $type
+ * @property string                          $amount
+ * @property string                          $description
+ * @property int                             $voucher_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property-read Voucher $voucher
+ * @property-read Voucher                    $voucher
  * @method static VoucherTransactionFactory factory(...$parameters)
  * @method static Builder|VoucherTransaction newModelQuery()
  * @method static Builder|VoucherTransaction newQuery()

@@ -21,7 +21,7 @@ return new class extends Migration
             $table->decimal('amount');
             $table->string('status', 15)->default('SENT');
             $table->string('discount');
-            $table->string('description');
+            $table->string('description')->nullable();
             $table->string('request_id')->index();
 
             $table->foreignId('airtime_request_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
