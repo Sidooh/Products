@@ -2,7 +2,7 @@
 
 namespace App\Listeners;
 
-use App\Repositories\EventRepositories\EventRepository;
+use App\Repositories\EventRepositories\KyandaEventRepository;
 use Illuminate\Support\Facades\Log;
 use Nabcellent\Kyanda\Events\KyandaRequestEvent;
 use Nabcellent\Kyanda\Events\KyandaTransactionSuccessEvent;
@@ -14,10 +14,7 @@ class KyandaRequest
      *
      * @return void
      */
-    public function __construct()
-    {
-        //
-    }
+    public function __construct() { }
 
     /**
      * Handle the event.
@@ -27,9 +24,8 @@ class KyandaRequest
      */
     public function handle(KyandaRequestEvent $event)
     {
-        //
         Log::info('----------------- Kyanda Request: ' . $event->request->status . ' - ' . $event->request->message);
 
-        EventRepository::kyandaRequest($event->request);
+        KyandaEventRepository::request($event->request);
     }
 }

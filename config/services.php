@@ -58,7 +58,7 @@ return [
             ],
         ],
         'utilities_enabled'  => true,
-        'utilities_provider' => 'AT',
+        'utilities_provider' => 'KYANDA',
         'services'           => [
             'notify'   => [
                 'enabled' => true,

@@ -19,7 +19,7 @@ use Propaganistas\LaravelPhone\PhoneNumber;
 
 class KyandaEventRepository extends EventRepository
 {
-    public static function kyandaRequest(KyandaRequest $kyandaRequest)
+    public static function request(KyandaRequest $kyandaRequest)
     {
         $transaction = Transaction::find($kyandaRequest->relation_id);
         $date = $kyandaRequest->created_at->timezone('Africa/Nairobi')->format(config("settings.sms_date_time_format"));
@@ -73,7 +73,7 @@ class KyandaEventRepository extends EventRepository
     /**
      * @throws Exception
      */
-    public static function kyandaTransactionSuccess(KyandaTransaction $kyandaTransaction)
+    public static function transactionSuccess(KyandaTransaction $kyandaTransaction)
     {
 //                Update Transaction
         $transaction = Transaction::find($kyandaTransaction->request->relation_id);
@@ -209,7 +209,7 @@ class KyandaEventRepository extends EventRepository
     /**
      * @throws Exception
      */
-    public static function kyandaTransactionFailed(KyandaTransaction $kyandaTransaction)
+    public static function transactionFailed(KyandaTransaction $kyandaTransaction)
     {
         $transaction = Transaction::find($kyandaTransaction->request->relation_id);
         Transaction::updateStatus($transaction, Status::FAILED);

@@ -3,7 +3,7 @@
 namespace App\Listeners;
 
 use App\Helpers\SidoohNotify\EventTypes;
-use App\Repositories\EventRepositories\EventRepository;
+use App\Repositories\EventRepositories\KyandaEventRepository;
 use App\Repositories\NotificationRepository;
 use App\Repositories\TransactionRepository;
 use Exception;
@@ -35,6 +35,6 @@ class KyandaTransactionFailed
         Log::info('----------------- Kyanda Transaction Failed ');
         Log::error($event->transaction);
 
-        EventRepository::kyandaTransactionFailed($event->transaction);
+        KyandaEventRepository::transactionFailed($event->transaction);
     }
 }
