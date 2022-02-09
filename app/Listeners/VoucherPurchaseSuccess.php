@@ -2,10 +2,8 @@
 
 namespace App\Listeners;
 
-use App\Enums\EventType;
 use App\Events\VoucherPurchaseEvent;
-use App\Services\SidoohAccounts;
-use App\Services\SidoohNotify;
+use App\Repositories\EventRepositories\EventRepository;
 use Exception;
 use Illuminate\Support\Facades\Log;
 
@@ -33,19 +31,6 @@ class VoucherPurchaseSuccess
     {
         Log::info('----------------- Voucher Purchase Success ');
 
-        $amount = $event->transaction->amount;
-        $account = SidoohAccounts::find($event->transaction->account_id);
-
-        $phone = ltrim($account['phone'], '+');
-
-        $date = $event->voucher->updated_at->timezone('Africa/Nairobi')
-            ->format(config("settings.sms_date_time_format"));
-
-        $message = "Congratulations! You have successfully purchased a voucher ";
-        $message .= "worth Ksh{$amount} on {$date}.\n\n";
-        $message .= config('services.sidooh.tagline');
-
-        SidoohNotify::notify([$phone], $message, EventType::VOUCHER_PURCHASE);
-
+        EventRepository::voucherPurchaseSuccess($event->transaction, $event->voucher);
     }
 }

@@ -2,7 +2,7 @@
 
 namespace App\Listeners;
 
-use App\Repositories\EventRepositories\EventRepository;
+use App\Repositories\EventRepositories\MpesaEventRepository;
 use DrH\Mpesa\Events\StkPushPaymentFailedEvent;
 use Illuminate\Support\Facades\Log;
 
@@ -25,6 +25,6 @@ class StkPaymentFailed
     {
         Log::info("----------------- STK Payment Failed ({$event->stkCallback->ResultDesc})");
 
-        EventRepository::stkPaymentFailed($event->stkCallback);
+        MpesaEventRepository::stkPaymentFailed($event->stkCallback);
     }
 }

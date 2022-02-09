@@ -8,6 +8,7 @@ use App\Enums\PaymentType;
 use App\Enums\Status;
 use App\Enums\TransactionType;
 use App\Enums\VoucherType;
+use App\Models\Enterprise;
 use App\Models\SubscriptionType;
 use App\Models\Transaction;
 use App\Models\Voucher;
@@ -107,6 +108,56 @@ class PaymentRepository
 
         ProductRepository::requestPurchase($this->transaction, $this->data);
     }
+
+    /**
+     * @throws Throwable
+     */
+    public function float()
+    {
+        $enterprise = Enterprise::findOrFail($this->data['enterprise_id']);
+        $float = $enterprise->floatAccount;
+
+        if($float) {
+            $bal = $float->balance;
+
+            if($bal < (int)$this->data['amount']) throw new Exception("Insufficient float balance!");
+        }
+
+        $float->balance -= $this->data['amount'];
+        $float->save();
+
+        $paymentData = [
+            'amount'        => $this->data['amount'],
+            'type'          => PaymentType::SIDOOH,
+            'subtype'       => PaymentSubtype::VOUCHER,
+            'status'        => Status::COMPLETED,
+            'provider_id'   => $float->id,
+            'provider_type' => $float->getMorphClass(),
+        ];
+
+        if($this->data['product'] === 'subscription') {
+            $paymentData['amount'] = SubscriptionType::wherePrice($this->data['amount'])->firstOrFail()->value('price');
+            $paymentData['status'] = Status::PENDING;
+        } else if($this->data['product'] === 'airtime') {
+            $paymentData['phone'] = PhoneNumber::make($this->data['account']['phone'], 'KE')->formatE164();
+        } else if($this->data['product'] === 'utility') {
+            $paymentData['account_number'] = $this->data['account']['phone'];
+        }
+
+        if($this->data['product'] === 'merchant') $paymentData['status'] = Status::PENDING;
+
+        $float->floatAccountTransaction()->create([
+            'amount'      => $this->data['amount'],
+            'type'        => TransactionType::DEBIT,
+            'description' => $this->data['description']
+        ]);
+
+        $this->data += $paymentData;
+        $this->transaction->payment()->create($this->data);
+
+        ProductRepository::requestPurchase($this->transaction, $this->data);
+    }
+
 
 
     /**

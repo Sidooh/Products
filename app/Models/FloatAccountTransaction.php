@@ -6,16 +6,17 @@ use Database\Factories\FloatAccountTransactionFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
  * App\Models\FloatAccountTransaction
  *
- * @property int $id
- * @property string $type
- * @property string $amount
- * @property string $description
- * @property int $float_account_id
+ * @property int         $id
+ * @property string      $type
+ * @property string      $amount
+ * @property string      $description
+ * @property int         $float_account_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @method static FloatAccountTransactionFactory factory(...$parameters)
@@ -34,4 +35,18 @@ use Illuminate\Support\Carbon;
 class FloatAccountTransaction extends Model
 {
     use HasFactory;
+
+    protected $fillable= [
+        'amount',
+        'type',
+        'description'
+    ];
+
+    /**
+     * ---------------------------------------- Relationships ----------------------------------------
+     */
+    public function floatAccount(): BelongsTo
+    {
+        return $this->belongsTo(FloatAccount::class);
+    }
 }

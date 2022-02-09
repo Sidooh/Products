@@ -14,16 +14,15 @@ use App\Services\SidoohAccounts;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Throwable;
 
 class AirtimeController extends Controller
 {
     /**
      * Handle the incoming request.
      *
-     * @param Request $request
+     * @param ProductRequest $request
      * @return JsonResponse
-     * @throws Throwable
+     * @throws Exception
      */
     public function __invoke(ProductRequest $request): JsonResponse
     {
@@ -34,6 +33,8 @@ class AirtimeController extends Controller
         $data['product'] = 'airtime';
         $data['type'] = TransactionType::PAYMENT;
         $data['description'] = "Airtime Purchase";
+
+        if($data['initiator'] === 'ENTERPRISE') $data['method'] = 'FLOAT';
 
         $transaction = $this->init($data, $account);
 

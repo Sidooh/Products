@@ -33,7 +33,6 @@ class VoucherController extends Controller
         $data['method'] = 'MPESA';
         $data['type'] = TransactionType::PAYMENT;
         $data['description'] = "Voucher Purchase";
-        $data['destination'] = $destination ?? $account['phone'];
 
         $transaction = $this->createTransaction($data);
 

@@ -68,6 +68,7 @@ class ProductRepository
         match ($paymentMethod) {
             PaymentMethod::MPESA => $this->paymentRepo->mpesa($destination, $mpesaNumber),
             PaymentMethod::VOUCHER => $this->paymentRepo->voucher($this->data['account'], $destination),
+            PaymentMethod::FLOAT => $this->paymentRepo->float(),
             default => throw new Exception("Unsupported payment method!")
         };
     }

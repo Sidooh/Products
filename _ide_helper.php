@@ -4,7 +4,7 @@
 
 /**
  * A helper file for Laravel, to provide autocomplete information to your IDE
- * Generated for Laravel 9.x-dev.
+ * Generated for Laravel 9.0.0.
  *
  * This file should not be included in your code, only analyzed by your IDE!
  *
@@ -12,7 +12,7 @@
  * @see https://github.com/barryvdh/laravel-ide-helper
  */
 
-    namespace Illuminate\Support\Facades {use Ably\AblyRest;use App\Console\Kernel;use App\Models\User;use BadMethodCallException;use Closure;use Countable;use DateInterval;use DateTimeInterface;use Doctrine\DBAL\DBALException;use Doctrine\DBAL\Schema\AbstractSchemaManager;use Doctrine\DBAL\Schema\Column;use Exception;use Generator;use GuzzleHttp\Promise\PromiseInterface;use Illuminate\Auth\Access\AuthorizationException;use Illuminate\Auth\Access\iterable;use Illuminate\Auth\AuthenticationException;use Illuminate\Auth\AuthManager;use Illuminate\Auth\Passwords\PasswordBrokerManager;use Illuminate\Auth\Passwords\TokenRepositoryInterface;use Illuminate\Auth\SessionGuard;use Illuminate\Auth\TokenGuard;use Illuminate\Broadcasting\Broadcasters\Broadcaster;use Illuminate\Broadcasting\BroadcastManager;use Illuminate\Broadcasting\PendingBroadcast;use Illuminate\Bus\Batch;use Illuminate\Bus\PendingBatch;use Illuminate\Cache\CacheManager;use Illuminate\Cache\MemcachedStore;use Illuminate\Cache\TaggedCache;use Illuminate\Config\Repository;use Illuminate\Container\array;use Illuminate\Contracts\Auth\Authenticatable;use Illuminate\Contracts\Auth\CanResetPassword;use Illuminate\Contracts\Auth\Guard;use Illuminate\Contracts\Auth\PasswordBroker;use Illuminate\Contracts\Auth\StatefulGuard;use Illuminate\Contracts\Auth\UserProvider;use Illuminate\Contracts\Cache\Lock;use Illuminate\Contracts\Container\BindingResolutionException;use Illuminate\Contracts\Container\CircularDependencyException;use Illuminate\Contracts\Container\Container;use Illuminate\Contracts\Container\ContextualBindingBuilder;use Illuminate\Contracts\Cookie\QueueingFactory;use Illuminate\Contracts\Encryption\DecryptException;use Illuminate\Contracts\Encryption\EncryptException;use Illuminate\Contracts\Events\Dispatcher;use Illuminate\Contracts\Filesystem\Cloud;use Illuminate\Contracts\Filesystem\FileNotFoundException;use Illuminate\Contracts\Foundation\Application;use Illuminate\Contracts\Foundation\MaintenanceMode;use Illuminate\Contracts\Mail\Mailable;use Illuminate\Contracts\Queue\Job;use Illuminate\Contracts\Support\Arrayable;use Illuminate\Contracts\Support\Htmlable;use Illuminate\Contracts\Translation\Loader;use Illuminate\Contracts\Translation\Translator;use Illuminate\Contracts\View\Engine;use Illuminate\Cookie\CookieJar;use Illuminate\Database\Connection;use Illuminate\Database\DatabaseManager;use Illuminate\Database\DatabaseTransactionsManager;use Illuminate\Database\Eloquent\ModelNotFoundException;use Illuminate\Database\Grammar;use Illuminate\Database\MySqlConnection;use Illuminate\Database\Query\Builder;use Illuminate\Database\Query\Expression;use Illuminate\Database\Query\Processors\Processor;use Illuminate\Database\Schema\MySqlBuilder;use Illuminate\Database\Schema\MySqlSchemaState;use Illuminate\Encryption\Encrypter;use Illuminate\Filesystem\Filesystem;use Illuminate\Filesystem\FilesystemAdapter;use Illuminate\Filesystem\FilesystemManager;use Illuminate\Foundation\Bus\PendingChain;use Illuminate\Foundation\Bus\PendingDispatch;use Illuminate\Foundation\Console\ClosureCommand;use Illuminate\Foundation\never;use Illuminate\Hashing\Argon2IdHasher;use Illuminate\Hashing\ArgonHasher;use Illuminate\Hashing\BcryptHasher;use Illuminate\Hashing\HashManager;use Illuminate\Http\Client\PendingRequest;use Illuminate\Http\Client\ResponseSequence;use Illuminate\Http\JsonResponse;use Illuminate\Http\RedirectResponse;use Illuminate\Http\UploadedFile;use Illuminate\Log\Logger;use Illuminate\Log\LogManager;use Illuminate\Mail\Mailer;use Illuminate\Mail\MailManager;use Illuminate\Mail\PendingMail;use Illuminate\Mail\SentMessage;use Illuminate\Notifications\ChannelManager;use Illuminate\Queue\QueueManager;use Illuminate\Queue\SyncQueue;use Illuminate\Routing\Exceptions\BackedEnumCaseNotFoundException;use Illuminate\Routing\Exceptions\UrlGenerationException;use Illuminate\Routing\PendingResourceRegistration;use Illuminate\Routing\Redirector;use Illuminate\Routing\ResponseFactory;use Illuminate\Routing\RouteCollection;use Illuminate\Routing\RouteCollectionInterface;use Illuminate\Routing\Router;use Illuminate\Routing\RouteRegistrar;use Illuminate\Routing\UrlGenerator;use Illuminate\Session\SessionManager;use Illuminate\Session\Store;use Illuminate\Support\Carbon;use Illuminate\Support\Collection;use Illuminate\Support\DateFactory;use Illuminate\Support\LazyCollection;use Illuminate\Support\ServiceProvider;use Illuminate\Support\Testing\Fakes\BusFake;use Illuminate\Support\Testing\Fakes\EventFake;use Illuminate\Support\Testing\Fakes\MailFake;use Illuminate\Support\Testing\Fakes\NotificationFake;use Illuminate\Support\Testing\Fakes\QueueFake;use Illuminate\Translation\MessageSelector;use Illuminate\Validation\PresenceVerifierInterface;use Illuminate\Validation\ValidationException;use Illuminate\View\Compilers\BladeCompiler;use Illuminate\View\Engines\EngineResolver;use Illuminate\View\Factory;use Illuminate\View\ViewFinderInterface;use InvalidArgumentException;use League\Flysystem\FilesystemOperator;use LogicException;use Memcached;use PDO;use PDOStatement;use Psr\Http\Message\StreamInterface;use Psr\Log\LoggerInterface;use Pusher\Pusher;use ReflectionException;use RuntimeException;use SessionHandlerInterface;use SplFileInfo;use stdClass;use Symfony\Component\Console\Command\Command;use Symfony\Component\Console\Exception\CommandNotFoundException;use Symfony\Component\Console\Input\InputInterface;use Symfony\Component\Console\Output\OutputInterface;use Symfony\Component\HttpFoundation\BinaryFileResponse;use Symfony\Component\HttpFoundation\callable;use Symfony\Component\HttpFoundation\ParameterBag;use Symfony\Component\HttpFoundation\StreamedResponse;use Symfony\Component\HttpKernel\Exception\HttpException;use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;use Symfony\Component\Mailer\Transport\TransportInterface;use Symfony\Component\Routing\Exception\RouteNotFoundException;use Symfony\Component\Translation\TranslatorInterface;use Throwable;use TypeError;
+    namespace Illuminate\Support\Facades {use BadMethodCallException;use Closure;use Countable;use DateInterval;use DateTimeInterface;use Doctrine\DBAL\DBALException;use Doctrine\DBAL\Schema\AbstractSchemaManager;use Doctrine\DBAL\Schema\Column;use Exception;use Generator;use GuzzleHttp\Promise\PromiseInterface;use Illuminate\Auth\Access\AuthorizationException;use Illuminate\Auth\Access\iterable;use Illuminate\Auth\Passwords\PasswordBrokerManager;use Illuminate\Auth\Passwords\TokenRepositoryInterface;use Illuminate\Bus\Batch;use Illuminate\Bus\PendingBatch;use Illuminate\Cache\CacheManager;use Illuminate\Cache\MemcachedStore;use Illuminate\Cache\TaggedCache;use Illuminate\Config\Repository;use Illuminate\Contracts\Auth\Authenticatable;use Illuminate\Contracts\Auth\CanResetPassword;use Illuminate\Contracts\Auth\PasswordBroker;use Illuminate\Contracts\Cache\Lock;use Illuminate\Contracts\Container\BindingResolutionException;use Illuminate\Contracts\Container\Container;use Illuminate\Contracts\Encryption\DecryptException;use Illuminate\Contracts\Encryption\EncryptException;use Illuminate\Contracts\Events\Dispatcher;use Illuminate\Contracts\Filesystem\Cloud;use Illuminate\Contracts\Filesystem\FileNotFoundException;use Illuminate\Contracts\Foundation\Application;use Illuminate\Contracts\Mail\Mailable;use Illuminate\Contracts\Queue\Job;use Illuminate\Contracts\Support\Arrayable;use Illuminate\Contracts\Support\Htmlable;use Illuminate\Contracts\Translation\Loader;use Illuminate\Contracts\Translation\Translator;use Illuminate\Contracts\View\Engine;use Illuminate\Cookie\CookieJar;use Illuminate\Database\Connection;use Illuminate\Database\DatabaseManager;use Illuminate\Database\DatabaseTransactionsManager;use Illuminate\Database\Eloquent\ModelNotFoundException;use Illuminate\Database\Grammar;use Illuminate\Database\MySqlConnection;use Illuminate\Database\Query\Builder;use Illuminate\Database\Query\Expression;use Illuminate\Database\Query\Processors\Processor;use Illuminate\Database\Schema\MySqlBuilder;use Illuminate\Database\Schema\MySqlSchemaState;use Illuminate\Encryption\Encrypter;use Illuminate\Filesystem\Filesystem;use Illuminate\Filesystem\FilesystemAdapter;use Illuminate\Filesystem\FilesystemManager;use Illuminate\Foundation\Bus\PendingChain;use Illuminate\Hashing\Argon2IdHasher;use Illuminate\Hashing\ArgonHasher;use Illuminate\Hashing\BcryptHasher;use Illuminate\Hashing\HashManager;use Illuminate\Http\Client\PendingRequest;use Illuminate\Http\Client\ResponseSequence;use Illuminate\Http\JsonResponse;use Illuminate\Http\RedirectResponse;use Illuminate\Http\UploadedFile;use Illuminate\Log\Logger;use Illuminate\Log\LogManager;use Illuminate\Mail\Mailer;use Illuminate\Mail\MailManager;use Illuminate\Mail\PendingMail;use Illuminate\Mail\SentMessage;use Illuminate\Notifications\ChannelManager;use Illuminate\Queue\QueueManager;use Illuminate\Queue\SyncQueue;use Illuminate\Routing\Exceptions\BackedEnumCaseNotFoundException;use Illuminate\Routing\Exceptions\UrlGenerationException;use Illuminate\Routing\PendingResourceRegistration;use Illuminate\Routing\Redirector;use Illuminate\Routing\ResponseFactory;use Illuminate\Routing\RouteCollection;use Illuminate\Routing\RouteCollectionInterface;use Illuminate\Routing\Router;use Illuminate\Routing\RouteRegistrar;use Illuminate\Routing\UrlGenerator;use Illuminate\Session\SessionManager;use Illuminate\Session\Store;use Illuminate\Support\Carbon;use Illuminate\Support\Collection;use Illuminate\Support\DateFactory;use Illuminate\Support\LazyCollection;use Illuminate\Support\Testing\Fakes\BusFake;use Illuminate\Support\Testing\Fakes\EventFake;use Illuminate\Support\Testing\Fakes\MailFake;use Illuminate\Support\Testing\Fakes\NotificationFake;use Illuminate\Support\Testing\Fakes\QueueFake;use Illuminate\Translation\MessageSelector;use Illuminate\Validation\PresenceVerifierInterface;use Illuminate\Validation\ValidationException;use Illuminate\View\Engines\EngineResolver;use Illuminate\View\Factory;use Illuminate\View\ViewFinderInterface;use InvalidArgumentException;use League\Flysystem\FilesystemOperator;use LogicException;use Memcached;use PDO;use PDOStatement;use Psr\Http\Message\StreamInterface;use Psr\Log\LoggerInterface;use ReflectionException;use RuntimeException;use SessionHandlerInterface;use SplFileInfo;use stdClass;use Symfony\Component\HttpFoundation\BinaryFileResponse;use Symfony\Component\HttpFoundation\callable;use Symfony\Component\HttpFoundation\ParameterBag;use Symfony\Component\HttpFoundation\StreamedResponse;use Symfony\Component\Mailer\Transport\TransportInterface;use Symfony\Component\Routing\Exception\RouteNotFoundException;use Symfony\Component\Translation\TranslatorInterface;use Throwable;
             /**
      *
      *
@@ -422,9 +422,9 @@
                     /**
          * Register a service provider with the application.
          *
-         * @param ServiceProvider|string $provider
+         * @param \Illuminate\Support\ServiceProvider|string $provider
          * @param bool $force
-         * @return ServiceProvider
+         * @return \Illuminate\Support\ServiceProvider
          * @static
          */
         public static function register($provider, $force = false)
@@ -435,8 +435,8 @@
                     /**
          * Get the registered service provider instance if it exists.
          *
-         * @param ServiceProvider|string $provider
-         * @return ServiceProvider|null
+         * @param \Illuminate\Support\ServiceProvider|string $provider
+         * @return \Illuminate\Support\ServiceProvider|null
          * @static
          */
         public static function getProvider($provider)
@@ -447,7 +447,7 @@
                     /**
          * Get the registered service provider instances if any exist.
          *
-         * @param ServiceProvider|string $provider
+         * @param \Illuminate\Support\ServiceProvider|string $provider
          * @return array
          * @static
          */
@@ -460,7 +460,7 @@
          * Resolve a service provider instance from the class name.
          *
          * @param string $provider
-         * @return ServiceProvider
+         * @return \Illuminate\Support\ServiceProvider
          * @static
          */
         public static function resolveProvider($provider)
@@ -700,7 +700,7 @@
                     /**
          * Get an instance of the maintenance mode manager implementation.
          *
-         * @return MaintenanceMode
+         * @return \Illuminate\Contracts\Foundation\MaintenanceMode
          * @static
          */
         public static function maintenanceMode()
@@ -725,9 +725,9 @@
          * @param int $code
          * @param string $message
          * @param array $headers
-         * @return never
-         * @throws HttpException
-         * @throws NotFoundHttpException
+         * @return \Illuminate\Foundation\never
+         * @throws \Symfony\Component\HttpKernel\Exception\HttpException
+         * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
          * @static
          */
         public static function abort($code, $message = '', $headers = [])
@@ -947,7 +947,7 @@
          * Define a contextual binding.
          *
          * @param array|string $concrete
-         * @return ContextualBindingBuilder
+         * @return \Illuminate\Contracts\Container\ContextualBindingBuilder
          * @static
          */
         public static function when($concrete)
@@ -1016,7 +1016,7 @@
          * @param Closure|string|null $concrete
          * @param bool $shared
          * @return void
-         * @throws TypeError
+         * @throws \TypeError
          * @static
          */
         public static function bind($abstract, $concrete = null, $shared = false)
@@ -1252,7 +1252,7 @@
          * Call the given Closure / class@method and inject its dependencies.
          *
          * @param callable|string $callback
-         * @param array<string,  mixed>  $parameters
+         * @param \Illuminate\Container\array<string,  mixed>  $parameters
          * @param string|null $defaultMethod
          * @return mixed
          * @throws InvalidArgumentException
@@ -1310,7 +1310,7 @@
          * @param Closure|string $concrete
          * @return mixed
          * @throws BindingResolutionException
-         * @throws CircularDependencyException
+         * @throws \Illuminate\Contracts\Container\CircularDependencyException
          * @static
          */
         public static function build($concrete)
@@ -1507,27 +1507,27 @@
                     /**
          * Run the console application.
          *
-         * @param InputInterface $input
-         * @param OutputInterface|null $output
+         * @param \Symfony\Component\Console\Input\InputInterface $input
+         * @param \Symfony\Component\Console\Output\OutputInterface|null $output
          * @return int
          * @static
          */
         public static function handle($input, $output = null)
         {            //Method inherited from \Illuminate\Foundation\Console\Kernel
-                        /** @var Kernel $instance */
+                        /** @var \App\Console\Kernel $instance */
                         return $instance->handle($input, $output);
         }
                     /**
          * Terminate the application.
          *
-         * @param InputInterface $input
+         * @param \Symfony\Component\Console\Input\InputInterface $input
          * @param int $status
          * @return void
          * @static
          */
         public static function terminate($input, $status)
         {            //Method inherited from \Illuminate\Foundation\Console\Kernel
-                        /** @var Kernel $instance */
+                        /** @var \App\Console\Kernel $instance */
                         $instance->terminate($input, $status);
         }
                     /**
@@ -1535,24 +1535,24 @@
          *
          * @param string $signature
          * @param Closure $callback
-         * @return ClosureCommand
+         * @return \Illuminate\Foundation\Console\ClosureCommand
          * @static
          */
         public static function command($signature, $callback)
         {            //Method inherited from \Illuminate\Foundation\Console\Kernel
-                        /** @var Kernel $instance */
+                        /** @var \App\Console\Kernel $instance */
                         return $instance->command($signature, $callback);
         }
                     /**
          * Register the given command with the console application.
          *
-         * @param Command $command
+         * @param \Symfony\Component\Console\Command\Command $command
          * @return void
          * @static
          */
         public static function registerCommand($command)
         {            //Method inherited from \Illuminate\Foundation\Console\Kernel
-                        /** @var Kernel $instance */
+                        /** @var \App\Console\Kernel $instance */
                         $instance->registerCommand($command);
         }
                     /**
@@ -1560,14 +1560,14 @@
          *
          * @param string $command
          * @param array $parameters
-         * @param OutputInterface|null $outputBuffer
+         * @param \Symfony\Component\Console\Output\OutputInterface|null $outputBuffer
          * @return int
-         * @throws CommandNotFoundException
+         * @throws \Symfony\Component\Console\Exception\CommandNotFoundException
          * @static
          */
         public static function call($command, $parameters = [], $outputBuffer = null)
         {            //Method inherited from \Illuminate\Foundation\Console\Kernel
-                        /** @var Kernel $instance */
+                        /** @var \App\Console\Kernel $instance */
                         return $instance->call($command, $parameters, $outputBuffer);
         }
                     /**
@@ -1575,12 +1575,12 @@
          *
          * @param string $command
          * @param array $parameters
-         * @return PendingDispatch
+         * @return \Illuminate\Foundation\Bus\PendingDispatch
          * @static
          */
         public static function queue($command, $parameters = [])
         {            //Method inherited from \Illuminate\Foundation\Console\Kernel
-                        /** @var Kernel $instance */
+                        /** @var \App\Console\Kernel $instance */
                         return $instance->queue($command, $parameters);
         }
                     /**
@@ -1591,7 +1591,7 @@
          */
         public static function all()
         {            //Method inherited from \Illuminate\Foundation\Console\Kernel
-                        /** @var Kernel $instance */
+                        /** @var \App\Console\Kernel $instance */
                         return $instance->all();
         }
                     /**
@@ -1602,7 +1602,7 @@
          */
         public static function output()
         {            //Method inherited from \Illuminate\Foundation\Console\Kernel
-                        /** @var Kernel $instance */
+                        /** @var \App\Console\Kernel $instance */
                         return $instance->output();
         }
                     /**
@@ -1613,7 +1613,7 @@
          */
         public static function bootstrap()
         {            //Method inherited from \Illuminate\Foundation\Console\Kernel
-                        /** @var Kernel $instance */
+                        /** @var \App\Console\Kernel $instance */
                         $instance->bootstrap();
         }
                     /**
@@ -1625,7 +1625,7 @@
          */
         public static function setArtisan($artisan)
         {            //Method inherited from \Illuminate\Foundation\Console\Kernel
-                        /** @var Kernel $instance */
+                        /** @var \App\Console\Kernel $instance */
                         $instance->setArtisan($artisan);
         }
 
@@ -1643,12 +1643,12 @@
          * Attempt to get the guard from the local cache.
          *
          * @param string|null $name
-         * @return Guard|StatefulGuard
+         * @return \Illuminate\Contracts\Auth\Guard|\Illuminate\Contracts\Auth\StatefulGuard
          * @static
          */
         public static function guard($name = null)
         {
-                        /** @var AuthManager $instance */
+                        /** @var \Illuminate\Auth\AuthManager $instance */
                         return $instance->guard($name);
         }
                     /**
@@ -1656,12 +1656,12 @@
          *
          * @param string $name
          * @param array $config
-         * @return SessionGuard
+         * @return \Illuminate\Auth\SessionGuard
          * @static
          */
         public static function createSessionDriver($name, $config)
         {
-                        /** @var AuthManager $instance */
+                        /** @var \Illuminate\Auth\AuthManager $instance */
                         return $instance->createSessionDriver($name, $config);
         }
                     /**
@@ -1669,12 +1669,12 @@
          *
          * @param string $name
          * @param array $config
-         * @return TokenGuard
+         * @return \Illuminate\Auth\TokenGuard
          * @static
          */
         public static function createTokenDriver($name, $config)
         {
-                        /** @var AuthManager $instance */
+                        /** @var \Illuminate\Auth\AuthManager $instance */
                         return $instance->createTokenDriver($name, $config);
         }
                     /**
@@ -1685,7 +1685,7 @@
          */
         public static function getDefaultDriver()
         {
-                        /** @var AuthManager $instance */
+                        /** @var \Illuminate\Auth\AuthManager $instance */
                         return $instance->getDefaultDriver();
         }
                     /**
@@ -1697,7 +1697,7 @@
          */
         public static function shouldUse($name)
         {
-                        /** @var AuthManager $instance */
+                        /** @var \Illuminate\Auth\AuthManager $instance */
                         $instance->shouldUse($name);
         }
                     /**
@@ -1709,7 +1709,7 @@
          */
         public static function setDefaultDriver($name)
         {
-                        /** @var AuthManager $instance */
+                        /** @var \Illuminate\Auth\AuthManager $instance */
                         $instance->setDefaultDriver($name);
         }
                     /**
@@ -1717,12 +1717,12 @@
          *
          * @param string $driver
          * @param callable $callback
-         * @return AuthManager
+         * @return \Illuminate\Auth\AuthManager
          * @static
          */
         public static function viaRequest($driver, $callback)
         {
-                        /** @var AuthManager $instance */
+                        /** @var \Illuminate\Auth\AuthManager $instance */
                         return $instance->viaRequest($driver, $callback);
         }
                     /**
@@ -1733,19 +1733,19 @@
          */
         public static function userResolver()
         {
-                        /** @var AuthManager $instance */
+                        /** @var \Illuminate\Auth\AuthManager $instance */
                         return $instance->userResolver();
         }
                     /**
          * Set the callback to be used to resolve users.
          *
          * @param Closure $userResolver
-         * @return AuthManager
+         * @return \Illuminate\Auth\AuthManager
          * @static
          */
         public static function resolveUsersUsing($userResolver)
         {
-                        /** @var AuthManager $instance */
+                        /** @var \Illuminate\Auth\AuthManager $instance */
                         return $instance->resolveUsersUsing($userResolver);
         }
                     /**
@@ -1753,12 +1753,12 @@
          *
          * @param string $driver
          * @param Closure $callback
-         * @return AuthManager
+         * @return \Illuminate\Auth\AuthManager
          * @static
          */
         public static function extend($driver, $callback)
         {
-                        /** @var AuthManager $instance */
+                        /** @var \Illuminate\Auth\AuthManager $instance */
                         return $instance->extend($driver, $callback);
         }
                     /**
@@ -1766,12 +1766,12 @@
          *
          * @param string $name
          * @param Closure $callback
-         * @return AuthManager
+         * @return \Illuminate\Auth\AuthManager
          * @static
          */
         public static function provider($name, $callback)
         {
-                        /** @var AuthManager $instance */
+                        /** @var \Illuminate\Auth\AuthManager $instance */
                         return $instance->provider($name, $callback);
         }
                     /**
@@ -1782,43 +1782,43 @@
          */
         public static function hasResolvedGuards()
         {
-                        /** @var AuthManager $instance */
+                        /** @var \Illuminate\Auth\AuthManager $instance */
                         return $instance->hasResolvedGuards();
         }
                     /**
          * Forget all of the resolved guard instances.
          *
-         * @return AuthManager
+         * @return \Illuminate\Auth\AuthManager
          * @static
          */
         public static function forgetGuards()
         {
-                        /** @var AuthManager $instance */
+                        /** @var \Illuminate\Auth\AuthManager $instance */
                         return $instance->forgetGuards();
         }
                     /**
          * Set the application instance used by the manager.
          *
          * @param Application $app
-         * @return AuthManager
+         * @return \Illuminate\Auth\AuthManager
          * @static
          */
         public static function setApplication($app)
         {
-                        /** @var AuthManager $instance */
+                        /** @var \Illuminate\Auth\AuthManager $instance */
                         return $instance->setApplication($app);
         }
                     /**
          * Create the user provider implementation for the driver.
          *
          * @param string|null $provider
-         * @return UserProvider|null
+         * @return \Illuminate\Contracts\Auth\UserProvider|null
          * @throws InvalidArgumentException
          * @static
          */
         public static function createUserProvider($provider = null)
         {
-                        /** @var AuthManager $instance */
+                        /** @var \Illuminate\Auth\AuthManager $instance */
                         return $instance->createUserProvider($provider);
         }
                     /**
@@ -1829,18 +1829,18 @@
          */
         public static function getDefaultUserProvider()
         {
-                        /** @var AuthManager $instance */
+                        /** @var \Illuminate\Auth\AuthManager $instance */
                         return $instance->getDefaultUserProvider();
         }
                     /**
          * Get the currently authenticated user.
          *
-         * @return User|null
+         * @return \App\Models\User|null
          * @static
          */
         public static function user()
         {
-                        /** @var SessionGuard $instance */
+                        /** @var \Illuminate\Auth\SessionGuard $instance */
                         return $instance->user();
         }
                     /**
@@ -1851,7 +1851,7 @@
          */
         public static function id()
         {
-                        /** @var SessionGuard $instance */
+                        /** @var \Illuminate\Auth\SessionGuard $instance */
                         return $instance->id();
         }
                     /**
@@ -1863,19 +1863,19 @@
          */
         public static function once($credentials = [])
         {
-                        /** @var SessionGuard $instance */
+                        /** @var \Illuminate\Auth\SessionGuard $instance */
                         return $instance->once($credentials);
         }
                     /**
          * Log the given user ID into the application without sessions or cookies.
          *
          * @param mixed $id
-         * @return User|false
+         * @return \App\Models\User|false
          * @static
          */
         public static function onceUsingId($id)
         {
-                        /** @var SessionGuard $instance */
+                        /** @var \Illuminate\Auth\SessionGuard $instance */
                         return $instance->onceUsingId($id);
         }
                     /**
@@ -1887,7 +1887,7 @@
          */
         public static function validate($credentials = [])
         {
-                        /** @var SessionGuard $instance */
+                        /** @var \Illuminate\Auth\SessionGuard $instance */
                         return $instance->validate($credentials);
         }
                     /**
@@ -1900,7 +1900,7 @@
          */
         public static function basic($field = 'email', $extraConditions = [])
         {
-                        /** @var SessionGuard $instance */
+                        /** @var \Illuminate\Auth\SessionGuard $instance */
                         return $instance->basic($field, $extraConditions);
         }
                     /**
@@ -1913,7 +1913,7 @@
          */
         public static function onceBasic($field = 'email', $extraConditions = [])
         {
-                        /** @var SessionGuard $instance */
+                        /** @var \Illuminate\Auth\SessionGuard $instance */
                         return $instance->onceBasic($field, $extraConditions);
         }
                     /**
@@ -1926,7 +1926,7 @@
          */
         public static function attempt($credentials = [], $remember = false)
         {
-                        /** @var SessionGuard $instance */
+                        /** @var \Illuminate\Auth\SessionGuard $instance */
                         return $instance->attempt($credentials, $remember);
         }
                     /**
@@ -1940,7 +1940,7 @@
          */
         public static function attemptWhen($credentials = [], $callbacks = null, $remember = false)
         {
-                        /** @var SessionGuard $instance */
+                        /** @var \Illuminate\Auth\SessionGuard $instance */
                         return $instance->attemptWhen($credentials, $callbacks, $remember);
         }
                     /**
@@ -1948,12 +1948,12 @@
          *
          * @param mixed $id
          * @param bool $remember
-         * @return User|false
+         * @return \App\Models\User|false
          * @static
          */
         public static function loginUsingId($id, $remember = false)
         {
-                        /** @var SessionGuard $instance */
+                        /** @var \Illuminate\Auth\SessionGuard $instance */
                         return $instance->loginUsingId($id, $remember);
         }
                     /**
@@ -1966,7 +1966,7 @@
          */
         public static function login($user, $remember = false)
         {
-                        /** @var SessionGuard $instance */
+                        /** @var \Illuminate\Auth\SessionGuard $instance */
                         $instance->login($user, $remember);
         }
                     /**
@@ -1977,7 +1977,7 @@
          */
         public static function logout()
         {
-                        /** @var SessionGuard $instance */
+                        /** @var \Illuminate\Auth\SessionGuard $instance */
                         $instance->logout();
         }
                     /**
@@ -1990,7 +1990,7 @@
          */
         public static function logoutCurrentDevice()
         {
-                        /** @var SessionGuard $instance */
+                        /** @var \Illuminate\Auth\SessionGuard $instance */
                         $instance->logoutCurrentDevice();
         }
                     /**
@@ -2000,13 +2000,13 @@
          *
          * @param string $password
          * @param string $attribute
-         * @return User|null
-         * @throws AuthenticationException
+         * @return \App\Models\User|null
+         * @throws \Illuminate\Auth\AuthenticationException
          * @static
          */
         public static function logoutOtherDevices($password, $attribute = 'password')
         {
-                        /** @var SessionGuard $instance */
+                        /** @var \Illuminate\Auth\SessionGuard $instance */
                         return $instance->logoutOtherDevices($password, $attribute);
         }
                     /**
@@ -2018,18 +2018,18 @@
          */
         public static function attempting($callback)
         {
-                        /** @var SessionGuard $instance */
+                        /** @var \Illuminate\Auth\SessionGuard $instance */
                         $instance->attempting($callback);
         }
                     /**
          * Get the last user we attempted to authenticate.
          *
-         * @return User
+         * @return \App\Models\User
          * @static
          */
         public static function getLastAttempted()
         {
-                        /** @var SessionGuard $instance */
+                        /** @var \Illuminate\Auth\SessionGuard $instance */
                         return $instance->getLastAttempted();
         }
                     /**
@@ -2040,7 +2040,7 @@
          */
         public static function getName()
         {
-                        /** @var SessionGuard $instance */
+                        /** @var \Illuminate\Auth\SessionGuard $instance */
                         return $instance->getName();
         }
                     /**
@@ -2051,7 +2051,7 @@
          */
         public static function getRecallerName()
         {
-                        /** @var SessionGuard $instance */
+                        /** @var \Illuminate\Auth\SessionGuard $instance */
                         return $instance->getRecallerName();
         }
                     /**
@@ -2062,43 +2062,43 @@
          */
         public static function viaRemember()
         {
-                        /** @var SessionGuard $instance */
+                        /** @var \Illuminate\Auth\SessionGuard $instance */
                         return $instance->viaRemember();
         }
                     /**
          * Set the number of minutes the remember me cookie should be valid for.
          *
          * @param int $minutes
-         * @return SessionGuard
+         * @return \Illuminate\Auth\SessionGuard
          * @static
          */
         public static function setRememberDuration($minutes)
         {
-                        /** @var SessionGuard $instance */
+                        /** @var \Illuminate\Auth\SessionGuard $instance */
                         return $instance->setRememberDuration($minutes);
         }
                     /**
          * Get the cookie creator instance used by the guard.
          *
-         * @return QueueingFactory
+         * @return \Illuminate\Contracts\Cookie\QueueingFactory
          * @throws RuntimeException
          * @static
          */
         public static function getCookieJar()
         {
-                        /** @var SessionGuard $instance */
+                        /** @var \Illuminate\Auth\SessionGuard $instance */
                         return $instance->getCookieJar();
         }
                     /**
          * Set the cookie creator instance used by the guard.
          *
-         * @param QueueingFactory $cookie
+         * @param \Illuminate\Contracts\Cookie\QueueingFactory $cookie
          * @return void
          * @static
          */
         public static function setCookieJar($cookie)
         {
-                        /** @var SessionGuard $instance */
+                        /** @var \Illuminate\Auth\SessionGuard $instance */
                         $instance->setCookieJar($cookie);
         }
                     /**
@@ -2109,7 +2109,7 @@
          */
         public static function getDispatcher()
         {
-                        /** @var SessionGuard $instance */
+                        /** @var \Illuminate\Auth\SessionGuard $instance */
                         return $instance->getDispatcher();
         }
                     /**
@@ -2121,7 +2121,7 @@
          */
         public static function setDispatcher($events)
         {
-                        /** @var SessionGuard $instance */
+                        /** @var \Illuminate\Auth\SessionGuard $instance */
                         $instance->setDispatcher($events);
         }
                     /**
@@ -2132,30 +2132,30 @@
          */
         public static function getSession()
         {
-                        /** @var SessionGuard $instance */
+                        /** @var \Illuminate\Auth\SessionGuard $instance */
                         return $instance->getSession();
         }
                     /**
          * Return the currently cached user.
          *
-         * @return User|null
+         * @return \App\Models\User|null
          * @static
          */
         public static function getUser()
         {
-                        /** @var SessionGuard $instance */
+                        /** @var \Illuminate\Auth\SessionGuard $instance */
                         return $instance->getUser();
         }
                     /**
          * Set the current user.
          *
          * @param Authenticatable $user
-         * @return SessionGuard
+         * @return \Illuminate\Auth\SessionGuard
          * @static
          */
         public static function setUser($user)
         {
-                        /** @var SessionGuard $instance */
+                        /** @var \Illuminate\Auth\SessionGuard $instance */
                         return $instance->setUser($user);
         }
                     /**
@@ -2166,31 +2166,31 @@
          */
         public static function getRequest()
         {
-                        /** @var SessionGuard $instance */
+                        /** @var \Illuminate\Auth\SessionGuard $instance */
                         return $instance->getRequest();
         }
                     /**
          * Set the current request instance.
          *
          * @param \Symfony\Component\HttpFoundation\Request $request
-         * @return SessionGuard
+         * @return \Illuminate\Auth\SessionGuard
          * @static
          */
         public static function setRequest($request)
         {
-                        /** @var SessionGuard $instance */
+                        /** @var \Illuminate\Auth\SessionGuard $instance */
                         return $instance->setRequest($request);
         }
                     /**
          * Determine if the current user is authenticated. If not, throw an exception.
          *
-         * @return User
-         * @throws AuthenticationException
+         * @return \App\Models\User
+         * @throws \Illuminate\Auth\AuthenticationException
          * @static
          */
         public static function authenticate()
         {
-                        /** @var SessionGuard $instance */
+                        /** @var \Illuminate\Auth\SessionGuard $instance */
                         return $instance->authenticate();
         }
                     /**
@@ -2201,7 +2201,7 @@
          */
         public static function hasUser()
         {
-                        /** @var SessionGuard $instance */
+                        /** @var \Illuminate\Auth\SessionGuard $instance */
                         return $instance->hasUser();
         }
                     /**
@@ -2212,7 +2212,7 @@
          */
         public static function check()
         {
-                        /** @var SessionGuard $instance */
+                        /** @var \Illuminate\Auth\SessionGuard $instance */
                         return $instance->check();
         }
                     /**
@@ -2223,30 +2223,30 @@
          */
         public static function guest()
         {
-                        /** @var SessionGuard $instance */
+                        /** @var \Illuminate\Auth\SessionGuard $instance */
                         return $instance->guest();
         }
                     /**
          * Get the user provider used by the guard.
          *
-         * @return UserProvider
+         * @return \Illuminate\Contracts\Auth\UserProvider
          * @static
          */
         public static function getProvider()
         {
-                        /** @var SessionGuard $instance */
+                        /** @var \Illuminate\Auth\SessionGuard $instance */
                         return $instance->getProvider();
         }
                     /**
          * Set the user provider used by the guard.
          *
-         * @param UserProvider $provider
+         * @param \Illuminate\Contracts\Auth\UserProvider $provider
          * @return void
          * @static
          */
         public static function setProvider($provider)
         {
-                        /** @var SessionGuard $instance */
+                        /** @var \Illuminate\Auth\SessionGuard $instance */
                         $instance->setProvider($provider);
         }
                     /**
@@ -2259,7 +2259,7 @@
          */
         public static function macro($name, $macro)
         {
-                        SessionGuard::macro($name, $macro);
+                        \Illuminate\Auth\SessionGuard::macro($name, $macro);
         }
                     /**
          * Mix another object into the class.
@@ -2272,7 +2272,7 @@
          */
         public static function mixin($mixin, $replace = true)
         {
-                        SessionGuard::mixin($mixin, $replace);
+                        \Illuminate\Auth\SessionGuard::mixin($mixin, $replace);
         }
                     /**
          * Checks if macro is registered.
@@ -2283,7 +2283,7 @@
          */
         public static function hasMacro($name)
         {
-                        return SessionGuard::hasMacro($name);
+                        return \Illuminate\Auth\SessionGuard::hasMacro($name);
         }
                     /**
          * Flush the existing macros.
@@ -2293,7 +2293,7 @@
          */
         public static function flushMacros()
         {
-                        SessionGuard::flushMacros();
+                        \Illuminate\Auth\SessionGuard::flushMacros();
         }
 
     }
@@ -2312,7 +2312,7 @@
          */
         public static function compile($path = null)
         {
-                        /** @var BladeCompiler $instance */
+                        /** @var \Illuminate\View\Compilers\BladeCompiler $instance */
                         $instance->compile($path);
         }
                     /**
@@ -2323,7 +2323,7 @@
          */
         public static function getPath()
         {
-                        /** @var BladeCompiler $instance */
+                        /** @var \Illuminate\View\Compilers\BladeCompiler $instance */
                         return $instance->getPath();
         }
                     /**
@@ -2335,7 +2335,7 @@
          */
         public static function setPath($path)
         {
-                        /** @var BladeCompiler $instance */
+                        /** @var \Illuminate\View\Compilers\BladeCompiler $instance */
                         $instance->setPath($path);
         }
                     /**
@@ -2347,7 +2347,7 @@
          */
         public static function compileString($value)
         {
-                        /** @var BladeCompiler $instance */
+                        /** @var \Illuminate\View\Compilers\BladeCompiler $instance */
                         return $instance->compileString($value);
         }
                     /**
@@ -2361,7 +2361,18 @@
          */
         public static function render($string, $data = [], $deleteCachedView = false)
         {
-                        return BladeCompiler::render($string, $data, $deleteCachedView);
+                        return \Illuminate\View\Compilers\BladeCompiler::render($string, $data, $deleteCachedView);
+        }
+                    /**
+         * Render a component instance to HTML.
+         *
+         * @param \Illuminate\View\Component $component
+         * @return string
+         * @static
+         */
+        public static function renderComponent($component)
+        {
+                        return \Illuminate\View\Compilers\BladeCompiler::renderComponent($component);
         }
                     /**
          * Strip the parentheses from the given expression.
@@ -2372,7 +2383,7 @@
          */
         public static function stripParentheses($expression)
         {
-                        /** @var BladeCompiler $instance */
+                        /** @var \Illuminate\View\Compilers\BladeCompiler $instance */
                         return $instance->stripParentheses($expression);
         }
                     /**
@@ -2384,7 +2395,7 @@
          */
         public static function extend($compiler)
         {
-                        /** @var BladeCompiler $instance */
+                        /** @var \Illuminate\View\Compilers\BladeCompiler $instance */
                         $instance->extend($compiler);
         }
                     /**
@@ -2395,7 +2406,7 @@
          */
         public static function getExtensions()
         {
-                        /** @var BladeCompiler $instance */
+                        /** @var \Illuminate\View\Compilers\BladeCompiler $instance */
                         return $instance->getExtensions();
         }
                     /**
@@ -2408,7 +2419,7 @@
          */
         public static function if($name, $callback)
         {
-                        /** @var BladeCompiler $instance */
+                        /** @var \Illuminate\View\Compilers\BladeCompiler $instance */
                         $instance->if($name, $callback);
         }
                     /**
@@ -2421,7 +2432,7 @@
          */
         public static function check($name, ...$parameters)
         {
-                        /** @var BladeCompiler $instance */
+                        /** @var \Illuminate\View\Compilers\BladeCompiler $instance */
                         return $instance->check($name, ...$parameters);
         }
                     /**
@@ -2435,7 +2446,7 @@
          */
         public static function component($class, $alias = null, $prefix = '')
         {
-                        /** @var BladeCompiler $instance */
+                        /** @var \Illuminate\View\Compilers\BladeCompiler $instance */
                         $instance->component($class, $alias, $prefix);
         }
                     /**
@@ -2448,7 +2459,7 @@
          */
         public static function components($components, $prefix = '')
         {
-                        /** @var BladeCompiler $instance */
+                        /** @var \Illuminate\View\Compilers\BladeCompiler $instance */
                         $instance->components($components, $prefix);
         }
                     /**
@@ -2459,7 +2470,7 @@
          */
         public static function getClassComponentAliases()
         {
-                        /** @var BladeCompiler $instance */
+                        /** @var \Illuminate\View\Compilers\BladeCompiler $instance */
                         return $instance->getClassComponentAliases();
         }
                     /**
@@ -2472,7 +2483,7 @@
          */
         public static function componentNamespace($namespace, $prefix)
         {
-                        /** @var BladeCompiler $instance */
+                        /** @var \Illuminate\View\Compilers\BladeCompiler $instance */
                         $instance->componentNamespace($namespace, $prefix);
         }
                     /**
@@ -2483,7 +2494,7 @@
          */
         public static function getClassComponentNamespaces()
         {
-                        /** @var BladeCompiler $instance */
+                        /** @var \Illuminate\View\Compilers\BladeCompiler $instance */
                         return $instance->getClassComponentNamespaces();
         }
                     /**
@@ -2496,7 +2507,7 @@
          */
         public static function aliasComponent($path, $alias = null)
         {
-                        /** @var BladeCompiler $instance */
+                        /** @var \Illuminate\View\Compilers\BladeCompiler $instance */
                         $instance->aliasComponent($path, $alias);
         }
                     /**
@@ -2509,7 +2520,7 @@
          */
         public static function include($path, $alias = null)
         {
-                        /** @var BladeCompiler $instance */
+                        /** @var \Illuminate\View\Compilers\BladeCompiler $instance */
                         $instance->include($path, $alias);
         }
                     /**
@@ -2522,7 +2533,7 @@
          */
         public static function aliasInclude($path, $alias = null)
         {
-                        /** @var BladeCompiler $instance */
+                        /** @var \Illuminate\View\Compilers\BladeCompiler $instance */
                         $instance->aliasInclude($path, $alias);
         }
                     /**
@@ -2536,7 +2547,7 @@
          */
         public static function directive($name, $handler)
         {
-                        /** @var BladeCompiler $instance */
+                        /** @var \Illuminate\View\Compilers\BladeCompiler $instance */
                         $instance->directive($name, $handler);
         }
                     /**
@@ -2547,7 +2558,7 @@
          */
         public static function getCustomDirectives()
         {
-                        /** @var BladeCompiler $instance */
+                        /** @var \Illuminate\View\Compilers\BladeCompiler $instance */
                         return $instance->getCustomDirectives();
         }
                     /**
@@ -2559,7 +2570,7 @@
          */
         public static function precompiler($precompiler)
         {
-                        /** @var BladeCompiler $instance */
+                        /** @var \Illuminate\View\Compilers\BladeCompiler $instance */
                         $instance->precompiler($precompiler);
         }
                     /**
@@ -2571,7 +2582,7 @@
          */
         public static function setEchoFormat($format)
         {
-                        /** @var BladeCompiler $instance */
+                        /** @var \Illuminate\View\Compilers\BladeCompiler $instance */
                         $instance->setEchoFormat($format);
         }
                     /**
@@ -2582,7 +2593,7 @@
          */
         public static function withDoubleEncoding()
         {
-                        /** @var BladeCompiler $instance */
+                        /** @var \Illuminate\View\Compilers\BladeCompiler $instance */
                         $instance->withDoubleEncoding();
         }
                     /**
@@ -2593,7 +2604,7 @@
          */
         public static function withoutDoubleEncoding()
         {
-                        /** @var BladeCompiler $instance */
+                        /** @var \Illuminate\View\Compilers\BladeCompiler $instance */
                         $instance->withoutDoubleEncoding();
         }
                     /**
@@ -2604,7 +2615,7 @@
          */
         public static function withoutComponentTags()
         {
-                        /** @var BladeCompiler $instance */
+                        /** @var \Illuminate\View\Compilers\BladeCompiler $instance */
                         $instance->withoutComponentTags();
         }
                     /**
@@ -2616,7 +2627,7 @@
          */
         public static function getCompiledPath($path)
         {            //Method inherited from \Illuminate\View\Compilers\Compiler
-                        /** @var BladeCompiler $instance */
+                        /** @var \Illuminate\View\Compilers\BladeCompiler $instance */
                         return $instance->getCompiledPath($path);
         }
                     /**
@@ -2628,7 +2639,7 @@
          */
         public static function isExpired($path)
         {            //Method inherited from \Illuminate\View\Compilers\Compiler
-                        /** @var BladeCompiler $instance */
+                        /** @var \Illuminate\View\Compilers\BladeCompiler $instance */
                         return $instance->isExpired($path);
         }
                     /**
@@ -2640,7 +2651,7 @@
          */
         public static function newComponentHash($component)
         {
-                        return BladeCompiler::newComponentHash($component);
+                        return \Illuminate\View\Compilers\BladeCompiler::newComponentHash($component);
         }
                     /**
          * Compile a class component opening.
@@ -2654,7 +2665,7 @@
          */
         public static function compileClassComponentOpening($component, $alias, $data, $hash)
         {
-                        return BladeCompiler::compileClassComponentOpening($component, $alias, $data, $hash);
+                        return \Illuminate\View\Compilers\BladeCompiler::compileClassComponentOpening($component, $alias, $data, $hash);
         }
                     /**
          * Compile the end-component statements into valid PHP.
@@ -2664,7 +2675,7 @@
          */
         public static function compileEndComponentClass()
         {
-                        /** @var BladeCompiler $instance */
+                        /** @var \Illuminate\View\Compilers\BladeCompiler $instance */
                         return $instance->compileEndComponentClass();
         }
                     /**
@@ -2676,7 +2687,7 @@
          */
         public static function sanitizeComponentAttribute($value)
         {
-                        return BladeCompiler::sanitizeComponentAttribute($value);
+                        return \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($value);
         }
                     /**
          * Compile an end-once block into valid PHP.
@@ -2686,7 +2697,7 @@
          */
         public static function compileEndOnce()
         {
-                        /** @var BladeCompiler $instance */
+                        /** @var \Illuminate\View\Compilers\BladeCompiler $instance */
                         return $instance->compileEndOnce();
         }
                     /**
@@ -2699,7 +2710,7 @@
          */
         public static function stringable($class, $handler = null)
         {
-                        /** @var BladeCompiler $instance */
+                        /** @var \Illuminate\View\Compilers\BladeCompiler $instance */
                         $instance->stringable($class, $handler);
         }
                     /**
@@ -2711,7 +2722,7 @@
          */
         public static function compileEchos($value)
         {
-                        /** @var BladeCompiler $instance */
+                        /** @var \Illuminate\View\Compilers\BladeCompiler $instance */
                         return $instance->compileEchos($value);
         }
                     /**
@@ -2723,7 +2734,7 @@
          */
         public static function applyEchoHandler($value)
         {
-                        /** @var BladeCompiler $instance */
+                        /** @var \Illuminate\View\Compilers\BladeCompiler $instance */
                         return $instance->applyEchoHandler($value);
         }
 
@@ -2731,7 +2742,7 @@
             /**
      *
      *
-     * @method static Broadcaster channel(string $channel, callable|string  $callback, array $options = [])
+     * @method static \Illuminate\Broadcasting\Broadcasters\Broadcaster channel(string $channel, callable|string  $callback, array $options = [])
      * @method static mixed auth(\Illuminate\Http\Request $request)
      * @see \Illuminate\Contracts\Broadcasting\Factory
      */
@@ -2745,7 +2756,7 @@
          */
         public static function routes($attributes = null)
         {
-                        /** @var BroadcastManager $instance */
+                        /** @var \Illuminate\Broadcasting\BroadcastManager $instance */
                         $instance->routes($attributes);
         }
                     /**
@@ -2757,19 +2768,19 @@
          */
         public static function socket($request = null)
         {
-                        /** @var BroadcastManager $instance */
+                        /** @var \Illuminate\Broadcasting\BroadcastManager $instance */
                         return $instance->socket($request);
         }
                     /**
          * Begin broadcasting an event.
          *
          * @param mixed|null $event
-         * @return PendingBroadcast
+         * @return \Illuminate\Broadcasting\PendingBroadcast
          * @static
          */
         public static function event($event = null)
         {
-                        /** @var BroadcastManager $instance */
+                        /** @var \Illuminate\Broadcasting\BroadcastManager $instance */
                         return $instance->event($event);
         }
                     /**
@@ -2781,7 +2792,7 @@
          */
         public static function queue($event)
         {
-                        /** @var BroadcastManager $instance */
+                        /** @var \Illuminate\Broadcasting\BroadcastManager $instance */
                         $instance->queue($event);
         }
                     /**
@@ -2793,7 +2804,7 @@
          */
         public static function connection($driver = null)
         {
-                        /** @var BroadcastManager $instance */
+                        /** @var \Illuminate\Broadcasting\BroadcastManager $instance */
                         return $instance->connection($driver);
         }
                     /**
@@ -2805,31 +2816,31 @@
          */
         public static function driver($name = null)
         {
-                        /** @var BroadcastManager $instance */
+                        /** @var \Illuminate\Broadcasting\BroadcastManager $instance */
                         return $instance->driver($name);
         }
                     /**
          * Get a Pusher instance for the given configuration.
          *
          * @param array $config
-         * @return Pusher
+         * @return \Pusher\Pusher
          * @static
          */
         public static function pusher($config)
         {
-                        /** @var BroadcastManager $instance */
+                        /** @var \Illuminate\Broadcasting\BroadcastManager $instance */
                         return $instance->pusher($config);
         }
                     /**
          * Get an Ably instance for the given configuration.
          *
          * @param array $config
-         * @return AblyRest
+         * @return \Ably\AblyRest
          * @static
          */
         public static function ably($config)
         {
-                        /** @var BroadcastManager $instance */
+                        /** @var \Illuminate\Broadcasting\BroadcastManager $instance */
                         return $instance->ably($config);
         }
                     /**
@@ -2840,7 +2851,7 @@
          */
         public static function getDefaultDriver()
         {
-                        /** @var BroadcastManager $instance */
+                        /** @var \Illuminate\Broadcasting\BroadcastManager $instance */
                         return $instance->getDefaultDriver();
         }
                     /**
@@ -2852,7 +2863,7 @@
          */
         public static function setDefaultDriver($name)
         {
-                        /** @var BroadcastManager $instance */
+                        /** @var \Illuminate\Broadcasting\BroadcastManager $instance */
                         $instance->setDefaultDriver($name);
         }
                     /**
@@ -2864,7 +2875,7 @@
          */
         public static function purge($name = null)
         {
-                        /** @var BroadcastManager $instance */
+                        /** @var \Illuminate\Broadcasting\BroadcastManager $instance */
                         $instance->purge($name);
         }
                     /**
@@ -2872,12 +2883,12 @@
          *
          * @param string $driver
          * @param Closure $callback
-         * @return BroadcastManager
+         * @return \Illuminate\Broadcasting\BroadcastManager
          * @static
          */
         public static function extend($driver, $callback)
         {
-                        /** @var BroadcastManager $instance */
+                        /** @var \Illuminate\Broadcasting\BroadcastManager $instance */
                         return $instance->extend($driver, $callback);
         }
                     /**
@@ -2888,30 +2899,30 @@
          */
         public static function getApplication()
         {
-                        /** @var BroadcastManager $instance */
+                        /** @var \Illuminate\Broadcasting\BroadcastManager $instance */
                         return $instance->getApplication();
         }
                     /**
          * Set the application instance used by the manager.
          *
          * @param Application $app
-         * @return BroadcastManager
+         * @return \Illuminate\Broadcasting\BroadcastManager
          * @static
          */
         public static function setApplication($app)
         {
-                        /** @var BroadcastManager $instance */
+                        /** @var \Illuminate\Broadcasting\BroadcastManager $instance */
                         return $instance->setApplication($app);
         }
                     /**
          * Forget all of the resolved driver instances.
          *
-         * @return BroadcastManager
+         * @return \Illuminate\Broadcasting\BroadcastManager
          * @static
          */
         public static function forgetDrivers()
         {
-                        /** @var BroadcastManager $instance */
+                        /** @var \Illuminate\Broadcasting\BroadcastManager $instance */
                         return $instance->forgetDrivers();
         }
 
@@ -16130,7 +16141,7 @@
 
 }
 
-        namespace DrH\Mpesa\Facades {use DrH\Mpesa\Entities\MpesaBulkPaymentRequest;use DrH\Mpesa\Entities\MpesaStkRequest;use DrH\Mpesa\Library\BulkSender;use DrH\Mpesa\Library\C2bRegister;use DrH\Mpesa\Library\IdCheck;use DrH\Mpesa\Library\MpesaAccount;use DrH\Mpesa\Library\StkPush;
+        namespace DrH\Mpesa\Facades {use DrH\Mpesa\Entities\MpesaBulkPaymentRequest;use DrH\Mpesa\Entities\MpesaStkRequest;use DrH\Mpesa\Exceptions\ClientException;use DrH\Mpesa\Library\BulkSender;use DrH\Mpesa\Library\C2bRegister;use DrH\Mpesa\Library\IdCheck;use DrH\Mpesa\Library\MpesaAccount;use DrH\Mpesa\Library\StkPush;
             /**
      *
      *
@@ -16178,8 +16189,8 @@
          * @param int|null $amount
          * @param string|null $remarks
          * @return MpesaBulkPaymentRequest
-         * @throws MpesaException
-         * @throws GuzzleException
+         * @throws ExternalServiceException
+         * @throws GuzzleException|ClientException
          * @static
          */
         public static function send($number = null, $amount = null, $remarks = null)
@@ -16190,8 +16201,8 @@
                     /**
          *
          *
-         * @return mixed
-         * @throws MpesaException
+         * @return array
+         * @throws ExternalServiceException
          * @throws Exception
          * @throws GuzzleException
          * @static
@@ -16204,12 +16215,25 @@
                     /**
          *
          *
+         * @param string $number
+         * @param bool $strip_plus
+         * @return string
+         * @static
+         */
+        public static function formatPhoneNumber($number, $strip_plus = true)
+        {            //Method inherited from \DrH\Mpesa\Library\ApiCore
+                        /** @var BulkSender $instance */
+                        return $instance->formatPhoneNumber($number, $strip_plus);
+        }
+                    /**
+         *
+         *
          * @param array $body
          * @param string $endpoint
          * @param MpesaAccount|null $account
          * @return array
          * @throws GuzzleException
-         * @throws MpesaException
+         * @throws ExternalServiceException|ClientException
          * @static
          */
         public static function sendRequest($body, $endpoint, $account = null)
@@ -16243,12 +16267,25 @@
                     /**
          *
          *
+         * @param string $number
+         * @param bool $strip_plus
+         * @return string
+         * @static
+         */
+        public static function formatPhoneNumber($number, $strip_plus = true)
+        {            //Method inherited from \DrH\Mpesa\Library\ApiCore
+                        /** @var IdCheck $instance */
+                        return $instance->formatPhoneNumber($number, $strip_plus);
+        }
+                    /**
+         *
+         *
          * @param array $body
          * @param string $endpoint
          * @param MpesaAccount|null $account
          * @return array
          * @throws GuzzleException
-         * @throws MpesaException
+         * @throws ExternalServiceException|ClientException
          * @static
          */
         public static function sendRequest($body, $endpoint, $account = null)
@@ -16299,7 +16336,7 @@
          * @param string $onTimeout
          * @return C2bRegister
          * @throws Exception
-         * @throws MpesaException
+         * @throws ClientException
          * @static
          */
         public static function onTimeout($onTimeout = 'Cancelled')
@@ -16315,7 +16352,7 @@
          * @param string|null $validationURL
          * @param string|null $onTimeout
          * @return array
-         * @throws MpesaException
+         * @throws ClientException
          * @throws Exception
          * @throws GuzzleException
          * @static
@@ -16328,12 +16365,25 @@
                     /**
          *
          *
+         * @param string $number
+         * @param bool $strip_plus
+         * @return string
+         * @static
+         */
+        public static function formatPhoneNumber($number, $strip_plus = true)
+        {            //Method inherited from \DrH\Mpesa\Library\ApiCore
+                        /** @var C2bRegister $instance */
+                        return $instance->formatPhoneNumber($number, $strip_plus);
+        }
+                    /**
+         *
+         *
          * @param array $body
          * @param string $endpoint
          * @param MpesaAccount|null $account
          * @return array
          * @throws GuzzleException
-         * @throws MpesaException
+         * @throws ExternalServiceException|ClientException
          * @static
          */
         public static function sendRequest($body, $endpoint, $account = null)
@@ -16380,8 +16430,7 @@
          * @param string $reference
          * @param string $description
          * @return StkPush
-         * @throws Exception
-         * @throws MpesaException
+         * @throws ClientException
          * @static
          */
         public static function usingReference($reference, $description)
@@ -16398,9 +16447,8 @@
          * @param string|null $description
          * @param MpesaAccount|null $account
          * @return MpesaStkRequest
-         * @throws MpesaException
+         * @throws ExternalServiceException|ClientException
          * @throws GuzzleException
-         * @throws Exception
          * @static
          */
         public static function push($amount = null, $number = null, $reference = null, $description = null, $account = null)
@@ -16414,7 +16462,7 @@
          * @param int $stkRequestId
          * @return array
          * @throws GuzzleException
-         * @throws MpesaException
+         * @throws ExternalServiceException|ClientException
          * @static
          */
         public static function status($stkRequestId)
@@ -16425,12 +16473,25 @@
                     /**
          *
          *
+         * @param string $number
+         * @param bool $strip_plus
+         * @return string
+         * @static
+         */
+        public static function formatPhoneNumber($number, $strip_plus = true)
+        {            //Method inherited from \DrH\Mpesa\Library\ApiCore
+                        /** @var StkPush $instance */
+                        return $instance->formatPhoneNumber($number, $strip_plus);
+        }
+                    /**
+         *
+         *
          * @param array $body
          * @param string $endpoint
          * @param MpesaAccount|null $account
          * @return array
          * @throws GuzzleException
-         * @throws MpesaException
+         * @throws ExternalServiceException|ClientException
          * @static
          */
         public static function sendRequest($body, $endpoint, $account = null)

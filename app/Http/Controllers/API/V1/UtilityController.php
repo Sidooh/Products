@@ -29,6 +29,8 @@ class UtilityController extends Controller
         $data['description'] = "{$data['provider']} Payment";
         $data['destination'] = $data['account_number'];
 
+        if($data['initiator'] === 'ENTERPRISE') $data['method'] = 'FLOAT';
+
         $transaction = $this->init($data);
 
         return $this->successResponse(['transaction_id' => $transaction->id], 'Utility Request Successful');

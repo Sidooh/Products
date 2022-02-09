@@ -10,6 +10,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
+use JetBrains\PhpStorm\ArrayShape;
 
 class ProductRequest extends FormRequest
 {
@@ -39,7 +40,7 @@ class ProductRequest extends FormRequest
                 function($attribute, $value, $fail) {
                     $isSubscription = $this->is('*/products/subscription');
                     $subPrices = SubscriptionType::pluck('price')->toArray();
-                    $subPricesStr = implode(', ',$subPrices);
+                    $subPricesStr = implode(', ', $subPrices);
 
                     if($isSubscription && !in_array($value, $subPrices)) {
                         $fail("The $attribute must be either of: {$subPricesStr}.");
@@ -50,6 +51,7 @@ class ProductRequest extends FormRequest
                 "required_if:initiator,CONSUMER",
                 new Enum(PaymentMethod::class),
             ],
+            'enterprise_id'    => ['required_if:initiator,ENTERPRISE'],
             'account_number'   => [Rule::requiredIf($this->is('*/products/utility')), 'integer'],
             'utility_provider' => ["required_if:product,utility"],
             'target_number'    => 'phone:KE',
@@ -57,6 +59,7 @@ class ProductRequest extends FormRequest
         ];
     }
 
+    #[ArrayShape(['product.in' => "string"])]
     public function messages(): array
     {
         return [

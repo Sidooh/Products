@@ -2,7 +2,7 @@
 
 namespace App\Listeners;
 
-use App\Repositories\EventRepositories\EventRepository;
+use App\Repositories\EventRepositories\MpesaEventRepository;
 use DrH\Mpesa\Events\StkPushPaymentSuccessEvent;
 use Illuminate\Support\Facades\Log;
 use Throwable;
@@ -27,6 +27,6 @@ class StkPaymentReceived
     {
         Log::info('----------------- STK Payment Received ');
 
-        EventRepository::stkPaymentReceived($event->stkCallback);
+        MpesaEventRepository::stkPaymentReceived($event->stkCallback);
     }
 }
