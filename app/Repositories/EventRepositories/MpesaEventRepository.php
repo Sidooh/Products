@@ -14,7 +14,7 @@ class MpesaEventRepository extends EventRepository
 {
     public static function stkPaymentFailed($stkCallback)
     {
-        //        TODO: Make into a transaction/try catch?
+        // TODO: Make into a transaction/try catch?
         $p = Payment::whereProviderId($stkCallback->request->id)->whereSubtype('STK')->firstOrFail();
 
         if($p->status == 'FAILED') return;
@@ -25,7 +25,7 @@ class MpesaEventRepository extends EventRepository
         $p->payable->status = Status::FAILED;
         $p->payable->save();
 
-//        TODO: Can we inform the user of the actual issue?
+        //  TODO: Can we inform the user of the actual issue?
         $message = "Sorry! We failed to complete your transaction. No amount was deducted from your account. We apologize for the inconvenience. Please try again.";
 
         SidoohNotify::notify([$stkCallback->request->phone], $message, EventType::PAYMENT_FAILURE);
