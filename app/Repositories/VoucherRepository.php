@@ -31,6 +31,7 @@ class VoucherRepository
 
             $floatDebitAmount = $vouchers->sum('voucher_top_up_amount');
 
+            if($floatDebitAmount < 1) return;
             if($enterprise->floatAccount->balance < $floatDebitAmount) throw new Exception('Insufficient float balance!', 422);
 
             $creditVouchers = $vouchers->map(function(Voucher $voucher) {
