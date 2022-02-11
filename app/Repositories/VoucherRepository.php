@@ -2,6 +2,8 @@
 
 namespace App\Repositories;
 
+use App\Enums\Description;
+use App\Enums\TransactionType;
 use App\Models\Enterprise;
 use App\Models\Voucher;
 use App\Traits\ApiResponse;
@@ -25,9 +27,11 @@ class VoucherRepository
                 ->whereType("ENTERPRISE_{$disburseData['disburse_type']}")
                 ->get();
 
-            $totalFloatDebit = $vouchers->sum('voucher_top_up_amount');
+            if($vouchers->isEmpty()) return;
 
-            if($enterprise->floatAccount->balance < $totalFloatDebit) throw new Exception('Insufficient float balance!', 422);
+            $floatDebitAmount = $vouchers->sum('voucher_top_up_amount');
+
+            if($enterprise->floatAccount->balance < $floatDebitAmount) throw new Exception('Insufficient float balance!', 422);
 
             $creditVouchers = $vouchers->map(function(Voucher $voucher) {
                 return [
@@ -38,8 +42,14 @@ class VoucherRepository
                 ];
             })->toArray();
 
-            $enterprise->floatAccount->balance -= $totalFloatDebit;
+            $enterprise->floatAccount->balance -= $floatDebitAmount;
             $enterprise->floatAccount->save();
+
+            $enterprise->floatAccount->floatAccountTransaction()->create([
+                'type'        => TransactionType::DEBIT,
+                'amount'      => $floatDebitAmount,
+                'description' => Description::VOUCHER_DISBURSEMENT
+            ]);
 
             Voucher::upsert($creditVouchers, ['account_id', 'enterprise_id', 'type'], ['balance']);
         });

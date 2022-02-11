@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\V1;
 use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MerchantRequest;
+use App\Repositories\TransactionRepository;
 use App\Services\SidoohAccounts;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -28,7 +29,7 @@ class MerchantController extends Controller
         $data['description'] = "Merchant Payment";
         $data['method'] = "VOUCHER";
 
-        $transaction = $this->createTransaction($data);
+        $transaction = TransactionRepository::createTransaction($data);
 
         return $this->successResponse(['transaction_id' => $transaction->id], 'Merchant Request Successful!');
     }

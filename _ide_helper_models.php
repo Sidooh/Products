@@ -10,7 +10,7 @@
  */
 
 
-namespace App\Models{use Illuminate\Database\Eloquent\Collection;
+namespace App\Models{
 /**
  * App\Models\AirtimeRequest
  *
@@ -36,14 +36,14 @@ namespace App\Models{use Illuminate\Database\Eloquent\Collection;
  * @method static Builder|AirtimeRequest whereNumSent($value)
  * @method static Builder|AirtimeRequest whereTransactionId($value)
  * @method static Builder|AirtimeRequest whereUpdatedAt($value)
- * @property-read Collection|AirtimeResponse[] $airtimeResponses
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\AirtimeResponse[] $airtimeResponses
  * @property-read int|null $airtime_responses_count
- * @property-read Transaction|null $transaction
+ * @property-read \App\Models\Transaction|null $transaction
  */
 	class IdeHelperAirtimeRequest {}
 }
 
-namespace App\Models{use Illuminate\Database\Eloquent\Builder;
+namespace App\Models{
 /**
  * App\Models\AirtimeResponse
  *
@@ -72,8 +72,8 @@ namespace App\Models{use Illuminate\Database\Eloquent\Builder;
  * @method static Builder|AirtimeResponse whereStatus($value)
  * @method static Builder|AirtimeResponse whereUpdatedAt($value)
  * @property string|null $description
- * @property-read AirtimeRequest $airtimeRequest
- * @method static Builder|AirtimeResponse whereDescription($value)
+ * @property-read \App\Models\AirtimeRequest $airtimeRequest
+ * @method static \Illuminate\Database\Eloquent\Builder|AirtimeResponse whereDescription($value)
  */
 	class IdeHelperAirtimeResponse {}
 }
@@ -217,6 +217,8 @@ namespace App\Models{
  * @method static Builder|FloatAccount whereCreatedAt($value)
  * @method static Builder|FloatAccount whereId($value)
  * @method static Builder|FloatAccount whereUpdatedAt($value)
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\FloatAccountTransaction[] $floatAccountTransaction
+ * @property-read int|null $float_account_transaction_count
  */
 	class IdeHelperFloatAccount {}
 }
@@ -225,11 +227,11 @@ namespace App\Models{
 /**
  * App\Models\FloatAccountTransaction
  *
- * @property int $id
- * @property string $type
- * @property string $amount
- * @property string $description
- * @property int $float_account_id
+ * @property int         $id
+ * @property string      $type
+ * @property string      $amount
+ * @property string      $description
+ * @property int         $float_account_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @method static FloatAccountTransactionFactory factory(...$parameters)
@@ -243,6 +245,7 @@ namespace App\Models{
  * @method static Builder|FloatAccountTransaction whereId($value)
  * @method static Builder|FloatAccountTransaction whereType($value)
  * @method static Builder|FloatAccountTransaction whereUpdatedAt($value)
+ * @property-read \App\Models\FloatAccount $floatAccount
  */
 	class IdeHelperFloatAccountTransaction {}
 }
@@ -259,7 +262,7 @@ namespace App\Models{
 	class IdeHelperFloatTransaction {}
 }
 
-namespace App\Models{use Database\Factories\MerchantFactory;use Illuminate\Database\Eloquent\Builder;use Illuminate\Support\Carbon;
+namespace App\Models{
 /**
  * App\Models\Merchant
  *
@@ -269,20 +272,20 @@ namespace App\Models{use Database\Factories\MerchantFactory;use Illuminate\Datab
  * @property string $contact_name
  * @property string $contact_phone
  * @property string $balance
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @method static MerchantFactory factory(...$parameters)
- * @method static Builder|Merchant newModelQuery()
- * @method static Builder|Merchant newQuery()
- * @method static Builder|Merchant query()
- * @method static Builder|Merchant whereBalance($value)
- * @method static Builder|Merchant whereCode($value)
- * @method static Builder|Merchant whereContactName($value)
- * @method static Builder|Merchant whereContactPhone($value)
- * @method static Builder|Merchant whereCreatedAt($value)
- * @method static Builder|Merchant whereId($value)
- * @method static Builder|Merchant whereName($value)
- * @method static Builder|Merchant whereUpdatedAt($value)
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Database\Factories\MerchantFactory factory(...$parameters)
+ * @method static \Illuminate\Database\Eloquent\Builder|Merchant newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Merchant newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Merchant query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Merchant whereBalance($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Merchant whereCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Merchant whereContactName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Merchant whereContactPhone($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Merchant whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Merchant whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Merchant whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Merchant whereUpdatedAt($value)
  */
 	class IdeHelperMerchant {}
 }
@@ -407,7 +410,7 @@ namespace App\Models{
 	class IdeHelperSubscriptionType {}
 }
 
-namespace App\Models{use Database\Factories\TransactionFactory;use Illuminate\Database\Eloquent\Builder;use Illuminate\Support\Carbon;use Nabcellent\Kyanda\Models\KyandaRequest;
+namespace App\Models{
 /**
  * App\Models\Transaction
  *
@@ -419,26 +422,26 @@ namespace App\Models{use Database\Factories\TransactionFactory;use Illuminate\Da
  * @property string|null $destination
  * @property string $description
  * @property int $account_id
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @property-read AirtimeRequest|null $airtime
- * @property-read AirtimeRequest|null $airtimeRequest
- * @property-read KyandaRequest|null $kyandaTransaction
- * @property-read Payment|null $payment
- * @method static TransactionFactory factory(...$parameters)
- * @method static Builder|Transaction newModelQuery()
- * @method static Builder|Transaction newQuery()
- * @method static Builder|Transaction query()
- * @method static Builder|Transaction whereAccountId($value)
- * @method static Builder|Transaction whereAmount($value)
- * @method static Builder|Transaction whereCreatedAt($value)
- * @method static Builder|Transaction whereDescription($value)
- * @method static Builder|Transaction whereDestination($value)
- * @method static Builder|Transaction whereId($value)
- * @method static Builder|Transaction whereInitiator($value)
- * @method static Builder|Transaction whereStatus($value)
- * @method static Builder|Transaction whereType($value)
- * @method static Builder|Transaction whereUpdatedAt($value)
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\AirtimeRequest|null $airtime
+ * @property-read \App\Models\AirtimeRequest|null $airtimeRequest
+ * @property-read \Nabcellent\Kyanda\Models\KyandaRequest|null $kyandaTransaction
+ * @property-read \App\Models\Payment|null $payment
+ * @method static \Database\Factories\TransactionFactory factory(...$parameters)
+ * @method static \Illuminate\Database\Eloquent\Builder|Transaction newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Transaction newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Transaction query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereDestination($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereInitiator($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereUpdatedAt($value)
  */
 	class IdeHelperTransaction {}
 }

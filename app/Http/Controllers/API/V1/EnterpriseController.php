@@ -74,13 +74,20 @@ class EnterpriseController extends Controller
             ];
         }, $accountsData);
 
-        $voucherData = array_map(function($account) use ($enterprise) {
+        $voucherData = collect($accountsData)->map(function($account) use ($enterprise) {
+            $account['enterprise_id'] = $enterprise->id;
+
             return [
-                ...$account,
-                'enterprise_id' => $enterprise->id,
-                'type'          => VoucherType::ENTERPRISE_LUNCH,
+                [
+                    ...$account,
+                    'type' => VoucherType::ENTERPRISE_LUNCH,
+                ],
+                [
+                    ...$account,
+                    'type' => VoucherType::ENTERPRISE_GENERAL,
+                ],
             ];
-        }, $accountsData);
+        })->collapse()->toArray();
 
         Voucher::upsert($voucherData, ['account_id', 'type'], []);
 
@@ -103,11 +110,13 @@ class EnterpriseController extends Controller
      *
      * @param Request $request
      * @param int     $id
-     * @return Response
+     * @return JsonResponse
      */
-    public function update(Request $request, $id)
+    public function update(EnterpriseRequest $request, Enterprise $enterprise): JsonResponse
     {
-        //
+        $enterprise->update($request->all());
+
+        return $this->successResponse(EnterpriseResource::make($enterprise));
     }
 
     /**

@@ -3,7 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\TransactionCreated;
-use App\Repositories\ProductRepository;
+use App\Repositories\TransactionRepository;
 use Exception;
 use Throwable;
 
@@ -28,7 +28,7 @@ class ProcessTransaction
      */
     public function handle(TransactionCreated $event)
     {
-        $repo = new ProductRepository($event->transaction);
+        $repo = new TransactionRepository($event->transaction);
         $repo->init($event->data);
     }
 }

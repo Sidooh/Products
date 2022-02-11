@@ -106,7 +106,7 @@ class PaymentRepository
         $this->data += $paymentData;
         $this->transaction->payment()->create($this->data);
 
-        ProductRepository::requestPurchase($this->transaction, $this->data);
+        TransactionRepository::requestPurchase($this->transaction, $this->data);
     }
 
     /**
@@ -155,7 +155,7 @@ class PaymentRepository
         $this->data += $paymentData;
         $this->transaction->payment()->create($this->data);
 
-        ProductRepository::requestPurchase($this->transaction, $this->data);
+        TransactionRepository::requestPurchase($this->transaction, $this->data);
     }
 
 

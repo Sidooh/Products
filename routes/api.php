@@ -44,6 +44,7 @@ Route::/*middleware('auth.jwt')->*/prefix('/v1')->name('api.')->group(function()
         Route::post('/', [EnterpriseController::class, 'store']);
         Route::post('/accounts', [EnterpriseController::class, 'storeAccount']);
         Route::get('/{enterprise}', [EnterpriseController::class, 'show']);
+        Route::put('/{enterprise}', [EnterpriseController::class, 'update']);
     });
 
     Route::get('/transactions', [TransactionController::class, 'index']);

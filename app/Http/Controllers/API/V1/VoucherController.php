@@ -6,6 +6,7 @@ use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\VoucherRequest;
 use App\Models\Enterprise;
+use App\Repositories\TransactionRepository;
 use App\Repositories\VoucherRepository;
 use App\Services\SidoohAccounts;
 use Exception;
@@ -34,7 +35,7 @@ class VoucherController extends Controller
         $data['type'] = TransactionType::PAYMENT;
         $data['description'] = "Voucher Purchase";
 
-        $transaction = $this->createTransaction($data);
+        $transaction = TransactionRepository::createTransaction($data);
 
         return $this->successResponse(['transaction_id' => $transaction->id], 'Voucher Request Successful');
     }
@@ -65,6 +66,6 @@ class VoucherController extends Controller
         VoucherRepository::disburse($enterprise, $data);
 
         $message = "{$data['disburse_type']} Voucher Disburse Request Successful";
-        return $this->successResponse($data, $message);
+        return $this->successResponse($data['accounts'], $message);
     }
 }

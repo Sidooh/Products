@@ -5,7 +5,7 @@ namespace App\Http\Controllers\API\V1;
 use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductRequest;
-use App\Models\Transaction;
+use App\Repositories\TransactionRepository;
 use App\Services\SidoohAccounts;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -31,16 +31,8 @@ class UtilityController extends Controller
 
         if($data['initiator'] === 'ENTERPRISE') $data['method'] = 'FLOAT';
 
-        $transaction = $this->init($data);
+        $transaction = TransactionRepository::createTransaction($data);
 
         return $this->successResponse(['transaction_id' => $transaction->id], 'Utility Request Successful');
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function init($data): Transaction
-    {
-        return $this->createTransaction($data);
     }
 }

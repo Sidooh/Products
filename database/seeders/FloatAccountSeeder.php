@@ -13,6 +13,6 @@ class FloatAccountSeeder extends Seeder
      */
     public function run()
     {
-        //
+
     }
 }

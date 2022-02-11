@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\TransactionCreated;
-use App\Models\Transaction;
-use App\Repositories\ProductRepository;
+use App\Repositories\TransactionRepository;
 use App\Traits\ApiResponse;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
@@ -15,14 +13,5 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests, ApiResponse;
 
-    public function __construct(public ProductRepository $repo) { }
-
-    public function createTransaction(array $transactionData): Transaction
-    {
-        $transaction = Transaction::create($transactionData);
-
-        TransactionCreated::dispatch($transaction, $transactionData);
-
-        return $transaction;
-    }
+    public function __construct(public TransactionRepository $repo) { }
 }

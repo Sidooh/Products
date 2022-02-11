@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductRequest;
 use App\Models\AirtimeResponse;
 use App\Models\Transaction;
+use App\Repositories\TransactionRepository;
 use App\Services\SidoohAccounts;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -48,7 +49,7 @@ class AirtimeController extends Controller
     {
         $data['destination'] = $data['target_number'] ?? $account['phone'];
 
-        return $this->createTransaction($data);
+        return TransactionRepository::createTransaction($data);
     }
 
     /**

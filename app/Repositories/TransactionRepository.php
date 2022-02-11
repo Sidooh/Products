@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Enums\PaymentMethod;
+use App\Events\TransactionCreated;
 use App\Helpers\Product\Purchase;
 use App\Models\Payment;
 use App\Models\Transaction;
@@ -14,7 +15,7 @@ use JetBrains\PhpStorm\Pure;
 use Propaganistas\LaravelPhone\PhoneNumber;
 use Throwable;
 
-class ProductRepository
+class TransactionRepository
 {
     use ApiResponse;
 
@@ -47,6 +48,15 @@ class ProductRepository
         $this->initiatePayment($targetNumber, $mpesaNumber);
     }
 
+    public static function createTransaction(array $transactionData): Transaction
+    {
+        $transaction = Transaction::create($transactionData);
+
+        TransactionCreated::dispatch($transaction, $transactionData);
+
+        return $transaction;
+    }
+
     /**
      * @throws Exception|Throwable
      */
@@ -54,7 +64,7 @@ class ProductRepository
     {
         $paymentMethod = PaymentMethod::tryFrom($this->data['method']);
 
-        Log::info("====== Product Purchase (Method:{$paymentMethod->value}) ======");
+        Log::info("====== Product Purchase (Method: $paymentMethod->value) ======");
         if($this->data['product'] === 'airtime' || 'voucher') {
             $destination = $destination
                 ? ltrim(PhoneNumber::make($destination, 'KE')->formatE164(), '+')
@@ -81,9 +91,9 @@ class ProductRepository
         $purchase = new Purchase($transaction);
 
         match ($purchaseData['product']) {
-            'airtime' => $purchase->airtime( $purchaseData),
-            'utility' => $purchase->utility( $purchaseData, $purchaseData['provider']),
-            'subscription' => $purchase->subscription( $purchaseData['amount']),
+            'airtime' => $purchase->airtime($purchaseData),
+            'utility' => $purchase->utility($purchaseData, $purchaseData['provider']),
+            'subscription' => $purchase->subscription($purchaseData['amount']),
             'voucher' => $purchase->voucher(),
             'merchant' => $purchase->merchant($purchaseData['merchant_code']),
             default => throw new Exception("Invalid product purchase!"),

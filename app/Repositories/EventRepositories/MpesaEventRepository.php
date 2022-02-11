@@ -6,7 +6,7 @@ use App\Enums\EventType;
 use App\Enums\MpesaReference;
 use App\Enums\Status;
 use App\Models\Payment;
-use App\Repositories\ProductRepository;
+use App\Repositories\TransactionRepository;
 use App\Services\SidoohNotify;
 use Throwable;
 
@@ -80,6 +80,6 @@ class MpesaEventRepository extends EventRepository
 
         $purchaseData['amount'] = $stkCallback->Amount;
 
-        ProductRepository::requestPurchase($p->payable, $purchaseData);
+        TransactionRepository::requestPurchase($p->payable, $purchaseData);
     }
 }

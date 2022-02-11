@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Enums\Initiator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
 use JetBrains\PhpStorm\ArrayShape;
 use JetBrains\PhpStorm\Pure;
@@ -38,7 +39,7 @@ class VoucherRequest extends FormRequest
     {
         return [
             'initiator'     => [
-                'required',
+                Rule::requiredIf(!$this->is('*/products/voucher/disburse')),
                 new Enum(Initiator::class),
                 function($attribute, $value, $fail) {
                     $isVoucherDisburse = $this->is('*/products/voucher/disburse');
@@ -49,7 +50,7 @@ class VoucherRequest extends FormRequest
             'disburse_type' => ['in:LUNCH,GENERAL',],
             'account_id'    => 'integer',
             'enterprise_id' => ['required_if:initiator,ENTERPRISE', 'exists:enterprises,id'],
-            'amount'        => ['required_unless:initiator,ENTERPRISE', 'numeric'],
+            'amount'        => ['required_unless:initiator,null', 'numeric'],
             'accounts'      => ['array'],
         ];
     }
