@@ -2,6 +2,7 @@
 
 namespace App\Library;
 
+use Exception;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum\Guard;
@@ -15,31 +16,35 @@ class JWT extends Guard
 
     static function verify($token)
     {
-        $secret = env('JWT_KEY');
+        try {
+            $secret = env('JWT_KEY');
 
-        if(!isset($secret)) exit('Invalid JWT key!');
+            if(!isset($secret)) exit('Invalid JWT key!');
 
-        // split the token
-        $tokenParts = explode('.', $token);
-        $header = base64_decode($tokenParts[0]);
-        $payload = base64_decode($tokenParts[1]);
-        $signatureProvided = $tokenParts[2];
+            // split the token
+            $tokenParts = explode('.', $token);
+            $header = base64_decode($tokenParts[0]);
+            $payload = base64_decode($tokenParts[1]);
+            $signatureProvided = $tokenParts[2];
 
-        // check the expiration time - note this will cause an error if there is no 'exp' claim in the token
-        $expiration = Carbon::createFromTimestamp(json_decode($payload)->exp);
-        $tokenExpired = (Carbon::now()->diffInSeconds($expiration, false) < 0);
+            // check the expiration time - note this will cause an error if there is no 'exp' claim in the token
+            $expiration = Carbon::createFromTimestamp(json_decode($payload)->exp);
+            $tokenExpired = (Carbon::now()->diffInSeconds($expiration, false) < 0);
 
-        // build a signature based on the header and payload using the secret
-        $base64UrlHeader = base_64_url_encode($header);
-        $base64UrlPayload = base_64_url_encode($payload);
-        $signature = hash_hmac('sha256', $base64UrlHeader . "." . $base64UrlPayload, $secret, true);
-        $base64UrlSignature = base_64_url_encode($signature);
+            // build a signature based on the header and payload using the secret
+            $base64UrlHeader = base_64_url_encode($header);
+            $base64UrlPayload = base_64_url_encode($payload);
+            $signature = hash_hmac('sha256', $base64UrlHeader . "." . $base64UrlPayload, $secret, true);
+            $base64UrlSignature = base_64_url_encode($signature);
 
-        // verify it matches the signature provided in the token
+            // verify it matches the signature provided in the token
 
-        if($tokenExpired) Log::error("Token has expired.");
-        if($base64UrlSignature !== $signatureProvided) Log::error("Token is invalid.");
+            if($tokenExpired) Log::info("Token has expired.");
+            if($base64UrlSignature !== $signatureProvided) Log::info("Token is invalid.");
 
-        return !$tokenExpired && $base64UrlSignature === $signatureProvided;
+            return !$tokenExpired && $base64UrlSignature === $signatureProvided;
+        } catch (Exception $err) {
+            return false;
+        }
     }
 }
