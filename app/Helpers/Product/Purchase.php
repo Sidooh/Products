@@ -6,7 +6,6 @@ use App\Enums\Status;
 use App\Events\MerchantPurchaseEvent;
 use App\Events\SubscriptionPurchaseEvent;
 use App\Events\SubscriptionPurchaseFailedEvent;
-use App\Events\VoucherPurchaseEvent;
 use App\Helpers\AfricasTalking\AfricasTalkingApi;
 use App\Helpers\Kyanda\KyandaApi;
 use App\Helpers\Tanda\TandaApi;
@@ -15,9 +14,9 @@ use App\Models\Subscription;
 use App\Models\SubscriptionType;
 use App\Models\Transaction;
 use App\Models\Voucher;
+use App\Services\SidoohPayments;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 use function config;
@@ -89,19 +88,17 @@ class Purchase
         });
     }
 
-    public function voucher(): Model|Builder|Voucher
+    /**
+     * @throws RequestException
+     */
+    public function voucher()
     {
-        $voucher = Voucher::whereAccountId($this->transaction->account_id)->firstOrFail();
-
-        $voucher->balance += (double)$this->transaction->amount;
-        $voucher->save();
+        $voucher = SidoohPayments::voucherDeposit($this->transaction->account_id, $this->transaction->amount);
 
         $this->transaction->status = Status::COMPLETED;
         $this->transaction->save();
 
-        VoucherPurchaseEvent::dispatch($voucher, $this->transaction);
-
-        return $voucher;
+//        VoucherPurchaseEvent::dispatch($voucher, $this->transaction);
     }
 
     public function merchant($merchantCode)

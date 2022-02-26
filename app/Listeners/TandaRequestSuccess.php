@@ -32,7 +32,6 @@ class TandaRequestSuccess
      */
     public function handle(TandaRequestSuccessEvent $event)
     {
-        //
         Log::info('----------------- Tanda Request Success ');
         Log::info($event->request->provider);
 

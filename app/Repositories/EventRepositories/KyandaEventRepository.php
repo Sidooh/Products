@@ -10,6 +10,7 @@ use App\Models\Voucher;
 use App\Repositories\EarningRepository;
 use App\Services\SidoohAccounts;
 use App\Services\SidoohNotify;
+use App\Services\SidoohPayments;
 use Exception;
 use Illuminate\Support\Facades\Log;
 use Nabcellent\Kyanda\Library\Providers;
@@ -40,14 +41,11 @@ class KyandaEventRepository extends EventRepository
             $transaction->status = Status::REIMBURSED;
             $transaction->save();
 
-            $voucher = Voucher::whereAccountId($transaction->account_id)->firstOrFail();
-            $voucher->balance += $amount;
-            $voucher->save();
-
+            $voucher = SidoohPayments::voucherDeposit($transaction->account_id, $amount);
 
             $message = match ($kyandaRequest->provider) {
-                Providers::SAFARICOM, Providers::AIRTEL, Providers::FAIBA, Providers::EQUITEL, Providers::TELKOM => "Sorry! We could not complete your KES{$amount} airtime purchase on {$date}. We have added KES{$amount} to your voucher. New Voucher balance is {$voucher->balance}.",
-                default => "Sorry! We could not complete your KES{$amount} {$kyandaRequest->provider} payment for {$transaction->destination} on {$date}. We have added KES{$amount} to your voucher. New Voucher balance is {$voucher->balance}.",
+                Providers::SAFARICOM, Providers::AIRTEL, Providers::FAIBA, Providers::EQUITEL, Providers::TELKOM => "Sorry! We could not complete your KES{$amount} airtime purchase on {$date}. We have added KES{$amount} to your voucher. New Voucher balance is {$voucher['balance']}.",
+                default => "Sorry! We could not complete your KES{$amount} {$kyandaRequest->provider} payment for {$transaction->destination} on {$date}. We have added KES{$amount} to your voucher. New Voucher balance is {$voucher['balance']}.",
             };
 
             SidoohNotify::notify([$phone], $message, EventType::SP_REQUEST_FAILURE);

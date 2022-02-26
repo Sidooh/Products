@@ -31,12 +31,15 @@ class ProductRequest extends FormRequest
      */
     public function rules(): array
     {
+        $countryCode = env('COUNTRY_CODE');
+
         return [
             'initiator'        => ['required', new Enum(Initiator::class)],
             'account_id'       => 'integer',
             'amount'           => [
                 'required',
                 'numeric',
+                'max:10000',
                 function($attribute, $value, $fail) {
                     $isSubscription = $this->is('*/products/subscription');
                     $subPrices = SubscriptionType::pluck('price')->toArray();
@@ -47,23 +50,23 @@ class ProductRequest extends FormRequest
                     }
                 },
             ],
-            'method'           => [
-                "required_if:initiator,CONSUMER",
-                new Enum(PaymentMethod::class),
-            ],
-            'enterprise_id'    => ['required_if:initiator,ENTERPRISE'],
+            'method'           => [new Enum(PaymentMethod::class),],
+            'enterprise_id'    => ["required_if:initiator," . Initiator::ENTERPRISE->name],
             'account_number'   => [Rule::requiredIf($this->is('*/products/utility')), 'integer'],
             'utility_provider' => ["required_if:product,utility"],
-            'target_number'    => 'phone:KE',
-            'mpesa_number'     => 'phone:KE',
+            'target_number'    => "phone:$countryCode",
+            'mpesa_number'     => "phone:$countryCode",
         ];
     }
 
-    #[ArrayShape(['product.in' => "string"])]
+    #[ArrayShape(['product.in' => "string", 'mpesa_number.phone' => "string", 'target_number.phone' => "string"])]
     public function messages(): array
     {
         return [
-            'product.in' => 'Invalid product. Allowed product values are: [airtime, utility, subscription, voucher]',
+            'product.in'          => 'Invalid product. Allowed product values are: [airtime, utility, subscription, voucher]',
+            'mpesa_number.phone'  => 'Invalid :attribute number',
+            'target_number.phone' => 'Invalid target phone number',
+            ''
         ];
     }
 

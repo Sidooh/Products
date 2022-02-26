@@ -58,7 +58,7 @@ return [
             ],
         ],
         'utilities_enabled'  => true,
-        'utilities_provider' => 'TANDA',
+        'utilities_provider' => 'KYANDA',
         'services'           => [
             'notify'   => [
                 'enabled' => true,
@@ -67,6 +67,10 @@ return [
             'accounts' => [
                 'enabled' => true,
                 'url'     => 'https://sidooh-accounts.herokuapp.com/api/accounts'
+            ],
+            'payments' => [
+                'enabled' => true,
+                'url'     => 'http://localhost:7000/api/v1/payments'
             ]
         ],
     ],

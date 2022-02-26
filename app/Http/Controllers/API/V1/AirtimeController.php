@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\API\V1;
 
+use App\Enums\Description;
+use App\Enums\PaymentMethod;
 use App\Enums\Status;
 use App\Enums\TransactionType;
 use App\Events\AirtimePurchaseFailedEvent;
@@ -28,16 +30,17 @@ class AirtimeController extends Controller
     public function __invoke(ProductRequest $request): JsonResponse
     {
         $data = $request->all();
-        $account = SidoohAccounts::find($data['account_id']);
-
-        $data['account'] = SidoohAccounts::find($data['account_id']);
-        $data['product'] = 'airtime';
-        $data['type'] = TransactionType::PAYMENT;
-        $data['description'] = "Airtime Purchase";
+        $data += [
+            "account"     => SidoohAccounts::find($data['account_id']),
+            "product"     => "airtime",
+            "method"      => $data['method'] ?? PaymentMethod::MPESA->value,
+            "type"        => TransactionType::PAYMENT,
+            "description" => Description::AIRTIME_PURCHASE
+        ];
 
         if($data['initiator'] === 'ENTERPRISE') $data['method'] = 'FLOAT';
 
-        $transaction = $this->init($data, $account);
+        $transaction = $this->init($data, $data['account']);
 
         return $this->successResponse(['transaction_id' => $transaction->id], 'Airtime Request Successful');
     }

@@ -7,6 +7,7 @@ use App\Events\TransactionCreated;
 use App\Helpers\Product\Purchase;
 use App\Models\Payment;
 use App\Models\Transaction;
+use App\Services\SidoohPayments;
 use App\Traits\ApiResponse;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
@@ -66,21 +67,19 @@ class TransactionRepository
 
         Log::info("====== Product Purchase (Method: $paymentMethod->value) ======");
         if($this->data['product'] === 'airtime' || 'voucher') {
-            $destination = $destination
+            $this->data['destination'] = $destination
                 ? ltrim(PhoneNumber::make($destination, 'KE')->formatE164(), '+')
                 : $this->data['account']['phone'];
-            $mpesaNumber = $mpesaNumber
+            $this->data['mpesa_number'] = $mpesaNumber
                 ? ltrim(PhoneNumber::make($mpesaNumber, 'KE')->formatE164(), '+')
                 : $this->data['account']['phone'];
         }
-        Log::info("$destination - $mpesaNumber");
+        Log::info("{$this->data['destination']} - {$this->data['mpesa_number']}");
 
-        match ($paymentMethod) {
-            PaymentMethod::MPESA => $this->paymentRepo->mpesa($destination, $mpesaNumber),
-            PaymentMethod::VOUCHER => $this->paymentRepo->voucher($this->data['account'], $destination),
-            PaymentMethod::FLOAT => $this->paymentRepo->float(),
-            default => throw new Exception("Unsupported payment method!")
-        };
+        $payment = SidoohPayments::pay($this->transaction->id, PaymentMethod::from($this->data['method']), $this->data['amount'], $this->data);
+        dump_json($payment);
+
+        self::requestPurchase($this->transaction, $this->data);
     }
 
     /**

@@ -27,13 +27,7 @@ class SidoohAccounts
      */
     public static function find($id): array
     {
-        $acc = Cache::get($id, function() use ($id) {
-            $acc = self::fetch($id);
-
-            Cache::put($acc['id'], $acc);
-
-            return $acc;
-        });
+        $acc = Cache::remember($id, (60 * 60 * 24), fn() => self::fetch($id));
 
         if(!$acc) throw new Exception("Account doesn't exist!");
 

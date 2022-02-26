@@ -11,7 +11,6 @@ use App\Enums\VoucherType;
 use App\Models\Enterprise;
 use App\Models\SubscriptionType;
 use App\Models\Transaction;
-use App\Models\Voucher;
 use DrH\Mpesa\Exceptions\MpesaException;
 use Exception;
 use Illuminate\Support\Facades\Log;

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API\V1;
 
+use App\Enums\PaymentMethod;
 use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductRequest;
@@ -23,16 +24,19 @@ class UtilityController extends Controller
     {
         $data = $request->all();
 
-        $data['account'] = SidoohAccounts::find($data['account_id']);
-        $data['product'] = 'utility';
-        $data['type'] = TransactionType::PAYMENT;
-        $data['description'] = "{$data['provider']} Payment";
-        $data['destination'] = $data['account_number'];
+        $data += [
+            'account' =>SidoohAccounts::find($data['account_id']),
+            'product' => 'utility',
+            'type' => TransactionType::PAYMENT,
+            'description' => "{$data['provider']} Payment",
+            'destination' =>$data['account_number'],
+            "method" => $data['method'] ?? PaymentMethod::MPESA->value
+        ];
 
         if($data['initiator'] === 'ENTERPRISE') $data['method'] = 'FLOAT';
 
         $transaction = TransactionRepository::createTransaction($data);
 
-        return $this->successResponse(['transaction_id' => $transaction->id], 'Utility Request Successful');
+        return $this->successResponse(['transaction_id' => $transaction->id], 'Utility Request Successful!');
     }
 }

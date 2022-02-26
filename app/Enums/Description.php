@@ -9,4 +9,5 @@ enum Description: string
 
     case VOUCHER_DISBURSEMENT = 'Voucher Disbursement';
     case VOUCHER_PURCHASE = 'Voucher Purchase';
+    case SUBSCRIPTION_PURCHASE = "Subscription Purchase";
 }

@@ -12,7 +12,7 @@ class TandaApi
     public static function airtime(Transaction $transaction, array $array): void
     {
         try {
-            Utility::airtimePurchase($array['phone'], $array['amount'], $transaction->id);
+            Utility::airtimePurchase($array['destination'], $array['amount'], $transaction->id);
         } catch (TandaException $e) {
             Log::error("TandaError: " . $e->getMessage(), [$transaction]);
         }

@@ -39,8 +39,8 @@ class JWT extends Guard
 
             // verify it matches the signature provided in the token
 
-            if($tokenExpired) Log::info("Token has expired.");
-            if($base64UrlSignature !== $signatureProvided) Log::info("Token is invalid.");
+            if($tokenExpired) Log::debug("Token has expired.");
+            if($base64UrlSignature !== $signatureProvided) Log::debug("Token is invalid.");
 
             return !$tokenExpired && $base64UrlSignature === $signatureProvided;
         } catch (Exception $err) {

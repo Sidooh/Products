@@ -13,7 +13,7 @@ class KyandaApi
     public static function airtime(Transaction $transaction, array $array): bool|KyandaRequest|array
     {
         try {
-            return Utility::airtimePurchase($array['phone'], $array['amount'], $transaction->id);
+            return Utility::airtimePurchase($array['destination'], $array['amount'], $transaction->id);
         } catch (KyandaException $e) {
             Log::error("KyandaError: " . $e->getMessage());
         }

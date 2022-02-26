@@ -2,11 +2,9 @@
 
 namespace App\Providers;
 
-use App\Listeners\StkPaymentFailed;
-use App\Listeners\StkPaymentReceived;
-use DrH\Mpesa\Events\StkPushPaymentFailedEvent;
-use DrH\Mpesa\Events\StkPushPaymentSuccessEvent;
+use App\Jobs\TestJob;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\App;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -15,14 +13,7 @@ class EventServiceProvider extends ServiceProvider
      *
      * @var array<class-string, array<int, class-string>>
      */
-    protected $listen = [
-        StkPushPaymentSuccessEvent::class => [
-            StkPaymentReceived::class,
-        ],
-        StkPushPaymentFailedEvent::class => [
-            StkPaymentFailed::class,
-        ],
-    ];
+    protected $listen = [];
 
     /**
      * Register any events for your application.
@@ -31,7 +22,7 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        App::bindMethod(TestJob::class . "@handle", fn($job) => $job->handle());
     }
 
     /**
