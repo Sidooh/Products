@@ -16,7 +16,7 @@ class TransactionCreated
      *
      * @return void
      */
-    public function __construct(public Transaction $transaction, public array $data)
+    public function __construct(public Transaction|array $transaction, public array $data)
     {
         //
     }

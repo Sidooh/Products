@@ -8,7 +8,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class TestJob implements ShouldQueue
+class PaymentCreated implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -17,10 +17,7 @@ class TestJob implements ShouldQueue
      *
      * @return void
      */
-    public function __construct()
-    {
-        //
-    }
+    public function __construct(private array $data) { }
 
     /**
      * Execute the job.
@@ -29,6 +26,6 @@ class TestJob implements ShouldQueue
      */
     public function handle()
     {
-        echo "Event has been handled".PHP_EOL;
+        \Log::info("Payment Received: id - {$this->data['id']}");
     }
 }

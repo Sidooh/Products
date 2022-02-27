@@ -2,9 +2,8 @@
 
 namespace App\Providers;
 
-use App\Jobs\TestJob;
+use App\Jobs\PaymentCreated;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use Illuminate\Support\Facades\App;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -20,9 +19,8 @@ class EventServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
-    {
-        App::bindMethod(TestJob::class . "@handle", fn($job) => $job->handle());
+    public function boot() {
+        $this->app->bind(PaymentCreated::class."@handle", fn($job) => $job->handle());
     }
 
     /**

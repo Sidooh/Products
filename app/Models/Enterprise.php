@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Support\Carbon;
 
 /**
@@ -76,16 +75,6 @@ class Enterprise extends Model
     /**
      * ---------------------------------------- Relationships ----------------------------------------
      */
-    public function vouchers(): HasMany
-    {
-        return $this->hasMany(Voucher::class);
-    }
-
-    public function floatAccount(): MorphOne
-    {
-        return $this->morphOne(FloatAccount::class, 'accountable');
-    }
-
     public function enterpriseAccounts(): HasMany
     {
         return $this->hasMany(EnterpriseAccount::class);

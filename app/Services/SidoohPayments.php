@@ -14,9 +14,9 @@ class SidoohPayments
     /**
      * @throws RequestException
      */
-    public static function pay(int $transactionId, PaymentMethod $method, $amount, array $data = [])
+    public static function pay(int $transactionId, PaymentMethod $method, $amount, array $data = []): PromiseInterface|Response
     {
-        Log::alert('****************************    SIDOOH PAYMENTS: Product Payment     ****************************');
+        Log::alert('****************************    SIDOOH-SRV PAYMENTS: Product Payment     ****************************');
 
         $url = config('services.sidooh.services.payments.url');
 
@@ -25,7 +25,7 @@ class SidoohPayments
             "method"         => $method,
             "amount"         => $amount,
             "data"           => $data,
-        ])->throw()->json();
+        ])->throw();
     }
 
     /**
@@ -33,7 +33,7 @@ class SidoohPayments
      */
     public static function voucherDeposit(int $accountId, $amount): PromiseInterface|Response
     {
-        Log::alert('****************************    SIDOOH PAYMENTS: Voucher Deposit     ****************************');
+        Log::alert('****************************    SIDOOH-SRV PAYMENTS: Voucher Deposit     ****************************');
 
         $url = config('services.sidooh.services.payments.url') . '/voucher/deposit';
 
@@ -48,7 +48,7 @@ class SidoohPayments
      */
     public static function voucherDisbursement(int $enterpriseId, $data): PromiseInterface|Response
     {
-        Log::alert('****************************    SIDOOH PAYMENTS: Voucher Disbursement     ****************************');
+        Log::alert('****************************    SIDOOH-SRV PAYMENTS: Voucher Disbursement     ****************************');
 
         $url = config('services.sidooh.services.payments.url') . '/voucher/disburse';
 

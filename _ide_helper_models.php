@@ -198,72 +198,6 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * App\Models\FloatAccount
- *
- * @property int                             $id
- * @property string                          $balance
- * @property string                          $accountable_type
- * @property int                             $accountable_id
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @property-read Model|Eloquent             $accountable
- * @method static FloatAccountFactory factory(...$parameters)
- * @method static Builder|FloatAccount newModelQuery()
- * @method static Builder|FloatAccount newQuery()
- * @method static Builder|FloatAccount query()
- * @method static Builder|FloatAccount whereAccountableId($value)
- * @method static Builder|FloatAccount whereAccountableType($value)
- * @method static Builder|FloatAccount whereBalance($value)
- * @method static Builder|FloatAccount whereCreatedAt($value)
- * @method static Builder|FloatAccount whereId($value)
- * @method static Builder|FloatAccount whereUpdatedAt($value)
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\FloatAccountTransaction[] $floatAccountTransaction
- * @property-read int|null $float_account_transaction_count
- */
-	class IdeHelperFloatAccount {}
-}
-
-namespace App\Models{
-/**
- * App\Models\FloatAccountTransaction
- *
- * @property int         $id
- * @property string      $type
- * @property string      $amount
- * @property string      $description
- * @property int         $float_account_id
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @method static FloatAccountTransactionFactory factory(...$parameters)
- * @method static Builder|FloatAccountTransaction newModelQuery()
- * @method static Builder|FloatAccountTransaction newQuery()
- * @method static Builder|FloatAccountTransaction query()
- * @method static Builder|FloatAccountTransaction whereAmount($value)
- * @method static Builder|FloatAccountTransaction whereCreatedAt($value)
- * @method static Builder|FloatAccountTransaction whereDescription($value)
- * @method static Builder|FloatAccountTransaction whereFloatAccountId($value)
- * @method static Builder|FloatAccountTransaction whereId($value)
- * @method static Builder|FloatAccountTransaction whereType($value)
- * @method static Builder|FloatAccountTransaction whereUpdatedAt($value)
- * @property-read \App\Models\FloatAccount $floatAccount
- */
-	class IdeHelperFloatAccountTransaction {}
-}
-
-namespace App\Models{
-/**
- * App\Models\FloatTransaction
- *
- * @method static FloatTransactionFactory factory(...$parameters)
- * @method static Builder|FloatTransaction newModelQuery()
- * @method static Builder|FloatTransaction newQuery()
- * @method static Builder|FloatTransaction query()
- */
-	class IdeHelperFloatTransaction {}
-}
-
-namespace App\Models{
-/**
  * App\Models\Merchant
  *
  * @property int $id
@@ -288,41 +222,6 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Merchant whereUpdatedAt($value)
  */
 	class IdeHelperMerchant {}
-}
-
-namespace App\Models{
-/**
- * App\Models\Payment
- *
- * @property int                             $id
- * @property string                          $payable_type
- * @property int                             $payable_id
- * @property string                          $amount
- * @property string                          $status
- * @property string                          $type
- * @property string                          $subtype
- * @property string                          $provider_type
- * @property int                             $provider_id
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @property-read Model|Eloquent             $payable
- * @method static PaymentFactory factory(...$parameters)
- * @method static Builder|Payment newModelQuery()
- * @method static Builder|Payment newQuery()
- * @method static Builder|Payment query()
- * @method static Builder|Payment whereAmount($value)
- * @method static Builder|Payment whereCreatedAt($value)
- * @method static Builder|Payment whereId($value)
- * @method static Builder|Payment wherePayableId($value)
- * @method static Builder|Payment wherePayableType($value)
- * @method static Builder|Payment whereProviderId($value)
- * @method static Builder|Payment whereProviderType($value)
- * @method static Builder|Payment whereStatus($value)
- * @method static Builder|Payment whereSubtype($value)
- * @method static Builder|Payment whereType($value)
- * @method static Builder|Payment whereUpdatedAt($value)
- */
-	class IdeHelperPayment {}
 }
 
 namespace App\Models{
@@ -427,7 +326,6 @@ namespace App\Models{
  * @property-read \App\Models\AirtimeRequest|null $airtime
  * @property-read \App\Models\AirtimeRequest|null $airtimeRequest
  * @property-read \Nabcellent\Kyanda\Models\KyandaRequest|null $kyandaTransaction
- * @property-read \App\Models\Payment|null $payment
  * @method static \Database\Factories\TransactionFactory factory(...$parameters)
  * @method static \Illuminate\Database\Eloquent\Builder|Transaction newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Transaction newQuery()
@@ -444,61 +342,5 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereUpdatedAt($value)
  */
 	class IdeHelperTransaction {}
-}
-
-namespace App\Models{
-/**
- * App\Models\Voucher
- *
- * @property int                                  $id
- * @property string                               $type
- * @property string                               $balance
- * @property int                                  $account_id
- * @property int|null                             $enterprise_id
- * @property Carbon|null      $created_at
- * @property Carbon|null      $updated_at
- * @property-read Enterprise|null                 $enterprise
- * @property-read Collection|VoucherTransaction[] $voucherTransaction
- * @property-read int|null                        $voucher_transaction_count
- * @method static VoucherFactory factory(...$parameters)
- * @method static Builder|Voucher newModelQuery()
- * @method static Builder|Voucher newQuery()
- * @method static Builder|Voucher query()
- * @method static Builder|Voucher whereAccountId($value)
- * @method static Builder|Voucher whereBalance($value)
- * @method static Builder|Voucher whereCreatedAt($value)
- * @method static Builder|Voucher whereEnterpriseId($value)
- * @method static Builder|Voucher whereId($value)
- * @method static Builder|Voucher whereType($value)
- * @method static Builder|Voucher whereUpdatedAt($value)
- */
-	class IdeHelperVoucher {}
-}
-
-namespace App\Models{
-/**
- * App\Models\VoucherTransaction
- *
- * @property int                             $id
- * @property string                          $type
- * @property string                          $amount
- * @property string                          $description
- * @property int                             $voucher_id
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @property-read Voucher                    $voucher
- * @method static VoucherTransactionFactory factory(...$parameters)
- * @method static Builder|VoucherTransaction newModelQuery()
- * @method static Builder|VoucherTransaction newQuery()
- * @method static Builder|VoucherTransaction query()
- * @method static Builder|VoucherTransaction whereAmount($value)
- * @method static Builder|VoucherTransaction whereCreatedAt($value)
- * @method static Builder|VoucherTransaction whereDescription($value)
- * @method static Builder|VoucherTransaction whereId($value)
- * @method static Builder|VoucherTransaction whereType($value)
- * @method static Builder|VoucherTransaction whereUpdatedAt($value)
- * @method static Builder|VoucherTransaction whereVoucherId($value)
- */
-	class IdeHelperVoucherTransaction {}
 }
 

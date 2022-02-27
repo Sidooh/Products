@@ -4,7 +4,7 @@
 
 /**
  * A helper file for Laravel, to provide autocomplete information to your IDE
- * Generated for Laravel 9.0.0.
+ * Generated for Laravel 9.2.0.
  *
  * This file should not be included in your code, only analyzed by your IDE!
  *
@@ -7113,7 +7113,7 @@
      * @method static \Illuminate\Http\Client\PendingRequest contentType(string $contentType)
      * @method static \Illuminate\Http\Client\PendingRequest dd()
      * @method static \Illuminate\Http\Client\PendingRequest dump()
-     * @method static \Illuminate\Http\Client\PendingRequest retry(int $times, int $sleep = 0, ?callable $when = null)
+     * @method static \Illuminate\Http\Client\PendingRequest retry(int $times, int $sleep = 0, ?callable $when = null, bool $throw = true)
      * @method static \Illuminate\Http\Client\PendingRequest sink(string|resource $to)
      * @method static \Illuminate\Http\Client\PendingRequest stub(callable $callback)
      * @method static \Illuminate\Http\Client\PendingRequest timeout(int $seconds)
@@ -9022,7 +9022,7 @@
                         return $instance->pushRaw($payload, $queue, $options);
         }
                     /**
-         * Push a new job onto the queue after a delay.
+         * Push a new job onto the queue after (n) seconds.
          *
          * @param \DateTimeInterface|\DateInterval|int $delay
          * @param string $job
@@ -9051,7 +9051,7 @@
                         return $instance->pushOn($queue, $job, $data);
         }
                     /**
-         * Push a new job onto the queue after a delay.
+         * Push a new job onto a specific queue after (n) seconds.
          *
          * @param string $queue
          * @param \DateTimeInterface|\DateInterval|int $delay
@@ -9126,6 +9126,236 @@
                         return $instance->setConnectionName($name);
         }
                     /**
+         * 
+         *
+         * @param $delay
+         * @param $payload
+         * @param null $queue
+         * @param int $attempts
+         * @return mixed 
+         * @throws AMQPProtocolChannelException
+         * @static 
+         */ 
+        public static function laterRaw($delay, $payload, $queue = null, $attempts = 0)
+        {
+                        /** @var \VladimirYuldashev\LaravelQueueRabbitMQ\Queue\RabbitMQQueue $instance */
+                        return $instance->laterRaw($delay, $payload, $queue, $attempts);
+        }
+                    /**
+         * 
+         *
+         * @param string $payload
+         * @param null $queue
+         * @param array $options
+         * @return mixed 
+         * @throws AMQPProtocolChannelException
+         * @static 
+         */ 
+        public static function bulkRaw($payload, $queue = null, $options = [])
+        {
+                        /** @var \VladimirYuldashev\LaravelQueueRabbitMQ\Queue\RabbitMQQueue $instance */
+                        return $instance->bulkRaw($payload, $queue, $options);
+        }
+                    /**
+         * 
+         *
+         * @return \VladimirYuldashev\LaravelQueueRabbitMQ\Queue\AbstractConnection 
+         * @static 
+         */ 
+        public static function getConnection()
+        {
+                        /** @var \VladimirYuldashev\LaravelQueueRabbitMQ\Queue\RabbitMQQueue $instance */
+                        return $instance->getConnection();
+        }
+                    /**
+         * 
+         *
+         * @return \VladimirYuldashev\LaravelQueueRabbitMQ\Queue\AMQPChannel 
+         * @static 
+         */ 
+        public static function getChannel()
+        {
+                        /** @var \VladimirYuldashev\LaravelQueueRabbitMQ\Queue\RabbitMQQueue $instance */
+                        return $instance->getChannel();
+        }
+                    /**
+         * Job class to use.
+         *
+         * @return string 
+         * @throws Throwable
+         * @static 
+         */ 
+        public static function getJobClass()
+        {
+                        /** @var \VladimirYuldashev\LaravelQueueRabbitMQ\Queue\RabbitMQQueue $instance */
+                        return $instance->getJobClass();
+        }
+                    /**
+         * Gets a queue/destination, by default the queue option set on the connection.
+         *
+         * @param null $queue
+         * @return string 
+         * @static 
+         */ 
+        public static function getQueue($queue = null)
+        {
+                        /** @var \VladimirYuldashev\LaravelQueueRabbitMQ\Queue\RabbitMQQueue $instance */
+                        return $instance->getQueue($queue);
+        }
+                    /**
+         * Checks if the given exchange already present/defined in RabbitMQ.
+         * 
+         * Returns false when when the exchange is missing.
+         *
+         * @param string $exchange
+         * @return bool 
+         * @throws AMQPProtocolChannelException
+         * @static 
+         */ 
+        public static function isExchangeExists($exchange)
+        {
+                        /** @var \VladimirYuldashev\LaravelQueueRabbitMQ\Queue\RabbitMQQueue $instance */
+                        return $instance->isExchangeExists($exchange);
+        }
+                    /**
+         * Declare a exchange in rabbitMQ, when not already declared.
+         *
+         * @param string $name
+         * @param string $type
+         * @param bool $durable
+         * @param bool $autoDelete
+         * @param array $arguments
+         * @return void 
+         * @static 
+         */ 
+        public static function declareExchange($name, $type = 'direct', $durable = true, $autoDelete = false, $arguments = [])
+        {
+                        /** @var \VladimirYuldashev\LaravelQueueRabbitMQ\Queue\RabbitMQQueue $instance */
+                        $instance->declareExchange($name, $type, $durable, $autoDelete, $arguments);
+        }
+                    /**
+         * Delete a exchange from rabbitMQ, only when present in RabbitMQ.
+         *
+         * @param string $name
+         * @param bool $unused
+         * @return void 
+         * @throws AMQPProtocolChannelException
+         * @static 
+         */ 
+        public static function deleteExchange($name, $unused = false)
+        {
+                        /** @var \VladimirYuldashev\LaravelQueueRabbitMQ\Queue\RabbitMQQueue $instance */
+                        $instance->deleteExchange($name, $unused);
+        }
+                    /**
+         * Checks if the given queue already present/defined in RabbitMQ.
+         * 
+         * Returns false when when the queue is missing.
+         *
+         * @param string|null $name
+         * @return bool 
+         * @throws AMQPProtocolChannelException
+         * @static 
+         */ 
+        public static function isQueueExists($name = null)
+        {
+                        /** @var \VladimirYuldashev\LaravelQueueRabbitMQ\Queue\RabbitMQQueue $instance */
+                        return $instance->isQueueExists($name);
+        }
+                    /**
+         * Declare a queue in rabbitMQ, when not already declared.
+         *
+         * @param string $name
+         * @param bool $durable
+         * @param bool $autoDelete
+         * @param array $arguments
+         * @return void 
+         * @static 
+         */ 
+        public static function declareQueue($name, $durable = true, $autoDelete = false, $arguments = [])
+        {
+                        /** @var \VladimirYuldashev\LaravelQueueRabbitMQ\Queue\RabbitMQQueue $instance */
+                        $instance->declareQueue($name, $durable, $autoDelete, $arguments);
+        }
+                    /**
+         * Delete a queue from rabbitMQ, only when present in RabbitMQ.
+         *
+         * @param string $name
+         * @param bool $if_unused
+         * @param bool $if_empty
+         * @return void 
+         * @throws AMQPProtocolChannelException
+         * @static 
+         */ 
+        public static function deleteQueue($name, $if_unused = false, $if_empty = false)
+        {
+                        /** @var \VladimirYuldashev\LaravelQueueRabbitMQ\Queue\RabbitMQQueue $instance */
+                        $instance->deleteQueue($name, $if_unused, $if_empty);
+        }
+                    /**
+         * Bind a queue to an exchange.
+         *
+         * @param string $queue
+         * @param string $exchange
+         * @param string $routingKey
+         * @return void 
+         * @static 
+         */ 
+        public static function bindQueue($queue, $exchange, $routingKey = '')
+        {
+                        /** @var \VladimirYuldashev\LaravelQueueRabbitMQ\Queue\RabbitMQQueue $instance */
+                        $instance->bindQueue($queue, $exchange, $routingKey);
+        }
+                    /**
+         * Purge the queue of messages.
+         *
+         * @param string|null $queue
+         * @return void 
+         * @static 
+         */ 
+        public static function purge($queue = null)
+        {
+                        /** @var \VladimirYuldashev\LaravelQueueRabbitMQ\Queue\RabbitMQQueue $instance */
+                        $instance->purge($queue);
+        }
+                    /**
+         * Acknowledge the message.
+         *
+         * @param \VladimirYuldashev\LaravelQueueRabbitMQ\Queue\RabbitMQJob $job
+         * @return void 
+         * @static 
+         */ 
+        public static function ack($job)
+        {
+                        /** @var \VladimirYuldashev\LaravelQueueRabbitMQ\Queue\RabbitMQQueue $instance */
+                        $instance->ack($job);
+        }
+                    /**
+         * Reject the message.
+         *
+         * @param \VladimirYuldashev\LaravelQueueRabbitMQ\Queue\RabbitMQJob $job
+         * @param bool $requeue
+         * @return void 
+         * @static 
+         */ 
+        public static function reject($job, $requeue = false)
+        {
+                        /** @var \VladimirYuldashev\LaravelQueueRabbitMQ\Queue\RabbitMQQueue $instance */
+                        $instance->reject($job, $requeue);
+        }
+                    /**
+         * Close the connection to RabbitMQ.
+         *
+         * @return void 
+         * @throws Exception
+         * @static 
+         */ 
+        public static function close()
+        {
+                        /** @var \VladimirYuldashev\LaravelQueueRabbitMQ\Queue\RabbitMQQueue $instance */
+                        $instance->close();
+        }
+                    /**
          * Get the backoff for an object-based queue handler.
          *
          * @param mixed $job
@@ -9134,7 +9364,7 @@
          */ 
         public static function getJobBackoff($job)
         {            //Method inherited from \Illuminate\Queue\Queue         
-                        /** @var \Illuminate\Queue\SyncQueue $instance */
+                        /** @var \VladimirYuldashev\LaravelQueueRabbitMQ\Queue\RabbitMQQueue $instance */
                         return $instance->getJobBackoff($job);
         }
                     /**
@@ -9146,7 +9376,7 @@
          */ 
         public static function getJobExpiration($job)
         {            //Method inherited from \Illuminate\Queue\Queue         
-                        /** @var \Illuminate\Queue\SyncQueue $instance */
+                        /** @var \VladimirYuldashev\LaravelQueueRabbitMQ\Queue\RabbitMQQueue $instance */
                         return $instance->getJobExpiration($job);
         }
                     /**
@@ -9158,7 +9388,7 @@
          */ 
         public static function createPayloadUsing($callback)
         {            //Method inherited from \Illuminate\Queue\Queue         
-                        \Illuminate\Queue\SyncQueue::createPayloadUsing($callback);
+                        \VladimirYuldashev\LaravelQueueRabbitMQ\Queue\RabbitMQQueue::createPayloadUsing($callback);
         }
                     /**
          * Get the container instance being used by the connection.
@@ -9168,7 +9398,7 @@
          */ 
         public static function getContainer()
         {            //Method inherited from \Illuminate\Queue\Queue         
-                        /** @var \Illuminate\Queue\SyncQueue $instance */
+                        /** @var \VladimirYuldashev\LaravelQueueRabbitMQ\Queue\RabbitMQQueue $instance */
                         return $instance->getContainer();
         }
                     /**
@@ -9180,7 +9410,7 @@
          */ 
         public static function setContainer($container)
         {            //Method inherited from \Illuminate\Queue\Queue         
-                        /** @var \Illuminate\Queue\SyncQueue $instance */
+                        /** @var \VladimirYuldashev\LaravelQueueRabbitMQ\Queue\RabbitMQQueue $instance */
                         $instance->setContainer($container);
         }
          
@@ -12148,7 +12378,7 @@
          * Create a route group with shared attributes.
          *
          * @param array $attributes
-         * @param \Closure|string $routes
+         * @param \Closure|array|string $routes
          * @return void 
          * @static 
          */ 
@@ -12300,7 +12530,7 @@
          *
          * @param \Illuminate\Routing\Route $route
          * @return \Illuminate\Routing\Route 
-         * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
+         * @throws \Illuminate\Database\Eloquent\ModelNotFoundException<\Illuminate\Database\Eloquent\Model>
          * @throws \Illuminate\Routing\Exceptions\BackedEnumCaseNotFoundException
          * @static 
          */ 
@@ -12314,7 +12544,7 @@
          *
          * @param \Illuminate\Routing\Route $route
          * @return void 
-         * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
+         * @throws \Illuminate\Database\Eloquent\ModelNotFoundException<\Illuminate\Database\Eloquent\Model>
          * @throws \Illuminate\Routing\Exceptions\BackedEnumCaseNotFoundException
          * @static 
          */ 
@@ -16141,370 +16371,7 @@
      
 }
 
-        namespace DrH\Mpesa\Facades { 
-            /**
-     * 
-     *
-     * @see \DrH\Mpesa\Library\BulkSender
-     */ 
-        class B2C {
-                    /**
-         * Set number to receive the funds
-         *
-         * @param string $number
-         * @return \DrH\Mpesa\Library\BulkSender 
-         * @static 
-         */ 
-        public static function to($number)
-        {
-                        /** @var \DrH\Mpesa\Library\BulkSender $instance */
-                        return $instance->to($number);
-        }
-                    /**
-         * 
-         *
-         * @static 
-         */ 
-        public static function withRemarks($remarks)
-        {
-                        /** @var \DrH\Mpesa\Library\BulkSender $instance */
-                        return $instance->withRemarks($remarks);
-        }
-                    /**
-         * The amount to transact
-         *
-         * @param int $amount
-         * @return \DrH\Mpesa\Library\BulkSender 
-         * @static 
-         */ 
-        public static function amount($amount)
-        {
-                        /** @var \DrH\Mpesa\Library\BulkSender $instance */
-                        return $instance->amount($amount);
-        }
-                    /**
-         * 
-         *
-         * @param string|null $number
-         * @param int|null $amount
-         * @param string|null $remarks
-         * @return \DrH\Mpesa\Entities\MpesaBulkPaymentRequest 
-         * @throws ExternalServiceException
-         * @throws GuzzleException|ClientException
-         * @static 
-         */ 
-        public static function send($number = null, $amount = null, $remarks = null)
-        {
-                        /** @var \DrH\Mpesa\Library\BulkSender $instance */
-                        return $instance->send($number, $amount, $remarks);
-        }
-                    /**
-         * 
-         *
-         * @return array 
-         * @throws ExternalServiceException
-         * @throws Exception
-         * @throws GuzzleException
-         * @static 
-         */ 
-        public static function balance()
-        {
-                        /** @var \DrH\Mpesa\Library\BulkSender $instance */
-                        return $instance->balance();
-        }
-                    /**
-         * 
-         *
-         * @param string $number
-         * @param bool $strip_plus
-         * @return string 
-         * @static 
-         */ 
-        public static function formatPhoneNumber($number, $strip_plus = true)
-        {            //Method inherited from \DrH\Mpesa\Library\ApiCore         
-                        /** @var \DrH\Mpesa\Library\BulkSender $instance */
-                        return $instance->formatPhoneNumber($number, $strip_plus);
-        }
-                    /**
-         * 
-         *
-         * @param array $body
-         * @param string $endpoint
-         * @param \DrH\Mpesa\Library\MpesaAccount|null $account
-         * @return array 
-         * @throws GuzzleException
-         * @throws ExternalServiceException|\DrH\Mpesa\Exceptions\ClientException
-         * @static 
-         */ 
-        public static function sendRequest($body, $endpoint, $account = null)
-        {            //Method inherited from \DrH\Mpesa\Library\ApiCore         
-                        /** @var \DrH\Mpesa\Library\BulkSender $instance */
-                        return $instance->sendRequest($body, $endpoint, $account);
-        }
-         
-    }
-            /**
-     * 
-     *
-     * @see \DrH\Mpesa\Library\IdCheck
-     */ 
-        class Identity {
-                    /**
-         * 
-         *
-         * @param string $number
-         * @param string|null $callback
-         * @return mixed 
-         * @throws Exception
-         * @throws GuzzleException
-         * @static 
-         */ 
-        public static function validate($number, $callback = null)
-        {
-                        /** @var \DrH\Mpesa\Library\IdCheck $instance */
-                        return $instance->validate($number, $callback);
-        }
-                    /**
-         * 
-         *
-         * @param string $number
-         * @param bool $strip_plus
-         * @return string 
-         * @static 
-         */ 
-        public static function formatPhoneNumber($number, $strip_plus = true)
-        {            //Method inherited from \DrH\Mpesa\Library\ApiCore         
-                        /** @var \DrH\Mpesa\Library\IdCheck $instance */
-                        return $instance->formatPhoneNumber($number, $strip_plus);
-        }
-                    /**
-         * 
-         *
-         * @param array $body
-         * @param string $endpoint
-         * @param \DrH\Mpesa\Library\MpesaAccount|null $account
-         * @return array 
-         * @throws GuzzleException
-         * @throws ExternalServiceException|\DrH\Mpesa\Exceptions\ClientException
-         * @static 
-         */ 
-        public static function sendRequest($body, $endpoint, $account = null)
-        {            //Method inherited from \DrH\Mpesa\Library\ApiCore         
-                        /** @var \DrH\Mpesa\Library\IdCheck $instance */
-                        return $instance->sendRequest($body, $endpoint, $account);
-        }
-         
-    }
-            /**
-     * 
-     *
-     */ 
-        class Registrar {
-                    /**
-         * 
-         *
-         * @static 
-         */ 
-        public static function shortcode($shortCode)
-        {
-                        /** @var \DrH\Mpesa\Library\C2bRegister $instance */
-                        return $instance->shortcode($shortCode);
-        }
-                    /**
-         * 
-         *
-         * @static 
-         */ 
-        public static function onValidation($validationURL)
-        {
-                        /** @var \DrH\Mpesa\Library\C2bRegister $instance */
-                        return $instance->onValidation($validationURL);
-        }
-                    /**
-         * 
-         *
-         * @static 
-         */ 
-        public static function onConfirmation($confirmationURL)
-        {
-                        /** @var \DrH\Mpesa\Library\C2bRegister $instance */
-                        return $instance->onConfirmation($confirmationURL);
-        }
-                    /**
-         * 
-         *
-         * @param string $onTimeout
-         * @return \DrH\Mpesa\Library\C2bRegister 
-         * @throws Exception
-         * @throws ClientException
-         * @static 
-         */ 
-        public static function onTimeout($onTimeout = 'Cancelled')
-        {
-                        /** @var \DrH\Mpesa\Library\C2bRegister $instance */
-                        return $instance->onTimeout($onTimeout);
-        }
-                    /**
-         * 
-         *
-         * @param string|null $shortCode
-         * @param string|null $confirmationURL
-         * @param string|null $validationURL
-         * @param string|null $onTimeout
-         * @return array 
-         * @throws ClientException
-         * @throws Exception
-         * @throws GuzzleException
-         * @static 
-         */ 
-        public static function submit($shortCode = null, $confirmationURL = null, $validationURL = null, $onTimeout = null)
-        {
-                        /** @var \DrH\Mpesa\Library\C2bRegister $instance */
-                        return $instance->submit($shortCode, $confirmationURL, $validationURL, $onTimeout);
-        }
-                    /**
-         * 
-         *
-         * @param string $number
-         * @param bool $strip_plus
-         * @return string 
-         * @static 
-         */ 
-        public static function formatPhoneNumber($number, $strip_plus = true)
-        {            //Method inherited from \DrH\Mpesa\Library\ApiCore         
-                        /** @var \DrH\Mpesa\Library\C2bRegister $instance */
-                        return $instance->formatPhoneNumber($number, $strip_plus);
-        }
-                    /**
-         * 
-         *
-         * @param array $body
-         * @param string $endpoint
-         * @param \DrH\Mpesa\Library\MpesaAccount|null $account
-         * @return array 
-         * @throws GuzzleException
-         * @throws ExternalServiceException|\DrH\Mpesa\Exceptions\ClientException
-         * @static 
-         */ 
-        public static function sendRequest($body, $endpoint, $account = null)
-        {            //Method inherited from \DrH\Mpesa\Library\ApiCore         
-                        /** @var \DrH\Mpesa\Library\C2bRegister $instance */
-                        return $instance->sendRequest($body, $endpoint, $account);
-        }
-         
-    }
-            /**
-     * 
-     *
-     * @see \DrH\Mpesa\Library\StkPush
-     */ 
-        class STK {
-                    /**
-         * 
-         *
-         * @param int $amount
-         * @return \DrH\Mpesa\Library\StkPush 
-         * @throws Exception
-         * @static 
-         */ 
-        public static function amount($amount)
-        {
-                        /** @var \DrH\Mpesa\Library\StkPush $instance */
-                        return $instance->amount($amount);
-        }
-                    /**
-         * 
-         *
-         * @param string $number
-         * @return \DrH\Mpesa\Library\StkPush 
-         * @static 
-         */ 
-        public static function from($number)
-        {
-                        /** @var \DrH\Mpesa\Library\StkPush $instance */
-                        return $instance->from($number);
-        }
-                    /**
-         * Set the mpesa reference
-         *
-         * @param string $reference
-         * @param string $description
-         * @return \DrH\Mpesa\Library\StkPush 
-         * @throws ClientException
-         * @static 
-         */ 
-        public static function usingReference($reference, $description)
-        {
-                        /** @var \DrH\Mpesa\Library\StkPush $instance */
-                        return $instance->usingReference($reference, $description);
-        }
-                    /**
-         * Send a payment request
-         *
-         * @param int|null $amount
-         * @param string|null $number
-         * @param string|null $reference
-         * @param string|null $description
-         * @param \DrH\Mpesa\Library\MpesaAccount|null $account
-         * @return \DrH\Mpesa\Entities\MpesaStkRequest 
-         * @throws ExternalServiceException|ClientException
-         * @throws GuzzleException
-         * @static 
-         */ 
-        public static function push($amount = null, $number = null, $reference = null, $description = null, $account = null)
-        {
-                        /** @var \DrH\Mpesa\Library\StkPush $instance */
-                        return $instance->push($amount, $number, $reference, $description, $account);
-        }
-                    /**
-         * Query a transaction.
-         *
-         * @param int $stkRequestId
-         * @return array 
-         * @throws GuzzleException
-         * @throws ExternalServiceException|ClientException
-         * @static 
-         */ 
-        public static function status($stkRequestId)
-        {
-                        /** @var \DrH\Mpesa\Library\StkPush $instance */
-                        return $instance->status($stkRequestId);
-        }
-                    /**
-         * 
-         *
-         * @param string $number
-         * @param bool $strip_plus
-         * @return string 
-         * @static 
-         */ 
-        public static function formatPhoneNumber($number, $strip_plus = true)
-        {            //Method inherited from \DrH\Mpesa\Library\ApiCore         
-                        /** @var \DrH\Mpesa\Library\StkPush $instance */
-                        return $instance->formatPhoneNumber($number, $strip_plus);
-        }
-                    /**
-         * 
-         *
-         * @param array $body
-         * @param string $endpoint
-         * @param \DrH\Mpesa\Library\MpesaAccount|null $account
-         * @return array 
-         * @throws GuzzleException
-         * @throws ExternalServiceException|\DrH\Mpesa\Exceptions\ClientException
-         * @static 
-         */ 
-        public static function sendRequest($body, $endpoint, $account = null)
-        {            //Method inherited from \DrH\Mpesa\Library\ApiCore         
-                        /** @var \DrH\Mpesa\Library\StkPush $instance */
-                        return $instance->sendRequest($body, $endpoint, $account);
-        }
-         
-    }
-     
-}
-
-    namespace Spatie\LaravelIgnition\Facades { 
+        namespace Spatie\LaravelIgnition\Facades { 
             /**
      * 
      *
@@ -17213,7 +17080,7 @@ namespace  {
              * @param mixed $id
              * @param array $columns
              * @return \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Collection|static|static[] 
-             * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
+             * @throws \Illuminate\Database\Eloquent\ModelNotFoundException<\Illuminate\Database\Eloquent\Model>
              * @static 
              */ 
             public static function findOrFail($id, $columns = [])
@@ -17283,7 +17150,7 @@ namespace  {
              *
              * @param array $columns
              * @return \Illuminate\Database\Eloquent\Model|static 
-             * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
+             * @throws \Illuminate\Database\Eloquent\ModelNotFoundException<\Illuminate\Database\Eloquent\Model>
              * @static 
              */ 
             public static function firstOrFail($columns = [])
@@ -17311,7 +17178,7 @@ namespace  {
              *
              * @param array|string $columns
              * @return \Illuminate\Database\Eloquent\Model 
-             * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
+             * @throws \Illuminate\Database\Eloquent\ModelNotFoundException<\Illuminate\Database\Eloquent\Model>
              * @throws \Illuminate\Database\MultipleRecordsFoundException
              * @static 
              */ 
@@ -17339,7 +17206,7 @@ namespace  {
              *
              * @param string|\Illuminate\Database\Query\Expression $column
              * @return mixed 
-             * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
+             * @throws \Illuminate\Database\Eloquent\ModelNotFoundException<\Illuminate\Database\Eloquent\Model>
              * @static 
              */ 
             public static function valueOrFail($column)
@@ -17907,10 +17774,11 @@ namespace  {
                 /**
              * Apply the callback if the given "value" is (or resolves to) truthy.
              *
+             * @template TWhenParameter
              * @template TWhenReturnType
-             * @param bool $value
-             * @param \Illuminate\Database\Eloquent\(callable($this):  TWhenReturnType)|null  $callback
-             * @param \Illuminate\Database\Eloquent\(callable($this):  TWhenReturnType)|null  $default
+             * @param \Illuminate\Database\Eloquent\(callable($this):  TWhenParameter)|TWhenParameter  $value
+             * @param \Illuminate\Database\Eloquent\(callable($this,  TWhenParameter): TWhenReturnType)|null  $callback
+             * @param \Illuminate\Database\Eloquent\(callable($this,  TWhenParameter): TWhenReturnType)|null  $default
              * @return $this|\Illuminate\Database\Eloquent\TWhenReturnType 
              * @static 
              */ 
@@ -17923,10 +17791,11 @@ namespace  {
                 /**
              * Apply the callback if the given "value" is (or resolves to) falsy.
              *
+             * @template TUnlessParameter
              * @template TUnlessReturnType
-             * @param bool $value
-             * @param \Illuminate\Database\Eloquent\(callable($this):  TUnlessReturnType)  $callback
-             * @param \Illuminate\Database\Eloquent\(callable($this):  TUnlessReturnType)|null  $default
+             * @param \Illuminate\Database\Eloquent\(callable($this):  TUnlessParameter)|TUnlessParameter  $value
+             * @param \Illuminate\Database\Eloquent\(callable($this,  TUnlessParameter): TUnlessReturnType)|null  $callback
+             * @param \Illuminate\Database\Eloquent\(callable($this,  TUnlessParameter): TUnlessReturnType)|null  $default
              * @return $this|\Illuminate\Database\Eloquent\TUnlessReturnType 
              * @static 
              */ 
@@ -20534,10 +20403,6 @@ namespace  {
             class URL extends \Illuminate\Support\Facades\URL {}
             class Validator extends \Illuminate\Support\Facades\Validator {}
             class View extends \Illuminate\Support\Facades\View {}
-            class B2C extends \DrH\Mpesa\Facades\B2C {}
-            class Identity extends \DrH\Mpesa\Facades\Identity {}
-            class Registrar extends \DrH\Mpesa\Facades\Registrar {}
-            class STK extends \DrH\Mpesa\Facades\STK {}
             class Flare extends \Spatie\LaravelIgnition\Facades\Flare {}
      
 }

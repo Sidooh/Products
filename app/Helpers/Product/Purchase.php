@@ -9,14 +9,11 @@ use App\Events\SubscriptionPurchaseFailedEvent;
 use App\Helpers\AfricasTalking\AfricasTalkingApi;
 use App\Helpers\Kyanda\KyandaApi;
 use App\Helpers\Tanda\TandaApi;
-use App\Models\Merchant;
 use App\Models\Subscription;
 use App\Models\SubscriptionType;
 use App\Models\Transaction;
 use App\Models\Voucher;
-use App\Services\SidoohPayments;
 use Exception;
-use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 use function config;
@@ -39,8 +36,7 @@ class Purchase
     }
 
     /**
-     * @param Transaction $transaction
-     * @param array       $airtimeData
+     * @param array $airtimeData
      * @throws Throwable
      */
     public function airtime(array $airtimeData): void
@@ -86,31 +82,5 @@ class Purchase
 
             return $sub;
         });
-    }
-
-    /**
-     * @throws RequestException
-     */
-    public function voucher()
-    {
-        $voucher = SidoohPayments::voucherDeposit($this->transaction->account_id, $this->transaction->amount);
-
-        $this->transaction->status = Status::COMPLETED;
-        $this->transaction->save();
-
-//        VoucherPurchaseEvent::dispatch($voucher, $this->transaction);
-    }
-
-    public function merchant($merchantCode)
-    {
-        $merchant = Merchant::whereCode($merchantCode)->firstOrFail();
-        $merchant->balance += (double)$this->transaction->amount;
-        $payment = $this->transaction->payment;
-        $payment->status = Status::COMPLETED;
-
-        $merchant->save();
-        $payment->save();
-
-        MerchantPurchaseEvent::dispatch($merchant, $this->transaction);
     }
 }

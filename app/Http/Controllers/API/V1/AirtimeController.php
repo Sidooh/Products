@@ -9,9 +9,9 @@ use App\Enums\TransactionType;
 use App\Events\AirtimePurchaseFailedEvent;
 use App\Events\AirtimePurchaseSuccessEvent;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\AirtimeRequest;
 use App\Http\Requests\ProductRequest;
 use App\Models\AirtimeResponse;
-use App\Models\Transaction;
 use App\Repositories\TransactionRepository;
 use App\Services\SidoohAccounts;
 use Exception;
@@ -39,20 +39,38 @@ class AirtimeController extends Controller
         ];
 
         if($data['initiator'] === 'ENTERPRISE') $data['method'] = 'FLOAT';
+        $data['destination'] = $data['target_number'] ?? $data['account']['phone'];
 
-        $transaction = $this->init($data, $data['account']);
+        $transaction = TransactionRepository::createTransaction($data);
 
         return $this->successResponse(['transaction_id' => $transaction->id], 'Airtime Request Successful');
     }
 
-    /**
-     * @throws Exception
-     */
-    public function init($data, $account): Transaction
+    public function bulk(AirtimeRequest $request)
     {
-        $data['destination'] = $data['target_number'] ?? $account['phone'];
+        $data = $request->all();
 
-        return TransactionRepository::createTransaction($data);
+        $transactions = fn($recipient) => [
+            ...SidoohAccounts::find($recipient['account_id']),
+            "initiator" => $data["initiator"],
+            "amount" => $recipient["amount"],
+            "type"         => TransactionType::PAYMENT,
+            "description"  => Description::AIRTIME_PURCHASE,
+            "account_id" => $recipient['account_id']
+        ];
+
+        $data += [
+            "transactions"     => array_map($transactions, $data["recipients_data"]),
+            "total_amount" => collect($data["recipients_data"])->sum("amount"),
+            "product"      => "airtime",
+            "method"       => $data['method'] ?? PaymentMethod::MPESA->value,
+        ];
+
+        unset($data["recipients_data"]);
+
+        $transaction = TransactionRepository::createTransaction($data, true);
+
+        return $this->successResponse(['transaction_id' => $transaction->id], 'Airtime Request Successful');
     }
 
     /**

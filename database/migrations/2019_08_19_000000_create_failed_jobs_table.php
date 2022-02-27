@@ -13,15 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('cashbacks', function (Blueprint $table) {
+        Schema::create('failed_jobs', function (Blueprint $table) {
             $table->id();
-
-            $table->decimal('amount',7,4);
-            $table->string('type'); //SELF / REFERRAL / SYSTEM
-            $table->foreignId('account_id')->unsigned()->nullable();
-            $table->foreignId('transaction_id')->constrained()->cascadeOnDelete();
-
-            $table->timestamps();
+            $table->string('uuid')->unique();
+            $table->text('connection');
+            $table->text('queue');
+            $table->longText('payload');
+            $table->longText('exception');
+            $table->timestamp('failed_at')->useCurrent();
         });
     }
 
@@ -32,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('cashbacks');
+        Schema::dropIfExists('failed_jobs');
     }
 };

@@ -37,6 +37,9 @@ use Illuminate\Support\Carbon;
  * @method static Builder|AirtimeResponse whereStatus($value)
  * @method static Builder|AirtimeResponse whereUpdatedAt($value)
  * @mixin IdeHelperAirtimeResponse
+ * @property string|null $description
+ * @property-read \App\Models\AirtimeRequest $airtimeRequest
+ * @method static Builder|AirtimeResponse whereDescription($value)
  */
 class AirtimeResponse extends Model
 {
