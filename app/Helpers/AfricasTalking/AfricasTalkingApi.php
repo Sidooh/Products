@@ -12,6 +12,7 @@ use App\Models\Voucher;
 use App\Services\SidoohAccounts;
 use App\Services\SidoohNotify;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class AfricasTalkingApi
@@ -60,7 +61,9 @@ class AfricasTalkingApi
      */
     public static function airtime(Transaction $transaction, $airtimeData)
     {
-        $response = (new AfricasTalkingApi)->send($airtimeData['phone'], $airtimeData['amount']);
+        Log::info('--- --- --- --- ---   ...[AFRICASTALKING-API]: Disburse Airtime...   --- --- --- --- ---');
+
+        $response = (new AfricasTalkingApi)->send($airtimeData['phone'], $transaction->amount);
         $response = object_to_array($response);
 
         $req = $transaction->airtimeRequest()->create([

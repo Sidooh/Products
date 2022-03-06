@@ -27,40 +27,56 @@ class AirtimeController extends Controller
      * @return JsonResponse
      * @throws Exception
      */
-    public function __invoke(ProductRequest $request): JsonResponse
+    public function __invoke(AirtimeRequest $request): JsonResponse
     {
         $data = $request->all();
+
+        $account = SidoohAccounts::find($data['account_id']);
+
+        $transactions = [
+            [
+                "destination" => $data['target_number'] ?? $account["phone"],
+                "initiator"   => $data["initiator"],
+                "amount"      => $data["amount"],
+                "type"        => TransactionType::PAYMENT,
+                "description" => Description::AIRTIME_PURCHASE,
+                "account_id"  => $data['account_id'],
+                "account"     => $account,
+            ]
+        ];
         $data += [
-            "account"     => SidoohAccounts::find($data['account_id']),
-            "product"     => "airtime",
-            "method"      => $data['method'] ?? PaymentMethod::MPESA->value,
-            "type"        => TransactionType::PAYMENT,
-            "description" => Description::AIRTIME_PURCHASE
+            "payment_account" => $account,
+            "product"         => "airtime",
+            "method"          => $data['method'] ?? PaymentMethod::MPESA->value,
         ];
 
-        if($data['initiator'] === 'ENTERPRISE') $data['method'] = 'FLOAT';
-        $data['destination'] = $data['target_number'] ?? $data['account']['phone'];
+        if($request->input("initiator") === 'ENTERPRISE') $data['method'] = 'FLOAT';
 
-        $transaction = TransactionRepository::createTransaction($data);
+        $transactionIds = TransactionRepository::createTransaction($transactions, $data);
 
-        return $this->successResponse(['transaction_id' => $transaction->id], 'Airtime Request Successful');
+        return $this->successResponse(['transactions' => $transactionIds], 'Airtime Request Successful!');
     }
 
-    public function bulk(AirtimeRequest $request)
+    public function bulk(AirtimeRequest $request): JsonResponse
     {
         $data = $request->all();
 
-        $transactions = fn($recipient) => [
-            ...SidoohAccounts::find($recipient['account_id']),
-            "initiator" => $data["initiator"],
-            "amount" => $recipient["amount"],
-            "type"         => TransactionType::PAYMENT,
-            "description"  => Description::AIRTIME_PURCHASE,
-            "account_id" => $recipient['account_id']
-        ];
+        $transactions = function($recipient) use ($data) {
+            $account = SidoohAccounts::find($recipient['account_id']);
+
+            return [
+                "account"     => $account,
+                "destination" => $account["phone"],
+                "initiator"   => $data["initiator"],
+                "amount"      => $recipient["amount"],
+                "type"        => TransactionType::PAYMENT,
+                "description" => Description::AIRTIME_PURCHASE,
+                "account_id"  => $recipient['account_id']
+            ];
+        };
 
         $data += [
-            "transactions"     => array_map($transactions, $data["recipients_data"]),
+            "transactions" => array_map($transactions, $data["recipients_data"]),
             "total_amount" => collect($data["recipients_data"])->sum("amount"),
             "product"      => "airtime",
             "method"       => $data['method'] ?? PaymentMethod::MPESA->value,

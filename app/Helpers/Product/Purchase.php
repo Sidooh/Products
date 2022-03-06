@@ -15,6 +15,8 @@ use App\Models\Transaction;
 use App\Models\Voucher;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Propaganistas\LaravelPhone\PhoneNumber;
 use Throwable;
 use function config;
 
@@ -28,6 +30,8 @@ class Purchase
      */
     public function utility(array $billDetails, string $provider): void
     {
+        $billDetails['account_number'] = $this->transaction->destination;
+
         match (config('services.sidooh.utilities_provider')) {
             'KYANDA' => KyandaApi::bill($this->transaction, $billDetails, $provider),
             'TANDA' => TandaApi::bill($this->transaction, $billDetails, $provider),
@@ -43,6 +47,8 @@ class Purchase
     {
         if($this->transaction->airtime) exit;
 
+        $airtimeData['phone'] = PhoneNumber::make($this->transaction->destination, 'KE')->formatE164();
+
         match (config('services.sidooh.utilities_provider')) {
             'AT' => AfricasTalkingApi::airtime($this->transaction, $airtimeData),
             'KYANDA' => KyandaApi::airtime($this->transaction, $airtimeData),
@@ -54,8 +60,10 @@ class Purchase
     /**
      * @throws Throwable
      */
-    public function subscription(int $amount): ?Subscription
+    public function subscription(): ?Subscription
     {
+        Log::info('--- --- --- --- ---   ...[SIDOOH-API]: Subscribe...   --- --- --- --- ---');
+
         if(Subscription::active($this->transaction->account_id)) {
             SubscriptionPurchaseFailedEvent::dispatch($this->transaction);
 
@@ -65,14 +73,14 @@ class Purchase
         $type = SubscriptionType::wherePrice($this->transaction->amount)->firstOrFail();
 
         $subscription = [
-            'amount'     => $amount,
+            'amount'     => $this->transaction->amount,
             'active'     => true,
             'account_id' => $this->transaction->account_id,
             'start_date' => now(),
             'end_date'   => now()->addMonths($type->duration),
         ];
 
-        return DB::transaction(function() use ($type, $subscription, $amount) {
+        return DB::transaction(function() use ($type, $subscription) {
             $sub = $type->subscription()->create($subscription);
 
             $this->transaction->status = Status::COMPLETED;

@@ -2,7 +2,6 @@
 
 namespace App\Repositories;
 
-use App\Enums\PaymentMethod;
 use App\Events\TransactionCreated;
 use App\Helpers\Product\Purchase;
 use App\Models\Transaction;
@@ -10,8 +9,7 @@ use App\Services\SidoohPayments;
 use App\Traits\ApiResponse;
 use Exception;
 use Illuminate\Http\Client\RequestException;
-use Illuminate\Support\Facades\Log;
-use Propaganistas\LaravelPhone\PhoneNumber;
+use Illuminate\Support\Arr;
 use Throwable;
 
 class TransactionRepository
@@ -20,61 +18,26 @@ class TransactionRepository
 
     public array $data;
 
-    /**
-     * @param Transaction $transaction
-     */
-    public function __construct(public Transaction $transaction) {}
-
-    /**
-     * @throws Exception|Throwable
-     */
-    public function init($data)
+    public static function createTransaction(array $transactions, $data): array
     {
-        $this->data = $data;
+        $transactions = array_map(fn($transaction) => [
+            ...Transaction::create($transaction)->toArray(),
+            "account" => $transaction['account']
+        ], $transactions);
 
-        $targetNumber = $data['target_number'] ?? null;
-        $mpesaNumber = $data['mpesa_number'] ?? null;
+        TransactionCreated::dispatch($transactions, $data);
 
-        $this->initiatePayment($targetNumber, $mpesaNumber);
-    }
-
-    public static function createTransaction(array $transactionData, $bulk = false): Transaction|array
-    {
-        if($bulk) {
-            $transactions = array_map(fn($transaction) => [
-                ...Transaction::create($transaction)->toArray(),
-            ], $transactionData["transactions"]);
-
-            TransactionCreated::dispatch($transactions, $transactionData, $bulk);
-
-            return $transactions;
-        }
-
-        $transaction = Transaction::create($transactionData);
-
-        TransactionCreated::dispatch($transaction, $transactionData);
-
-        return $transaction;
+        return Arr::pluck($transactions, 'id');
     }
 
     /**
      * @throws RequestException
      */
-    public function initiatePayment($destination = null, $mpesaNumber = null)
+    public static function initiatePayment(array $transactions, array $data)
     {
-        Log::info("====== Product Purchase (Method: {$this->data['method']}) ======");
-        if(in_array($this->data['product'], ["airtime", "voucher"])) {
-            $this->data['destination'] = $destination
-                ? ltrim(PhoneNumber::make($destination, 'KE')->formatE164(), '+')
-                : $this->data['account']['phone'];
-            $this->data['mpesa_number'] = $mpesaNumber
-                ? ltrim(PhoneNumber::make($mpesaNumber, 'KE')->formatE164(), '+')
-                : $this->data['account']['phone'];
+        $totalAmount = collect($transactions)->sum("amount");
 
-            Log::info("{$this->data['destination']} - {$this->data['mpesa_number']}");
-        }
-
-        SidoohPayments::pay($this->transaction->id, PaymentMethod::from($this->data['method']), $this->data['amount'], $this->data);
+        SidoohPayments::pay($transactions, $data['method'], $totalAmount, $data);
     }
 
     /**
@@ -87,16 +50,8 @@ class TransactionRepository
         match ($purchaseData['product']) {
             'airtime' => $purchase->airtime($purchaseData),
             'utility' => $purchase->utility($purchaseData, $purchaseData['provider']),
-            'subscription' => $purchase->subscription($purchaseData['amount']),
+            'subscription' => $purchase->subscription(),
             default => throw new Exception("Invalid product purchase!"),
         };
-    }
-
-    /**
-     * @return Transaction
-     */
-    public function getTransaction(): Transaction
-    {
-        return $this->transaction;
     }
 }

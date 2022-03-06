@@ -24,19 +24,31 @@ class UtilityController extends Controller
     {
         $data = $request->all();
 
-        $data += [
-            'account' =>SidoohAccounts::find($data['account_id']),
-            'product' => 'utility',
-            'type' => TransactionType::PAYMENT,
-            'description' => "{$data['provider']} Payment",
-            'destination' =>$data['account_number'],
-            "method" => $data['method'] ?? PaymentMethod::MPESA->value
+        $account = SidoohAccounts::find($data['account_id']);
+
+        $transactions = [
+            [
+                "destination" => $data['account_number'],
+                "initiator"   => $data["initiator"],
+                "amount"      => $data["amount"],
+                "type"        => TransactionType::PAYMENT,
+                "description" => "{$data['provider']} Payment",
+                "account_id"  => $data['account_id'],
+                "account"     => $account,
+            ]
         ];
 
-        if($data['initiator'] === 'ENTERPRISE') $data['method'] = 'FLOAT';
+        $data = [
+            "payment_account" => $account,
+            "product"         => "utility",
+            "provider"        => $data['provider'],
+            "method"          => $data['method'] ?? PaymentMethod::MPESA->value,
+        ];
 
-        $transaction = TransactionRepository::createTransaction($data);
+        if($request->input("initiator") === 'ENTERPRISE') $data['method'] = 'FLOAT';
 
-        return $this->successResponse(['transaction_id' => $transaction->id], 'Utility Request Successful!');
+        $transactionIds = TransactionRepository::createTransaction($transactions, $data);
+
+        return $this->successResponse(['transactions' => $transactionIds], 'Utility Request Successful!');
     }
 }

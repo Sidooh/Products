@@ -5,18 +5,22 @@ namespace App\Services;
 use App\Models\ProductAccount;
 use Exception;
 use GuzzleHttp\Promise\PromiseInterface;
-use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use function env;
 
 class SidoohAccounts
 {
-    public static function authenticate(): PromiseInterface|Response
+    private static string $url;
+
+    static function authenticate(): PromiseInterface|Response
     {
-        return Http::retry(2)->post(env('SIDOOH_ACCOUNT_URL') . "/users/signin", [
+        Log::info('--- --- --- --- ---   ...[SRV - ACCOUNTS]: Authenticate...   --- --- --- --- ---');
+
+        $url = config('services.sidooh.services.accounts.url');
+
+        return Http::retry(2)->post("$url/users/signin", [
             'email'    => 'aa@a.a',
             'password' => "12345678"
         ]);
@@ -25,9 +29,13 @@ class SidoohAccounts
     /**
      * @throws Exception
      */
-    public static function find($id): array
+    static function find($id): array
     {
-        $acc = Cache::remember($id, (60 * 60 * 24), fn() => self::fetch($id));
+        Log::info('--- --- --- --- ---   ...[SRV - ACCOUNTS]: Find Account...   --- --- --- --- ---', ['id' => $id]);
+
+        self::$url = config('services.sidooh.services.accounts.url') . "/accounts/$id";
+
+        $acc = Cache::remember($id, (60 * 60 * 24), fn() => self::fetch());
 
         if(!$acc) throw new Exception("Account doesn't exist!");
 
@@ -37,7 +45,7 @@ class SidoohAccounts
     /**
      * @throws Exception
      */
-    public static function findPhone($accountId)
+    static function findPhone($accountId)
     {
         return self::find($accountId)['phone'];
     }
@@ -45,29 +53,33 @@ class SidoohAccounts
     /**
      * @throws Exception
      */
-    public static function fetch($id): ?array
+    static function findByPhone($phone)
     {
-        Log::info('----------------- Sidooh find Account', ['id' => $id]);
+        Log::info('--- --- --- --- ---   ...[SRV - ACCOUNTS]: Find Account...   --- --- --- --- ---', ['phone' => $phone]);
 
-        $url = env('SIDOOH_ACCOUNT_URL') . "/accounts/$id";
+        self::$url = config('services.sidooh.services.accounts.url') . "/accounts/phone/$phone";
 
-        $response = self::sendRequest($url, 'GET');
+        $acc = Cache::remember($phone, (60 * 60 * 24), function() {
+            $acc = self::fetch();
 
-        Log::info('----------------- Sidooh find Account by phone sent', ['id' => $response->json()['id']]);
+            Cache::put($acc['id'], $acc);
 
-        return $response->json();
+            return $acc;
+        });
+
+        if(!$acc) throw new Exception("Account doesn't exist!");
+
+        return $acc;
     }
 
     /**
-     * @throws RequestException
+     * @throws Exception
      */
-    public static function sendRequest($url, $method = 'POST', $data = []): Response
+    static function fetch($method = "GET", $data = []): ?array
     {
         $authCookie = self::authenticate()->cookies();
-        $token = $authCookie->getCookieByName('jwt')->getValue();
 
-//        dd(JWT::verify($token));
-        return Http::send($method, $url, ['cookies' => $authCookie, 'json' => $data])->throw();
+        return Http::send($method, self::$url, ['cookies' => $authCookie, 'json' => $data])->throw()->json();
     }
 
     static function syncUtilityAccounts(int $accountId, string $provider, string $number, $product = 'airtime')

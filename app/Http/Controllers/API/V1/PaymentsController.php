@@ -7,7 +7,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Transaction;
 use App\Repositories\TransactionRepository;
 use App\Traits\ApiResponse;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rules\Enum;
 use Throwable;
 
@@ -37,14 +39,22 @@ class PaymentsController extends Controller
     public function requestPurchase(Request $request)
     {
         $request->validate([
-            'transaction_id' => ['required', 'exists:transactions,id'],
-            'data'           => ['required', 'array']
+            'transaction_ids' => ['required'],
+            'data'            => ['required', 'array']
         ]);
 
-        $transaction = Transaction::findOrFail($request->input('transaction_id'));
+        Transaction::whereIn("id", $request->input('transaction_ids'))->update(['status' => Status::COMPLETED]);
+        $transactions = Transaction::findMany($request->input('transaction_ids'));
 
-        TransactionRepository::requestPurchase($transaction, $request->input('data'));
+        try {
+            foreach($transactions as $transaction) {
+                TransactionRepository::requestPurchase($transaction, $request->input('data'));
+            }
+            return $this->successResponse(message: 'Purchase Successful!');
+        } catch (Exception $err) {
+            Log::error($err);
 
-        return $this->successResponse(message: 'Purchase Successful!');
+            return $this->errorResponse(message: 'Purchase Failed!');
+        }
     }
 }

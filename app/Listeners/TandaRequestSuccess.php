@@ -2,11 +2,11 @@
 
 namespace App\Listeners;
 
+use App\Enums\Status;
 use App\Events\TransactionSuccessEvent;
 use App\Helpers\SidoohNotify\EventTypes;
 use App\Models\Transaction;
 use App\Repositories\NotificationRepository;
-use App\Repositories\TransactionRepository;
 use DrH\Tanda\Events\TandaRequestSuccessEvent;
 use DrH\Tanda\Library\Providers;
 use Illuminate\Support\Facades\Log;
@@ -37,7 +37,7 @@ class TandaRequestSuccess
 
 //                Update Transaction
         $transaction = Transaction::find($event->request->relation_id);
-        (new TransactionRepository())->updateStatus($transaction, 'completed');
+        Transaction::updateStatus($transaction, Status::COMPLETED);
 
         $method = $transaction->payment->subtype;
 

@@ -2,7 +2,6 @@
 
 namespace App\Events;
 
-use App\Models\Transaction;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
@@ -16,7 +15,7 @@ class TransactionCreated
      *
      * @return void
      */
-    public function __construct(public Transaction|array $transaction, public array $data)
+    public function __construct(public array $transaction, public array $data)
     {
         //
     }

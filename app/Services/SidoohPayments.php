@@ -2,29 +2,27 @@
 
 namespace App\Services;
 
-use App\Enums\PaymentMethod;
 use GuzzleHttp\Promise\PromiseInterface;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\Client\Response;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
-class SidoohPayments
+class SidoohPayments extends SidoohService
 {
     /**
      * @throws RequestException
      */
-    public static function pay(int $transactionId, PaymentMethod $method, $amount, array $data = []): PromiseInterface|Response
+    public static function pay(array $transactions, string $method, $totalAmount, array $data = []): PromiseInterface|Response
     {
-        Log::alert('****************************    SIDOOH-SRV PAYMENTS: Product Payment     ****************************');
+        Log::info('--- --- --- --- ---   ...[SRV - PAYMENTS]: Make Payment...   --- --- --- --- ---');
 
         $url = config('services.sidooh.services.payments.url');
 
-        return Http::retry(3)->post($url, [
-            "transaction_id" => $transactionId,
-            "method"         => $method,
-            "amount"         => $amount,
-            "data"           => $data,
+        return self::send()->post($url, [
+            "transactions" => $transactions,
+            "method"       => $method,
+            "total_amount" => $totalAmount,
+            "data"         => $data,
         ])->throw();
     }
 
@@ -33,11 +31,11 @@ class SidoohPayments
      */
     public static function voucherDeposit(int $accountId, $amount): PromiseInterface|Response
     {
-        Log::alert('****************************    SIDOOH-SRV PAYMENTS: Voucher Deposit     ****************************');
+        Log::info('--- --- --- --- ---   ...[SRV - PAYMENTS]: Voucher Deposit...   --- --- --- --- ---');
 
         $url = config('services.sidooh.services.payments.url') . '/voucher/deposit';
 
-        return Http::retry(3)->post($url, [
+        return self::send()->post($url, [
             "account_id" => $accountId,
             "amount"     => $amount
         ])->throw();
@@ -48,11 +46,11 @@ class SidoohPayments
      */
     public static function voucherDisbursement(int $enterpriseId, $data): PromiseInterface|Response
     {
-        Log::alert('****************************    SIDOOH-SRV PAYMENTS: Voucher Disbursement     ****************************');
+        Log::info('--- --- --- --- ---   ...[SRV - PAYMENTS]: Voucher Disbursement...   --- --- --- --- ---');
 
         $url = config('services.sidooh.services.payments.url') . '/voucher/disburse';
 
-        return Http::retry(3)->post($url, [
+        return self::send()->post($url, [
             "enterprise_id" => $enterpriseId,
             "data"          => $data
         ])->throw();

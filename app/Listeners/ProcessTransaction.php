@@ -5,6 +5,7 @@ namespace App\Listeners;
 use App\Events\TransactionCreated;
 use App\Repositories\TransactionRepository;
 use Exception;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class ProcessTransaction
@@ -14,10 +15,7 @@ class ProcessTransaction
      *
      * @return void
      */
-    public function __construct()
-    {
-        //
-    }
+    public function __construct() { }
 
     /**
      * Handle the event.
@@ -28,7 +26,8 @@ class ProcessTransaction
      */
     public function handle(TransactionCreated $event)
     {
-        $repo = new TransactionRepository($event->transaction);
-        $repo->init($event->data);
+        Log::info('--- --- --- --- ---   ...[EVENT]: Process Transaction...   --- --- --- --- ---');
+
+        TransactionRepository::initiatePayment($event->transaction, $event->data);
     }
 }
