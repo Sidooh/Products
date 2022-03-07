@@ -82,7 +82,7 @@ class SidoohAccounts
             "data"   => $data
         ]);
 
-        $authCookie = Cache::remember("accounts_auth_cookie", (60 * 60 * 24), fn() => self::authenticate()->cookies());
+        $authCookie = Cache::remember("accounts_auth_cookie", (60), fn() => self::authenticate()->cookies());
 
         return Http::send($method, self::$url, ['cookies' => $authCookie, 'json' => $data])->throw()->json();
     }
