@@ -41,7 +41,7 @@ class KyandaEventRepository extends EventRepository
             $transaction->status = Status::REIMBURSED;
             $transaction->save();
 
-            $voucher = SidoohPayments::voucherDeposit($transaction->account_id, $amount);
+            $voucher = SidoohPayments::creditVoucher($transaction->account_id, $amount);
 
             $message = match ($kyandaRequest->provider) {
                 Providers::SAFARICOM, Providers::AIRTEL, Providers::FAIBA, Providers::EQUITEL, Providers::TELKOM => "Sorry! We could not complete your KES{$amount} airtime purchase on {$date}. We have added KES{$amount} to your voucher. New Voucher balance is {$voucher['balance']}.",

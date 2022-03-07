@@ -24,7 +24,7 @@ class KyandaRequest
      */
     public function handle(KyandaRequestEvent $event)
     {
-        Log::info('----------------- Kyanda Request: ' . $event->request->status . ' - ' . $event->request->message);
+        Log::info("--- --- --- --- ---   ...[EVENT]: Kyanda Request ({$event->request->status} - {$event->request->message})...   --- --- --- --- ---");
 
         KyandaEventRepository::request($event->request);
     }

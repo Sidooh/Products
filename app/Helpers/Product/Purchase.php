@@ -74,7 +74,7 @@ class Purchase
 
         $subscription = [
             'amount'     => $this->transaction->amount,
-            'active'     => true,
+            'status'     => Status::ACTIVE,
             'account_id' => $this->transaction->account_id,
             'start_date' => now(),
             'end_date'   => now()->addMonths($type->duration),

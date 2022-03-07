@@ -8,4 +8,6 @@ enum Status: string
     case FAILED = 'FAILED';
     case PENDING = "PENDING";
     case REIMBURSED = "REIMBURSED";
+
+    case ACTIVE = "ACTIVE";
 }

@@ -43,6 +43,7 @@ class Subscription extends Model
 
     protected $fillable = [
         'amount',
+        'status',
         'start_date',
         'end_date',
         'account_id'

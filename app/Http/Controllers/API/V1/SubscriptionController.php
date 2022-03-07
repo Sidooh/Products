@@ -20,16 +20,28 @@ class SubscriptionController extends Controller
     public function __invoke(ProductRequest $request): JsonResponse
     {
         $data = $request->all();
-        $data += [
-            "account"     => SidoohAccounts::find($data['account_id']),
-            "product"     => "subscription",
-            "method"      => $data['method'] ?? PaymentMethod::MPESA->value,
-            "type"        => TransactionType::PAYMENT,
-            "description" => Description::SUBSCRIPTION_PURCHASE
+
+        $account = SidoohAccounts::find($data['account_id']);
+
+        $transactions = [
+            [
+                "initiator"   => $data["initiator"],
+                "amount"      => $data["amount"],
+                "type"        => TransactionType::PAYMENT,
+                "description" => Description::SUBSCRIPTION_PURCHASE,
+                "account_id"  => $data['account_id'],
+                "account"     => SidoohAccounts::find($data['account_id']),
+            ]
         ];
 
-        $transaction = TransactionRepository::createTransaction($data);
+        $data = [
+            "payment_account" => $account,
+            "product"         => "subscription",
+            "method"          => $data['method'] ?? PaymentMethod::MPESA->value,
+        ];
 
-        return $this->successResponse(['transaction_id' => $transaction->id], 'Subscription Request Successful');
+        $transactionIds = TransactionRepository::createTransaction($transactions, $data);
+
+        return $this->successResponse(['transactions' => $transactionIds], 'Subscription Request Successful!');
     }
 }

@@ -66,7 +66,7 @@ return [
             ],
             'accounts' => [
                 'enabled' => true,
-                'url'     => 'https://sidooh-accounts.herokuapp.com/api/accounts'
+                'url'     => 'http://localhost:3000/api'
             ],
             'payments' => [
                 'enabled' => true,

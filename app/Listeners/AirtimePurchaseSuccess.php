@@ -3,9 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\AirtimePurchaseSuccessEvent;
-use App\Helpers\SidoohNotify\EventTypes;
-use App\Repositories\NotificationRepository;
-use App\Repositories\TransactionRepository;
+use App\Repositories\EventRepositories\ATEventRepository;
 use Illuminate\Support\Facades\Log;
 
 class AirtimePurchaseSuccess
@@ -16,10 +14,7 @@ class AirtimePurchaseSuccess
      *
      * @return void
      */
-    public function __construct()
-    {
-        //
-    }
+    public function __construct() { }
 
     /**
      * Handle the event.
@@ -29,19 +24,8 @@ class AirtimePurchaseSuccess
      */
     public function handle(AirtimePurchaseSuccessEvent $event)
     {
-        //
-//        TODO:: Send sms notification
+        Log::info('--- --- --- --- ---   ...[EVENT]: Airtime Purchase Success...   --- --- --- --- ---');
 
-        Log::info('----------------- Airtime Purchase Success ');
-
-
-
-    }
-
-//    TODO: Refactor this to external file?
-    public function getPointsEarned(float $discount)
-    {
-        $e = $discount * config('services.sidooh.earnings.users_percentage');
-        return 'KES' . $e / 6;
+        ATEventRepository::airtimePurchaseSuccess($event->airtime_response);
     }
 }

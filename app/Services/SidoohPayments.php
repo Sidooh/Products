@@ -29,11 +29,11 @@ class SidoohPayments extends SidoohService
     /**
      * @throws RequestException
      */
-    public static function voucherDeposit(int $accountId, $amount): PromiseInterface|Response
+    public static function creditVoucher(int $accountId, $amount): PromiseInterface|Response
     {
-        Log::info('--- --- --- --- ---   ...[SRV - PAYMENTS]: Voucher Deposit...   --- --- --- --- ---');
+        Log::info('--- --- --- --- ---   ...[SRV - PAYMENTS]: Credit Voucher...   --- --- --- --- ---');
 
-        $url = config('services.sidooh.services.payments.url') . '/voucher/deposit';
+        $url = config('services.sidooh.services.payments.url') . '/voucher/credit';
 
         return self::send()->post($url, [
             "account_id" => $accountId,

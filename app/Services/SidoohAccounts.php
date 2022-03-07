@@ -77,7 +77,12 @@ class SidoohAccounts
      */
     static function fetch($method = "GET", $data = []): ?array
     {
-        $authCookie = self::authenticate()->cookies();
+        Log::info('--- --- --- --- ---   ...[SRV - ACCOUNTS]: Fetch Account...   --- --- --- --- ---', [
+            'method' => $method,
+            "data"   => $data
+        ]);
+
+        $authCookie = Cache::remember("accounts_auth_cookie", (60 * 60 * 24), fn() => self::authenticate()->cookies());
 
         return Http::send($method, self::$url, ['cookies' => $authCookie, 'json' => $data])->throw()->json();
     }

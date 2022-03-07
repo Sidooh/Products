@@ -2,10 +2,7 @@
 
 namespace App\Listeners;
 
-use App\Helpers\SidoohNotify\EventTypes;
 use App\Repositories\EventRepositories\KyandaEventRepository;
-use App\Repositories\NotificationRepository;
-use App\Repositories\TransactionRepository;
 use Exception;
 use Illuminate\Support\Facades\Log;
 use Nabcellent\Kyanda\Events\KyandaTransactionSuccessEvent;
@@ -17,10 +14,7 @@ class KyandaTransactionSuccess
      *
      * @return void
      */
-    public function __construct()
-    {
-        //
-    }
+    public function __construct() { }
 
     /**
      * Handle the event.
@@ -31,9 +25,9 @@ class KyandaTransactionSuccess
      */
     public function handle(KyandaTransactionSuccessEvent $event)
     {
-        //
-        Log::info('----------------- Kyanda Transaction Success ');
-        Log::info($event->transaction->request->provider);
+        Log::info('--- --- --- --- ---   ...[EVENT]: Kyanda Transaction Success...   --- --- --- --- ---', [
+            "" => $event->transaction->request->provider
+        ]);
 
         KyandaEventRepository::transactionSuccess($event->transaction);
     }

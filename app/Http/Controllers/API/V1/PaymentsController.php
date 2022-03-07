@@ -8,6 +8,7 @@ use App\Models\Transaction;
 use App\Repositories\TransactionRepository;
 use App\Traits\ApiResponse;
 use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rules\Enum;
@@ -36,7 +37,7 @@ class PaymentsController extends Controller
     /**
      * @throws Throwable
      */
-    public function requestPurchase(Request $request)
+    public function requestPurchase(Request $request): JsonResponse
     {
         $request->validate([
             'transaction_ids' => ['required'],

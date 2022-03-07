@@ -3,9 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\AirtimePurchaseFailedEvent;
-use App\Helpers\SidoohNotify\EventTypes;
 use App\Repositories\EventRepositories\ATEventRepository;
-use App\Repositories\NotificationRepository;
 use Illuminate\Support\Facades\Log;
 
 class AirtimePurchaseFailed
@@ -25,8 +23,9 @@ class AirtimePurchaseFailed
      */
     public function handle(AirtimePurchaseFailedEvent $event)
     {
-        Log::info('----------------- Airtime Purchase Failed');
-        Log::info($event->airtime_response);
+        Log::info('--- --- --- --- ---   ...[EVENT]: Airtime Purchase Failed...   --- --- --- --- ---', [
+            "response" => $event->airtime_response
+        ]);
 
         ATEventRepository::airtimePurchaseFailed($event->airtime_response);
     }

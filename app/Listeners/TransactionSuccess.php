@@ -23,11 +23,8 @@ class TransactionSuccess
      */
     public function handle(TransactionSuccessEvent $event)
     {
-        Log::info('----------------- Transaction Success');
+        Log::info('--- --- --- --- ---   ...[EVENT]: Transaction Success...   --- --- --- --- ---');
 
-        $trans = $event->transaction;
-        $earnings = $event->totalEarned;
-
-        EarningRepository::calcEarnings($trans, $earnings);
+        EarningRepository::calcEarnings($event->transaction, $event->totalEarned);
     }
 }

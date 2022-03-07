@@ -61,32 +61,29 @@ class AirtimeController extends Controller
     {
         $data = $request->all();
 
-        $transactions = function($recipient) use ($data) {
+        $transactions = array_map(function($recipient) use ($data) {
             $account = SidoohAccounts::find($recipient['account_id']);
 
             return [
-                "account"     => $account,
                 "destination" => $account["phone"],
                 "initiator"   => $data["initiator"],
                 "amount"      => $recipient["amount"],
                 "type"        => TransactionType::PAYMENT,
                 "description" => Description::AIRTIME_PURCHASE,
-                "account_id"  => $recipient['account_id']
+                "account_id"  => $data['account_id'],
+                "account"     => $account,
             ];
-        };
+        }, $data['recipients_data']);
 
-        $data += [
-            "transactions" => array_map($transactions, $data["recipients_data"]),
-            "total_amount" => collect($data["recipients_data"])->sum("amount"),
-            "product"      => "airtime",
-            "method"       => $data['method'] ?? PaymentMethod::MPESA->value,
+        $data = [
+            "payment_account" => SidoohAccounts::find($data['account_id']),
+            "product"         => "airtime",
+            "method"          => $data['method'] ?? PaymentMethod::MPESA->value,
         ];
 
-        unset($data["recipients_data"]);
+        $transactionIds = TransactionRepository::createTransaction($transactions, $data);
 
-        $transaction = TransactionRepository::createTransaction($data, true);
-
-        return $this->successResponse(['transaction_id' => $transaction->id], 'Airtime Request Successful');
+        return $this->successResponse(['transactions' => $transactionIds], 'Bulk Airtime Request Successful!');
     }
 
     /**
