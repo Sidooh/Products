@@ -3,7 +3,6 @@
 use App\Http\Controllers\API\V1\AirtimeController;
 use App\Http\Controllers\API\V1\EnterpriseController;
 use App\Http\Controllers\API\V1\FloatController;
-use App\Http\Controllers\API\V1\MerchantController;
 use App\Http\Controllers\API\V1\PaymentsController;
 use App\Http\Controllers\API\V1\SubscriptionController;
 use App\Http\Controllers\API\V1\UtilityController;
