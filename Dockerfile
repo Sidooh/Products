@@ -5,7 +5,9 @@ RUN apt-get update -y && apt-get install -y \
     build-essential \
     libicu-dev \
     zlib1g-dev \
-    libmemcached-dev
+    libmemcached-dev \
+    zip \
+    unzip
 
 # Install docker dependencies
 RUN apt-get install -y libc-client-dev libkrb5-dev \
