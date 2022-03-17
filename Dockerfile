@@ -3,12 +3,16 @@ FROM php:8.1-apache
 # Install system libraries
 RUN apt-get update -y && apt-get install -y \
     build-essential \
-    libicu-dev
+    libicu-dev \
+    zlib1g-dev \
+    libmemcached-dev
 
 # Install docker dependencies
 RUN apt-get install -y libc-client-dev libkrb5-dev \
+    && pecl install memcached-3.1.5 \
     && docker-php-ext-install mysqli \
     && docker-php-ext-install intl \
+    && docker-php-ext-enable memcached \
     && docker-php-ext-install sockets
 
 # Clear cache

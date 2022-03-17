@@ -29,7 +29,7 @@ class SidoohPayments extends SidoohService
     /**
      * @throws RequestException
      */
-    public static function creditVoucher(int $accountId, $amount): PromiseInterface|Response
+    public static function creditVoucher(int $accountId, $amount, $notify = false): PromiseInterface|Response
     {
         Log::info('--- --- --- --- ---   ...[SRV - PAYMENTS]: Credit Voucher...   --- --- --- --- ---');
 
@@ -37,7 +37,8 @@ class SidoohPayments extends SidoohService
 
         return self::send()->post($url, [
             "account_id" => $accountId,
-            "amount"     => $amount
+            "amount"     => $amount,
+            "notify"     => $notify
         ])->throw();
     }
 

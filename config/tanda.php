@@ -42,7 +42,7 @@ return [
          * Note: This package has already routes for handling this callback.
          * You should leave this values as they are unless you know what you are doing.
          */
-        'callback' => env('APP_URL') . '/tanda/callbacks/notification',
+        'callback' => config('app.url') . '/tanda/callbacks/notification',
     ],
 
     /*

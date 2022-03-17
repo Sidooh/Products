@@ -11,13 +11,13 @@
         "php": "^8.1",
         "ext-intl": "*",
         "africastalking/africastalking": "^3.0",
-        "drh/laravel-tanda": "dev-master",
+        "drh/laravel-tanda": "dev-red.dev",
         "fruitcake/laravel-cors": "^2.0.5",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^9.0",
         "laravel/sanctum": "^2.14",
         "laravel/tinker": "^2.7",
-        "nabcellent/laravel-kyanda": "dev-master",
+        "nabcellent/laravel-kyanda": "dev-red.dev",
         "propaganistas/laravel-phone": "^4.3",
         "vladimir-yuldashev/laravel-queue-rabbitmq": "^12.0"
     },
@@ -59,16 +59,6 @@
             "@php artisan key:generate --ansi"
         ]
     },
-    "repositories": [
-        {
-            "type": "path",
-            "url": "../../Libraries/laravel-kyanda"
-        },
-        {
-            "type": "path",
-            "url": "../../Libraries/laravel-tanda"
-        }
-    ],
     "extra": {
         "laravel": {
             "dont-discover": []
