@@ -12,6 +12,7 @@ RUN apt-get update -y && apt-get install -y \
 # Install docker dependencies
 RUN apt-get install -y libc-client-dev libkrb5-dev \
     && pecl install memcached-3.1.5 \
+    && docker-php-ext-install pdo_mysql \
     && docker-php-ext-install mysqli \
     && docker-php-ext-install intl \
     && docker-php-ext-enable memcached \
