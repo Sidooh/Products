@@ -11,7 +11,7 @@ class EarningRepository
 {
     public static function calcEarnings(Transaction $transaction, float $earnings)
     {
-        Log::info("----------------- Calc Earnings ($earnings)");
+        Log::info("--- --- --- --- ---   ...[EARNING REPOSITORY]: Calc Earnings($earnings)...   --- --- --- --- ---");
 
         $acc = $transaction->account;
 
@@ -92,23 +92,23 @@ class EarningRepository
 
             $systemEarnings = [
                 [
-//                    'account_id' => $acc->id,
-'transaction_id' => $transaction->id,
-'earnings'       => $earnings - $groupEarnings,
-'type'           => 'SYSTEM',
-'created_at'     => $now,
-'updated_at'     => $now
+                    //  'account_id' => $acc->id,
+                    'transaction_id' => $transaction->id,
+                    'earnings'       => $earnings - $groupEarnings,
+                    'type'           => 'SYSTEM',
+                    'created_at'     => $now,
+                    'updated_at'     => $now
                 ]
             ];
 
             if($totalLeftOverEarnings > 0) {
                 $systemEarnings[] = [
-//                    'account_id' => $referral->id,
-'transaction_id' => $transaction->id,
-'earnings'       => $totalLeftOverEarnings,
-'type'           => 'SYSTEM',
-'created_at'     => $now,
-'updated_at'     => $now
+                    //  'account_id' => $referral->id,
+                    'transaction_id' => $transaction->id,
+                    'earnings'       => $totalLeftOverEarnings,
+                    'type'           => 'SYSTEM',
+                    'created_at'     => $now,
+                    'updated_at'     => $now
                 ];
             }
 

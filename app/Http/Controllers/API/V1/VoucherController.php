@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\API\V1;
 
 use App\Enums\Description;
+use App\Enums\PaymentMethod;
 use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\VoucherRequest;
 use App\Models\Enterprise;
 use App\Repositories\TransactionRepository;
-use App\Repositories\VoucherRepository;
 use App\Services\SidoohAccounts;
 use App\Services\SidoohPayments;
 use Exception;
@@ -30,15 +30,29 @@ class VoucherController extends Controller
     {
         $data = $request->all();
 
-        $data['account'] = SidoohAccounts::find($data['account_id']);
-        $data['product'] = 'voucher';
-        $data['method'] = 'MPESA';
-        $data['type'] = TransactionType::PAYMENT;
-        $data['description'] = Description::VOUCHER_PURCHASE;
+        $account = SidoohAccounts::find($data['account_id']);
 
-        $transaction = TransactionRepository::createTransaction($data);
+        $transactions = [
+            [
+                "destination" => $account["phone"],
+                "initiator"   => $data["initiator"],
+                "amount"      => $data["amount"],
+                "type"        => TransactionType::PAYMENT,
+                "description" => Description::VOUCHER_PURCHASE,
+                "account_id"  => $data['account_id'],
+                "account"     => $account,
+            ]
+        ];
 
-        return $this->successResponse(['transaction_id' => $transaction->id], 'Voucher Request Successful');
+        $data = [
+            "payment_account" => $account,
+            "product"         => "voucher",
+            "method"          => PaymentMethod::MPESA->value,
+        ];
+
+        $transactionIds = TransactionRepository::createTransaction($transactions, $data);
+
+        return $this->successResponse(['transactions' => $transactionIds], 'Voucher Request Successful!');
     }
 
     /**

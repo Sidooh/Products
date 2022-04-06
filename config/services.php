@@ -33,7 +33,7 @@ return [
     'at' => [
         'key'      => 'a828e15f1db322b77d7f57787ea3d390d06f3e5ab6e9254fe80044afaf4b0d82',
         'username' => 'sandbox',
-        'phone'    => NULL,
+        'phone'    => null,
         'env'      => 'development',
         'airtime'  => [
             'key'      => '89770c2faea7f33dce6ca5605a0cd7b9e810a999af8ea0c051a5e504d2380928',
@@ -58,19 +58,19 @@ return [
             ],
         ],
         'utilities_enabled'  => true,
-        'utilities_provider' => 'KYANDA',
+        'utilities_provider' => 'TANDA',
         'services'           => [
             'notify'   => [
                 'enabled' => true,
-                'url'     => 'https://hoodis-notify.herokuapp.com/api/notifications',
+                'url'     => env("SIDOOH_NOTIFY_API_URL"),
             ],
             'accounts' => [
                 'enabled' => true,
-                'url'     => 'http://localhost:3000/api'
+                'url'     => env("SIDOOH_ACCOUNTS_API_URL")
             ],
             'payments' => [
                 'enabled' => true,
-                'url'     => 'http://localhost:7000/api/v1/payments'
+                'url'     => env("SIDOOH_PAYMENTS_API_URL")
             ]
         ],
     ],

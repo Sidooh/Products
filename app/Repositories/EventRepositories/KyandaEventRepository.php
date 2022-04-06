@@ -130,6 +130,7 @@ class KyandaEventRepository extends EventRepository
                 } else {
                     $message = "You have purchased {$amount} airtime from your Sidooh account on {$date} using $method. You have received {$userEarnings} cashback.$vText";
                 }
+
                 SidoohNotify::notify([$phone], $message, EventType::AIRTIME_PURCHASE);
                 break;
 

@@ -4,9 +4,10 @@ namespace App\Listeners;
 
 use App\Events\TransactionSuccessEvent;
 use App\Repositories\EarningRepository;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
 
-class TransactionSuccess
+class TransactionSuccess implements ShouldQueue
 {
     /**
      * Create the event listener.

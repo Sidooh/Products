@@ -16,9 +16,9 @@ class SidoohPayments extends SidoohService
     {
         Log::info('--- --- --- --- ---   ...[SRV - PAYMENTS]: Make Payment...   --- --- --- --- ---');
 
-        $url = config('services.sidooh.services.payments.url');
+        $url = config('services.sidooh.services.payments.url') . "/v1/payments";
 
-        return self::send()->post($url, [
+        return parent::http()->post($url, [
             "transactions" => $transactions,
             "method"       => $method,
             "total_amount" => $totalAmount,
@@ -33,9 +33,9 @@ class SidoohPayments extends SidoohService
     {
         Log::info('--- --- --- --- ---   ...[SRV - PAYMENTS]: Credit Voucher...   --- --- --- --- ---');
 
-        $url = config('services.sidooh.services.payments.url') . '/voucher/credit';
+        $url = config('services.sidooh.services.payments.url') . '/v1/payments/voucher/credit';
 
-        return self::send()->post($url, [
+        return parent::http()->post($url, [
             "account_id" => $accountId,
             "amount"     => $amount,
             "notify"     => $notify
@@ -49,11 +49,18 @@ class SidoohPayments extends SidoohService
     {
         Log::info('--- --- --- --- ---   ...[SRV - PAYMENTS]: Voucher Disbursement...   --- --- --- --- ---');
 
-        $url = config('services.sidooh.services.payments.url') . '/voucher/disburse';
+        $url = config('services.sidooh.services.payments.url') . '/v1/payments/voucher/disburse';
 
-        return self::send()->post($url, [
+        return parent::http()->post($url, [
             "enterprise_id" => $enterpriseId,
             "data"          => $data
         ])->throw();
+    }
+
+    public static function findPaymentDetails(int $transactionId, int $accountId)
+    {
+        $url = config('services.sidooh.services.payments.url') . "/v1/payments/details/$transactionId/$accountId";
+
+        return parent::http()->get($url)->json();
     }
 }

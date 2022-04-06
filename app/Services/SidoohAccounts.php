@@ -4,26 +4,23 @@ namespace App\Services;
 
 use App\Models\ProductAccount;
 use Exception;
-use GuzzleHttp\Promise\PromiseInterface;
-use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
-class SidoohAccounts
+class SidoohAccounts extends SidoohService
 {
     private static string $url;
 
-    static function authenticate(): PromiseInterface|Response
+    static function authenticate()
     {
         Log::info('--- --- --- --- ---   ...[SRV - ACCOUNTS]: Authenticate...   --- --- --- --- ---');
 
         $url = config('services.sidooh.services.accounts.url');
 
-        return Http::retry(2)->post("$url/users/signin", [
+        return parent::http()->post("$url/users/signin", [
             'email'    => 'aa@a.a',
             'password' => "12345678"
-        ]);
+        ])->json();
     }
 
     /**
@@ -82,9 +79,9 @@ class SidoohAccounts
             "data"   => $data
         ]);
 
-        $authCookie = Cache::remember("accounts_auth_cookie", (60), fn() => self::authenticate()->cookies());
+        $token = Cache::remember("accounts_auth_cookie", (60), fn() => self::authenticate()["token"]);
 
-        return Http::send($method, self::$url, ['cookies' => $authCookie, 'json' => $data])->throw()->json();
+        return parent::http()->withToken($token)->send($method, self::$url, ['json' => $data])->throw()->json();
     }
 
     static function syncUtilityAccounts(int $accountId, string $provider, string $number, $product = 'airtime')

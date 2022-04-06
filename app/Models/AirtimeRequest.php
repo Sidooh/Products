@@ -35,10 +35,10 @@ use Illuminate\Support\Carbon;
  * @method static Builder|AirtimeRequest whereNumSent($value)
  * @method static Builder|AirtimeRequest whereTransactionId($value)
  * @method static Builder|AirtimeRequest whereUpdatedAt($value)
- * @mixin IdeHelperAirtimeRequest
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\AirtimeResponse[] $airtimeResponses
  * @property-read int|null $airtime_responses_count
  * @property-read \App\Models\Transaction|null $transaction
+ * @mixin IdeHelperAirtimeRequest
  */
 class AirtimeRequest extends Model
 {

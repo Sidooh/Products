@@ -14,7 +14,6 @@ use Nabcellent\Kyanda\Models\KyandaRequest;
 /**
  * App\Models\Transaction
  *
- * @mixin IdeHelperTransaction
  * @property int                             $id
  * @property string                          $initiator
  * @property string                          $type
@@ -42,6 +41,7 @@ use Nabcellent\Kyanda\Models\KyandaRequest;
  * @method static Builder|Transaction whereStatus($value)
  * @method static Builder|Transaction whereType($value)
  * @method static Builder|Transaction whereUpdatedAt($value)
+ * @mixin IdeHelperTransaction
  */
 class Transaction extends Model
 {
