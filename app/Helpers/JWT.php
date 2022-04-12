@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Library;
+namespace App\Helpers;
 
 use Exception;
 use Illuminate\Support\Carbon;
@@ -9,11 +9,6 @@ use Laravel\Sanctum\Guard;
 
 class JWT extends Guard
 {
-    function getSecretKey()
-    {
-        return env('JWT_KEY');
-    }
-
     static function verify($token)
     {
         try {
@@ -44,6 +39,8 @@ class JWT extends Guard
 
             return !$tokenExpired && $base64UrlSignature === $signatureProvided;
         } catch (Exception $err) {
+            Log::error('--- --- --- --- ---   ...[JWT]: Unable to verify auth token...   --- --- --- --- ---', [$err]);
+
             return false;
         }
     }

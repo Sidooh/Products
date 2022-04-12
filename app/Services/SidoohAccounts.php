@@ -9,30 +9,16 @@ use Illuminate\Support\Facades\Log;
 
 class SidoohAccounts extends SidoohService
 {
-    private static string $url;
-
-    static function authenticate()
-    {
-        Log::info('--- --- --- --- ---   ...[SRV - ACCOUNTS]: Authenticate...   --- --- --- --- ---');
-
-        $url = config('services.sidooh.services.accounts.url');
-
-        return parent::http()->post("$url/users/signin", [
-            'email'    => 'aa@a.a',
-            'password' => "12345678"
-        ])->json();
-    }
-
     /**
      * @throws Exception
      */
-    static function find($id): array
+    static function find(int|string $id): array
     {
         Log::info('--- --- --- --- ---   ...[SRV - ACCOUNTS]: Find Account...   --- --- --- --- ---', ['id' => $id]);
 
-        self::$url = config('services.sidooh.services.accounts.url') . "/accounts/$id";
+        $url = config('services.sidooh.services.accounts.url') . "/accounts/$id";
 
-        $acc = Cache::remember($id, (60 * 60 * 24), fn() => self::fetch());
+        $acc = Cache::remember($id, (60 * 60 * 24), fn() => self::fetch($url));
 
         if(!$acc) throw new Exception("Account doesn't exist!");
 
@@ -42,46 +28,23 @@ class SidoohAccounts extends SidoohService
     /**
      * @throws Exception
      */
-    static function findPhone($accountId)
+    static function findPhone(int|string $accountId)
     {
         return self::find($accountId)['phone'];
     }
 
-    /**
-     * @throws Exception
-     */
-    static function findByPhone($phone)
+    static function fetch(string $url, string $method = "GET", array $data = []): ?array
     {
-        Log::info('--- --- --- --- ---   ...[SRV - ACCOUNTS]: Find Account...   --- --- --- --- ---', ['phone' => $phone]);
-
-        self::$url = config('services.sidooh.services.accounts.url') . "/accounts/phone/$phone";
-
-        $acc = Cache::remember($phone, (60 * 60 * 24), function() {
-            $acc = self::fetch();
-
-            Cache::put($acc['id'], $acc);
-
-            return $acc;
-        });
-
-        if(!$acc) throw new Exception("Account doesn't exist!");
-
-        return $acc;
-    }
-
-    /**
-     * @throws Exception
-     */
-    static function fetch($method = "GET", $data = []): ?array
-    {
-        Log::info('--- --- --- --- ---   ...[SRV - ACCOUNTS]: Fetch Account...   --- --- --- --- ---', [
+        Log::info('--- --- --- --- ---   ...[SRV - ACCOUNTS]: Fetch...   --- --- --- --- ---', [
             'method' => $method,
             "data"   => $data
         ]);
 
-        $token = Cache::remember("accounts_auth_cookie", (60), fn() => self::authenticate()["token"]);
-
-        return parent::http()->withToken($token)->send($method, self::$url, ['json' => $data])->throw()->json();
+        try {
+            return parent::http()->send($method, $url, ['json' => $data])->json();
+        } catch (Exception $e) {
+            Log::error($e);
+        }
     }
 
     static function syncUtilityAccounts(int $accountId, string $provider, string $number, $product = 'airtime')

@@ -73,7 +73,7 @@ class EarningRepository
                     $totalLeftOverEarnings -= $userEarnings;
                 }
 
-                $e = Earning::insert($userEarning);
+                Earning::insert($userEarning);
 
                 foreach($userEarning as $ue) {
 //                    TODO: Get all accounts at once then filter programmatically
@@ -112,7 +112,7 @@ class EarningRepository
                 ];
             }
 
-            $e = Earning::insert($systemEarnings);
+            Earning::insert($systemEarnings);
 
             $transaction->status = 'completed';
             $transaction->save();
