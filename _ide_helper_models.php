@@ -12,6 +12,30 @@
 
 namespace App\Models{
 /**
+ * App\Models\AirtimeAccount
+ *
+ * @property int $id
+ * @property string $provider
+ * @property string $account_number
+ * @property int $account_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Database\Factories\AirtimeAccountFactory factory(...$parameters)
+ * @method static \Illuminate\Database\Eloquent\Builder|AirtimeAccount newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|AirtimeAccount newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|AirtimeAccount query()
+ * @method static \Illuminate\Database\Eloquent\Builder|AirtimeAccount whereAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AirtimeAccount whereAccountNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AirtimeAccount whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AirtimeAccount whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AirtimeAccount whereProvider($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AirtimeAccount whereUpdatedAt($value)
+ */
+	class IdeHelperAirtimeAccount {}
+}
+
+namespace App\Models{
+/**
  * App\Models\AirtimeRequest
  *
  * @property int                             $id
@@ -226,30 +250,6 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * App\Models\ProductAccount
- *
- * @property int $id
- * @property string $provider
- * @property string $account_number
- * @property int $account_id
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @method static ProductAccountFactory factory(...$parameters)
- * @method static Builder|ProductAccount newModelQuery()
- * @method static Builder|ProductAccount newQuery()
- * @method static Builder|ProductAccount query()
- * @method static Builder|ProductAccount whereAccountId($value)
- * @method static Builder|ProductAccount whereAccountNumber($value)
- * @method static Builder|ProductAccount whereCreatedAt($value)
- * @method static Builder|ProductAccount whereId($value)
- * @method static Builder|ProductAccount whereProvider($value)
- * @method static Builder|ProductAccount whereUpdatedAt($value)
- */
-	class IdeHelperProductAccount {}
-}
-
-namespace App\Models{
-/**
  * App\Models\Subscription
  *
  * @property int                             $id
@@ -342,5 +342,29 @@ namespace App\Models{
  * @method static Builder|Transaction whereUpdatedAt($value)
  */
 	class IdeHelperTransaction {}
+}
+
+namespace App\Models{
+/**
+ * App\Models\UtilityAccount
+ *
+ * @property int $id
+ * @property string $provider
+ * @property string $account_number
+ * @property int $account_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Database\Factories\UtilityAccountFactory factory(...$parameters)
+ * @method static \Illuminate\Database\Eloquent\Builder|UtilityAccount newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|UtilityAccount newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|UtilityAccount query()
+ * @method static \Illuminate\Database\Eloquent\Builder|UtilityAccount whereAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UtilityAccount whereAccountNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UtilityAccount whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UtilityAccount whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UtilityAccount whereProvider($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UtilityAccount whereUpdatedAt($value)
+ */
+	class IdeHelperUtilityAccount {}
 }
 

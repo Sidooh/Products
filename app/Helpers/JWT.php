@@ -9,6 +9,14 @@ use Laravel\Sanctum\Guard;
 
 class JWT extends Guard
 {
+    static function decode($token) {
+        // split the token
+        $tokenParts = explode('.', $token);
+        $payload = base64_decode($tokenParts[1]);
+
+        return json_decode($payload, true);
+    }
+
     static function verify($token)
     {
         try {

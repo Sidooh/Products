@@ -92,7 +92,7 @@ class AirtimeController extends Controller
      * @param Request $request
      * @return void
      */
-    public function airtimeStatusCallback(Request $request)
+    public function airtimeStatusCallback(Request $request): void
     {
         $callback = $request->all();
 

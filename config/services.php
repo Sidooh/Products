@@ -73,6 +73,7 @@ return [
                 'url'     => env("SIDOOH_PAYMENTS_API_URL")
             ]
         ],
+        'country_code' => env('COUNTRY_CODE', 'KE'),
     ],
 
 ];

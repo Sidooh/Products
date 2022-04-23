@@ -6,8 +6,8 @@ use App\Enums\EventType;
 use App\Enums\Status;
 use App\Events\TransactionSuccessEvent;
 use App\Models\Transaction;
-use App\Models\Voucher;
 use App\Repositories\EarningRepository;
+use App\Repositories\ProductRepository;
 use App\Services\SidoohAccounts;
 use App\Services\SidoohNotify;
 use App\Services\SidoohPayments;
@@ -51,21 +51,7 @@ class KyandaEventRepository extends EventRepository
             SidoohNotify::notify([$phone], $message, EventType::SP_REQUEST_FAILURE);
         }
 
-        switch($kyandaRequest->provider) {
-            case Providers::SAFARICOM:
-                //Most likely number accessing. Need to bulletproof this logic though by checking number against user
-                break;
-
-            case Providers::AIRTEL:
-            case Providers::FAIBA:
-            case Providers::EQUITEL:
-            case Providers::TELKOM:
-                SidoohAccounts::syncUtilityAccounts($account['id'], $kyandaRequest->provider, $transaction->destination);
-                break;
-
-            default:
-                SidoohAccounts::syncUtilityAccounts($account['id'], $kyandaRequest->provider, $transaction->destination, 'utility');
-        }
+        ProductRepository::syncUtilityAccounts($account['id'], $kyandaRequest->provider, $transaction->destination);
     }
 
     /**

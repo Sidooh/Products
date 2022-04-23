@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use Exception;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Log;
@@ -10,7 +9,7 @@ use Illuminate\Support\Facades\Log;
 class SidoohPayments extends SidoohService
 {
     /**
-     * @throws RequestException
+     * @throws AuthenticationException
      */
     public static function pay(array $transactions, string $method, $totalAmount, array $data = []): ?array
     {
@@ -18,7 +17,7 @@ class SidoohPayments extends SidoohService
 
         $url = config('services.sidooh.services.payments.url') . "/v1/payments";
 
-        return self::fetch($url, "POST", [
+        return parent::fetch($url, "POST", [
             "transactions" => $transactions,
             "method"       => $method,
             "total_amount" => $totalAmount,
@@ -35,7 +34,7 @@ class SidoohPayments extends SidoohService
 
         $url = config('services.sidooh.services.payments.url') . '/v1/payments/voucher/credit';
 
-        return self::fetch($url, "POST", [
+        return parent::fetch($url, "POST", [
             "account_id" => $accountId,
             "amount"     => $amount,
             "notify"     => $notify
@@ -51,40 +50,29 @@ class SidoohPayments extends SidoohService
 
         $url = config('services.sidooh.services.payments.url') . '/v1/payments/voucher/disburse';
 
-        return self::fetch($url, "POST", [
+        return parent::fetch($url, "POST", [
             "enterprise_id" => $enterpriseId,
             "data"          => $data
         ]);
     }
 
+    /**
+     * @throws \Illuminate\Auth\AuthenticationException
+     */
     public static function findPaymentDetails(int $transactionId, int $accountId): ?array
     {
         $url = config('services.sidooh.services.payments.url') . "/v1/payments/details/$transactionId/$accountId";
 
-        return self::fetch($url);
-    }
-
-    public static function findVoucher(int $voucherId): ?array
-    {
-        $url = config('services.sidooh.services.payments.url') . "/v1/payments/vouchers/$voucherId";
-
-        return self::fetch($url);
+        return parent::fetch($url);
     }
 
     /**
      * @throws \Illuminate\Auth\AuthenticationException
      */
-    static function fetch(string $url, string $method = "GET", array $data = []): ?array
+    public static function findVoucher(int $voucherId): ?array
     {
-        Log::info('--- --- --- --- ---   ...[SRV - ACCOUNTS]: Fetch...   --- --- --- --- ---', [
-            "method" => $method,
-            "data"   => $data
-        ]);
+        $url = config('services.sidooh.services.payments.url') . "/v1/payments/vouchers/$voucherId";
 
-        try {
-            return parent::http()->send($method, $url, ['json' => $data])->throw()->json();
-        } catch (RequestException|Exception $err) {
-            if($err->getCode() === 401) throw new AuthenticationException();
-        }
+        return parent::fetch($url);
     }
 }

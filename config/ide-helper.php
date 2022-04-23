@@ -59,7 +59,7 @@ return [
     |
     */
 
-    'include_factory_builders' => false,
+    'include_factory_builders' => true,
 
     /*
     |--------------------------------------------------------------------------

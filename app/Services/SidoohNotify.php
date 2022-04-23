@@ -26,7 +26,7 @@ class SidoohNotify extends SidoohService
         ])->json();
 
         Log::info('--- --- --- --- ---   ...[SRV - NOTIFY]: Notification Sent...   --- --- --- --- ---', [
-            'id' => $response["id"]
+            'ids' => $response["ids"]
         ]);
     }
 }

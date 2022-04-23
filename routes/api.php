@@ -1,13 +1,12 @@
 <?php
 
 use App\Http\Controllers\API\V1\AirtimeController;
-use App\Http\Controllers\API\V1\EnterpriseController;
 use App\Http\Controllers\API\V1\FloatController;
 use App\Http\Controllers\API\V1\PaymentsController;
+use App\Http\Controllers\API\V1\ProductController;
 use App\Http\Controllers\API\V1\SubscriptionController;
 use App\Http\Controllers\API\V1\UtilityController;
 use App\Http\Controllers\API\V1\VoucherController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -20,10 +19,6 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
-Route::middleware('auth:sanctum')->get('/user', function(Request $request) {
-    return $request->user();
-});
 
 Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function() {
     Route::prefix('/products')->group(function() {
@@ -46,12 +41,9 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function() {
         Route::post('/purchase', [PaymentsController::class, 'requestPurchase']);
     });
 
-    Route::prefix('/enterprises')->group(function() {
-        Route::get('/', [EnterpriseController::class, 'index']);
-        Route::post('/', [EnterpriseController::class, 'store']);
-        Route::post('/accounts', [EnterpriseController::class, 'storeAccount']);
-        Route::get('/{enterprise}', [EnterpriseController::class, 'show']);
-        Route::put('/{enterprise}', [EnterpriseController::class, 'update']);
+    Route::prefix('/accounts')->group(function() {
+        Route::get('/{accountId}/airtime-accounts', [ProductController::class, 'airtimeAccounts']);
+        Route::get('/{accountId}/utility-accounts', [ProductController::class, 'utilityAccounts']);
     });
 
     Route::get('/transactions', [PaymentsController::class, 'index']);

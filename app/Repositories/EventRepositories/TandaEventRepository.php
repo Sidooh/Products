@@ -7,6 +7,7 @@ use App\Enums\Status;
 use App\Events\TransactionSuccessEvent;
 use App\Models\Transaction;
 use App\Repositories\EarningRepository;
+use App\Repositories\ProductRepository;
 use App\Services\SidoohAccounts;
 use App\Services\SidoohNotify;
 use App\Services\SidoohPayments;
@@ -18,6 +19,24 @@ use Propaganistas\LaravelPhone\PhoneNumber;
 
 class TandaEventRepository extends EventRepository
 {
+    public static function getProvider(TandaRequest $tandaRequest, Transaction $transaction)
+    {
+        $provider = $tandaRequest->provider;
+
+        if(empty($provider)) {
+            $productString = explode(" ", $transaction->description);
+
+            $provider = $productString[0] == "Airtime"
+                ? getTelcoFromPhone($transaction->destination)
+                : $productString[0];
+
+            $tandaRequest->provider = $provider;
+            $tandaRequest->save();
+        }
+
+        return $provider;
+    }
+
     public static function requestSuccess(TandaRequest $tandaRequest)
     {
         // Update Transaction
@@ -31,18 +50,7 @@ class TandaEventRepository extends EventRepository
             $tandaRequest->save();
         }
 
-        $provider = $tandaRequest->provider;
-
-        if(empty($provider)) {
-            $productString = explode(" ", $transaction->description);
-
-            $provider = $productString[0] == "Airtime"
-                ? getTelcoFromPhone($transaction->destination)
-                : $productString[0];
-
-            $tandaRequest->provider = $provider;
-            $tandaRequest->save();
-        }
+        $provider = self::getProvider($tandaRequest, $transaction);
 
         $account = SidoohAccounts::find($transaction->account_id);
 
@@ -139,6 +147,7 @@ class TandaEventRepository extends EventRepository
         TransactionSuccessEvent::dispatch($transaction, $totalEarnings);
         SidoohNotify::notify([$sender], $message, $eventType);
         Transaction::updateStatus($transaction, Status::COMPLETED);
+        ProductRepository::syncAccounts($account, $provider, $destination);
 
         Log::info('--- --- --- --- ---   ...[TANDA EVENT REPOSITORY]: Completed Transaction...   --- --- --- --- ---');
     }
@@ -158,7 +167,7 @@ class TandaEventRepository extends EventRepository
         $amount = $transaction->amount;
         $date = $tandaRequest->updated_at->timezone('Africa/Nairobi')->format(config("settings.sms_date_time_format"));
 
-        $provider = $tandaRequest->provider;
+        $provider = self::getProvider($tandaRequest, $transaction);
 
         $voucher = SidoohPayments::creditVoucher($transaction->account_id, $amount);
 
