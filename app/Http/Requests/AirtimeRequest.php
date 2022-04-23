@@ -33,19 +33,19 @@ class AirtimeRequest extends FormRequest
         "recipients_data" => "array",
         'method'          => "\Illuminate\Validation\Rules\Enum[]",
         'target_number'   => "string",
-        'mpesa_number'    => "string"
+        'debit_account'   => "string"
     ])] public function rules(): array
     {
         $countryCode = config('services.sidooh.country_code');
 
         return [
-            'initiator'       => ['required', new Enum(Initiator::class)],
-            'account_id'      => ['integer', "required"],
-            'enterprise_id'   => ["required_if:initiator," . Initiator::ENTERPRISE->name],
+            "initiator"       => ['required', new Enum(Initiator::class)],
+            "account_id"      => ['integer', "required"],
+            "enterprise_id"   => ["required_if:initiator," . Initiator::ENTERPRISE->name],
             "recipients_data" => ['array', Rule::requiredIf($this->is('*/products/airtime/bulk'))],
-            'method'          => [new Enum(PaymentMethod::class),],
-            'target_number'   => "phone:$countryCode",
-            'mpesa_number'    => "phone:$countryCode",
+            "method"          => [new Enum(PaymentMethod::class)],
+            "target_number"   => "phone:$countryCode",
+            "debit_account"   => Rule::when($this->input("method") === PaymentMethod::MPESA->value, "phone:$countryCode", "integer")
         ];
     }
 }

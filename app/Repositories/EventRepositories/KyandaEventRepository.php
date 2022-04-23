@@ -2,6 +2,7 @@
 
 namespace App\Repositories\EventRepositories;
 
+use App\Enums\Description;
 use App\Enums\EventType;
 use App\Enums\Status;
 use App\Events\TransactionSuccessEvent;
@@ -20,6 +21,9 @@ use Propaganistas\LaravelPhone\PhoneNumber;
 
 class KyandaEventRepository extends EventRepository
 {
+    /**
+     * @throws \Illuminate\Http\Client\RequestException
+     */
     public static function request(KyandaRequest $kyandaRequest)
     {
         $transaction = Transaction::find($kyandaRequest->relation_id);
@@ -38,10 +42,10 @@ class KyandaEventRepository extends EventRepository
                 Log::error($e->getMessage());
             }
 
-            $transaction->status = Status::REIMBURSED;
+            $transaction->status = Status::REFUNDED;
             $transaction->save();
 
-            $voucher = SidoohPayments::creditVoucher($transaction->account_id, $amount);
+            $voucher = SidoohPayments::creditVoucher($transaction->account_id, $amount, Description::VOUCHER_REFUND);
 
             $message = match ($kyandaRequest->provider) {
                 Providers::SAFARICOM, Providers::AIRTEL, Providers::FAIBA, Providers::EQUITEL, Providers::TELKOM => "Sorry! We could not complete your KES{$amount} airtime purchase on {$date}. We have added KES{$amount} to your voucher. New Voucher balance is {$voucher['balance']}.",
@@ -51,7 +55,7 @@ class KyandaEventRepository extends EventRepository
             SidoohNotify::notify([$phone], $message, EventType::SP_REQUEST_FAILURE);
         }
 
-        ProductRepository::syncUtilityAccounts($account['id'], $kyandaRequest->provider, $transaction->destination);
+        ProductRepository::syncAccounts($account['id'], $kyandaRequest->provider, $transaction->destination);
     }
 
     /**
@@ -212,7 +216,7 @@ class KyandaEventRepository extends EventRepository
         $voucher->balance += $amount;
         $voucher->save();
 
-        $transaction->status = Status::REIMBURSED;
+        $transaction->status = Status::REFUNDED;
         $transaction->save();
 
         $eventType = EventType::PAYMENT_FAILURE;

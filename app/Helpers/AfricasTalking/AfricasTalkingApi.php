@@ -97,7 +97,7 @@ class AfricasTalkingApi
             $voucher->balance += (double)$amount;
             $voucher->save();
 
-            $transaction->status = Status::REIMBURSED;
+            $transaction->status = Status::REFUNDED;
             $transaction->save();
 
             $message = "Sorry! We could not complete your airtime purchase for {$phone} worth {$amount} on {$date}. We have credited your voucher {$amount} and your balance is now {$voucher->balance}.";

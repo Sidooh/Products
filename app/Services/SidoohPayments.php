@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\Description;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Log;
@@ -28,16 +29,17 @@ class SidoohPayments extends SidoohService
     /**
      * @throws RequestException
      */
-    public static function creditVoucher(int $accountId, $amount, $notify = false): ?array
+    public static function creditVoucher(int $accountId, $amount, Description $description, $notify = false): ?array
     {
         Log::info('--- --- --- --- ---   ...[SRV - PAYMENTS]: Credit Voucher...   --- --- --- --- ---');
 
         $url = config('services.sidooh.services.payments.url') . '/v1/payments/voucher/credit';
 
         return parent::fetch($url, "POST", [
-            "account_id" => $accountId,
-            "amount"     => $amount,
-            "notify"     => $notify
+            "account_id"  => $accountId,
+            "amount"      => $amount,
+            "description" => $description->value,
+            "notify"      => $notify
         ]);
     }
 

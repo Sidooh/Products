@@ -50,7 +50,7 @@ class SubscriptionRequest extends FormRequest
             'account_number'   => [Rule::requiredIf($this->is('*/products/utility')), 'integer'],
             'utility_provider' => ["required_if:product,utility"],
             'target_number'    => 'phone:KE',
-            'mpesa_number'     => 'phone:KE',
+            'debit_account'     => 'phone:KE',
         ];
     }
 }

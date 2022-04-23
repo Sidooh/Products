@@ -8,6 +8,8 @@ enum Description: string
     case UTILITY_PURCHASE = 'Utility Purchase';
 
     case VOUCHER_DISBURSEMENT = 'Voucher Disbursement';
+    case VOUCHER_REFUND = 'Voucher Refund';
     case VOUCHER_PURCHASE = 'Voucher Purchase';
+
     case SUBSCRIPTION_PURCHASE = "Subscription Purchase";
 }

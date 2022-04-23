@@ -34,7 +34,7 @@ class ATEventRepository
 
 //        TODO: Find a better way to get the transaction cause of gateway error from AT and transaction seems empty
 //        $transaction = new $airtimeResponse->request->transaction;
-//        $transaction->status = 'reimbursed';
+//        $transaction->status = Status::REFUNDED;
 //        $transaction->save();
 
         $voucher = $account->voucher;

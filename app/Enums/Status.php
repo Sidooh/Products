@@ -7,7 +7,7 @@ enum Status: string
     case COMPLETED = 'COMPLETED';
     case FAILED = 'FAILED';
     case PENDING = "PENDING";
-    case REIMBURSED = "REIMBURSED";
+    case REFUNDED = "REFUNDED";
 
     case ACTIVE = "ACTIVE";
 }

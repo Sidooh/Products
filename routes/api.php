@@ -27,9 +27,9 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function() {
         Route::post('/utility', UtilityController::class);
         Route::post('/subscription', SubscriptionController::class);
 
-        Route::prefix('/voucher')->controller(VoucherController::class)->group(function() {
-            Route::post('/top-up', 'topUp');
-            Route::post('/disburse', 'disburse');
+        Route::prefix('/voucher')->group(function() {
+            Route::post('/top-up', [VoucherController::class, 'topUp']);
+            Route::post('/disburse', [VoucherController::class, 'disburse']);
         });
 
         Route::post('/float/top-up', [FloatController::class, 'topUp']);

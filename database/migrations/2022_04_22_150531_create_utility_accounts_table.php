@@ -18,6 +18,7 @@ return new class extends Migration
 
             $table->string('provider');
             $table->string('account_number');
+            $table->tinyInteger('priority')->default(0);
 
             $table->foreignId('account_id')->unsigned();
             $table->index(['account_id', 'provider']);

@@ -2,6 +2,7 @@
 
 namespace App\Repositories\EventRepositories;
 
+use App\Enums\Description;
 use App\Enums\EventType;
 use App\Enums\Status;
 use App\Events\TransactionSuccessEvent;
@@ -169,9 +170,9 @@ class TandaEventRepository extends EventRepository
 
         $provider = self::getProvider($tandaRequest, $transaction);
 
-        $voucher = SidoohPayments::creditVoucher($transaction->account_id, $amount);
+        $voucher = SidoohPayments::creditVoucher($transaction->account_id, $amount, Description::VOUCHER_REFUND);
 
-        $transaction->status = Status::REIMBURSED;
+        $transaction->status = Status::REFUNDED;
         $transaction->save();
 
         $message = match ($provider) {

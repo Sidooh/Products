@@ -8,7 +8,7 @@ use App\Models\Transaction;
 use App\Services\SidoohPayments;
 use App\Traits\ApiResponse;
 use Exception;
-use Illuminate\Http\Client\RequestException;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Support\Arr;
 use Throwable;
 
@@ -31,9 +31,9 @@ class TransactionRepository
     }
 
     /**
-     * @throws RequestException
+     * @throws AuthenticationException
      */
-    public static function initiatePayment(array $transactions, array $data)
+    public static function initiatePayment(array $transactions, array $data): void
     {
         $totalAmount = collect($transactions)->sum("amount");
 
@@ -43,7 +43,7 @@ class TransactionRepository
     /**
      * @throws Throwable
      */
-    public static function requestPurchase(Transaction $transaction, array $purchaseData)
+    public static function requestPurchase(Transaction $transaction, array $purchaseData): void
     {
         $purchase = new Purchase($transaction);
 
