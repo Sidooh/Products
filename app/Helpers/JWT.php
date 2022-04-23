@@ -17,6 +17,13 @@ class JWT extends Guard
         return json_decode($payload, true);
     }
 
+    static function expiry($token): Carbon
+    {
+        $payload = self::decode($token);
+
+        return Carbon::createFromTimestamp($payload["exp"]);
+    }
+
     static function verify($token)
     {
         try {

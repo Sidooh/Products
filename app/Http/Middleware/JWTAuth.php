@@ -28,7 +28,7 @@ class JWTAuth
 
         if(!JWT::verify($bearer)) throw new AuthenticationException();
 
-        Cache::put('auth_token', $bearer);
+        Cache::put('auth_token', $bearer, JWT::expiry($bearer)->diffInMinutes());
 
         return $next($request);
     }
