@@ -147,9 +147,9 @@ class TandaEventRepository extends EventRepository
 
         //  Update Earnings
         SidoohNotify::notify([$sender], $message, $eventType);
-        TransactionSuccessEvent::dispatch($transaction, $totalEarnings);
         Transaction::updateStatus($transaction, Status::COMPLETED);
         ProductRepository::syncAccounts($account, $provider, $destination);
+        TransactionSuccessEvent::dispatch($transaction, $totalEarnings);
 
         Log::info('--- --- --- --- ---   ...[TANDA EVENT REPOSITORY]: Completed Transaction...   --- --- --- --- ---');
     }
