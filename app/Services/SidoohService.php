@@ -15,7 +15,7 @@ class SidoohService
     {
         $token = Cache::remember("auth_token", now()->addMinutes(10), fn() => self::authenticate());
 
-        return Http::withToken($token)->/*retry(1)->*/acceptJson();
+        return Http::withToken($token)->/*retry(1)->*/ acceptJson();
     }
 
     /**
@@ -47,8 +47,12 @@ class SidoohService
             "data"   => $data
         ]);
 
+        $options = strtoupper($method) === "POST"
+            ? ["json" => $data]
+            : [];
+
         try {
-            return self::http()->send($method, $url, ['json' => $data])->throw()->json();
+            return self::http()->send($method, $url, $options)->throw()->json();
         } catch (Exception $err) {
             Log::error($err);
 
