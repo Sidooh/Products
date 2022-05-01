@@ -16,7 +16,7 @@ class SidoohPayments extends SidoohService
     {
         Log::info('--- --- --- --- ---   ...[SRV - PAYMENTS]: Make Payment...   --- --- --- --- ---');
 
-        $url = config('services.sidooh.services.payments.url') . "/v1/payments";
+        $url = config('services.sidooh.services.payments.url') . "/payments";
 
         return parent::fetch($url, "POST", [
             "transactions" => $transactions,
@@ -33,7 +33,7 @@ class SidoohPayments extends SidoohService
     {
         Log::info('--- --- --- --- ---   ...[SRV - PAYMENTS]: Credit Voucher...   --- --- --- --- ---');
 
-        $url = config('services.sidooh.services.payments.url') . '/v1/payments/voucher/credit';
+        $url = config('services.sidooh.services.payments.url') . '/payments/voucher/credit';
 
         return parent::fetch($url, "POST", [
             "account_id"  => $accountId,
@@ -50,7 +50,7 @@ class SidoohPayments extends SidoohService
     {
         Log::info('--- --- --- --- ---   ...[SRV - PAYMENTS]: Voucher Disbursement...   --- --- --- --- ---');
 
-        $url = config('services.sidooh.services.payments.url') . '/v1/payments/voucher/disburse';
+        $url = config('services.sidooh.services.payments.url') . '/payments/voucher/disburse';
 
         return parent::fetch($url, "POST", [
             "enterprise_id" => $enterpriseId,
@@ -63,7 +63,7 @@ class SidoohPayments extends SidoohService
      */
     public static function findPaymentDetails(int $transactionId, int $accountId): ?array
     {
-        $url = config('services.sidooh.services.payments.url') . "/v1/payments/details/$transactionId/$accountId";
+        $url = config('services.sidooh.services.payments.url') . "/payments/details/$transactionId/$accountId";
 
         return parent::fetch($url);
     }
@@ -73,7 +73,7 @@ class SidoohPayments extends SidoohService
      */
     public static function findVoucher(int $voucherId): ?array
     {
-        $url = config('services.sidooh.services.payments.url') . "/v1/payments/vouchers/$voucherId";
+        $url = config('services.sidooh.services.payments.url') . "/payments/vouchers/$voucherId";
 
         return parent::fetch($url);
     }
