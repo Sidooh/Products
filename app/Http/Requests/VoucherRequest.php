@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Enums\Initiator;
+use App\Enums\PaymentMethod;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
@@ -25,16 +26,10 @@ class VoucherRequest extends FormRequest
      *
      * @return array
      */
-    #[ArrayShape([
-        'initiator'     => "array",
-        'disburse_type' => "string[]",
-        'account_id'    => "string",
-        'enterprise_id' => "string[]",
-        'amount'        => "string[]",
-        'accounts'      => "string[]",
-        'debit_account' => "string"
-    ])] public function rules(): array
+    public function rules(): array
     {
+        $countryCode = config('services.sidooh.country_code');
+
         return [
             'initiator'     => [
                 Rule::requiredIf(!$this->is('*/products/voucher/disburse')),
@@ -50,6 +45,8 @@ class VoucherRequest extends FormRequest
             'enterprise_id' => ['required_if:initiator,ENTERPRISE', 'exists:enterprises,id'],
             'amount'        => ['required_unless:initiator,null', 'numeric'],
             'accounts'      => ['array'],
+            "method"          => [new Enum(PaymentMethod::class)],
+            "target_number"   => "phone:$countryCode",
             'debit_account' => 'integer',
         ];
     }

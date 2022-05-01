@@ -50,6 +50,8 @@ class VoucherController extends Controller
             "method"          => PaymentMethod::MPESA->value,
         ];
 
+        dump_json($data);
+
         $transactionIds = TransactionRepository::createTransaction($transactions, $data);
 
         return $this->successResponse(['transactions' => $transactionIds], 'Voucher Request Successful!');
