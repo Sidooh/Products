@@ -40,14 +40,17 @@ class VoucherRequest extends FormRequest
                     if($isVoucherDisburse && $value !== "ENTERPRISE") $fail("Unauthorized Initiator!");
                 },
             ],
-            'disburse_type' => ['in:LUNCH,GENERAL',],
-            'account_id'    => 'integer',
+            'disburse_type' => ['in:LUNCH,GENERAL'],
+            'account_id'    => ["required", 'integer'],
             'enterprise_id' => ['required_if:initiator,ENTERPRISE', 'exists:enterprises,id'],
-            'amount'        => ['required_unless:initiator,null', 'numeric'],
+            'amount'        => ['required', 'numeric'],
             'accounts'      => ['array'],
-            "method"          => [new Enum(PaymentMethod::class)],
-            "target_number"   => "phone:$countryCode",
-            'debit_account' => 'integer',
+            "method"        => ["exclude_without:target_number", new Enum(PaymentMethod::class)],
+            "target_number" => "phone:$countryCode",
+            "debit_account" => [
+                Rule::excludeIf($this->input("method") === PaymentMethod::VOUCHER->value),
+                "phone:$countryCode"
+            ]
         ];
     }
 

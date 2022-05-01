@@ -15,6 +15,7 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Propaganistas\LaravelPhone\PhoneNumber;
 use Throwable;
 
 class VoucherController extends Controller
@@ -23,18 +24,20 @@ class VoucherController extends Controller
      * Handle the incoming request.
      *
      * @param Request $request
-     * @return Response
      * @throws Exception
+     * @return Response
      */
     public function topUp(VoucherRequest $request): JsonResponse
     {
-        $data = $request->all();
+        $data = $request->validated();
 
-        $account = SidoohAccounts::find($data['account_id']);
+        $account = isset($data["debit_account"])
+            ? SidoohAccounts::findByPhone(PhoneNumber::make($data['debit_account']))
+            : SidoohAccounts::find($data['account_id']);
 
         $transactions = [
             [
-                "destination" => $account["phone"],
+                "destination" => $data['target_number'] ?? $account["phone"],
                 "initiator"   => $data["initiator"],
                 "amount"      => $data["amount"],
                 "type"        => TransactionType::PAYMENT,
@@ -47,10 +50,8 @@ class VoucherController extends Controller
         $data = [
             "payment_account" => $account,
             "product"         => "voucher",
-            "method"          => PaymentMethod::MPESA->value,
+            "method"          => $data["method"] ?? PaymentMethod::MPESA->value,
         ];
-
-        dump_json($data);
 
         $transactionIds = TransactionRepository::createTransaction($transactions, $data);
 

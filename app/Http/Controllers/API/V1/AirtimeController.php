@@ -29,7 +29,7 @@ class AirtimeController extends Controller
      */
     public function __invoke(AirtimeRequest $request): JsonResponse
     {
-        $data = $request->all();
+        $data = $request->validated();
 
         $account = SidoohAccounts::find($data['account_id']);
 
