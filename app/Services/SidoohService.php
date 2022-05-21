@@ -42,7 +42,7 @@ class SidoohService
      */
     static function fetch(string $url, string $method = "GET", array $data = [])
     {
-        Log::info('--- --- --- --- ---   ...[SRV - ACCOUNTS]: Fetch...   --- --- --- --- ---', [
+        Log::info('--- --- --- --- ---   ...[SRV - SIDOOH]: Fetch...   --- --- --- --- ---', [
             "method" => $method,
             "data"   => $data
         ]);
