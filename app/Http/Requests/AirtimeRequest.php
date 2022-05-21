@@ -27,18 +27,20 @@ class AirtimeRequest extends FormRequest
      * @return array
      */
     #[ArrayShape([
-        'initiator'       => "array",
-        'account_id'      => "string[]",
-        'enterprise_id'   => "string[]",
+        "amount"          => "string",
+        "initiator"       => "array",
+        "account_id"      => "string[]",
+        "enterprise_id"   => "string[]",
         "recipients_data" => "array",
-        'method'          => "\Illuminate\Validation\Rules\Enum[]",
-        'target_number'   => "string",
-        'debit_account'   => "string"
+        "method"          => "\Illuminate\Validation\Rules\Enum[]",
+        "target_number"   => "string",
+        "debit_account"   => "\Illuminate\Validation\ConditionalRules"
     ])] public function rules(): array
     {
         $countryCode = config('services.sidooh.country_code');
 
         return [
+            "amount"          => "required|integer",
             "initiator"       => ['required', new Enum(Initiator::class)],
             "account_id"      => ['integer', "required"],
             "enterprise_id"   => ["required_if:initiator," . Initiator::ENTERPRISE->name],
