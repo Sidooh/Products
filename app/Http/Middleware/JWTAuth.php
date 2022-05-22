@@ -9,6 +9,7 @@ use Closure;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class JWTAuth
 {
@@ -22,7 +23,7 @@ class JWTAuth
      * @throws \Illuminate\Auth\AuthenticationException
      * @return JsonResponse
      */
-    public function handle(Request $request, Closure $next): JsonResponse
+    public function handle(Request $request, Closure $next): JsonResponse|Response
     {
         $bearer = $request->bearerToken();
 

@@ -12,10 +12,10 @@
         "ext-intl": "*",
         "africastalking/africastalking": "^3.0",
         "drh/laravel-tanda": "dev-red.dev",
-        "fruitcake/laravel-cors": "^2.0.5",
-        "guzzlehttp/guzzle": "^7.2",
-        "laravel/framework": "^9.0",
-        "laravel/sanctum": "^2.14",
+        "fruitcake/laravel-cors": "^2.2",
+        "guzzlehttp/guzzle": "^7.4",
+        "laravel/framework": "^9.13",
+        "laravel/sanctum": "^2.15",
         "laravel/tinker": "^2.7",
         "nabcellent/laravel-kyanda": "dev-red.dev",
         "propaganistas/laravel-phone": "^4.3",
@@ -24,9 +24,9 @@
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.12",
         "fakerphp/faker": "^1.9.1",
-        "mockery/mockery": "^1.4.4",
-        "nunomaduro/collision": "^6.0",
-        "phpunit/phpunit": "^9.5.10",
+        "mockery/mockery": "^1.5",
+        "nunomaduro/collision": "^6.2",
+        "phpunit/phpunit": "^9.5.20",
         "spatie/laravel-ignition": "^1.0"
     },
     "autoload": {
