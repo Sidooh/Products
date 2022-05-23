@@ -5,10 +5,11 @@ namespace App\Listeners;
 use App\Events\TransactionCreated;
 use App\Repositories\TransactionRepository;
 use Exception;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
-class ProcessTransaction
+class ProcessTransaction implements ShouldQueue
 {
     /**
      * Create the event listener.
