@@ -33,9 +33,11 @@ COPY . /home/app
 # Run composer install && update
 RUN composer install
 
+# Run laravel queue worker
+RUN /home/app/artisan queue:work --tries=3
+
 # Expose the port
 EXPOSE 8080
 
 # Start artisan
 CMD php artisan serve --host=0.0.0.0 --port=8080
-CMD php artisan queue:work --tries=3 --sleep=3
