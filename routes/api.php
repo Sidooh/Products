@@ -1,6 +1,12 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\API\V1\AirtimeController;
+use App\Http\Controllers\API\V1\FloatController;
+use App\Http\Controllers\API\V1\PaymentsController;
+use App\Http\Controllers\API\V1\ProductController;
+use App\Http\Controllers\API\V1\SubscriptionController;
+use App\Http\Controllers\API\V1\UtilityController;
+use App\Http\Controllers\API\V1\VoucherController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,6 +20,31 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function() {
+    Route::prefix('/products')->group(function() {
+        Route::post('/airtime', AirtimeController::class);
+        Route::post('/airtime/bulk', [AirtimeController::class, 'bulk']);
+        Route::post('/utility', UtilityController::class);
+        Route::post('/subscription', SubscriptionController::class);
+
+        Route::prefix('/voucher')->group(function() {
+            Route::post('/top-up', [VoucherController::class, 'topUp']);
+            Route::post('/disburse', [VoucherController::class, 'disburse']);
+        });
+
+        Route::post('/float/top-up', [FloatController::class, 'topUp']);
+
+        //  AT Callback Route
+        Route::post('/airtime/status/callback', [AirtimeController::class, 'airtimeStatusCallback']);
+
+        Route::post('/callback', [PaymentsController::class, 'processCallback']);
+        Route::post('/purchase', [PaymentsController::class, 'requestPurchase']);
+    });
+
+    Route::prefix('/accounts')->group(function() {
+        Route::get('/{accountId}/airtime-accounts', [ProductController::class, 'airtimeAccounts']);
+        Route::get('/{accountId}/utility-accounts', [ProductController::class, 'utilityAccounts']);
+    });
+
+    Route::get('/transactions', [PaymentsController::class, 'index']);
 });

@@ -15,8 +15,8 @@ return [
     */
 
     'mailgun' => [
-        'domain' => env('MAILGUN_DOMAIN'),
-        'secret' => env('MAILGUN_SECRET'),
+        'domain'   => env('MAILGUN_DOMAIN'),
+        'secret'   => env('MAILGUN_SECRET'),
         'endpoint' => env('MAILGUN_ENDPOINT', 'api.mailgun.net'),
     ],
 
@@ -25,9 +25,55 @@ return [
     ],
 
     'ses' => [
-        'key' => env('AWS_ACCESS_KEY_ID'),
+        'key'    => env('AWS_ACCESS_KEY_ID'),
         'secret' => env('AWS_SECRET_ACCESS_KEY'),
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
+    ],
+
+    'at' => [
+        'key'      => 'a828e15f1db322b77d7f57787ea3d390d06f3e5ab6e9254fe80044afaf4b0d82',
+        'username' => 'sandbox',
+        'phone'    => null,
+        'env'      => 'development',
+        'airtime'  => [
+            'key'      => '89770c2faea7f33dce6ca5605a0cd7b9e810a999af8ea0c051a5e504d2380928',
+            'username' => 'sidooh_airtime',
+        ],
+        'ussd'     => [
+            'code' => '*384*99#',
+        ],
+    ],
+
+    'sidooh' => [
+        'earnings'           => [
+            'users_percentage' => 0.6,
+        ],
+        'tagline'            => 'Sidooh, Makes You Money with Every Purchase.',
+        'mpesa'              => [
+            'env' => 'local',
+            'b2c' => [
+                'phone'      => '254708374149',
+                'min_amount' => '10',
+                'max_amount' => '70000',
+            ],
+        ],
+        'utilities_enabled'  => true,
+        'utilities_provider' => 'TANDA',
+        'services'           => [
+            'notify'   => [
+                'enabled' => true,
+                'url'     => env("SIDOOH_NOTIFY_API_URL"),
+            ],
+            'accounts' => [
+                'enabled' => true,
+                'url'     => env("SIDOOH_ACCOUNTS_API_URL")
+            ],
+            'payments' => [
+                'enabled' => true,
+                'url'     => env("SIDOOH_PAYMENTS_API_URL")
+            ]
+        ],
+        'country_code' => env('COUNTRY_CODE', 'KE'),
     ],
 
 ];
