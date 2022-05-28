@@ -5,24 +5,25 @@ RUN apt-get update -y && apt-get install -y \
     build-essential \
     libicu-dev \
     zlib1g-dev \
-    libmemcached-dev \
+#    libmemcached-dev \
     zip \
-    unzip
+    unzip \
+    supervisor
 
 # Install docker dependencies
 RUN apt-get install -y libc-client-dev libkrb5-dev \
-    && pecl install memcached-3.1.5 \
     && docker-php-ext-install mysqli \
     && docker-php-ext-install intl \
-    && docker-php-ext-install sockets \
-    && docker-php-ext-install pdo_mysql \
-    && docker-php-ext-enable memcached
+#    && docker-php-ext-install sockets \
+    && docker-php-ext-install pdo_mysql
 
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Download composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+COPY laravel-worker.conf /etc/supervisor/conf.d
 
 # Define working directory
 WORKDIR /home/app
@@ -32,7 +33,7 @@ COPY . /home/app
 
 # Run composer install && update
 RUN composer install
-RUN php /home/app/artisan queue:work --verbose --sleep=3 --tries=3 &
+RUN service supervisor start && supervisorctl reread && supervisorctl update && supervisorctl start laravel-worker:*
 
 # Expose the port
 EXPOSE 8080
