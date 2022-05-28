@@ -33,7 +33,12 @@ COPY . /home/app
 
 # Run composer install && update
 RUN composer install
-RUN service supervisor start && supervisorctl reread && supervisorctl update && supervisorctl start laravel-worker:*
+
+
+# Run supervisor for queues
+RUN service supervisor stop && service supervisor start \
+    && supervisorctl status && supervisorctl reread \
+    && supervisorctl update && supervisorctl start laravel-worker:*
 
 # Expose the port
 EXPOSE 8080
