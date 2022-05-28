@@ -17,6 +17,7 @@ use App\Services\SidoohAccounts;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class AirtimeController extends Controller
 {
@@ -33,15 +34,17 @@ class AirtimeController extends Controller
 
         $account = SidoohAccounts::find($data['account_id']);
 
+        Log::info("Airtime Request:", [$account]);
+
         $transactions = [
             [
                 "destination" => $data['target_number'] ?? $account["phone"],
-                "initiator"   => $data["initiator"],
-                "amount"      => $data["amount"],
-                "type"        => TransactionType::PAYMENT,
+                "initiator" => $data["initiator"],
+                "amount" => $data["amount"],
+                "type" => TransactionType::PAYMENT,
                 "description" => Description::AIRTIME_PURCHASE,
-                "account_id"  => $data['account_id'],
-                "account"     => $account,
+                "account_id" => $data['account_id'],
+                "account" => $account,
             ]
         ];
         $data += [
