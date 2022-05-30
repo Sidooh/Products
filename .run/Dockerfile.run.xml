@@ -2,9 +2,33 @@
   <configuration default="false" name="Dockerfile" type="docker-deploy" factoryName="dockerfile" server-name="Docker">
     <deployment type="dockerfile">
       <settings>
-        <option name="imageTag" value="products.sidooh" />
-        <option name="containerName" value="products.sidooh" />
-        <option name="sourceFilePath" value="Dockerfile" />
+          <option name="imageTag" value="products.sidooh"/>
+          <option name="containerName" value="products.sidooh"/>
+          <option name="envVars">
+              <list>
+                  <DockerEnvVarImpl>
+                      <option name="name" value="JWT_KEY"/>
+                      <option name="value" value="amsido3nf092n309dmmxin320"/>
+                  </DockerEnvVarImpl>
+                  <DockerEnvVarImpl>
+                      <option name="name" value="DB_DATABASE"/>
+                      <option name="value" value="sidooh_products"/>
+                  </DockerEnvVarImpl>
+                  <DockerEnvVarImpl>
+                      <option name="name" value="DB_USERNAME"/>
+                      <option name="value" value="root"/>
+                  </DockerEnvVarImpl>
+              </list>
+          </option>
+          <option name="portBindings">
+              <list>
+                  <DockerPortBindingImpl>
+                      <option name="containerPort" value="8080"/>
+                      <option name="hostPort" value="8001"/>
+                  </DockerPortBindingImpl>
+              </list>
+          </option>
+          <option name="sourceFilePath" value="Dockerfile"/>
       </settings>
     </deployment>
     <method v="2" />

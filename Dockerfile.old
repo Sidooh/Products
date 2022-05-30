@@ -8,7 +8,7 @@ RUN apt-get update -y && apt-get install -y \
     build-essential \
     libicu-dev \
     zlib1g-dev \
-    libmemcached-dev \
+#    libmemcached-dev \
     zip \
     unzip \
     nginx \
@@ -19,12 +19,12 @@ RUN apt-get install -y supervisor
 
 # Install docker dependencies
 RUN apt-get install -y libc-client-dev libkrb5-dev \
-    && pecl install memcached-3.1.5 \
+#    && pecl install memcached-3.1.5 \
     && docker-php-ext-install mysqli \
     && docker-php-ext-install intl \
-    && docker-php-ext-install sockets \
-    && docker-php-ext-install pdo_mysql \
-    && docker-php-ext-enable memcached
+#    && docker-php-ext-install sockets \
+    && docker-php-ext-install pdo_mysql
+#    && docker-php-ext-enable memcached
 
 # Download composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
@@ -46,6 +46,7 @@ RUN chmod -R ug+w /home/app/storage
 RUN cp docker/supervisor.conf /etc/supervisord.conf
 RUN cp docker/php.ini /usr/local/etc/php/conf.d/app.ini
 RUN cp docker/nginx.conf /etc/nginx/sites-enabled/default
+#RUN ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/
 
 # PHP Error Log Files
 RUN mkdir /var/log/php
@@ -54,6 +55,8 @@ RUN touch /var/log/php/errors.log && chmod 777 /var/log/php/errors.log
 # Deployment steps
 RUN composer install --optimize-autoloader --no-dev
 RUN chmod +x /home/app/docker/run.sh
+
+RUN service php8.1-fpm status
 
 # Expose the port
 EXPOSE 80

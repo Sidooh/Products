@@ -17,7 +17,6 @@ use App\Services\SidoohAccounts;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class AirtimeController extends Controller
 {
@@ -33,8 +32,6 @@ class AirtimeController extends Controller
         $data = $request->validated();
 
         $account = SidoohAccounts::find($data['account_id']);
-
-        Log::info("Airtime Request:", [$account]);
 
         $transactions = [
             [
