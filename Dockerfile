@@ -1,47 +1,57 @@
-FROM php:8.1-apache
+ARG ALPINE_VERSION=3.16
+FROM alpine:${ALPINE_VERSION}
+LABEL Maintainer="Dr H <jmnabangi@gmail.com>"
+LABEL Description="Lightweight container with Nginx 1.22 & PHP 8.1 based on Alpine Linux."
 
-# Install system libraries
-RUN apt-get update -y && apt-get install -y \
-    build-essential \
-    libicu-dev \
-    zlib1g-dev \
-#    libmemcached-dev \
-    zip \
-    unzip \
+# Setup document root
+WORKDIR /var/www/html
+
+# Install packages and remove default server definition
+RUN apk add --no-cache \
+    curl \
+    nginx \
+    php81 \
+    php81-curl \
+    php81-dom \
+    php81-fileinfo \
+    php81-fpm \
+    php81-intl \
+    php81-mbstring \
+    php81-mysqli \
+    php81-openssl \
+    php81-phar \
+    php81-pdo_mysql \
+    php81-session \
+    php81-tokenizer \
+    php81-xml \
+    php81-xmlwriter \
     supervisor
 
-# Install docker dependencies
-RUN apt-get install -y libc-client-dev libkrb5-dev \
-    && docker-php-ext-install mysqli \
-    && docker-php-ext-install intl \
-#    && docker-php-ext-install sockets \
-    && docker-php-ext-install pdo_mysql
+# Create symlink so programs depending on `php` still function
+RUN ln -s /usr/bin/php81 /usr/bin/php
 
-# Clear cache
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+# Configure nginx
+COPY docker/nginx.conf /etc/nginx/nginx.conf
 
-# Download composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+# Configure PHP-FPM
+#COPY docker/etc/php /etc/php81
 
-COPY laravel-worker.conf /etc/supervisor/conf.d
+# Configure supervisord
+COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-# Define working directory
-WORKDIR /home/app
-
-# Copy project
-COPY . /home/app
-
-# Run composer install && update
-RUN composer install
+# Add application
+COPY . /var/www/html/
 
 
-# Run supervisor for queues
-RUN service supervisor stop && service supervisor start \
-    && supervisorctl status && supervisorctl reread \
-    && supervisorctl update && supervisorctl start laravel-worker:*
+# Install composer from the official image
+COPY --from=composer /usr/bin/composer /usr/bin/composer
 
-# Expose the port
+# Run composer install to install the dependencies
+RUN composer install --optimize-autoloader --no-interaction --no-progress
+
+
+# Expose the port nginx is reachable on
 EXPOSE 8080
 
-# Start artisan
-CMD php artisan serve --host=0.0.0.0 --port=8080
+# Let supervisord start nginx & php-fpm
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
