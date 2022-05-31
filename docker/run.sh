@@ -2,10 +2,11 @@
 
 set -e
 
-cd /home/app || exit
-
 # php artisan migrate:fresh --seed
-php artisan cache:clear
-php artisan route:cache
+#php artisan cache:clear
+#php artisan route:cache
+#php artisan optimize
 
-/usr/bin/supervisord -c /etc/supervisord.conf
+a2enmod rewrite
+
+/usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
