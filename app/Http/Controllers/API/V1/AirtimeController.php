@@ -36,12 +36,12 @@ class AirtimeController extends Controller
         $transactions = [
             [
                 "destination" => $data['target_number'] ?? $account["phone"],
-                "initiator"   => $data["initiator"],
-                "amount"      => $data["amount"],
-                "type"        => TransactionType::PAYMENT,
+                "initiator" => $data["initiator"],
+                "amount" => $data["amount"],
+                "type" => TransactionType::PAYMENT,
                 "description" => Description::AIRTIME_PURCHASE,
-                "account_id"  => $data['account_id'],
-                "account"     => $account,
+                "account_id" => $data['account_id'],
+                "account" => $account,
             ]
         ];
         $data += [
