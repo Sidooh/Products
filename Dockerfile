@@ -39,16 +39,20 @@ COPY docker/nginx.conf /etc/nginx/nginx.conf
 # Configure supervisord
 COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-# Add application
-COPY . /var/www/html/
+# Make sure files/folders needed by the processes are accessable when they run under the nobody user
+RUN chown -R nobody.nobody /var/www/html /run /var/lib/nginx /var/log/nginx /var/log/php81
 
+# Switch to use a non-root user from here on
+USER nobody
+
+# Add application
+COPY --chown=nobody . /var/www/html/
 
 # Install composer from the official image
 COPY --from=composer /usr/bin/composer /usr/bin/composer
 
 # Run composer install to install the dependencies
 RUN composer install --optimize-autoloader --no-interaction --no-progress
-
 
 # Expose the port nginx is reachable on
 EXPOSE 8080
