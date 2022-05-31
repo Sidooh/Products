@@ -8,15 +8,15 @@
               <list>
                   <DockerEnvVarImpl>
                       <option name="name" value="JWT_KEY"/>
-                      <option name="value" value="amsido3nf092n309dmmxin320"/>
+                      <option name="value" value="accounts.sidooh"/>
                   </DockerEnvVarImpl>
                   <DockerEnvVarImpl>
-                      <option name="name" value="DB_DATABASE"/>
-                      <option name="value" value="sidooh_products"/>
+                      <option name="name" value="LOG_CHANNEL"/>
+                      <option name="value" value="stack"/>
                   </DockerEnvVarImpl>
                   <DockerEnvVarImpl>
-                      <option name="name" value="DB_USERNAME"/>
-                      <option name="value" value="root"/>
+                      <option name="name" value="SIDOOH_ACCOUNTS_API_URL"/>
+                      <option name="value" value="http://127.0.0.1:8000/api/v1"/>
                   </DockerEnvVarImpl>
               </list>
           </option>
@@ -28,6 +28,7 @@
                   </DockerPortBindingImpl>
               </list>
           </option>
+          <option name="commandLineOptions" value="--network=&quot;host&quot;"/>
           <option name="sourceFilePath" value="Dockerfile"/>
       </settings>
     </deployment>
