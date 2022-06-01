@@ -10,7 +10,6 @@ use App\Traits\ApiResponse;
 use Exception;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class TransactionRepository
@@ -26,11 +25,7 @@ class TransactionRepository
             "account" => $transaction['account']
         ], $transactions);
 
-        Log::info("Transaction created:", [$transactions]);
-
         TransactionCreated::dispatch($transactions, $data);
-
-        Log::info("Transaction dispatch:", [$data]);
 
         return Arr::pluck($transactions, 'id');
     }

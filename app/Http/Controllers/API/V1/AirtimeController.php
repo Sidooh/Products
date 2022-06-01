@@ -10,7 +10,6 @@ use App\Events\AirtimePurchaseFailedEvent;
 use App\Events\AirtimePurchaseSuccessEvent;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AirtimeRequest;
-use App\Http\Requests\ProductRequest;
 use App\Models\AirtimeResponse;
 use App\Repositories\TransactionRepository;
 use App\Services\SidoohAccounts;
@@ -23,7 +22,7 @@ class AirtimeController extends Controller
     /**
      * Handle the incoming request.
      *
-     * @param ProductRequest $request
+     * @param AirtimeRequest $request
      * @return JsonResponse
      * @throws Exception
      */
