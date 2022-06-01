@@ -20,15 +20,16 @@ RUN docker-php-ext-configure opcache --enable-opcache \
 COPY docker/php/conf.d/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 
 COPY docker/000-default.conf /etc/apache2/sites-available/000-default.conf
-#COPY .env.example /var/www/html/.env
 
 COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 COPY --from=build /app /var/www/html
 
 RUN chmod 777 -R /var/www/html/storage/ && \
-    chown -R www-data:www-data /var/www/
+    chown -R www-data:www-data /var/www/ && \
+    a2enmod rewrite
 
-RUN chmod +x docker/run.sh
 
-CMD ["docker/run.sh"]
+#RUN chmod +x docker/run.sh
+#
+#CMD ["docker/run.sh"]
