@@ -27,7 +27,7 @@ class JWT extends Guard
     static function verify($token)
     {
         try {
-            $secret = env('JWT_KEY');
+            $secret = config('services.sidooh.jwt_key');
 
             if(!isset($secret)) exit('Invalid JWT key!');
 

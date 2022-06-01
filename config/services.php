@@ -45,14 +45,15 @@ return [
     ],
 
     'sidooh' => [
-        'earnings'           => [
+        'jwt_key' => env('JWT_KEY'),
+        'earnings' => [
             'users_percentage' => 0.6,
         ],
-        'tagline'            => 'Sidooh, Makes You Money with Every Purchase.',
-        'mpesa'              => [
+        'tagline' => 'Sidooh, Makes You Money with Every Purchase.',
+        'mpesa' => [
             'env' => 'local',
             'b2c' => [
-                'phone'      => '254708374149',
+                'phone' => '254708374149',
                 'min_amount' => '10',
                 'max_amount' => '70000',
             ],

@@ -23,12 +23,11 @@
           <option name="portBindings">
               <list>
                   <DockerPortBindingImpl>
-                      <option name="containerPort" value="8080"/>
+                      <option name="containerPort" value="80"/>
                       <option name="hostPort" value="8001"/>
                   </DockerPortBindingImpl>
               </list>
           </option>
-          <option name="commandLineOptions" value=""/>
           <option name="sourceFilePath" value="Dockerfile"/>
       </settings>
     </deployment>
