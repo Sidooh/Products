@@ -5,18 +5,19 @@ namespace App\Listeners;
 use App\Events\TransactionCreated;
 use App\Repositories\TransactionRepository;
 use Exception;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
-class ProcessTransaction implements ShouldQueue
+class ProcessTransaction
 {
     /**
      * Create the event listener.
      *
      * @return void
      */
-    public function __construct() { }
+    public function __construct()
+    {
+    }
 
     /**
      * Handle the event.
