@@ -1,35 +1,49 @@
 FROM composer:2.2 as build
 
-COPY . /app/
+COPY . /app
 
 RUN composer install --prefer-dist --no-dev --optimize-autoloader --no-interaction --ignore-platform-reqs
 
-FROM php:8.1-apache-buster as production
+FROM php:8.1-buster as production
 
-ENV APP_ENV=production
-ENV APP_DEBUG=false
-
+# Install system libraries
 RUN apt-get update -y && apt-get install -y \
-    libicu-dev \
-    supervisor
+#    build-essential \
+    libicu-dev
+#    zlib1g-dev \
+#    libmemcached-dev \
+#    zip \
+#    unzip
 
-RUN docker-php-ext-configure opcache --enable-opcache \
-    && docker-php-ext-install pdo pdo_mysql \
-    && docker-php-ext-install intl
+# Install docker dependencies
+RUN #apt-get install -y \
+#    && libc-client-dev libkrb5-dev \
+#    && pecl install memcached-3.1.5 \
+    docker-php-ext-install mysqli \
+    && docker-php-ext-install intl \
+#    && docker-php-ext-install sockets \
+    && docker-php-ext-install pdo_mysql
+#    && docker-php-ext-enable memcached
 
-COPY docker/php/conf.d/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
+# Clear cache
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
-COPY docker/000-default.conf /etc/apache2/sites-available/000-default.conf
+# Download composer
+RUN #curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+# Define working directory
+WORKDIR /home/app
 
-COPY --from=build /app /var/www/html
-
-RUN chmod 777 -R /var/www/html/storage/ && \
-    chown -R www-data:www-data /var/www/ && \
-    a2enmod rewrite
+# Copy project
+#COPY . /home/app
+COPY --from=build /app /home/app
 
 
-#RUN chmod +x docker/run.sh
-#
-#CMD ["docker/run.sh"]
+# Run composer install && update
+RUN #composer install
+
+# Expose the port
+EXPOSE 8080
+
+# Start artisan
+CMD php artisan serve --host=0.0.0.0 --port=8080
