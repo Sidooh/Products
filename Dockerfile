@@ -16,10 +16,10 @@ RUN apt-get update -y && apt-get install -y \
 #    unzip
 
 # Install docker dependencies
-RUN #apt-get install -y \
+#RUN apt-get install -y \
 #    && libc-client-dev libkrb5-dev \
 #    && pecl install memcached-3.1.5 \
-    docker-php-ext-install mysqli \
+RUN docker-php-ext-install mysqli \
     && docker-php-ext-install intl \
 #    && docker-php-ext-install sockets \
     && docker-php-ext-install pdo_mysql
@@ -29,7 +29,7 @@ RUN #apt-get install -y \
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Download composer
-RUN #curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+#RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # Define working directory
 WORKDIR /home/app
@@ -40,7 +40,7 @@ COPY --from=build /app /home/app
 
 
 # Run composer install && update
-RUN #composer install
+#RUN composer install
 
 # Expose the port
 EXPOSE 8080
