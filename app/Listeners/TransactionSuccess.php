@@ -4,17 +4,18 @@ namespace App\Listeners;
 
 use App\Events\TransactionSuccessEvent;
 use App\Repositories\EarningRepository;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
 
-class TransactionSuccess implements ShouldQueue
+class TransactionSuccess
 {
     /**
      * Create the event listener.
      *
      * @return void
      */
-    public function __construct() { }
+    public function __construct()
+    {
+    }
 
     /**
      * Handle the event.
