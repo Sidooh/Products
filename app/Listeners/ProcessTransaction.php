@@ -30,6 +30,6 @@ class ProcessTransaction
     {
         Log::info('--- --- --- --- ---   ...[EVENT]: Process Transaction...   --- --- --- --- ---');
 
-        TransactionRepository::initiatePayment($event->transaction, $event->data);
+        TransactionRepository::initiatePayment($event->transactions, $event->data);
     }
 }
