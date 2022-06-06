@@ -44,6 +44,9 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function() {
     Route::prefix('/accounts')->group(function() {
         Route::get('/{accountId}/airtime-accounts', [ProductController::class, 'airtimeAccounts']);
         Route::get('/{accountId}/utility-accounts', [ProductController::class, 'utilityAccounts']);
+
+        Route::get('/{accountId}/current-subscription', [ProductController::class, 'currentSubscription']);
+
     });
 
     Route::get('/transactions', [PaymentsController::class, 'index']);

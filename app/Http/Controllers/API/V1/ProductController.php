@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\AirtimeAccount;
+use App\Models\Subscription;
 use App\Models\UtilityAccount;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -39,10 +40,17 @@ class ProductController extends Controller
     {
         $accounts = UtilityAccount::select(["id", "provider", "account_number"])->whereAccountId($accountId);
 
-        if($request->exists('limit')) $accounts = $accounts->limit($request->input('limit'));
+        if ($request->exists('limit')) $accounts = $accounts->limit($request->input('limit'));
 
         $accounts = $accounts->latest()->get();
 
         return $this->successResponse($accounts);
+    }
+
+    public function currentSubscription(Request $request, int $accountId): JsonResponse
+    {
+        $subscription = Subscription::whereAccountId($accountId)->latest()->first();
+
+        return $this->successResponse($subscription);
     }
 }
