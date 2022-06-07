@@ -45,17 +45,17 @@ class ProductRequest extends FormRequest
                     $subPrices = SubscriptionType::pluck('price')->toArray();
                     $subPricesStr = implode(', ', $subPrices);
 
-                    if($isSubscription && !in_array($value, $subPrices)) {
+                    if ($isSubscription && !in_array($value, $subPrices)) {
                         $fail("The $attribute must be either of: {$subPricesStr}.");
                     }
                 },
             ],
-            'method'           => [new Enum(PaymentMethod::class),],
-            'enterprise_id'    => ["required_if:initiator," . Initiator::ENTERPRISE->name],
-            'account_number'   => [Rule::requiredIf($this->is('*/products/utility')), 'integer'],
+            'method' => [new Enum(PaymentMethod::class),],
+            'enterprise_id' => ["required_if:initiator," . Initiator::ENTERPRISE->name],
+            'account_number' => [Rule::requiredIf($this->is('*/products/utility')), 'integer'],
             'utility_provider' => ["required_if:product,utility"],
-            'target_number'    => "phone:$countryCode",
-            'debit_account'     => "phone:$countryCode",
+            'target_number' => "phone:$countryCode",
+            'debit_account' => "phone:$countryCode",
         ];
     }
 

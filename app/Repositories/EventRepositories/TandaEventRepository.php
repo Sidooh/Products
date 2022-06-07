@@ -5,6 +5,7 @@ namespace App\Repositories\EventRepositories;
 use App\Enums\Description;
 use App\Enums\EventType;
 use App\Enums\Status;
+use App\Enums\TransactionType;
 use App\Events\TransactionSuccessEvent;
 use App\Models\Transaction;
 use App\Repositories\EarningRepository;
@@ -44,7 +45,9 @@ class TandaEventRepository extends EventRepository
         if($tandaRequest->relation_id) {
             $transaction = Transaction::find($tandaRequest->relation_id);
         } else {
-            $transaction = Transaction::whereStatus('pending')->whereType('PAYMENT')->whereAmount($tandaRequest->amount)
+            $transaction = Transaction::whereStatus(Status::PENDING->name)
+                ->whereType(TransactionType::PAYMENT->name)
+                ->whereAmount($tandaRequest->amount)
                 ->whereLike('description', 'LIKE', "%" . $tandaRequest->destination)
                 ->whereDate('createdAt', '<', $tandaRequest->created_at);
             $tandaRequest->relation_id = $transaction->id;
@@ -146,10 +149,10 @@ class TandaEventRepository extends EventRepository
         }
 
         //  Update Earnings
-        SidoohNotify::notify([$sender], $message, $eventType);
+        TransactionSuccessEvent::dispatch($transaction, $totalEarnings);
         Transaction::updateStatus($transaction, Status::COMPLETED);
         ProductRepository::syncAccounts($account, $provider, $destination);
-        TransactionSuccessEvent::dispatch($transaction, $totalEarnings);
+        SidoohNotify::notify([$sender], $message, $eventType);
 
         Log::info('--- --- --- --- ---   ...[TANDA EVENT REPOSITORY]: Completed Transaction...   --- --- --- --- ---');
     }
