@@ -3,7 +3,6 @@
 namespace App\Listeners;
 
 use App\Events\TransactionSuccessEvent;
-use App\Repositories\EarningRepository;
 use Illuminate\Support\Facades\Log;
 
 class TransactionSuccess
@@ -27,6 +26,7 @@ class TransactionSuccess
     {
         Log::info('--- --- --- --- ---   ...[EVENT]: Transaction Success...   --- --- --- --- ---');
 
-        EarningRepository::calcEarnings($event->transaction, $event->totalEarned);
+//        TODO: Fix earnings logic ASAP!
+//        EarningRepository::calcEarnings($event->transaction, $event->totalEarned);
     }
 }
