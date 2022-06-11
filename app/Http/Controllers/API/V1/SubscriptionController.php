@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\V1;
 
 use App\Enums\Description;
 use App\Enums\PaymentMethod;
+use App\Enums\ProductType;
 use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductRequest;
@@ -25,12 +26,13 @@ class SubscriptionController extends Controller
 
         $transactions = [
             [
-                "initiator"   => $data["initiator"],
-                "amount"      => $data["amount"],
-                "type"        => TransactionType::PAYMENT,
+                "initiator" => $data["initiator"],
+                "amount" => $data["amount"],
+                "type" => TransactionType::PAYMENT,
                 "description" => Description::SUBSCRIPTION_PURCHASE,
-                "account_id"  => $data['account_id'],
-                "account"     => SidoohAccounts::find($data['account_id']),
+                "account_id" => $data['account_id'],
+                "product_id" => ProductType::SUBSCRIPTION,
+                "account" => SidoohAccounts::find($data['account_id']),
             ]
         ];
 

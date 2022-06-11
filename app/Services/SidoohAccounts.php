@@ -47,4 +47,20 @@ class SidoohAccounts extends SidoohService
     {
         return self::find($accountId)['phone'];
     }
+
+    /**
+     * @throws Exception
+     */
+    static function getInviters(int|string $id): array
+    {
+        Log::info('--- --- --- --- ---   ...[SRV - ACCOUNTS]: Find Ancestors...   --- --- --- --- ---', ['id' => $id]);
+
+        $url = config('services.sidooh.services.accounts.url') . "/accounts/$id/ancestors";
+
+        $ancestors = Cache::remember($id, now()->addMonth(), fn() => parent::fetch($url));
+
+        if (!$ancestors) throw new Exception("Account Ancestors don't exist!");
+
+        return $ancestors;
+    }
 }

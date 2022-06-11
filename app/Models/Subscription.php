@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\Status;
 use Database\Factories\SubscriptionFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -58,15 +59,23 @@ class Subscription extends Model
     }
 
 
-
     /**
      * Scope a query to only include active subscriptions.
      *
-     * @param Builder $query
+     * @param int $accountId
      * @return bool
      */
     public static function active(int $accountId): bool
     {
-        return self::whereAccountId($accountId)->whereDate('end_date', '>=', now())->exists();
+        return self::whereAccountId($accountId)
+            ->whereDate('start_date', '<', now())
+            ->whereDate('end_date', '>', now())
+            ->whereStatus(Status::ACTIVE)
+            ->exists();
+    }
+
+    public static function getMany(array $ids)
+    {
+        return self::whereIn('account_id', $ids)->get();
     }
 }

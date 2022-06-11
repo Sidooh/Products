@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\V1;
 
 use App\Enums\Description;
 use App\Enums\PaymentMethod;
+use App\Enums\ProductType;
 use App\Enums\Status;
 use App\Enums\TransactionType;
 use App\Events\AirtimePurchaseFailedEvent;
@@ -40,6 +41,7 @@ class AirtimeController extends Controller
                 "type" => TransactionType::PAYMENT,
                 "description" => Description::AIRTIME_PURCHASE,
                 "account_id" => $data['account_id'],
+                "product_id" => ProductType::AIRTIME,
                 "account" => $account,
             ]
         ];
@@ -65,12 +67,13 @@ class AirtimeController extends Controller
 
             return [
                 "destination" => $account["phone"],
-                "initiator"   => $data["initiator"],
-                "amount"      => $recipient["amount"],
-                "type"        => TransactionType::PAYMENT,
+                "initiator" => $data["initiator"],
+                "amount" => $recipient["amount"],
+                "type" => TransactionType::PAYMENT,
                 "description" => Description::AIRTIME_PURCHASE,
-                "account_id"  => $data['account_id'],
-                "account"     => $account,
+                "account_id" => $data['account_id'],
+                "product_id" => ProductType::AIRTIME,
+                "account" => $account,
             ];
         }, $data['recipients_data']);
 

@@ -34,4 +34,11 @@ use Illuminate\Support\Carbon;
 class Cashback extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'account_id',
+        'amount',
+        'type',
+        'transaction_id'
+    ];
 }

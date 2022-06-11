@@ -47,12 +47,21 @@ class EventRepository
 
     public static function voucherPurchaseSuccess(Transaction $transaction, Voucher $voucher)
     {
+        // TODO: Fix voucher purchase sms - add voucher balance
         $amount = $transaction->amount;
         $account = SidoohAccounts::find($transaction->account_id);
 
         $phone = ltrim($account['phone'], '+');
 
         $date = $voucher->updated_at->timezone('Africa/Nairobi')->format(config("settings.sms_date_time_format"));
+
+//        if($method == 'VOUCHER') {
+//            $bal = $airtimeResponse->request->transaction->account->voucher->balance;
+//            $vtext = " New Voucher balance is KES$bal.";
+//        } else {
+//            $method = 'MPESA';
+//            $vtext = '';
+//        }
 
         $message = "Congratulations! You have successfully purchased a voucher ";
         $message .= "worth Ksh{$amount} on {$date}.\n\n";

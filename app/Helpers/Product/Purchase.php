@@ -3,7 +3,6 @@
 namespace App\Helpers\Product;
 
 use App\Enums\Status;
-use App\Events\MerchantPurchaseEvent;
 use App\Events\SubscriptionPurchaseEvent;
 use App\Events\SubscriptionPurchaseFailedEvent;
 use App\Helpers\AfricasTalking\AfricasTalkingApi;
@@ -12,7 +11,6 @@ use App\Helpers\Tanda\TandaApi;
 use App\Models\Subscription;
 use App\Models\SubscriptionType;
 use App\Models\Transaction;
-use App\Models\Voucher;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;

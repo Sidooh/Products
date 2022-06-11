@@ -49,6 +49,7 @@ class Transaction extends Model
 
     protected $fillable = [
         'account_id',
+        'product_id',
         'initiator',
         'type',
         'amount',

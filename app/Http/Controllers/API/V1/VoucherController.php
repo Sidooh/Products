@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\V1;
 
 use App\Enums\Description;
 use App\Enums\PaymentMethod;
+use App\Enums\ProductType;
 use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\VoucherRequest;
@@ -38,12 +39,13 @@ class VoucherController extends Controller
         $transactions = [
             [
                 "destination" => $data['target_number'] ?? $account["phone"],
-                "initiator"   => $data["initiator"],
-                "amount"      => $data["amount"],
-                "type"        => TransactionType::PAYMENT,
+                "initiator" => $data["initiator"],
+                "amount" => $data["amount"],
+                "type" => TransactionType::PAYMENT,
                 "description" => Description::VOUCHER_PURCHASE,
-                "account_id"  => $data['account_id'],
-                "account"     => $account,
+                "account_id" => $data['account_id'],
+                "product_id" => ProductType::VOUCHER,
+                "account" => $account,
             ]
         ];
 
