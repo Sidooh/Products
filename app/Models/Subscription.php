@@ -68,7 +68,7 @@ class Subscription extends Model
     public static function active(int $accountId): bool
     {
         return self::whereAccountId($accountId)
-            ->whereDate('start_date', '<', now())
+//            ->whereDate('start_date', '<', now())
             ->whereDate('end_date', '>', now())
             ->whereStatus(Status::ACTIVE)
             ->exists();

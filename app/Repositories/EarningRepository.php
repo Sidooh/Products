@@ -53,7 +53,13 @@ class EarningRepository
             $inviters = SidoohAccounts::getInviters($transaction->account_id);
             array_shift($inviters);
 
+            if (count($inviters) + 1 > 6) abort(500, "Too many inviters");
+
             foreach ($inviters as $inviter) {
+                $hasActiveSubscription = Subscription::active($inviter['id']);
+                $isLevelOneInviter = $inviter['level'] == 1;
+                if (!$hasActiveSubscription && !$isLevelOneInviter) continue;
+
                 // Create Earning Transaction
                 Cashback::create([
                     'account_id' => $inviter['id'],
@@ -65,7 +71,7 @@ class EarningRepository
                 // Update Earning Account
                 //TODO: Is it possible to update in one statement? with the addition since we don't know the initial amount?
                 $earningAccount = EarningAccount::firstOrCreate([
-                    'account_id' => $transaction->account_id,
+                    'account_id' => $inviter['id'],
                     'type' => EarningAccountType::SUBSCRIPTION->name
                 ]);
 
@@ -114,10 +120,16 @@ class EarningRepository
             $inviters = SidoohAccounts::getInviters($transaction->account_id);
             array_shift($inviters);
 
+            if (count($inviters) + 1 > 6) abort(500, "Too many inviters");
+
             $groupEarnings = round($transaction->amount * config('services.sidooh.earnings.subscribed_inviters_percentage', .02), 4);
             $userEarnings = round($groupEarnings / 5, 4);
 
             foreach ($inviters as $inviter) {
+                $hasActiveSubscription = Subscription::active($inviter['id']);
+                $isLevelOneInviter = $inviter['level'] == 1;
+                if (!$hasActiveSubscription && !$isLevelOneInviter) continue;
+
                 // Create Earning Transaction
                 Cashback::create([
                     'account_id' => $inviter['id'],
@@ -129,7 +141,7 @@ class EarningRepository
                 // Update Earning Account
                 //TODO: Is it possible to update in one statement? with the addition since we don't know the initial amount?
                 $earningAccount = EarningAccount::firstOrCreate([
-                    'account_id' => $transaction->account_id,
+                    'account_id' => $inviter['id'],
                     'type' => EarningAccountType::PURCHASE->name
                 ]);
 
@@ -164,9 +176,14 @@ class EarningRepository
                 $inviters = SidoohAccounts::getInviters($transaction->account_id);
                 array_shift($inviters);
 
-                if (count($inviters) + 1 > 6) abort(500);
+                if (count($inviters) + 1 > 6) abort(500, "Too many inviters");
 
                 foreach ($inviters as $inviter) {
+                    $hasActiveSubscription = Subscription::active($inviter['id']);
+                    $isLevelOneInviter = $inviter['level'] == 1;
+                    Log::info("foreach", [$inviter, $hasActiveSubscription, $isLevelOneInviter]);
+                    if (!$hasActiveSubscription && !$isLevelOneInviter) continue;
+
                     // Create Earning Transaction
                     Cashback::create([
                         'account_id' => $inviter['id'],
@@ -178,7 +195,7 @@ class EarningRepository
                     // Update Earning Account
                     //TODO: Is it possible to update in one statement? with the addition since we don't know the initial amount?
                     $earningAccount = EarningAccount::firstOrCreate([
-                        'account_id' => $transaction->account_id,
+                        'account_id' => $inviter['id'],
                         'type' => EarningAccountType::PURCHASE->name
                     ]);
 

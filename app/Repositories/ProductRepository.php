@@ -4,7 +4,6 @@ namespace App\Repositories;
 
 use App\Models\AirtimeAccount;
 use App\Models\UtilityAccount;
-use DrH\Mpesa\Exceptions\MpesaException;
 use Nabcellent\Kyanda\Library\Providers;
 
 class ProductRepository

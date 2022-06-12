@@ -17,7 +17,7 @@ class SidoohAccounts extends SidoohService
 
         $url = config('services.sidooh.services.accounts.url') . "/accounts/$id";
 
-        $acc = Cache::remember($id, now()->addDay(), fn() => parent::fetch($url));
+        $acc = Cache::remember($id, (60 * 60 * 24), fn() => parent::fetch($url));
 
         if(!$acc) throw new Exception("Account doesn't exist!");
 
@@ -57,7 +57,7 @@ class SidoohAccounts extends SidoohService
 
         $url = config('services.sidooh.services.accounts.url') . "/accounts/$id/ancestors";
 
-        $ancestors = Cache::remember($id, now()->addMonth(), fn() => parent::fetch($url));
+        $ancestors = Cache::remember("${id}_ancestors", (60 * 60 * 24 * 28), fn() => parent::fetch($url));
 
         if (!$ancestors) throw new Exception("Account Ancestors don't exist!");
 

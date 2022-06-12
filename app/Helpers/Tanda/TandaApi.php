@@ -17,6 +17,9 @@ class TandaApi
     {
         Log::info('--- --- --- --- ---   ...[TANDA-API]: Disburse Airtime...   --- --- --- --- ---');
 
+        // TODO: Remove in Production
+        $transaction->amount = 10;
+
         try {
             $request = Utility::airtimePurchase($array['phone'], $transaction->amount, $transaction->id);
             self::handleRequestResponse($request);

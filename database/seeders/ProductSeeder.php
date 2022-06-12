@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Enums\ProductType;
+use App\Models\Product;
 use Illuminate\Database\Seeder;
 
 class ProductSeeder extends Seeder
@@ -14,5 +16,16 @@ class ProductSeeder extends Seeder
     public function run()
     {
         //
+
+        $products = [];
+
+        foreach (ProductType::cases() as $product) {
+            $products[] = [
+                'name' => $product->name
+            ];
+        }
+
+        Product::insert($products);
+
     }
 }

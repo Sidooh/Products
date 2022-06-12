@@ -41,6 +41,7 @@ class SubscriptionType extends Model
 {
     use HasFactory;
 
+    // TODO: Should we update duration to store period as well? e.g. 1m, 1y
     /**
      * ---------------------------------------- Relationships ----------------------------------------
      */

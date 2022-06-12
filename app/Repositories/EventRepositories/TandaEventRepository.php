@@ -4,6 +4,7 @@ namespace App\Repositories\EventRepositories;
 
 use App\Enums\Description;
 use App\Enums\EventType;
+use App\Enums\ProductType;
 use App\Enums\Status;
 use App\Enums\TransactionType;
 use App\Events\TransactionSuccessEvent;
@@ -25,14 +26,20 @@ class TandaEventRepository extends EventRepository
     {
         $provider = $tandaRequest->provider;
 
-        if(empty($provider)) {
-            $productString = explode(" ", $transaction->description);
+        if (empty($provider)) {
+            $productId = $transaction->product_id;
+            $descriptionArray = explode(" ", $transaction->description);
 
-            $provider = $productString[0] == "Airtime"
+            $provider = $productId == ProductType::AIRTIME->value
                 ? getTelcoFromPhone($transaction->destination)
-                : $productString[0];
+                : $descriptionArray[0];
 
             $tandaRequest->provider = $provider;
+
+            if (empty($tandaRequest->destination)) {
+                $tandaRequest->destination = $descriptionArray[1];
+            }
+
             $tandaRequest->save();
         }
 
@@ -42,7 +49,7 @@ class TandaEventRepository extends EventRepository
     public static function requestSuccess(TandaRequest $tandaRequest)
     {
         // Update Transaction
-        if($tandaRequest->relation_id) {
+        if ($tandaRequest->relation_id) {
             $transaction = Transaction::find($tandaRequest->relation_id);
         } else {
             $transaction = Transaction::whereStatus(Status::PENDING->name)
@@ -54,6 +61,14 @@ class TandaEventRepository extends EventRepository
             $tandaRequest->save();
         }
 
+        if ($transaction->status == Status::COMPLETED) {
+            SidoohNotify::notify([
+                '254714611696',
+                '254110039317'
+            ], "ERROR:TANDA REQUEST\nTransaction ${transaction} seems to have been completed already. Confirm!!!", EventType::ERROR_ALERT);
+            return;
+        }
+
         $provider = self::getProvider($tandaRequest, $transaction);
 
         $account = SidoohAccounts::find($transaction->account_id);
@@ -63,7 +78,7 @@ class TandaEventRepository extends EventRepository
         $voucher = $paymentDetails["voucher"];
         $method = $payment["subtype"];
 
-        if($method === 'VOUCHER') {
+        if ($method === 'VOUCHER') {
             $bal = $voucher["balance"];
             $vtext = " New Voucher balance is KES$bal.";
         } else {
@@ -80,7 +95,7 @@ class TandaEventRepository extends EventRepository
         $date = $tandaRequest->updated_at->timezone('Africa/Nairobi')->format(config("settings.sms_date_time_format"));
         $eventType = EventType::UTILITY_PAYMENT;
 
-        switch($provider) {
+        switch ($provider) {
             case Providers::FAIBA:
             case Providers::SAFARICOM:
             case Providers::AIRTEL:
@@ -95,7 +110,7 @@ class TandaEventRepository extends EventRepository
                 $eventType = EventType::AIRTIME_PURCHASE;
 
                 //  Send SMS
-                if($phone != $sender) {
+                if ($phone != $sender) {
                     $message = "You have purchased {$amount} airtime for {$phone} from your Sidooh account on {$date} using $method. You have received {$userEarnings} cashback.$vtext";
 
                     SidoohNotify::notify([$sender], $message, $eventType);
@@ -144,8 +159,6 @@ class TandaEventRepository extends EventRepository
                 //  Send SMS
                 $message = "You have made a payment to {$provider} - {$destination} of {$amount} from your Sidooh account on {$date} using $method. You have received {$userEarnings} cashback.$vtext";
                 break;
-            default:
-                $totalEarnings = .003 * $transaction->amount;
         }
 
         //  Update Earnings

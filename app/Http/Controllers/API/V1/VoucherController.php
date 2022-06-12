@@ -14,8 +14,6 @@ use App\Services\SidoohAccounts;
 use App\Services\SidoohPayments;
 use Exception;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Propaganistas\LaravelPhone\PhoneNumber;
 use Throwable;
 
@@ -24,9 +22,9 @@ class VoucherController extends Controller
     /**
      * Handle the incoming request.
      *
-     * @param Request $request
+     * @param VoucherRequest $request
+     * @return JsonResponse
      * @throws Exception
-     * @return Response
      */
     public function topUp(VoucherRequest $request): JsonResponse
     {

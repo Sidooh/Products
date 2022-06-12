@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             SubscriptionTypeSeeder::class,
+            ProductSeeder::class,
 //            EnterpriseSeeder::class,
         ]);
     }
