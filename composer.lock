@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "088e2df4b5786acc3c9f88f6fecced02",
+    "content-hash": "e12ab3fe36f230c7118607cc0476fd8c",
     "packages": [
         {
             "name": "africastalking/africastalking",
@@ -483,16 +483,16 @@
         },
         {
             "name": "drh/laravel-tanda",
-            "version": "dev-dev-dr",
+            "version": "v1.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DrH97/laravel-tanda.git",
-                "reference": "a76c34ce37e217602134e71fdc27420e2245d67d"
+                "reference": "9bb2d6d6a58923e0e5c635b7ebe779ed214f88ad"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DrH97/laravel-tanda/zipball/a76c34ce37e217602134e71fdc27420e2245d67d",
-                "reference": "a76c34ce37e217602134e71fdc27420e2245d67d",
+                "url": "https://api.github.com/repos/DrH97/laravel-tanda/zipball/9bb2d6d6a58923e0e5c635b7ebe779ed214f88ad",
+                "reference": "9bb2d6d6a58923e0e5c635b7ebe779ed214f88ad",
                 "shasum": ""
             },
             "require": {
@@ -541,9 +541,9 @@
             ],
             "support": {
                 "issues": "https://github.com/DrH97/laravel-tanda/issues",
-                "source": "https://github.com/DrH97/laravel-tanda/tree/dev-dr"
+                "source": "https://github.com/DrH97/laravel-tanda/tree/v1.3.0"
             },
-            "time": "2022-06-12T13:09:14+00:00"
+            "time": "2022-06-14T18:04:11+00:00"
         },
         {
             "name": "egulias/email-validator",
@@ -8952,9 +8952,7 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {
-        "drh/laravel-tanda": 20
-    },
+    "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
