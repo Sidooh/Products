@@ -26,31 +26,30 @@ class Purchase
     /**
      * @throws Exception
      */
-    public function utility(array $billDetails, string $provider): void
+    public function utility(array $billDetails): void
     {
         $billDetails['account_number'] = $this->transaction->destination;
 
         match (config('services.sidooh.utilities_provider')) {
-            'KYANDA' => KyandaApi::bill($this->transaction, $billDetails, $provider),
-            'TANDA' => TandaApi::bill($this->transaction, $billDetails, $provider),
+            'KYANDA' => KyandaApi::bill($this->transaction, $billDetails, $billDetails["provider"]),
+            'TANDA' => TandaApi::bill($this->transaction, $billDetails, $billDetails["provider"]),
             default => throw new Exception('No provider provided for utility purchase')
         };
     }
 
     /**
-     * @param array $airtimeData
-     * @throws Throwable
+     * @throws \Throwable
      */
-    public function airtime(array $airtimeData): void
+    public function airtime(): void
     {
         if($this->transaction->airtime) exit;
 
-        $airtimeData['phone'] = PhoneNumber::make($this->transaction->destination, 'KE')->formatE164();
+        $phone = PhoneNumber::make($this->transaction->destination, 'KE')->formatE164();
 
         match (config('services.sidooh.utilities_provider')) {
-            'AT' => AfricasTalkingApi::airtime($this->transaction, $airtimeData),
-            'KYANDA' => KyandaApi::airtime($this->transaction, $airtimeData),
-            'TANDA' => TandaApi::airtime($this->transaction, $airtimeData),
+            'AT' => AfricasTalkingApi::airtime($this->transaction, $phone),
+            'KYANDA' => KyandaApi::airtime($this->transaction, $phone),
+            'TANDA' => TandaApi::airtime($this->transaction, $phone),
             default => throw new Exception('No provider provided for airtime purchase')
         };
     }

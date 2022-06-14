@@ -8,6 +8,7 @@ use App\Models\Transaction;
 use App\Repositories\TransactionRepository;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rules\Enum;
 use Throwable;
 
@@ -36,11 +37,14 @@ class PaymentsController extends Controller
      */
     public function requestPurchase(Request $request)
     {
+        Log::info('--- --- ---   ...[CONTROLLER - PAYMENT]: Request Purchase...   --- --- ---', $request->all());
+
         $request->validate([
-            'transaction_ids' => ['required'],
-            'data'            => ['required', 'array']
+            "payments" => "required|array",
+            "phone"    => "phone:KE",
+            "provider" => "string"
         ]);
 
-        TransactionRepository::requestPurchase($request->input('transaction_ids'), $request->input('data'));
+        TransactionRepository::requestPurchase($request->all());
     }
 }

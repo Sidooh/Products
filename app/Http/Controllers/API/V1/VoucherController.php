@@ -49,7 +49,6 @@ class VoucherController extends Controller
 
         $data = [
             "payment_account" => $account,
-            "product"         => "voucher",
             "method"          => $data["method"] ?? PaymentMethod::MPESA->value,
         ];
 

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ProductType;
 use App\Enums\Status;
 use Database\Factories\TransactionFactory;
 use Illuminate\Database\Eloquent\Builder;
@@ -55,6 +56,10 @@ class Transaction extends Model
         'amount',
         'destination',
         'description',
+    ];
+
+    protected $casts = [
+        "product_id" => ProductType::class,
     ];
 
     public function airtime(): HasOne

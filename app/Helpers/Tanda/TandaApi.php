@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Log;
 
 class TandaApi
 {
-    public static function airtime(Transaction $transaction, array $array): void
+    public static function airtime(Transaction $transaction, int $phone): void
     {
         Log::info('--- --- --- --- ---   ...[TANDA-API]: Disburse Airtime...   --- --- --- --- ---');
 
@@ -21,7 +21,7 @@ class TandaApi
         $transaction->amount = 10;
 
         try {
-            $request = Utility::airtimePurchase($array['phone'], $transaction->amount, $transaction->id);
+            $request = Utility::airtimePurchase($phone, $transaction->amount, $transaction->id);
             self::handleRequestResponse($request);
         } catch (TandaException $e) {
             Log::error("TandaError: " . $e->getMessage(), [$transaction]);

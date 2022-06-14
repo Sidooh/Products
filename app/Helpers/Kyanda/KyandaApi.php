@@ -10,12 +10,12 @@ use Nabcellent\Kyanda\Models\KyandaRequest;
 
 class KyandaApi
 {
-    public static function airtime(Transaction $transaction, array $array): bool|KyandaRequest|array
+    public static function airtime(Transaction $transaction, int $phone): bool|KyandaRequest|array
     {
         Log::info('--- --- --- --- ---   ...[KYANDA-API]: Disburse Airtime...   --- --- --- --- ---');
 
         try {
-            return Utility::airtimePurchase($array['phone'], $transaction->amount, $transaction->id);
+            return Utility::airtimePurchase($phone, $transaction->amount, $transaction->id);
         } catch (KyandaException $e) {
             Log::error("KyandaError: " . $e->getMessage());
         }

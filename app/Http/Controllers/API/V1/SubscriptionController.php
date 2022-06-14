@@ -38,7 +38,6 @@ class SubscriptionController extends Controller
 
         $data = [
             "payment_account" => $account,
-            "product"         => "subscription",
             "method"          => $data['method'] ?? PaymentMethod::MPESA->value,
         ];
 

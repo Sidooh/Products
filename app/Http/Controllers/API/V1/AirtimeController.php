@@ -45,12 +45,12 @@ class AirtimeController extends Controller
                 "account" => $account,
             ]
         ];
-        $data += [
+        $data = [
             "payment_account" => $account,
-            "product"         => "airtime",
             "method"          => $data['method'] ?? PaymentMethod::MPESA->value,
         ];
 
+        if($request->has("debit_account")) $data["debit_account"] = $request->input("debit_account");
         if($request->input("initiator") === 'ENTERPRISE') $data['method'] = 'FLOAT';
 
         $transactionIds = TransactionRepository::createTransaction($transactions, $data);

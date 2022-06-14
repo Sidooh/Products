@@ -59,11 +59,11 @@ class AfricasTalkingApi
     /**
      * @throws Throwable
      */
-    public static function airtime(Transaction $transaction, $airtimeData)
+    public static function airtime(Transaction $transaction, string $phone)
     {
         Log::info('--- --- --- --- ---   ...[AFRICASTALKING-API]: Disburse Airtime...   --- --- --- --- ---');
 
-        $response = (new AfricasTalkingApi)->send($airtimeData['phone'], $transaction->amount);
+        $response = (new AfricasTalkingApi)->send($phone, $transaction->amount);
         $response = object_to_array($response);
 
         $req = $transaction->airtimeRequest()->create([

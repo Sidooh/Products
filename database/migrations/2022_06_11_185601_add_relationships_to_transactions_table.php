@@ -10,10 +10,9 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::table('transactions', function (Blueprint $table) {
-            //
             if (!Schema::hasColumn('transactions', 'product_id')) {
                 $table->unsignedBigInteger('product_id')->nullable()->after('account_id');
                 $table->foreign('product_id')->references('id')->on('products')->onDelete('set null');
@@ -26,10 +25,9 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('transactions', function (Blueprint $table) {
-            //
             $table->dropConstrainedForeignId('product_id');
         });
     }

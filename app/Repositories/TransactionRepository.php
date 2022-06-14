@@ -3,7 +3,7 @@
 namespace App\Repositories;
 
 use App\Enums\PaymentMethod;
-use App\Enums\Status;
+use App\Enums\ProductType;
 use App\Events\TransactionCreated;
 use App\Helpers\Product\Purchase;
 use App\Models\Transaction;
@@ -44,8 +44,8 @@ class TransactionRepository
 
         $response = SidoohPayments::pay($transactions, $data['method'], $totalAmount, $data);
 
-        if($data['method'] === PaymentMethod::VOUCHER->value && $response) {
-            self::requestPurchase(Arr::pluck($transactions, "id"), $data);
+        if(isset($response["data"]) && $data['method'] === PaymentMethod::VOUCHER->value) {
+            self::requestPurchase($response["data"]);
         }
 
         return response()->json(["status" => "success", "message" => "Purchase Completed!"]);
@@ -54,19 +54,18 @@ class TransactionRepository
     /**
      * @throws Throwable
      */
-    public static function requestPurchase(array $transactionIds, array $purchaseData): void
+    public static function requestPurchase(array $paymentsData): void
     {
-        Transaction::whereIn("id", $transactionIds)->update(['status' => Status::COMPLETED]);
-        $transactions = Transaction::findMany($transactionIds);
+        $transactions = Transaction::findMany(Arr::pluck($paymentsData["payments"], "payable_id"));
 
         try {
             foreach($transactions as $transaction) {
                 $purchase = new Purchase($transaction);
 
-                match ($purchaseData['product']) {
-                    'airtime' => $purchase->airtime($purchaseData),
-                    'utility' => $purchase->utility($purchaseData, $purchaseData['provider']),
-                    'subscription' => $purchase->subscription(),
+                match ($transaction->product_id) {
+                    ProductType::AIRTIME => $purchase->airtime(),
+                    ProductType::UTILITY => $purchase->utility($paymentsData),
+                    ProductType::SUBSCRIPTION => $purchase->subscription(),
                     default => throw new Exception("Invalid product purchase!"),
                 };
             }

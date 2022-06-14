@@ -42,7 +42,6 @@ class UtilityController extends Controller
 
         $data = [
             "payment_account" => $account,
-            "product"         => "utility",
             "provider"        => $data['provider'],
             "method"          => $data['method'] ?? PaymentMethod::MPESA->value,
         ];

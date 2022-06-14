@@ -17,6 +17,7 @@ namespace App\Models{
  * @property int $id
  * @property string $provider
  * @property string $account_number
+ * @property int $priority
  * @property int $account_id
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -28,6 +29,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|AirtimeAccount whereAccountNumber($value)
  * @method static \Illuminate\Database\Eloquent\Builder|AirtimeAccount whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|AirtimeAccount whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AirtimeAccount wherePriority($value)
  * @method static \Illuminate\Database\Eloquent\Builder|AirtimeAccount whereProvider($value)
  * @method static \Illuminate\Database\Eloquent\Builder|AirtimeAccount whereUpdatedAt($value)
  */
@@ -156,14 +158,28 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * App\Models\Earning
+ * App\Models\EarningAccount
  *
- * @method static EarningFactory factory(...$parameters)
- * @method static Builder|Earning newModelQuery()
- * @method static Builder|Earning newQuery()
- * @method static Builder|Earning query()
+ * @property int $id
+ * @property string $type
+ * @property string $self_amount
+ * @property string $invite_amount
+ * @property int $account_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Database\Factories\EarningAccountFactory factory(...$parameters)
+ * @method static \Illuminate\Database\Eloquent\Builder|EarningAccount newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|EarningAccount newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|EarningAccount query()
+ * @method static \Illuminate\Database\Eloquent\Builder|EarningAccount whereAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|EarningAccount whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|EarningAccount whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|EarningAccount whereInviteAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|EarningAccount whereSelfAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|EarningAccount whereType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|EarningAccount whereUpdatedAt($value)
  */
-	class IdeHelperEarning {}
+	class IdeHelperEarningAccount {}
 }
 
 namespace App\Models{
@@ -246,6 +262,26 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Merchant whereUpdatedAt($value)
  */
 	class IdeHelperMerchant {}
+}
+
+namespace App\Models{
+/**
+ * App\Models\Product
+ *
+ * @property int $id
+ * @property string $Name
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Database\Factories\ProductFactory factory(...$parameters)
+ * @method static \Illuminate\Database\Eloquent\Builder|Product newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Product newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Product query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Product whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Product whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Product whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Product whereUpdatedAt($value)
+ */
+	class IdeHelperProduct {}
 }
 
 namespace App\Models{
@@ -340,6 +376,8 @@ namespace App\Models{
  * @method static Builder|Transaction whereStatus($value)
  * @method static Builder|Transaction whereType($value)
  * @method static Builder|Transaction whereUpdatedAt($value)
+ * @property \App\Enums\ProductType|null $product_id
+ * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereProductId($value)
  */
 	class IdeHelperTransaction {}
 }
@@ -351,6 +389,7 @@ namespace App\Models{
  * @property int $id
  * @property string $provider
  * @property string $account_number
+ * @property int $priority
  * @property int $account_id
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -362,6 +401,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|UtilityAccount whereAccountNumber($value)
  * @method static \Illuminate\Database\Eloquent\Builder|UtilityAccount whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|UtilityAccount whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UtilityAccount wherePriority($value)
  * @method static \Illuminate\Database\Eloquent\Builder|UtilityAccount whereProvider($value)
  * @method static \Illuminate\Database\Eloquent\Builder|UtilityAccount whereUpdatedAt($value)
  */
