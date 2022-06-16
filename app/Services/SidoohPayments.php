@@ -27,7 +27,7 @@ class SidoohPayments extends SidoohService
     }
 
     /**
-     * @throws RequestException
+     * @throws RequestException|AuthenticationException
      */
     public static function creditVoucher(int $accountId, $amount, Description $description, $notify = false): ?array
     {
@@ -44,7 +44,7 @@ class SidoohPayments extends SidoohService
     }
 
     /**
-     * @throws RequestException
+     * @throws RequestException|AuthenticationException
      */
     public static function voucherDisbursement(int $enterpriseId, $data): ?array
     {

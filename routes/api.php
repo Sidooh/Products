@@ -27,7 +27,7 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function() {
         Route::post('/utility', UtilityController::class);
         Route::post('/subscription', SubscriptionController::class);
 
-        Route::prefix('/voucher')->group(function() {
+        Route::prefix('/voucher')->group(function () {
             Route::post('/top-up', [VoucherController::class, 'topUp']);
             Route::post('/disburse', [VoucherController::class, 'disburse']);
         });
@@ -37,8 +37,8 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function() {
         //  AT Callback Route
         Route::post('/airtime/status/callback', [AirtimeController::class, 'airtimeStatusCallback']);
 
-        Route::post('/callback', [PaymentsController::class, 'processCallback']);
-        Route::post('/purchase', [PaymentsController::class, 'requestPurchase']);
+        // Payments service callback
+        Route::post('/payments/callback', [PaymentsController::class, 'processPaymentCallback']);
     });
 
     Route::prefix('/accounts')->group(function() {

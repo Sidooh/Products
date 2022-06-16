@@ -24,7 +24,7 @@ class VoucherController extends Controller
      *
      * @param VoucherRequest $request
      * @return JsonResponse
-     * @throws Exception
+     * @throws Exception|Throwable
      */
     public function topUp(VoucherRequest $request): JsonResponse
     {

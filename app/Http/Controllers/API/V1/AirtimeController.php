@@ -33,7 +33,7 @@ class AirtimeController extends Controller
 
         $account = SidoohAccounts::find($data['account_id']);
 
-        $transactions = [
+        $transactionsData = [
             [
                 "destination" => $data['target_number'] ?? $account["phone"],
                 "initiator" => $data["initiator"],
@@ -53,7 +53,7 @@ class AirtimeController extends Controller
         if($request->has("debit_account")) $data["debit_account"] = $request->input("debit_account");
         if($request->input("initiator") === 'ENTERPRISE') $data['method'] = 'FLOAT';
 
-        $transactionIds = TransactionRepository::createTransaction($transactions, $data);
+        $transactionIds = TransactionRepository::createTransaction($transactionsData, $data);
 
         return $this->successResponse(['transactions' => $transactionIds], 'Airtime Request Successful!');
     }

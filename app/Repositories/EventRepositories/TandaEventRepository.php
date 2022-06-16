@@ -91,7 +91,7 @@ class TandaEventRepository extends EventRepository
         $destination = $tandaRequest->destination;
         $sender = $account["phone"];
 
-        $amount = $transaction->amount;
+        $amount = 'Ksh' . number_format($transaction->amount, 2);
         $date = $tandaRequest->updated_at->timezone('Africa/Nairobi')->format(config("settings.sms_date_time_format"));
         $eventType = EventType::UTILITY_PAYMENT;
 
@@ -111,24 +111,25 @@ class TandaEventRepository extends EventRepository
 
                 //  Send SMS
                 if ($phone != $sender) {
-                    $message = "You have purchased {$amount} airtime for {$phone} from your Sidooh account on {$date} using $method. You have received {$userEarnings} cashback.$vtext";
+                    $message = "You have purchased $amount airtime for $phone from your Sidooh account on $date using $method. You have received {$userEarnings} cashback.$vtext";
 
                     SidoohNotify::notify([$sender], $message, $eventType);
 
-                    $message = "Congratulations! You have received {$amount} airtime from Sidooh account {$sender} on {$date}. Sidooh Makes You Money with Every Purchase.\n\nDial $code NOW for FREE on your Safaricom line to BUY AIRTIME & START EARNING from your purchases.";
+                    $message = "Congratulations! You have received $amount airtime from Sidooh account {$sender} on {$date}. Sidooh Makes You Money with Every Purchase.\n\nDial $code NOW for FREE on your Safaricom line to BUY AIRTIME & START EARNING from your purchases.";
                 } else {
-                    $message = "You have purchased {$amount} airtime from your Sidooh account on {$date} using $method. You have received {$userEarnings} cashback.$vtext";
+                    $message = "You have purchased $amount airtime from your Sidooh account on $date using $method. You have received {$userEarnings} cashback.$vtext";
                 }
 
                 $sender = $phone;
                 break;
             case Providers::KPLC_POSTPAID:
+
                 //  Get Points Earned
                 $totalEarnings = .017 * $transaction->amount;
                 $userEarnings = EarningRepository::getPointsEarned($totalEarnings);
 
                 //  Send SMS
-                $message = "You have made a payment to {$provider} - {$destination} of {$amount} from your Sidooh account on {$date} using $method. You have received {$userEarnings} cashback.$vtext";
+                $message = "You have made a payment to $provider - $destination of $amount from your Sidooh account on $date using $method. You have received $userEarnings cashback.$vtext";
                 break;
             case Providers::KPLC_PREPAID:
                 //  Get Points Earned
@@ -137,7 +138,7 @@ class TandaEventRepository extends EventRepository
 
                 //  Send SMS
                 $details = $tandaRequest->result;
-                $message = "You have made a payment to {$provider} - {$destination} of {$amount} from your Sidooh account on {$date} using $method. You have received {$userEarnings} cashback.$vtext";
+                $message = "You have made a payment to $provider - $destination of $amount from your Sidooh account on $date using $method. You have received $userEarnings cashback.$vtext";
                 $message .= "\nTokens: {$details[0]['value']}\nUnits: {$details[1]['value']}";
                 break;
             case Providers::DSTV:
@@ -149,7 +150,7 @@ class TandaEventRepository extends EventRepository
                 $userEarnings = EarningRepository::getPointsEarned($totalEarnings);
 
                 //  Send SMS
-                $message = "You have made a payment to {$provider} - {$destination} of {$amount} from your Sidooh account on {$date} using $method. You have received {$userEarnings} cashback.$vtext";
+            $message = "You have made a payment to $provider - $destination of $amount from your Sidooh account on {$date} using $method. You have received $userEarnings cashback.$vtext";
                 break;
             case Providers::NAIROBI_WTR:
                 //  Get Points Earned
@@ -157,7 +158,7 @@ class TandaEventRepository extends EventRepository
                 $userEarnings = EarningRepository::getPointsEarned($totalEarnings);
 
                 //  Send SMS
-                $message = "You have made a payment to {$provider} - {$destination} of {$amount} from your Sidooh account on {$date} using $method. You have received {$userEarnings} cashback.$vtext";
+                $message = "You have made a payment to $provider - $destination of $amount from your Sidooh account on $date using $method. You have received $userEarnings cashback.$vtext";
                 break;
         }
 
@@ -191,9 +192,12 @@ class TandaEventRepository extends EventRepository
         $transaction->status = Status::REFUNDED;
         $transaction->save();
 
+        $amount = 'Ksh' . number_format($amount, 2);
+
+        // TODO: Can we categorize this or create a helper that returns if airtime or bill provider?
         $message = match ($provider) {
-            Providers::FAIBA, Providers::SAFARICOM, Providers::AIRTEL, Providers::TELKOM => "Sorry! We could not complete your KES{$amount} airtime purchase for {$destination} on {$date}. We have added KES{$amount} to your voucher account. New Voucher balance is {$voucher['balance']}.",
-            Providers::KPLC_POSTPAID, Providers::NAIROBI_WTR, Providers::KPLC_PREPAID, Providers::DSTV, Providers::GOTV, Providers::ZUKU, Providers::STARTIMES => "Sorry! We could not complete your payment to {$provider} of KES{$amount} for {$destination} on {$date}. We have added KES{$amount} to your voucher account. New Voucher balance is {$voucher["balance"]}."
+            Providers::FAIBA, Providers::SAFARICOM, Providers::AIRTEL, Providers::TELKOM => "Sorry! We could not complete your $amount airtime purchase for $destination on $date. We have added $amount to your voucher account. New Voucher balance is {$voucher['balance']}.",
+            Providers::KPLC_POSTPAID, Providers::NAIROBI_WTR, Providers::KPLC_PREPAID, Providers::DSTV, Providers::GOTV, Providers::ZUKU, Providers::STARTIMES => "Sorry! We could not complete your payment to $provider of $amount for $destination on $date. We have added $amount to your voucher account. New Voucher balance is {$voucher["balance"]}."
         };
 
         SidoohNotify::notify([$sender], $message, EventType::AIRTIME_PURCHASE_FAILURE);

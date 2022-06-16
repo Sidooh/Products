@@ -4,7 +4,6 @@ namespace App\Repositories;
 
 use App\Enums\PaymentMethod;
 use App\Enums\ProductType;
-use App\Events\TransactionCreated;
 use App\Helpers\Product\Purchase;
 use App\Models\Transaction;
 use App\Services\SidoohPayments;
@@ -13,6 +12,7 @@ use Exception;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
@@ -22,14 +22,24 @@ class TransactionRepository
 
     public array $data;
 
-    public static function createTransaction(array $transactions, $data): array
+    /**
+     * @throws AuthenticationException
+     * @throws Throwable
+     */
+    // TODO: Modify to be named create Transactions since it is bulk else create one for bulk specifically
+    public static function createTransaction(array $transactionsData, $data): array
     {
-        $transactions = array_map(fn($transaction) => [
-            ...Transaction::create($transaction)->toArray(),
-            "account" => $transaction['account']
-        ], $transactions);
+//        $transactions = array_map(fn($transaction) => [
+//            ...Transaction::create($transaction)->toArray(),
+////            "account" => $transaction['account']
+//        ], $transactionsData);
 
-        TransactionCreated::dispatch($transactions, $data);
+        $transactions = collect();
+        foreach ($transactionsData as $transactionData) {
+            $transactions->add(Transaction::create($transactionData));
+        }
+
+        self::initiatePayment($transactions, $data);
 
         return Arr::pluck($transactions, 'id');
     }
@@ -38,14 +48,14 @@ class TransactionRepository
      * @throws AuthenticationException
      * @throws \Throwable
      */
-    public static function initiatePayment(array $transactions, array $data): JsonResponse
+    public static function initiatePayment(Collection $transactions, array $data): JsonResponse
     {
         $totalAmount = collect($transactions)->sum("amount");
 
-        $response = SidoohPayments::pay($transactions, $data['method'], $totalAmount, $data);
+        $response = SidoohPayments::pay($transactions->toArray(), $data['method'], $totalAmount, $data);
 
-        if(isset($response["data"]) && $data['method'] === PaymentMethod::VOUCHER->value) {
-            self::requestPurchase($response["data"]);
+        if (isset($response["data"]) && $data['method'] === PaymentMethod::VOUCHER->name) {
+            self::requestPurchase($transactions, $response["data"]);
         }
 
         return response()->json(["status" => "success", "message" => "Purchase Completed!"]);
@@ -54,18 +64,20 @@ class TransactionRepository
     /**
      * @throws Throwable
      */
-    public static function requestPurchase(array $paymentsData): void
+    public static function requestPurchase(Collection $transactions, array $paymentsData): void
     {
-        $transactions = Transaction::findMany(Arr::pluck($paymentsData["payments"], "payable_id"));
+        // TODO: Is the response always with successful payments? Can there be failures?
+//        $transactions = Transaction::findMany(Arr::pluck($paymentsData["payments"], "payable_id"));
 
         try {
-            foreach($transactions as $transaction) {
+            foreach ($transactions as $transaction) {
                 $purchase = new Purchase($transaction);
 
                 match ($transaction->product_id) {
                     ProductType::AIRTIME => $purchase->airtime(),
                     ProductType::UTILITY => $purchase->utility($paymentsData),
                     ProductType::SUBSCRIPTION => $purchase->subscription(),
+                    ProductType::VOUCHER => $purchase->voucher($paymentsData),
                     default => throw new Exception("Invalid product purchase!"),
                 };
             }

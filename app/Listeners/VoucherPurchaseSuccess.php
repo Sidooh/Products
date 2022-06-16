@@ -3,7 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\VoucherPurchaseEvent;
-use App\Repositories\EventRepositories\EventRepository;
+use App\Repositories\EventRepositories\SidoohEventRepository;
 use Exception;
 use Illuminate\Support\Facades\Log;
 
@@ -24,10 +24,10 @@ class VoucherPurchaseSuccess
      * @return void
      * @throws Exception
      */
-    public function handle(VoucherPurchaseEvent $event)
+    public function handle(VoucherPurchaseEvent $event): void
     {
         Log::info('--- --- --- --- ---   ...[EVENT]: Voucher Purchase Success...   --- --- --- --- ---');
 
-        EventRepository::voucherPurchaseSuccess($event->transaction, $event->voucher);
+        SidoohEventRepository::voucherPurchaseSuccess($event->transaction, $event->vouchers, $event->payment);
     }
 }

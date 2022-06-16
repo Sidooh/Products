@@ -39,7 +39,7 @@ class EarningRepository
     {
         $e = $discount * config('services.sidooh.earnings.users_percentage', .6);
 
-        return 'KES' . $e / 6;
+        return 'Ksh' . $e / 6;
     }
 
     private static function computeSubscriptionEarnings(array $account, Transaction $transaction): void
@@ -181,7 +181,6 @@ class EarningRepository
                 foreach ($inviters as $inviter) {
                     $hasActiveSubscription = Subscription::active($inviter['id']);
                     $isLevelOneInviter = $inviter['level'] == 1;
-                    Log::info("foreach", [$inviter, $hasActiveSubscription, $isLevelOneInviter]);
                     if (!$hasActiveSubscription && !$isLevelOneInviter) continue;
 
                     // Create Earning Transaction

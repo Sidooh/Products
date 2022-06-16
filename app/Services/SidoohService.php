@@ -52,7 +52,9 @@ class SidoohService
             : [];
 
         try {
-            return self::http()->send($method, $url, $options)->throw()->json();
+            $response = self::http()->send($method, $url, $options)->throw()->json();
+            Log::info('--- --- --- --- ---   ...[SRV - SIDOOH]: Response...   --- --- --- --- ---', $response);
+            return $response;
         } catch (Exception $err) {
             Log::error($err);
 

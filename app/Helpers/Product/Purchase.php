@@ -5,6 +5,7 @@ namespace App\Helpers\Product;
 use App\Enums\Status;
 use App\Events\SubscriptionPurchaseEvent;
 use App\Events\SubscriptionPurchaseFailedEvent;
+use App\Events\VoucherPurchaseEvent;
 use App\Helpers\AfricasTalking\AfricasTalkingApi;
 use App\Helpers\Kyanda\KyandaApi;
 use App\Helpers\Tanda\TandaApi;
@@ -20,7 +21,9 @@ use function config;
 
 class Purchase
 {
-    public function __construct(public Transaction $transaction) { }
+    public function __construct(public Transaction $transaction)
+    {
+    }
 
 
     /**
@@ -42,7 +45,7 @@ class Purchase
      */
     public function airtime(): void
     {
-        if($this->transaction->airtime) exit;
+        if ($this->transaction->airtime) exit;
 
         $phone = PhoneNumber::make($this->transaction->destination, 'KE')->formatE164();
 
@@ -61,7 +64,7 @@ class Purchase
     {
         Log::info('--- --- --- --- ---   ...[SIDOOH-API]: Subscribe...   --- --- --- --- ---');
 
-        if(Subscription::active($this->transaction->account_id)) {
+        if (Subscription::active($this->transaction->account_id)) {
             SubscriptionPurchaseFailedEvent::dispatch($this->transaction);
 
             return null;
@@ -70,14 +73,14 @@ class Purchase
         $type = SubscriptionType::wherePrice($this->transaction->amount)->firstOrFail();
 
         $subscription = [
-            'amount'     => $this->transaction->amount,
-            'status'     => Status::ACTIVE,
+            'amount' => $this->transaction->amount,
+            'status' => Status::ACTIVE,
             'account_id' => $this->transaction->account_id,
             'start_date' => now(),
-            'end_date'   => now()->addMonths($type->duration),
+            'end_date' => now()->addMonths($type->duration),
         ];
 
-        return DB::transaction(function() use ($type, $subscription) {
+        return DB::transaction(function () use ($type, $subscription) {
             $sub = $type->subscription()->create($subscription);
 
             $this->transaction->status = Status::COMPLETED;
@@ -87,5 +90,18 @@ class Purchase
 
             return $sub;
         });
+    }
+
+    /**
+     * @param array $paymentsData
+     * @throws \Throwable
+     */
+    public function voucher(array $paymentsData): void
+    {
+        $this->transaction->status = Status::COMPLETED;
+        $this->transaction->save();
+
+        // TODO: Disparity, what if multiple payments? Only single transaction is passed here...!
+        VoucherPurchaseEvent::dispatch($this->transaction, $paymentsData['vouchers'], $paymentsData['payments'][0]);
     }
 }
