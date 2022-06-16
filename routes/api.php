@@ -20,8 +20,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function() {
-    Route::prefix('/products')->group(function() {
+Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function () {
+    Route::prefix('/products')->group(function () {
         Route::post('/airtime', AirtimeController::class);
         Route::post('/airtime/bulk', [AirtimeController::class, 'bulk']);
         Route::post('/utility', UtilityController::class);
@@ -37,11 +37,15 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function() {
         //  AT Callback Route
         Route::post('/airtime/status/callback', [AirtimeController::class, 'airtimeStatusCallback']);
 
-        // Payments service callback
-        Route::post('/payments/callback', [PaymentsController::class, 'processPaymentCallback']);
     });
 
-    Route::prefix('/accounts')->group(function() {
+    Route::prefix('/payments')->group(function () {
+        // Payments service callback
+        Route::post('/callback', [PaymentsController::class, 'processPaymentCallback']);
+    });
+
+
+    Route::prefix('/accounts')->group(function () {
         Route::get('/{accountId}/airtime-accounts', [ProductController::class, 'airtimeAccounts']);
         Route::get('/{accountId}/utility-accounts', [ProductController::class, 'utilityAccounts']);
 
