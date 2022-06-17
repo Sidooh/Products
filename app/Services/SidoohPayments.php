@@ -14,7 +14,7 @@ class SidoohPayments extends SidoohService
      */
     public static function pay(array $transactions, string $method, $totalAmount, array $data = []): ?array
     {
-        Log::info('--- --- --- --- ---   ...[SRV - PAYMENTS]: Make Payment...   --- --- --- --- ---');
+        Log::info('--- --- ---   ...[SRV - PAYMENTS]: Make Payment...   --- --- ---');
 
         $url = config('services.sidooh.services.payments.url') . "/payments";
 
@@ -31,7 +31,7 @@ class SidoohPayments extends SidoohService
      */
     public static function creditVoucher(int $accountId, $amount, Description $description, $notify = false): ?array
     {
-        Log::info('--- --- --- --- ---   ...[SRV - PAYMENTS]: Credit Voucher...   --- --- --- --- ---');
+        Log::info('--- --- ---   ...[SRV - PAYMENTS]: Credit Voucher...   --- --- ---');
 
         $url = config('services.sidooh.services.payments.url') . '/payments/voucher/credit';
 
@@ -48,7 +48,7 @@ class SidoohPayments extends SidoohService
      */
     public static function voucherDisbursement(int $enterpriseId, $data): ?array
     {
-        Log::info('--- --- --- --- ---   ...[SRV - PAYMENTS]: Voucher Disbursement...   --- --- --- --- ---');
+        Log::info('--- --- ---   ...[SRV - PAYMENTS]: Voucher Disbursement...   --- --- ---');
 
         $url = config('services.sidooh.services.payments.url') . '/payments/voucher/disburse';
 

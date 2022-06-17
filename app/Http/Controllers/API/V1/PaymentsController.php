@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\API\V1;
 
+use App\Enums\Status;
 use App\Http\Controllers\Controller;
 use App\Models\Transaction;
 use App\Repositories\TransactionRepository;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
@@ -18,19 +18,30 @@ class PaymentsController extends Controller
     /**
      * @throws Throwable
      */
-    public function processPaymentCallback(Request $request)
+    public function processCallback(Request $request)
     {
         Log::info('--- --- ---   ...[CONTROLLER - PAYMENT]: Request Purchase...   --- --- ---', $request->all());
 
         $request->validate([
             "payments" => "required|array",
-            "phone" => "phone:KE",
+            "phone"    => "phone:KE",
             "provider" => "string"
         ]);
 
-        // TODO: Will this work?
-        $transactions = Transaction::findMany(Arr::pluck($request->payments, "payable_id"));
+        $payments = $request->collect("payments");
 
-        TransactionRepository::requestPurchase($transactions, $request->all());
+        $completedPaymentsIds = $payments->where("status", Status::COMPLETED->value)->pluck("payable_id");
+        $failedPayments = $payments->where("status", Status::FAILED->value);
+
+        if($failedPayments->isNotEmpty()) {
+            Transaction::whereIn("id", $failedPayments)->update(["status" => Status::FAILED]);
+        }
+
+        if($completedPaymentsIds->isNotEmpty()) {
+            // TODO: Will this work?
+            $transactions = Transaction::findMany($completedPaymentsIds);
+
+            TransactionRepository::requestPurchase($transactions, $request->all());
+        }
     }
 }

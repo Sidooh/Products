@@ -37,14 +37,11 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function () {
 
         //  AT Callback Route
         Route::post('/airtime/status/callback', [AirtimeController::class, 'airtimeStatusCallback']);
-
-        Route::post('/callback', [PaymentsController::class, 'processCallback']);
-        Route::post('/purchase', [PaymentsController::class, 'requestPurchase']);
     });
 
     Route::prefix('/payments')->group(function () {
         // Payments service callback
-        Route::post('/callback', [PaymentsController::class, 'processPaymentCallback']);
+        Route::post('/callback', [PaymentsController::class, 'processCallback']);
     });
 
     Route::prefix('/accounts')->group(function () {

@@ -23,7 +23,7 @@ class SidoohService
      */
     static function authenticate()
     {
-        Log::info('--- --- --- --- ---   ...[SRV - SIDOOH]: Authenticate...   --- --- --- --- ---');
+        Log::info('--- --- ---   ...[SRV - SIDOOH]: Authenticate...   --- --- ---');
 
         $url = config('services.sidooh.services.accounts.url');
 
@@ -42,7 +42,7 @@ class SidoohService
      */
     static function fetch(string $url, string $method = "GET", array $data = [])
     {
-        Log::info('--- --- --- --- ---   ...[SRV - SIDOOH]: Fetch...   --- --- --- --- ---', [
+        Log::info('--- --- ---   ...[SRV - SIDOOH]: Fetch...   --- --- ---', [
             "method" => $method,
             "data"   => $data
         ]);
@@ -53,7 +53,7 @@ class SidoohService
 
         try {
             $response = self::http()->send($method, $url, $options)->throw()->json();
-            Log::info('--- --- --- --- ---   ...[SRV - SIDOOH]: Response...   --- --- --- --- ---', $response);
+            Log::info('--- --- ---   ...[SRV - SIDOOH]: Response...   --- --- ---', $response);
             return $response;
         } catch (Exception $err) {
             Log::error($err);
