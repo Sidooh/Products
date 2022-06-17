@@ -10,24 +10,25 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 use Nabcellent\Kyanda\Models\KyandaRequest;
 
 /**
  * App\Models\Transaction
  *
- * @property int                             $id
- * @property string                          $initiator
- * @property string                          $type
- * @property string                          $amount
- * @property string                          $status
- * @property string|null                     $destination
- * @property string                          $description
- * @property int                             $account_id
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @property-read AirtimeRequest|null        $airtime
- * @property-read AirtimeRequest|null        $airtimeRequest
- * @property-read KyandaRequest|null         $kyandaTransaction
+ * @property int                      $id
+ * @property string                   $initiator
+ * @property string                   $type
+ * @property string                   $amount
+ * @property string                   $status
+ * @property string|null              $destination
+ * @property string                   $description
+ * @property int                      $account_id
+ * @property Carbon|null              $created_at
+ * @property Carbon|null              $updated_at
+ * @property-read AirtimeRequest|null $airtime
+ * @property-read AirtimeRequest|null $airtimeRequest
+ * @property-read KyandaRequest|null  $kyandaTransaction
  * @method static TransactionFactory factory(...$parameters)
  * @method static Builder|Transaction newModelQuery()
  * @method static Builder|Transaction newQuery()
@@ -80,6 +81,10 @@ class Transaction extends Model
 
     public static function updateStatus(self $transaction, Status $status = Status::PENDING)
     {
+        Log::info('--- --- --- --- ---   ...[TRANSACTION MODEL]: Update Status...   --- --- --- --- ---', [
+            "status" => $status->value
+        ]);
+
         $transaction->status = $status;
         $transaction->save();
     }

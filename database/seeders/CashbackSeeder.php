@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Cashback;
 use Illuminate\Database\Seeder;
 
 class CashbackSeeder extends Seeder
@@ -11,8 +12,8 @@ class CashbackSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
-        //
+        Cashback::factory(10)->create();
     }
 }

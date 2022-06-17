@@ -35,7 +35,7 @@ class SidoohNotify extends SidoohService
 
         } catch (ConnectionException $e) {
 
-            Log::error("Failed to Connect to Notify!");
+            Log::error("Failed to Connect to Notify!", ["err" => $e->getMessage()]);
 
         } catch (Exception $e) {
 

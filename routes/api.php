@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\V1\AirtimeController;
+use App\Http\Controllers\API\V1\EarningController;
 use App\Http\Controllers\API\V1\FloatController;
 use App\Http\Controllers\API\V1\PaymentsController;
 use App\Http\Controllers\API\V1\ProductController;
@@ -37,6 +38,8 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function () {
         //  AT Callback Route
         Route::post('/airtime/status/callback', [AirtimeController::class, 'airtimeStatusCallback']);
 
+        Route::post('/callback', [PaymentsController::class, 'processCallback']);
+        Route::post('/purchase', [PaymentsController::class, 'requestPurchase']);
     });
 
     Route::prefix('/payments')->group(function () {
@@ -44,13 +47,15 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function () {
         Route::post('/callback', [PaymentsController::class, 'processPaymentCallback']);
     });
 
-
     Route::prefix('/accounts')->group(function () {
         Route::get('/{accountId}/airtime-accounts', [ProductController::class, 'airtimeAccounts']);
         Route::get('/{accountId}/utility-accounts', [ProductController::class, 'utilityAccounts']);
 
         Route::get('/{accountId}/current-subscription', [ProductController::class, 'currentSubscription']);
+    });
 
+    Route::prefix('/savings')->group(function() {
+        Route::post('/', [EarningController::class, 'save']);
     });
 
     Route::get('/transactions', [PaymentsController::class, 'index']);

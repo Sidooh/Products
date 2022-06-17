@@ -15,9 +15,12 @@ use Illuminate\Support\Facades\Log;
 
 class EarningRepository
 {
+    /**
+     * @throws \Exception
+     */
     public static function calculateEarnings(Transaction $transaction, float $earnings): void
     {
-        Log::info("--- --- --- --- ---   ...[EARNING REPOSITORY]: Calc Earnings($earnings)...   --- --- --- --- ---");
+        Log::info("--- --- ---   ...[EARNING REPOSITORY]: Calculate Earnings($earnings)...   --- --- ---");
 
         $account = SidoohAccounts::find($transaction->account_id);
 
@@ -42,13 +45,16 @@ class EarningRepository
         return 'Ksh' . $e / 6;
     }
 
+    /**
+     * @throws \Exception
+     */
     private static function computeSubscriptionEarnings(array $account, Transaction $transaction): void
     {
         $earningPerUser = config('services.sidooh.earnings.subscription.cashback', 35);
 
-        if (isset($account['inviter_id'])) {
-            self::computeSubscriptionEarningsForSelf($transaction, $earningPerUser);
+        self::computeSubscriptionEarningsForSelf($transaction, $earningPerUser);
 
+        if (isset($account['inviter_id'])) {
             // Account is invited
             $inviters = SidoohAccounts::getInviters($transaction->account_id);
             array_shift($inviters);
@@ -81,15 +87,12 @@ class EarningRepository
                 // Send details to savings service
                 // TODO: savings service
             }
-        } else {
-            // Account is root
-
-            self::computeSubscriptionEarningsForSelf($transaction, $earningPerUser);
-
         }
-
     }
 
+    /**
+     * @throws \Exception
+     */
     private static function computeSubscribedAccountEarnings(array $account, Transaction $transaction, float $earnings): void
     {
         $rootEarnings = round($earnings * config('services.sidooh.earnings.subscribed_users_percentage', 1), 4);
@@ -132,10 +135,10 @@ class EarningRepository
 
                 // Create Earning Transaction
                 Cashback::create([
-                    'account_id' => $inviter['id'],
-                    'transaction_id' => $transaction->id,
-                    'amount' => $userEarnings,
-                    'type' => EarningCategory::INVITE->name
+                    "account_id" => $inviter['id'],
+                    "transaction_id" => $transaction->id,
+                    "amount" => $userEarnings,
+                    "type" => EarningCategory::INVITE->name
                 ]);
 
                 // Update Earning Account
@@ -156,6 +159,9 @@ class EarningRepository
 
     }
 
+    /**
+     * @throws \Exception
+     */
     private static function computeAccountEarnings(array $account, Transaction $transaction, float $earnings): void
     {
         $groupEarnings = round($earnings * config('services.sidooh.earnings.users_percentage', .6), 4);
@@ -164,38 +170,35 @@ class EarningRepository
         $totalLeftOverEarnings = $groupEarnings;
 
         if ($transaction->amount >= 20) {
-            if (!isset($account['inviter_id'])) {
-                self::computeAccountEarningsForSelf($transaction, $userEarnings);
-                $totalLeftOverEarnings -= $userEarnings;
+            self::computeAccountEarningsForSelf($transaction, $userEarnings);
+            $totalLeftOverEarnings -= $userEarnings;
 
-            } else {
+            if (isset($account['inviter_id'])) {
                 // Account is invited
-                self::computeAccountEarningsForSelf($transaction, $userEarnings);
-                $totalLeftOverEarnings -= $userEarnings;
 
                 $inviters = SidoohAccounts::getInviters($transaction->account_id);
                 array_shift($inviters);
 
-                if (count($inviters) + 1 > 6) abort(500, "Too many inviters");
+                if(count($inviters) + 1 > 6) abort(500, "Too many inviters");
 
-                foreach ($inviters as $inviter) {
+                foreach($inviters as $inviter) {
                     $hasActiveSubscription = Subscription::active($inviter['id']);
                     $isLevelOneInviter = $inviter['level'] == 1;
-                    if (!$hasActiveSubscription && !$isLevelOneInviter) continue;
+                    if(!$hasActiveSubscription && !$isLevelOneInviter) continue;
 
                     // Create Earning Transaction
                     Cashback::create([
-                        'account_id' => $inviter['id'],
+                        'account_id'     => $inviter['id'],
                         'transaction_id' => $transaction->id,
-                        'amount' => $userEarnings,
-                        'type' => EarningCategory::INVITE->name
+                        'amount'         => $userEarnings,
+                        'type'           => EarningCategory::INVITE->name
                     ]);
 
                     // Update Earning Account
                     //TODO: Is it possible to update in one statement? with the addition since we don't know the initial amount?
                     $earningAccount = EarningAccount::firstOrCreate([
                         'account_id' => $inviter['id'],
-                        'type' => EarningAccountType::PURCHASE->name
+                        'type'       => EarningAccountType::PURCHASE->name
                     ]);
 
                     $earningAccount->invite_amount += $userEarnings;
