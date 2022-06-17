@@ -17,7 +17,7 @@ class SidoohSavings extends SidoohService
         try {
             $response = parent::http()->post($url, $savings)->json();
 
-            Log::info('--- --- --- --- ---   ...[SRV - SAVINGS]: Notification Sent...   --- --- --- --- ---', $response);
+            Log::info('--- --- ---   ...[SRV - SAVINGS]: Notification Sent...   --- --- ---', $response);
         } catch (ConnectionException $e) {
             Log::error("Failed to Connect to Savings!", ["err" => $e->getMessage()]);
         } catch (Exception $e) {
