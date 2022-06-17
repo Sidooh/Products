@@ -167,7 +167,7 @@ class TandaEventRepository extends EventRepository
         ProductRepository::syncAccounts($account, $provider, $destination);
         SidoohNotify::notify([$sender], $message, $eventType);
 
-        Log::info('--- --- --- --- ---   ...[TANDA EVENT REPOSITORY]: Completed Transaction...   --- --- --- --- ---');
+        Log::info('--- --- ---   ...[TANDA EVENT REPOSITORY]: Completed Transaction...   --- --- ---');
     }
 
     /**

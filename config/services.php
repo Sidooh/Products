@@ -61,18 +61,22 @@ return [
         'utilities_enabled'  => true,
         'utilities_provider' => 'TANDA',
         'services'           => [
-            'notify'   => [
-                'enabled' => true,
-                'url'     => env("SIDOOH_NOTIFY_API_URL"),
-            ],
             'accounts' => [
                 'enabled' => true,
                 'url'     => env("SIDOOH_ACCOUNTS_API_URL")
             ],
+            'notify'   => [
+                'enabled' => true,
+                'url'     => env("SIDOOH_NOTIFY_API_URL"),
+            ],
             'payments' => [
                 'enabled' => true,
                 'url'     => env("SIDOOH_PAYMENTS_API_URL")
-            ]
+            ],
+            'savings'   => [
+                'enabled' => true,
+                'url'     => env("SIDOOH_SAVINGS_API_URL"),
+            ],
         ],
         'country_code' => env('COUNTRY_CODE', 'KE'),
     ],

@@ -11,7 +11,7 @@ class SidoohNotify extends SidoohService
 {
     public static function notify(array $to, string $message, EventType $eventType)
     {
-        Log::info('--- --- --- --- ---   ...[SRV - NOTIFY]: Send Notification...   --- --- --- --- ---', [
+        Log::info('--- --- ---   ...[SRV - NOTIFY]: Send Notification...   --- --- ---', [
             "channel" => "sms",
             "event_type" => $eventType->value,
             "destination" => implode(', ', $to),
@@ -29,13 +29,13 @@ class SidoohNotify extends SidoohService
                 "content" => $message
             ])->json();
 
-            Log::info('--- --- --- --- ---   ...[SRV - NOTIFY]: Notification Sent...   --- --- --- --- ---', [
+            Log::info('--- --- ---   ...[SRV - NOTIFY]: Notification Sent...   --- --- ---', [
                 'ids' => $response["ids"]
             ]);
 
         } catch (ConnectionException $e) {
 
-            Log::error("Failed to Connect to Notify!");
+            Log::error("Failed to Connect to Notify!", ["err" => $e->getMessage()]);
 
         } catch (Exception $e) {
 
