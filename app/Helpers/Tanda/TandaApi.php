@@ -15,7 +15,7 @@ class TandaApi
 {
     public static function airtime(Transaction $transaction, int $phone): void
     {
-        Log::info('--- --- --- --- ---   ...[TANDA-API]: Disburse Airtime...   --- --- --- --- ---');
+        Log::info('...[TANDA-API]: Disburse Airtime...');
 
         // TODO: Remove in Production
         $transaction->amount = 10;
@@ -30,7 +30,7 @@ class TandaApi
 
     public static function bill(Transaction $transaction, array $array, string $provider): void
     {
-        Log::info('--- --- --- --- ---   ...[TANDA-API]: Disburse Utility...   --- --- --- --- ---');
+        Log::info('...[TANDA-API]: Disburse Utility...');
 
         try {
             Utility::billPayment($array['account_number'], $transaction->amount, $provider, $transaction->id);
@@ -52,7 +52,7 @@ class TandaApi
                     ['254714611696', '254711414987', '254721309253'], $message, EventType::ERROR_ALERT
                 );
 
-                Log::info('--- --- --- --- ---   ...[TANDA-API]: Airtime/Utility Failure SMS Sent...   --- --- --- --- ---');
+                Log::info('...[TANDA-API]: Airtime/Utility Failure SMS Sent...');
             } catch (Exception $e) {
                 Log::error($e->getMessage());
             }
