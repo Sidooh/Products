@@ -31,7 +31,7 @@ class PaymentsController extends Controller
         $payments = $request->collect("payments");
 
         $completedPaymentsIds = $payments->where("status", Status::COMPLETED->value)->pluck("payable_id");
-        $failedPayments = $payments->where("status", Status::FAILED->value);
+        $failedPayments = $payments->where("status", Status::FAILED->value)->pluck("payable_id");
 
         if($failedPayments->isNotEmpty()) {
             Transaction::whereIn("id", $failedPayments)->update(["status" => Status::FAILED]);
