@@ -20,7 +20,7 @@ class PaymentsController extends Controller
      */
     public function processCallback(Request $request)
     {
-        Log::info('--- --- ---   ...[CONTROLLER - PAYMENT]: Request Purchase...   --- --- ---', $request->all());
+        Log::info('...[CONTROLLER - PAYMENT]: Request Purchase...', $request->all());
 
         $request->validate([
             "payments" => "required|array",

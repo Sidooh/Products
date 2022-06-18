@@ -29,7 +29,7 @@ class SubscriptionPurchaseSuccess
      */
     public function handle(SubscriptionPurchaseEvent $event)
     {
-        Log::info('--- --- --- --- ---   ...[EVENT]: Subscription Purchase Success...   --- --- --- --- ---');
+        Log::info('...[EVENT]: Subscription Purchase Success...');
 
         EarningRepository::calculateEarnings($event->transaction, 0);
         SidoohEventRepository::subscriptionPurchaseSuccess($event->subscription, $event->transaction);

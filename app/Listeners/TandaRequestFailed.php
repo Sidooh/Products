@@ -25,8 +25,8 @@ class TandaRequestFailed
      */
     public function handle(TandaRequestFailedEvent $event)
     {
-        Log::info('--- --- --- --- ---   ...[EVENT]: Tanda Request Failed...   --- --- --- --- ---', [
-            'id'      => $event->request->id,
+        Log::info('...[EVENT]: Tanda Request Failed...', [
+            'id' => $event->request->id,
             'message' => $event->request->message
         ]);
 

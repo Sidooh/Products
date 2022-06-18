@@ -23,7 +23,7 @@ class AirtimePurchaseFailed
      */
     public function handle(AirtimePurchaseFailedEvent $event)
     {
-        Log::info('--- --- --- --- ---   ...[EVENT]: Airtime Purchase Failed...   --- --- --- --- ---', [
+        Log::info('...[EVENT]: Airtime Purchase Failed...', [
             "response" => $event->airtime_response
         ]);
 

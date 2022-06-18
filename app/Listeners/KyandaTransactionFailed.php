@@ -25,7 +25,7 @@ class KyandaTransactionFailed
      */
     public function handle(KyandaTransactionFailedEvent $event)
     {
-        Log::info('--- --- --- --- ---   ...[EVENT]: Kyanda Transaction Failed...   --- --- --- --- ---', [
+        Log::info('...[EVENT]: Kyanda Transaction Failed...', [
             "transaction" => $event->transaction
         ]);
 

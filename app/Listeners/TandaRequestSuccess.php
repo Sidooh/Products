@@ -23,7 +23,7 @@ class TandaRequestSuccess
      */
     public function handle(TandaRequestSuccessEvent $event)
     {
-        Log::info('--- --- --- --- ---   ...[EVENT]: Tanda Request Success...   --- --- --- --- ---', [
+        Log::info('...[EVENT]: Tanda Request Success...', [
             "id" => $event->request->id
         ]);
 

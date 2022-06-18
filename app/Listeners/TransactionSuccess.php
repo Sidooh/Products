@@ -28,7 +28,7 @@ class TransactionSuccess
      */
     public function handle(TransactionSuccessEvent $event): void
     {
-        Log::info('--- --- ---   ...[EVENT]: Transaction Success...   --- --- ---');
+        Log::info('...[EVENT]: Transaction Success...');
 
 //        TODO: Fix earnings logic ASAP!
         EarningRepository::calculateEarnings($event->transaction, $event->totalEarned);

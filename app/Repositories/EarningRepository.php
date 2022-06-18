@@ -20,7 +20,7 @@ class EarningRepository
      */
     public static function calculateEarnings(Transaction $transaction, float $earnings): void
     {
-        Log::info("--- --- ---   ...[EARNING REPOSITORY]: Calculate Earnings($earnings)...   --- --- ---");
+        Log::info("...[EARNING REPOSITORY]: Calculate Earnings($earnings)...");
 
         $account = SidoohAccounts::find($transaction->account_id);
 

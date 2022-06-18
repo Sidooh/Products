@@ -24,7 +24,7 @@ class AirtimePurchaseSuccess
      */
     public function handle(AirtimePurchaseSuccessEvent $event)
     {
-        Log::info('--- --- --- --- ---   ...[EVENT]: Airtime Purchase Success...   --- --- --- --- ---');
+        Log::info('...[EVENT]: Airtime Purchase Success...');
 
         ATEventRepository::airtimePurchaseSuccess($event->airtime_response);
     }
