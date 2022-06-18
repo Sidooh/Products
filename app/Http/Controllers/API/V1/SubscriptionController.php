@@ -16,7 +16,7 @@ use Illuminate\Http\JsonResponse;
 class SubscriptionController extends Controller
 {
     /**
-     * @throws Exception
+     * @throws Exception|\Throwable
      */
     public function __invoke(ProductRequest $request): JsonResponse
     {
@@ -38,8 +38,12 @@ class SubscriptionController extends Controller
 
         $data = [
             "payment_account" => $account,
-            "method"          => $data['method'] ?? PaymentMethod::MPESA->value,
+            "method" => $data['method'] ?? PaymentMethod::MPESA->value,
         ];
+
+        // TODO: Also ensure we can't use other voucher here
+        if ($request->has("debit_account") && $data['method'] === PaymentMethod::MPESA->value)
+            $data["debit_account"] = $request->input("debit_account");
 
         $transactionIds = TransactionRepository::createTransaction($transactions, $data);
 

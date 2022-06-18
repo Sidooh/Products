@@ -24,7 +24,7 @@ class EarningRepository
 
         $account = SidoohAccounts::find($transaction->account_id);
 
-        if ($transaction->product_id == ProductType::SUBSCRIPTION->value) {
+        if ($transaction->product_id == ProductType::SUBSCRIPTION) {
             self::computeSubscriptionEarnings($account, $transaction);
             return;
         }
@@ -50,6 +50,8 @@ class EarningRepository
      */
     private static function computeSubscriptionEarnings(array $account, Transaction $transaction): void
     {
+        Log::info("...[EARNING REPOSITORY]: Compute Subscription Earnings...");
+
         $earningPerUser = config('services.sidooh.earnings.subscription.cashback', 35);
 
         self::computeSubscriptionEarningsForSelf($transaction, $earningPerUser);
@@ -95,6 +97,8 @@ class EarningRepository
      */
     private static function computeSubscribedAccountEarnings(array $account, Transaction $transaction, float $earnings): void
     {
+        Log::info("...[EARNING REPOSITORY]: Compute Subscribed Acc Earnings...");
+
         $rootEarnings = round($earnings * config('services.sidooh.earnings.subscribed_users_percentage', 1), 4);
 
         // Create Earning Transaction
@@ -164,6 +168,8 @@ class EarningRepository
      */
     private static function computeAccountEarnings(array $account, Transaction $transaction, float $earnings): void
     {
+        Log::info("...[EARNING REPOSITORY]: Compute Earnings...");
+
         $groupEarnings = round($earnings * config('services.sidooh.earnings.users_percentage', .6), 4);
         $userEarnings = round($groupEarnings / 6, 4);
 

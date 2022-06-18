@@ -62,9 +62,11 @@ class Purchase
      */
     public function subscription(): ?Subscription
     {
-        Log::info('--- --- --- --- ---   ...[SIDOOH-API]: Subscribe...   --- --- --- --- ---');
+        Log::info('...[INTERNAL - PRODUCT]: Subscribe...');
 
         if (Subscription::active($this->transaction->account_id)) {
+            // TODO: Handle for subscription failure.
+            //       Also, should we not check this during the initial API call and reject it?
             SubscriptionPurchaseFailedEvent::dispatch($this->transaction);
 
             return null;

@@ -79,8 +79,8 @@ class TandaEventRepository extends EventRepository
         $method = $payment["subtype"];
 
         if ($method === 'VOUCHER') {
-            $bal = $voucher["balance"];
-            $vtext = " New Voucher balance is KES$bal.";
+            $bal = 'Ksh' . number_format($voucher["balance"], 2);
+            $vtext = " New Voucher balance is $bal.";
         } else {
             $method = 'MPESA';
             $vtext = '';

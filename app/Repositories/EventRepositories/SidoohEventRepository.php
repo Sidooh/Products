@@ -32,14 +32,14 @@ class SidoohEventRepository extends EventRepository
 
         switch ($type->duration) {
             case 1:
-                $message = "Congratulations! You have successfully registered as a {$type->title} on {$date}, valid until {$end_date}. ";
-                $message .= "You will earn commissions on every airtime purchased by your referred customers and sub-agents up to your {$limit} ripple.\n";
+                $message = "Congratulations! You have successfully registered as a $type->title on $date, valid until $end_date. ";
+                $message .= "You will earn commissions on every airtime purchased by your referred customers and sub-agents up to your $limit ripple.\n";
                 break;
             default:
                 $level_duration = $type->duration . " MONTHS";
-                $message = "Congratulations! You have successfully pre-registered as a {$type->title} on {$date}, valid until {$end_date}. ";
+                $message = "Congratulations! You have successfully pre-registered as a $type->title on $date, valid until $end_date. ";
                 $message .= "You will earn commissions on every airtime purchased by your referred customers and sub-agents up to your ";
-                $message .= "{$limit} ripple, for {$level_duration} WITHOUT PAYING MONTHLY SUBSCRIPTION FEES.\n";
+                $message .= "$limit ripple, for $level_duration WITHOUT PAYING MONTHLY SUBSCRIPTION FEES.\n";
         }
 
         $message .= config('services.sidooh.tagline');

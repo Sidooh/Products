@@ -31,7 +31,7 @@ class ProductRequest extends FormRequest
      */
     public function rules(): array
     {
-        $countryCode = env('COUNTRY_CODE');
+        $countryCode = config('services.sidooh.country_code');
 
         return [
             'initiator'        => ['required', new Enum(Initiator::class)],
@@ -63,7 +63,9 @@ class ProductRequest extends FormRequest
     public function messages(): array
     {
         return [
+            // TODO: is this 'product.in' necessary anymore?
             'product.in'          => 'Invalid product. Allowed product values are: [airtime, utility, subscription, voucher]',
+
             'debit_account.phone'  => 'Invalid :attribute number',
             'target_number.phone' => 'Invalid target phone number',
             ''

@@ -53,7 +53,7 @@ class SidoohAccounts extends SidoohService
      */
     static function getInviters(int|string $id): array
     {
-        Log::info('--- --- ---   ...[SRV - ACCOUNTS]: Find Ancestors...   --- --- ---', ['id' => $id]);
+        Log::info('...[SRV - ACCOUNTS]: Find Ancestors...', ['id' => $id]);
 
         $url = config('services.sidooh.services.accounts.url') . "/accounts/$id/ancestors";
 

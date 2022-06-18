@@ -32,6 +32,7 @@ class SubscriptionPurchaseEvent
      */
     public function __construct(Subscription $subscription, Transaction $transaction)
     {
+        // TODO: Should this be SubscriptionPurchaseSuccessEvent just to be clear?
         $this->subscription = $subscription;
         $this->transaction = $transaction;
     }

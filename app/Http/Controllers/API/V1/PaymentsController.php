@@ -30,6 +30,7 @@ class PaymentsController extends Controller
 
         $payments = $request->collect("payments");
 
+        // TODO: Use collection method for splitting here - one liner
         $completedPaymentsIds = $payments->where("status", Status::COMPLETED->value)->pluck("payable_id");
         $failedPaymentIds = $payments->where("status", Status::FAILED->value)->pluck("payable_id");
 
