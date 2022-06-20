@@ -8,7 +8,6 @@ use App\Models\Transaction;
 use App\Services\SidoohAccounts;
 use App\Services\SidoohNotify;
 use Exception;
-use Illuminate\Support\Facades\Log;
 use NumberFormatter;
 
 class SidoohEventRepository extends EventRepository
@@ -52,14 +51,6 @@ class SidoohEventRepository extends EventRepository
      */
     public static function voucherPurchaseSuccess(Transaction $transaction, array $vouchers, array $payment)
     {
-        Log::info("vPS");
-        Log::info($transaction);
-        Log::info($vouchers);
-        Log::info($payment);
-
-        // TODO: Fix voucher purchase sms - add voucher balance
-
-        // TODO: Determine if purchase for self or other first.
         $amount = 'Ksh' . number_format($transaction->amount, 2);
         $account = SidoohAccounts::find($transaction->account_id);
         $date = $transaction->updated_at

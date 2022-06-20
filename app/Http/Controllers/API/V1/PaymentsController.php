@@ -33,11 +33,6 @@ class PaymentsController extends Controller
         [$completedPayments, $failedPayments] =
             $payments->partition(fn($p) => $p['status'] === Status::COMPLETED->value);
 
-        Log::info("asd");
-        Log::info($completedPayments);
-        Log::info($failedPayments);
-        Log::info($payments);
-
         if ($failedPayments) {
             Transaction::whereIn("id", $failedPayments->pluck('payable_id'))->update(["status" => Status::FAILED]);
         }
