@@ -77,8 +77,40 @@ class SidoohEventRepository extends EventRepository
         if ($voucherLen === 1) {
             // Purchase was for self most probably.
             // Can confirm this using transaction account and destination
-            if ($vouchers[0]['account_id'] !== $transaction->account_id) {
+
+            $creditVoucher = $vouchers[0];
+            if ($creditVoucher['account_id'] !== $transaction->account_id) {
+
+                // Check Purchasing for other using MPESA
+                $accountFor = SidoohAccounts::findByPhone($transaction->destination);
+
+                if ($accountFor['id'] === $creditVoucher['account_id']) {
+                    // Send to purchaser
+                    $phone = $account['phone'];
+
+                    $message = "You have purchased $amount voucher ";
+                    $message .= "for $transaction->destination on $date.\n\n";
+                    $message .= config('services.sidooh.tagline');
+
+                    SidoohNotify::notify([$phone], $message, EventType::VOUCHER_PURCHASE);
+
+                    // Send to purchasee
+                    $phone = $accountFor['phone'];
+                    $balance = 'Ksh' . number_format($creditVoucher['balance'], 2);
+
+                    $message = "You have received $amount voucher ";
+                    $message .= "from Sidooh account {$account['phone']} on $date.\n";
+                    $message .= "New voucher balance is $balance.\n\n";
+                    $message .= "Dial *384*99# NOW for FREE on your Safaricom line to BUY AIRTIME or TOKENS & PAY USING the voucher received.\n\n";
+                    $message .= config('services.sidooh.tagline');
+
+                    SidoohNotify::notify([$phone], $message, EventType::VOUCHER_PURCHASE);
+
+                    return;
+                }
+
                 throw new Exception('Voucher does not match account making transaction');
+
             }
 
             // select voucher
@@ -86,18 +118,11 @@ class SidoohEventRepository extends EventRepository
 
             // send notification
             $phone = $account['phone'];
-
-//            if ($payment['subtype'] == 'VOUCHER') {
-//                $bal = $debitVoucher['balance'];
-//                $vtext = " New Voucher balance is KES$bal.";
-//            } else {
-//                $method = 'MPESA';
-//                $vtext = '';
-//            }
+            $balance = 'Ksh' . number_format($debitVoucher['balance'], 2);
 
             $message = "Congratulations! You have successfully topped up your voucher ";
             $message .= "with $amount on $date.\n";
-            $message .= "New voucher balance is Ksh{$debitVoucher['balance']}.\n\n";
+            $message .= "New voucher balance is $balance.\n\n";
             $message .= config('services.sidooh.tagline');
 
             SidoohNotify::notify([$phone], $message, EventType::VOUCHER_PURCHASE);

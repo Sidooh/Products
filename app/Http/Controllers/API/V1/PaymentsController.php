@@ -24,23 +24,27 @@ class PaymentsController extends Controller
 
         $request->validate([
             "payments" => "required|array",
-            "phone"    => "phone:KE",
+            "phone" => "phone:KE",
             "provider" => "string"
         ]);
 
         $payments = $request->collect("payments");
 
-        // TODO: Use collection method for splitting here - one liner
-        $completedPaymentsIds = $payments->where("status", Status::COMPLETED->value)->pluck("payable_id");
-        $failedPaymentIds = $payments->where("status", Status::FAILED->value)->pluck("payable_id");
+        [$completedPayments, $failedPayments] =
+            $payments->partition(fn($p) => $p['status'] === Status::COMPLETED->value);
 
-        if($failedPaymentIds->isNotEmpty()) {
-            Transaction::whereIn("id", $failedPaymentIds)->update(["status" => Status::FAILED]);
+        Log::info("asd");
+        Log::info($completedPayments);
+        Log::info($failedPayments);
+        Log::info($payments);
+
+        if ($failedPayments) {
+            Transaction::whereIn("id", $failedPayments->pluck('payable_id'))->update(["status" => Status::FAILED]);
         }
 
-        if($completedPaymentsIds->isNotEmpty()) {
+        if ($completedPayments) {
             // TODO: Will this work?
-            $transactions = Transaction::findMany($completedPaymentsIds);
+            $transactions = Transaction::findMany($completedPayments->pluck('payable_id'));
 
             TransactionRepository::requestPurchase($transactions, $request->all());
         }

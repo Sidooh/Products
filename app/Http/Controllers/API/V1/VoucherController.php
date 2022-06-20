@@ -14,7 +14,6 @@ use App\Services\SidoohAccounts;
 use App\Services\SidoohPayments;
 use Exception;
 use Illuminate\Http\JsonResponse;
-use Propaganistas\LaravelPhone\PhoneNumber;
 use Throwable;
 
 class VoucherController extends Controller
@@ -30,9 +29,12 @@ class VoucherController extends Controller
     {
         $data = $request->validated();
 
-        $account = isset($data["debit_account"])
-            ? SidoohAccounts::findByPhone(PhoneNumber::make($data['debit_account']))
-            : SidoohAccounts::find($data['account_id']);
+        $account = SidoohAccounts::find($data['account_id']);
+
+        // == and not ===  since they are int and string sometimes
+        if ($data['target_number'] && $account['phone'] == $data['target_number']) {
+            return $this->errorResponse('Target number cannot be your account phone number', 422);
+        }
 
         $transactions = [
             [
@@ -49,8 +51,12 @@ class VoucherController extends Controller
 
         $data = [
             "payment_account" => $account,
-            "method"          => $data["method"] ?? PaymentMethod::MPESA->value,
+            "method" => $data["method"] ?? PaymentMethod::MPESA->value,
         ];
+
+        // TODO: Also ensure we can't use other voucher here
+        if ($request->has("debit_account") && $data['method'] === PaymentMethod::MPESA->value)
+            $data["debit_account"] = $request->input("debit_account");
 
         $transactionIds = TransactionRepository::createTransaction($transactions, $data);
 
