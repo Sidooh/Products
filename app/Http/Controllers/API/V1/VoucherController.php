@@ -32,7 +32,7 @@ class VoucherController extends Controller
         $account = SidoohAccounts::find($data['account_id']);
 
         // == and not ===  since they are int and string sometimes
-        if ($data['target_number'] && $account['phone'] == $data['target_number']) {
+        if (isset($data['target_number']) && $account['phone'] == $data['target_number']) {
             return $this->errorResponse('Target number cannot be your account phone number', 422);
         }
 
