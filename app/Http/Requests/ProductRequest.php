@@ -48,7 +48,7 @@ class ProductRequest extends FormRequest
             'debit_account' => "phone:$countryCode",
             'subscription_type_id' => [
                 Rule::requiredIf($this->is('*/products/subscription')),
-                'in:subscription-types',
+                'exists:subscription_types,id',
             ]
         ];
     }

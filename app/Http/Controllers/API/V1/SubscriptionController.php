@@ -8,6 +8,7 @@ use App\Enums\ProductType;
 use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductRequest;
+use App\Models\SubscriptionType;
 use App\Repositories\TransactionRepository;
 use App\Services\SidoohAccounts;
 use Exception;
@@ -24,10 +25,12 @@ class SubscriptionController extends Controller
 
         $account = SidoohAccounts::find($data['account_id']);
 
+        $subscriptionType = SubscriptionType::find($data['subscription_type_id']);
+
         $transactions = [
             [
                 "initiator" => $data["initiator"],
-                "amount" => $data["amount"],
+                "amount" => $subscriptionType->price,
                 "type" => TransactionType::PAYMENT,
                 "description" => Description::SUBSCRIPTION_PURCHASE,
                 "account_id" => $data['account_id'],
