@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\AirtimeAccount;
+use App\Models\EarningAccount;
 use App\Models\Subscription;
 use App\Models\UtilityAccount;
 use Illuminate\Http\JsonResponse;
@@ -52,5 +53,14 @@ class ProductController extends Controller
         $subscription = Subscription::whereAccountId($accountId)->latest()->first();
 
         return $this->successResponse($subscription);
+    }
+
+    public function earnings(Request $request, int $accountId): JsonResponse
+    {
+        $earnings = EarningAccount::select(["type", "self_amount", "invite_amount"])
+            ->whereAccountId($accountId)
+            ->get();
+
+        return $this->successResponse($earnings);
     }
 }
