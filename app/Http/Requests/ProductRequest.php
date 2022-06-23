@@ -4,7 +4,6 @@ namespace App\Http\Requests;
 
 use App\Enums\Initiator;
 use App\Enums\PaymentMethod;
-use App\Models\SubscriptionType;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -37,18 +36,9 @@ class ProductRequest extends FormRequest
             'initiator'        => ['required', new Enum(Initiator::class)],
             'account_id'       => 'integer',
             'amount'           => [
-                'required',
+                Rule::requiredIf(!$this->is('*/products/subscription')),
                 'numeric',
                 'max:10000',
-                function($attribute, $value, $fail) {
-                    $isSubscription = $this->is('*/products/subscription');
-                    $subPrices = SubscriptionType::pluck('price')->toArray();
-                    $subPricesStr = implode(', ', $subPrices);
-
-                    if ($isSubscription && !in_array($value, $subPrices)) {
-                        $fail("The $attribute must be either of: {$subPricesStr}.");
-                    }
-                },
             ],
             'method' => [new Enum(PaymentMethod::class),],
             'enterprise_id' => ["required_if:initiator," . Initiator::ENTERPRISE->name],
@@ -56,6 +46,10 @@ class ProductRequest extends FormRequest
             'utility_provider' => ["required_if:product,utility"],
             'target_number' => "phone:$countryCode",
             'debit_account' => "phone:$countryCode",
+            'subscription_type_id' => [
+                Rule::requiredIf($this->is('*/products/subscription')),
+                'in:subscription-types',
+            ]
         ];
     }
 

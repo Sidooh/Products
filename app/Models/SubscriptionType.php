@@ -41,7 +41,13 @@ class SubscriptionType extends Model
 {
     use HasFactory;
 
+    protected $casts = [
+        "price" => 'int',
+        "active" => 'bool'
+    ];
+
     // TODO: Should we update duration to store period as well? e.g. 1m, 1y
+
     /**
      * ---------------------------------------- Relationships ----------------------------------------
      */
@@ -49,4 +55,6 @@ class SubscriptionType extends Model
     {
         return $this->hasMany(Subscription::class);
     }
+
+
 }

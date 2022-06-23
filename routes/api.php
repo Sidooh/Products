@@ -6,6 +6,7 @@ use App\Http\Controllers\API\V1\FloatController;
 use App\Http\Controllers\API\V1\PaymentsController;
 use App\Http\Controllers\API\V1\ProductController;
 use App\Http\Controllers\API\V1\SubscriptionController;
+use App\Http\Controllers\API\V1\SubscriptionTypeController;
 use App\Http\Controllers\API\V1\UtilityController;
 use App\Http\Controllers\API\V1\VoucherController;
 use Illuminate\Support\Facades\Route;
@@ -37,6 +38,9 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function () {
 
         //  AT Callback Route
         Route::post('/airtime/status/callback', [AirtimeController::class, 'airtimeStatusCallback']);
+
+        Route::get('/subscription-types/default', SubscriptionTypeController::class);
+
     });
 
     Route::prefix('/payments')->group(function () {
