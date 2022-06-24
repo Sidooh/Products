@@ -61,5 +61,7 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function () {
         Route::post('/', [EarningController::class, 'save']);
     });
 
-    Route::get('/transactions', [PaymentsController::class, 'index']);
+
+    //  DASHBOARD ROUTES
+
 });
