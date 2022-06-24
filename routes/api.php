@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\TransactionController;
 use App\Http\Controllers\API\V1\AirtimeController;
 use App\Http\Controllers\API\V1\EarningController;
 use App\Http\Controllers\API\V1\FloatController;
@@ -22,7 +23,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function () {
+Route::/*middleware('auth.jwt')->*/prefix('/v1')->name('api.')->group(function () {
     Route::prefix('/products')->group(function () {
         Route::post('/airtime', AirtimeController::class);
         Route::post('/airtime/bulk', [AirtimeController::class, 'bulk']);
@@ -63,5 +64,5 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function () {
 
 
     //  DASHBOARD ROUTES
-
+    Route::get('/transactions', [TransactionController::class, "index"]);
 });

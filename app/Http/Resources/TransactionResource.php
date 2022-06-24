@@ -5,7 +5,6 @@ namespace App\Http\Resources;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use JetBrains\PhpStorm\ArrayShape;
 use JsonSerializable;
 
 class TransactionResource extends JsonResource
@@ -16,16 +15,6 @@ class TransactionResource extends JsonResource
      * @param Request $request
      * @return array|Arrayable|JsonSerializable
      */
-    #[ArrayShape([
-        'id'          => "mixed",
-        'initiator'   => "mixed",
-        'type'        => "mixed",
-        'amount'      => "mixed",
-        'status'      => "mixed",
-        'destination' => "mixed",
-        'description' => "mixed",
-        'account_id'  => "mixed"
-    ])]
     public function toArray($request): array|JsonSerializable|Arrayable
     {
         return [
