@@ -3,8 +3,10 @@
 namespace App\Services;
 
 use App\Enums\Description;
+use Exception;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Client\RequestException;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 class SidoohPayments extends SidoohService
@@ -19,6 +21,22 @@ class SidoohPayments extends SidoohService
         $url = config('services.sidooh.services.payments.url') . "/payments";
 
         return parent::fetch($url);
+    }
+
+    /**
+     * @throws Exception
+     */
+    static function findByTransactionId(int|string $id): array
+    {
+        Log::info('...[SRV - PAYMENTS]: Find By Transaction Id...', ['Transaction id' => $id]);
+
+        $url = config('services.sidooh.services.payments.url') . "/payments/transaction/$id";
+
+        $payment = Cache::remember($id, (60 * 60 * 24), fn() => parent::fetch($url));
+
+        if(!$payment) throw new Exception("Payment doesn't exist!");
+
+        return $payment;
     }
 
     /**

@@ -65,4 +65,5 @@ Route::/*middleware('auth.jwt')->*/prefix('/v1')->name('api.')->group(function (
 
     //  DASHBOARD ROUTES
     Route::get('/transactions', [TransactionController::class, "index"]);
+    Route::get('/transactions/{transaction}', [TransactionController::class, "show"]);
 });

@@ -48,4 +48,19 @@ class TransactionController extends Controller
 
         return TransactionResource::collection($transactions);
     }
+
+    public function show(Request $request, Transaction $transaction): TransactionResource
+    {
+        $relations = explode(",", $request->query("with"));
+
+        if(in_array("account", $relations)) {
+            $transaction->account = SidoohAccounts::find($transaction->account_id);
+        }
+
+        if(in_array("payment", $relations)) {
+            $transaction->payment = SidoohPayments::findByTransactionId($transaction->id);
+        }
+
+        return TransactionResource::make($transaction);
+    }
 }
