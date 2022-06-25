@@ -10,6 +10,18 @@ use Illuminate\Support\Facades\Log;
 class SidoohPayments extends SidoohService
 {
     /**
+     * @throws \Illuminate\Auth\AuthenticationException
+     */
+    static function getAll(): array
+    {
+        Log::info('...[SRV - PAYMENTS]: Get All...');
+
+        $url = config('services.sidooh.services.payments.url') . "/payments";
+
+        return parent::fetch($url);
+    }
+
+    /**
      * @throws AuthenticationException
      */
     public static function pay(array $transactions, string $method, $totalAmount, array $data = []): ?array
