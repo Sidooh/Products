@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
-use App\Enums\ProductType;
 use App\Enums\Status;
 use Database\Factories\TransactionFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
@@ -59,13 +59,14 @@ class Transaction extends Model
         'description',
     ];
 
-    protected $casts = [
-        "product_id" => ProductType::class,
-    ];
-
     public function airtime(): HasOne
     {
         return $this->hasOne(AirtimeRequest::class);
+    }
+
+    public function product(): BelongsTo
+    {
+        return $this->belongsTo(Product::class);
     }
 
     public function kyandaTransaction(): HasOne
@@ -77,7 +78,6 @@ class Transaction extends Model
     {
         return $this->hasOne(AirtimeRequest::class);
     }
-
 
     public static function updateStatus(self $transaction, Status $status = Status::PENDING)
     {

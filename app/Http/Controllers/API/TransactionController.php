@@ -18,7 +18,15 @@ class TransactionController extends Controller
     public function index(Request $request): AnonymousResourceCollection
     {
         $relations = explode(",", $request->query("with"));
-        $transactions = Transaction::latest()->get();
+        $transactions = Transaction::select([
+            "id",
+            "amount",
+            "status",
+            "destination",
+            "account_id",
+            "product_id",
+            "created_at"
+        ])->latest()->with("product:id,name")->get();
 
         if(in_array("account", $relations)) {
             $accounts = collect(SidoohAccounts::getAll());
@@ -37,8 +45,6 @@ class TransactionController extends Controller
                 return $transaction;
             });
         }
-
-        dump_json($transactions->toArray());
 
         return TransactionResource::collection($transactions);
     }
