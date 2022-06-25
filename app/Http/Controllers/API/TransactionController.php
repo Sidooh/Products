@@ -54,7 +54,7 @@ class TransactionController extends Controller
         $relations = explode(",", $request->query("with"));
 
         if(in_array("account", $relations)) {
-            $transaction->account = SidoohAccounts::find($transaction->account_id);
+            $transaction->account = SidoohAccounts::find($transaction->account_id, true);
         }
 
         if(in_array("payment", $relations)) {
