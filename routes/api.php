@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\DashboardController;
 use App\Http\Controllers\API\TransactionController;
 use App\Http\Controllers\API\V1\AirtimeController;
 use App\Http\Controllers\API\V1\EarningController;
@@ -64,6 +65,8 @@ Route::/*middleware('auth.jwt')->*/prefix('/v1')->name('api.')->group(function (
 
 
     //  DASHBOARD ROUTES
+    Route::get('/dashboard', [DashboardController::class, "index"]);
+
     Route::get('/transactions', [TransactionController::class, "index"]);
     Route::get('/transactions/{transaction}', [TransactionController::class, "show"]);
 });
