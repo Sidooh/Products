@@ -73,7 +73,7 @@ class TransactionRepository
             foreach ($transactions as $transaction) {
                 $purchase = new Purchase($transaction);
 
-                match ($transaction->product_id) {
+                match (ProductType::tryFrom($transaction->product_id)) {
                     ProductType::AIRTIME => $purchase->airtime(),
                     ProductType::UTILITY => $purchase->utility($paymentsData),
                     ProductType::SUBSCRIPTION => $purchase->subscription(),
