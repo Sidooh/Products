@@ -16654,7 +16654,58 @@
 
 }
 
-        namespace Clockwork\Support\Laravel {
+        namespace App\Facades {
+            /**
+     *
+     *
+     */
+        class LocalCarbon {
+                    /**
+         *
+         *
+         * @static
+         */
+        public static function init()
+        {
+                        /** @var \App\Helpers\LocalCarbon $instance */
+                        return $instance->init();
+        }
+                    /**
+         *
+         *
+         * @static
+         */
+        public static function today()
+        {
+                        /** @var \App\Helpers\LocalCarbon $instance */
+                        return $instance->today();
+        }
+                    /**
+         *
+         *
+         * @static
+         */
+        public static function yesterday()
+        {
+                        /** @var \App\Helpers\LocalCarbon $instance */
+                        return $instance->yesterday();
+        }
+                    /**
+         *
+         *
+         * @static
+         */
+        public static function now()
+        {
+                        /** @var \App\Helpers\LocalCarbon $instance */
+                        return $instance->now();
+        }
+
+    }
+
+}
+
+    namespace Clockwork\Support\Laravel {
             /**
      *
      *
@@ -21124,6 +21175,7 @@ namespace  {
             class URL extends \Illuminate\Support\Facades\URL {}
             class Validator extends \Illuminate\Support\Facades\Validator {}
             class View extends \Illuminate\Support\Facades\View {}
+            class LocalCarbon extends \App\Facades\LocalCarbon {}
             class Clockwork extends \Clockwork\Support\Laravel\Facade {}
             class Flare extends \Spatie\LaravelIgnition\Facades\Flare {}
 

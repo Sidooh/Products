@@ -2,14 +2,19 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Enums\Frequency;
+use App\Enums\Period;
 use App\Enums\Status;
 use App\Enums\TransactionType;
+use App\Helpers\ChartAid;
 use App\Http\Controllers\Controller;
 use App\Models\Transaction;
 use App\Services\SidoohAccounts;
 use App\Services\SidoohPayments;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use LocalCarbon;
 
 class DashboardController extends Controller
 {
@@ -58,6 +63,38 @@ class DashboardController extends Controller
 
             "recent_transactions"  => $transactions->take(70),
             "pending_transactions" => $transactions->filter(fn(Transaction $transaction) => $transaction->status === Status::PENDING->value)
+        ]);
+    }
+
+    public function revenueChart(Request $request)
+    {
+        $frequency = Frequency::tryFrom((string)$request->input('frequency')) ?? Frequency::HOURLY;
+        $status = $request->input('paymentStatus', Status::COMPLETED);
+
+        $whereStatus = $status === "ALL" ? Status::cases() : [$status];
+
+        $chartAid = new ChartAid(Period::TODAY, $frequency, 'sum', 'amount');
+        $chartAid->setShowFuture(true);
+
+        $transactionsYesterday = Transaction::select(['created_at', 'amount'])->whereBetween('created_at', [
+            LocalCarbon::yesterday()->startOfDay()->utc(),
+            LocalCarbon::yesterday()->endOfDay()->utc()
+        ])->whereIn('status', $whereStatus)->get()->groupBy(function($item) use ($chartAid) {
+            return $chartAid->chartDateFormat($item->created_at);
+        });
+
+        $transactionsToday = Transaction::select(['created_at', 'amount'])->whereBetween('created_at', [
+            LocalCarbon::today()->startOfDay()->utc(),
+            LocalCarbon::today()->endOfDay()->utc()
+        ])->whereIn('status', $whereStatus)->get()->groupBy(function($item) use ($chartAid) {
+            return $chartAid->chartDateFormat($item->created_at);
+        });
+
+        $todayHrs = LocalCarbon::now()->diffInHours(LocalCarbon::now()->startOfDay());
+
+        return response()->json([
+            "yesterday" => $chartAid->chartDataSet($transactionsToday, $todayHrs + 1),
+            "today"     => $chartAid->chartDataSet($transactionsYesterday),
         ]);
     }
 }

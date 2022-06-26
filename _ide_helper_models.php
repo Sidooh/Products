@@ -269,9 +269,11 @@ namespace App\Models{
  * App\Models\Product
  *
  * @property int $id
- * @property string $Name
+ * @property string $name
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Transaction[] $transaction
+ * @property-read int|null $transaction_count
  * @method static \Database\Factories\ProductFactory factory(...$parameters)
  * @method static \Illuminate\Database\Eloquent\Builder|Product newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Product newQuery()
@@ -376,7 +378,9 @@ namespace App\Models{
  * @method static Builder|Transaction whereStatus($value)
  * @method static Builder|Transaction whereType($value)
  * @method static Builder|Transaction whereUpdatedAt($value)
- * @property \App\Enums\ProductType|null $product_id
+ * @property int|null $product_id
+ * @property-read \App\Models\Product|null $product
+ * @property-read \DrH\Tanda\Models\TandaRequest|null $request
  * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereProductId($value)
  */
 	class IdeHelperTransaction {}
