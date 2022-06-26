@@ -61,6 +61,8 @@ class TransactionController extends Controller
             $transaction->payment = SidoohPayments::findByTransactionId($transaction->id);
         }
 
+        if(in_array("tanda_request", $relations)) $transaction->load("request:id,relation_id,receipt_number,amount,provider,destination,message,status,last_modified");
+
         return TransactionResource::make($transaction);
     }
 }

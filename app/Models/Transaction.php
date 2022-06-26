@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\Status;
 use Database\Factories\TransactionFactory;
+use DrH\Tanda\Models\TandaRequest;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -77,6 +78,11 @@ class Transaction extends Model
     public function airtimeRequest(): HasOne
     {
         return $this->hasOne(AirtimeRequest::class);
+    }
+
+    public function request(): HasOne
+    {
+        return $this->hasOne(TandaRequest::class, 'relation_id');
     }
 
     public static function updateStatus(self $transaction, Status $status = Status::PENDING)

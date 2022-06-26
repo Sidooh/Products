@@ -29,6 +29,7 @@ class TransactionResource extends JsonResource
             "account"     => $this->account,
             "payment"     => $this->payment,
             "product"     => $this->product->name,
+            "request"     => $this->request,
             "created_at"  => $this->created_at,
         ];
     }
