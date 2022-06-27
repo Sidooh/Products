@@ -64,39 +64,42 @@ class DashboardController extends Controller
             "total_revenue"       => $totalRevenue,
 
             "recent_transactions"  => $transactions->take(70),
-            "pending_transactions" => $transactions->filter(fn(Transaction $transaction) => $transaction->status === Status::PENDING->value)->values()
+            "pending_transactions" => $transactions->filter(fn(Transaction $transaction) => $transaction->status === Status::PENDING->value)
+                ->values()
         ]);
     }
 
     public function revenueChart(Request $request): JsonResponse
     {
-        $frequency = Frequency::tryFrom((string)$request->input('frequency')) ?? Frequency::HOURLY;
-        $status = $request->input('paymentStatus', Status::COMPLETED);
+        $frequency = Frequency::tryFrom((string)$request->input("frequency")) ?? Frequency::HOURLY;
 
-        $whereStatus = $status === "ALL" ? Status::cases() : [$status];
-
-        $chartAid = new ChartAid(Period::TODAY, $frequency, 'sum', 'amount');
+        $chartAid = new ChartAid(Period::TODAY, $frequency, "sum", "amount");
         $chartAid->setShowFuture(true);
 
-        $transactionsYesterday = Transaction::select(['created_at', 'amount'])->whereBetween('created_at', [
-            LocalCarbon::yesterday()->startOfDay()->utc(),
-            LocalCarbon::yesterday()->endOfDay()->utc()
-        ])->whereIn('status', $whereStatus)->get()->groupBy(function($item) use ($chartAid) {
-            return $chartAid->chartDateFormat($item->created_at);
-        });
+        $fetch = function(array $whereBetween, int $freqCount = null) use ($chartAid) {
+            $transactions = Transaction::select(["status", "created_at", "amount"])
+                ->whereBetween('created_at', $whereBetween)->get();
 
-        $transactionsToday = Transaction::select(['created_at', 'amount'])->whereBetween('created_at', [
-            LocalCarbon::today()->startOfDay()->utc(),
-            LocalCarbon::today()->endOfDay()->utc()
-        ])->whereIn('status', $whereStatus)->get()->groupBy(function($item) use ($chartAid) {
-            return $chartAid->chartDateFormat($item->created_at);
-        });
+            $transform = function($transactions, $key) use ($freqCount, $chartAid) {
+                $models = $transactions->groupBy(fn($item) => $chartAid->chartDateFormat($item->created_at));
+
+                return [$key => $chartAid->chartDataSet($models, $freqCount)];
+            };
+
+            return $transactions->groupBy("status")->mapWithKeys($transform)->merge($transform($transactions, "ALL"));
+        };
 
         $todayHrs = LocalCarbon::now()->diffInHours(LocalCarbon::now()->startOfDay());
 
         return response()->json([
-            "yesterday" => $chartAid->chartDataSet($transactionsYesterday),
-            "today"     => $chartAid->chartDataSet($transactionsToday, $todayHrs + 1),
+            "today"     => $fetch([
+                LocalCarbon::today()->startOfDay()->utc(),
+                LocalCarbon::today()->endOfDay()->utc()
+            ], $todayHrs + 1),
+            "yesterday" => $fetch([
+                LocalCarbon::yesterday()->startOfDay()->utc(),
+                LocalCarbon::yesterday()->endOfDay()->utc()
+            ]),
         ]);
     }
 }
