@@ -41,7 +41,6 @@ class ATEventRepository
         $voucher->balance += (double)$amount;
         $voucher->save();
 
-//        TODO:: Send sms notification
         $message = "Sorry! We could not complete your KES{$amount} airtime purchase for {$phone} on {$date}. We have added KES{$amount} to your voucher account. New Voucher balance is {$voucher->balance}.";
 
         SidoohNotify::notify([$phone], $message, EventType::AIRTIME_PURCHASE_FAILURE);

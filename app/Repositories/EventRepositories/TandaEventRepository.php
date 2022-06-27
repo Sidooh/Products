@@ -26,17 +26,16 @@ class TandaEventRepository extends EventRepository
     {
         $provider = $tandaRequest->provider;
 
-        if (empty($provider)) {
+        if(empty($provider)) {
             $productId = $transaction->product_id;
             $descriptionArray = explode(" ", $transaction->description);
 
-            $provider = $productId == ProductType::AIRTIME->value
-                ? getTelcoFromPhone($transaction->destination)
+            $provider = $productId == ProductType::AIRTIME->value ? getTelcoFromPhone($transaction->destination)
                 : $descriptionArray[0];
 
             $tandaRequest->provider = $provider;
 
-            if (empty($tandaRequest->destination)) {
+            if(empty($tandaRequest->destination)) {
                 $tandaRequest->destination = $descriptionArray[1];
             }
 
@@ -49,19 +48,17 @@ class TandaEventRepository extends EventRepository
     public static function requestSuccess(TandaRequest $tandaRequest)
     {
         // Update Transaction
-        if ($tandaRequest->relation_id) {
+        if($tandaRequest->relation_id) {
             $transaction = Transaction::find($tandaRequest->relation_id);
         } else {
-            $transaction = Transaction::whereStatus(Status::PENDING->name)
-                ->whereType(TransactionType::PAYMENT->name)
-                ->whereAmount($tandaRequest->amount)
-                ->whereLike('description', 'LIKE', "%" . $tandaRequest->destination)
+            $transaction = Transaction::whereStatus(Status::PENDING->name)->whereType(TransactionType::PAYMENT->name)
+                ->whereAmount($tandaRequest->amount)->whereLike('description', 'LIKE', "%" . $tandaRequest->destination)
                 ->whereDate('createdAt', '<', $tandaRequest->created_at);
             $tandaRequest->relation_id = $transaction->id;
             $tandaRequest->save();
         }
 
-        if ($transaction->status == Status::COMPLETED) {
+        if($transaction->status == Status::COMPLETED) {
             SidoohNotify::notify([
                 '254714611696',
                 '254110039317'
@@ -78,7 +75,7 @@ class TandaEventRepository extends EventRepository
         $voucher = $paymentDetails["voucher"];
         $method = $payment["subtype"];
 
-        if ($method === 'VOUCHER') {
+        if($method === 'VOUCHER') {
             $bal = 'Ksh' . number_format($voucher["balance"], 2);
             $vtext = " New Voucher balance is $bal.";
         } else {
@@ -95,22 +92,20 @@ class TandaEventRepository extends EventRepository
         $date = $tandaRequest->updated_at->timezone('Africa/Nairobi')->format(config("settings.sms_date_time_format"));
         $eventType = EventType::UTILITY_PAYMENT;
 
-        switch ($provider) {
+        switch($provider) {
             case Providers::FAIBA:
             case Providers::SAFARICOM:
             case Providers::AIRTEL:
             case Providers::TELKOM:
                 //  Get Points Earned
-                $totalEarnings = ($provider == Providers::FAIBA
-                        ? .07
-                        : .06) * $transaction->amount;
+                $totalEarnings = ($provider == Providers::FAIBA ? .07 : .06) * $transaction->amount;
 
                 $userEarnings = EarningRepository::getPointsEarned($totalEarnings);
                 $phone = ltrim(PhoneNumber::make($destination, 'KE')->formatE164(), '+');
                 $eventType = EventType::AIRTIME_PURCHASE;
 
                 //  Send SMS
-                if ($phone != $sender) {
+                if($phone != $sender) {
                     $message = "You have purchased $amount airtime for $phone from your Sidooh account on $date using $method. You have received {$userEarnings} cashback.$vtext";
 
                     SidoohNotify::notify([$sender], $message, $eventType);
@@ -150,7 +145,7 @@ class TandaEventRepository extends EventRepository
                 $userEarnings = EarningRepository::getPointsEarned($totalEarnings);
 
                 //  Send SMS
-            $message = "You have made a payment to $provider - $destination of $amount from your Sidooh account on {$date} using $method. You have received $userEarnings cashback.$vtext";
+                $message = "You have made a payment to $provider - $destination of $amount from your Sidooh account on {$date} using $method. You have received $userEarnings cashback.$vtext";
                 break;
             case Providers::NAIROBI_WTR:
                 //  Get Points Earned
@@ -192,12 +187,11 @@ class TandaEventRepository extends EventRepository
         $transaction->status = Status::REFUNDED;
         $transaction->save();
 
-        $amount = 'Ksh' . number_format($amount, 2);
+        $amount = "Ksh" . number_format($amount, 2);
 
-        // TODO: Can we categorize this or create a helper that returns if airtime or bill provider?
-        $message = match ($provider) {
-            Providers::FAIBA, Providers::SAFARICOM, Providers::AIRTEL, Providers::TELKOM => "Sorry! We could not complete your $amount airtime purchase for $destination on $date. We have added $amount to your voucher account. New Voucher balance is {$voucher['balance']}.",
-            Providers::KPLC_POSTPAID, Providers::NAIROBI_WTR, Providers::KPLC_PREPAID, Providers::DSTV, Providers::GOTV, Providers::ZUKU, Providers::STARTIMES => "Sorry! We could not complete your payment to $provider of $amount for $destination on $date. We have added $amount to your voucher account. New Voucher balance is {$voucher["balance"]}."
+        $message = match ($transaction->product_id) {
+            ProductType::AIRTIME->value => "Sorry! We could not complete your $amount airtime purchase for $destination on $date. We have added $amount to your voucher account. New Voucher balance is {$voucher['balance']}.",
+            ProductType::UTILITY->value => "Sorry! We could not complete your payment to $provider of $amount for $destination on $date. We have added $amount to your voucher account. New Voucher balance is {$voucher["balance"]}."
         };
 
         SidoohNotify::notify([$sender], $message, EventType::AIRTIME_PURCHASE_FAILURE);
