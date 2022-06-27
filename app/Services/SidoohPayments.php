@@ -26,7 +26,7 @@ class SidoohPayments extends SidoohService
     /**
      * @throws Exception
      */
-    static function findByTransactionId(int|string $id): array
+    static function findByTransactionId(int|string $id): ?array
     {
         Log::info('...[SRV - PAYMENTS]: Find By Transaction Id...', ['Transaction id' => $id]);
 
