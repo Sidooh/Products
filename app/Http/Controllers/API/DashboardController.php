@@ -11,7 +11,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Transaction;
 use App\Services\SidoohAccounts;
 use App\Services\SidoohPayments;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -78,12 +77,16 @@ class DashboardController extends Controller
         $chartAid->setShowFuture(true);
 
         $fetch = function(array $whereBetween, int $freqCount = null) use ($chartAid) {
-            return Transaction::select(["status", "created_at", "amount"])->whereBetween('created_at', $whereBetween)
-                ->get()->groupBy("status")->mapWithKeys(function(Collection $item, $key) use ($freqCount, $chartAid) {
-                    $models = $item->groupBy(fn($item) => $chartAid->chartDateFormat($item->created_at));
+            $transactions = Transaction::select(["status", "created_at", "amount"])
+                ->whereBetween('created_at', $whereBetween)->get();
 
-                    return [$key => $chartAid->chartDataSet($models, $freqCount)];
-                });
+            $transform = function($transactions, $key) use ($freqCount, $chartAid) {
+                $models = $transactions->groupBy(fn($item) => $chartAid->chartDateFormat($item->created_at));
+
+                return [$key => $chartAid->chartDataSet($models, $freqCount)];
+            };
+
+            return $transactions->groupBy("status")->mapWithKeys($transform)->merge($transform($transactions, "ALL"));
         };
 
         $todayHrs = LocalCarbon::now()->diffInHours(LocalCarbon::now()->startOfDay());
