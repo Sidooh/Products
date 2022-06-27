@@ -11,6 +11,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Transaction;
 use App\Services\SidoohAccounts;
 use App\Services\SidoohPayments;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -64,39 +65,38 @@ class DashboardController extends Controller
             "total_revenue"       => $totalRevenue,
 
             "recent_transactions"  => $transactions->take(70),
-            "pending_transactions" => $transactions->filter(fn(Transaction $transaction) => $transaction->status === Status::PENDING->value)->values()
+            "pending_transactions" => $transactions->filter(fn(Transaction $transaction) => $transaction->status === Status::PENDING->value)
+                ->values()
         ]);
     }
 
     public function revenueChart(Request $request): JsonResponse
     {
-        $frequency = Frequency::tryFrom((string)$request->input('frequency')) ?? Frequency::HOURLY;
-        $status = $request->input('paymentStatus', Status::COMPLETED);
+        $frequency = Frequency::tryFrom((string)$request->input("frequency")) ?? Frequency::HOURLY;
 
-        $whereStatus = $status === "ALL" ? Status::cases() : [$status];
-
-        $chartAid = new ChartAid(Period::TODAY, $frequency, 'sum', 'amount');
+        $chartAid = new ChartAid(Period::TODAY, $frequency, "sum", "amount");
         $chartAid->setShowFuture(true);
 
-        $transactionsYesterday = Transaction::select(['created_at', 'amount'])->whereBetween('created_at', [
-            LocalCarbon::yesterday()->startOfDay()->utc(),
-            LocalCarbon::yesterday()->endOfDay()->utc()
-        ])->whereIn('status', $whereStatus)->get()->groupBy(function($item) use ($chartAid) {
-            return $chartAid->chartDateFormat($item->created_at);
-        });
+        $fetch = function(array $whereBetween, int $freqCount = null) use ($chartAid) {
+            return Transaction::select(["status", "created_at", "amount"])->whereBetween('created_at', $whereBetween)
+                ->get()->groupBy("status")->mapWithKeys(function(Collection $item, $key) use ($freqCount, $chartAid) {
+                    $models = $item->groupBy(fn($item) => $chartAid->chartDateFormat($item->created_at));
 
-        $transactionsToday = Transaction::select(['created_at', 'amount'])->whereBetween('created_at', [
-            LocalCarbon::today()->startOfDay()->utc(),
-            LocalCarbon::today()->endOfDay()->utc()
-        ])->whereIn('status', $whereStatus)->get()->groupBy(function($item) use ($chartAid) {
-            return $chartAid->chartDateFormat($item->created_at);
-        });
+                    return [$key => $chartAid->chartDataSet($models, $freqCount)];
+                });
+        };
 
         $todayHrs = LocalCarbon::now()->diffInHours(LocalCarbon::now()->startOfDay());
 
         return response()->json([
-            "yesterday" => $chartAid->chartDataSet($transactionsYesterday),
-            "today"     => $chartAid->chartDataSet($transactionsToday, $todayHrs + 1),
+            "today"     => $fetch([
+                LocalCarbon::today()->startOfDay()->utc(),
+                LocalCarbon::today()->endOfDay()->utc()
+            ], $todayHrs + 1),
+            "yesterday" => $fetch([
+                LocalCarbon::yesterday()->startOfDay()->utc(),
+                LocalCarbon::yesterday()->endOfDay()->utc()
+            ]),
         ]);
     }
 }
