@@ -48,7 +48,7 @@ class UtilityController extends Controller
 
         if($request->input("initiator") === 'ENTERPRISE') $data['method'] = 'FLOAT';
 
-        $transactionIds = TransactionRepository::createTransaction($transactions, $data);
+        $transactionIds = TransactionRepository::createTransactions($transactions, $data);
 
         return $this->successResponse(['transactions' => $transactionIds], 'Utility Request Successful!');
     }

@@ -31,11 +31,13 @@ class DashboardController extends Controller
         $transactions = Transaction::whereType(TransactionType::PAYMENT)->select([
             "id",
             "description",
+            "destination",
             "account_id",
+            "product_id",
             "amount",
             "status",
             "updated_at"
-        ])->latest()->get();
+        ])->latest()->with("product:id,name")->get();
 
         $accounts = collect(SidoohAccounts::getAll());
         $transactions->transform(function(Transaction $transaction) use ($accounts) {
@@ -62,11 +64,11 @@ class DashboardController extends Controller
             "total_revenue"       => $totalRevenue,
 
             "recent_transactions"  => $transactions->take(70),
-            "pending_transactions" => $transactions->filter(fn(Transaction $transaction) => $transaction->status === Status::PENDING->value)
+            "pending_transactions" => $transactions->filter(fn(Transaction $transaction) => $transaction->status === Status::PENDING->value)->values()
         ]);
     }
 
-    public function revenueChart(Request $request)
+    public function revenueChart(Request $request): JsonResponse
     {
         $frequency = Frequency::tryFrom((string)$request->input('frequency')) ?? Frequency::HOURLY;
         $status = $request->input('paymentStatus', Status::COMPLETED);
@@ -93,8 +95,8 @@ class DashboardController extends Controller
         $todayHrs = LocalCarbon::now()->diffInHours(LocalCarbon::now()->startOfDay());
 
         return response()->json([
-            "yesterday" => $chartAid->chartDataSet($transactionsToday, $todayHrs + 1),
-            "today"     => $chartAid->chartDataSet($transactionsYesterday),
+            "yesterday" => $chartAid->chartDataSet($transactionsYesterday),
+            "today"     => $chartAid->chartDataSet($transactionsToday, $todayHrs + 1),
         ]);
     }
 }

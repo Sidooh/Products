@@ -53,7 +53,7 @@ class AirtimeController extends Controller
         if($request->has("debit_account")) $data["debit_account"] = $request->input("debit_account");
         if($request->input("initiator") === 'ENTERPRISE') $data['method'] = 'FLOAT';
 
-        $transactionIds = TransactionRepository::createTransaction($transactionsData, $data);
+        $transactionIds = TransactionRepository::createTransactions($transactionsData, $data);
 
         return $this->successResponse(['transactions' => $transactionIds], 'Airtime Request Successful!');
     }
@@ -83,7 +83,7 @@ class AirtimeController extends Controller
             "method"          => $data['method'] ?? PaymentMethod::MPESA->value,
         ];
 
-        $transactionIds = TransactionRepository::createTransaction($transactions, $data);
+        $transactionIds = TransactionRepository::createTransactions($transactions, $data);
 
         return $this->successResponse(['transactions' => $transactionIds], 'Bulk Airtime Request Successful!');
     }
