@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\API\DashboardController;
+use App\Http\Controllers\API\TransactionController;
 use App\Http\Controllers\API\V1\AirtimeController;
 use App\Http\Controllers\API\V1\EarningController;
 use App\Http\Controllers\API\V1\FloatController;
@@ -22,7 +24,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function () {
+Route::/*middleware('auth.jwt')->*/prefix('/v1')->name('api.')->group(function () {
     Route::prefix('/products')->group(function () {
         Route::post('/airtime', AirtimeController::class);
         Route::post('/airtime/bulk', [AirtimeController::class, 'bulk']);
@@ -61,5 +63,11 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function () {
         Route::post('/', [EarningController::class, 'save']);
     });
 
-    Route::get('/transactions', [PaymentsController::class, 'index']);
+
+    //  DASHBOARD ROUTES
+    Route::get('/dashboard', [DashboardController::class, "index"]);
+    Route::get('/dashboard/revenue-chart', [DashboardController::class, "revenueChart"]);
+
+    Route::get('/transactions', [TransactionController::class, "index"]);
+    Route::get('/transactions/{transaction}', [TransactionController::class, "show"]);
 });
