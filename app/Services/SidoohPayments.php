@@ -32,11 +32,12 @@ class SidoohPayments extends SidoohService
 
         $url = config('services.sidooh.services.payments.url') . "/payments/transaction/$id";
 
-        $payment = Cache::remember($id, (60 * 60 * 24), fn() => parent::fetch($url));
+        return Cache::remember($id, (60 * 60 * 24), fn() => parent::fetch($url));
+//        $payment = Cache::remember($id, (60 * 60 * 24), fn() => parent::fetch($url));
 
-        if(!$payment) throw new Exception("Payment doesn't exist!");
+//        if(!$payment) throw new Exception("Payment doesn't exist!");
 
-        return $payment;
+//        return $payment;
     }
 
     /**
