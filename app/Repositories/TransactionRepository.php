@@ -26,16 +26,10 @@ class TransactionRepository
      * @throws AuthenticationException
      * @throws Throwable
      */
-    // TODO: Modify to be named create Transactions since it is bulk else create one for bulk specifically
-    public static function createTransaction(array $transactionsData, $data): array
+    public static function createTransactions(array $transactionsData, $data): array
     {
-//        $transactions = array_map(fn($transaction) => [
-//            ...Transaction::create($transaction)->toArray(),
-////            "account" => $transaction['account']
-//        ], $transactionsData);
-
         $transactions = collect();
-        foreach ($transactionsData as $transactionData) {
+        foreach($transactionsData as $transactionData) {
             $transactions->add(Transaction::create($transactionData));
         }
 
@@ -54,7 +48,7 @@ class TransactionRepository
 
         $response = SidoohPayments::pay($transactions->toArray(), $data['method'], $totalAmount, $data);
 
-        if (isset($response["data"]) && $data['method'] === PaymentMethod::VOUCHER->name) {
+        if(isset($response["data"]) && $data['method'] === PaymentMethod::VOUCHER->name) {
             self::requestPurchase($transactions, $response["data"]);
         }
 
@@ -66,14 +60,13 @@ class TransactionRepository
      */
     public static function requestPurchase(Collection $transactions, array $paymentsData): void
     {
-        // TODO: Is the response always with successful payments? Can there be failures?
-//        $transactions = Transaction::findMany(Arr::pluck($paymentsData["payments"], "payable_id"));
-
         try {
-            foreach ($transactions as $transaction) {
+            foreach($transactions as $transaction) {
                 $purchase = new Purchase($transaction);
 
-                match (ProductType::tryFrom($transaction->product_id)) {
+                if(is_int($transaction->product_id)) $transaction->product_id = ProductType::tryFrom($transaction->product_id);
+
+                match ($transaction->product_id) {
                     ProductType::AIRTIME => $purchase->airtime(),
                     ProductType::UTILITY => $purchase->utility($paymentsData),
                     ProductType::SUBSCRIPTION => $purchase->subscription(),

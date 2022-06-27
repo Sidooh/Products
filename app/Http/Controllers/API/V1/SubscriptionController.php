@@ -49,7 +49,7 @@ class SubscriptionController extends Controller
         if ($request->has("debit_account") && $data['method'] === PaymentMethod::MPESA->value)
             $data["debit_account"] = $request->input("debit_account");
 
-        $transactionIds = TransactionRepository::createTransaction($transactions, $data);
+        $transactionIds = TransactionRepository::createTransactions($transactions, $data);
 
         return $this->successResponse(['transactions' => $transactionIds], 'Subscription Request Successful!');
     }

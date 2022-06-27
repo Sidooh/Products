@@ -32,7 +32,7 @@ class FloatController extends Controller
         $data['type'] = TransactionType::PAYMENT;
         $data['description'] = "Float Purchase";
 
-        $transaction = TransactionRepository::createTransaction($data);
+        $transaction = TransactionRepository::createTransactions($data);
 
         return $this->successResponse(['transaction_id' => $transaction->id], 'Voucher Request Successful');
     }
