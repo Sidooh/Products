@@ -10,7 +10,7 @@ use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class SubscriptionPurchaseEvent
+class SubscriptionPurchaseSuccessEvent
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -32,7 +32,6 @@ class SubscriptionPurchaseEvent
      */
     public function __construct(Subscription $subscription, Transaction $transaction)
     {
-        // TODO: Should this be SubscriptionPurchaseSuccessEvent just to be clear?
         $this->subscription = $subscription;
         $this->transaction = $transaction;
     }

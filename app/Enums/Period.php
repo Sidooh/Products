@@ -10,4 +10,7 @@ enum Period: string
     case LAST_THREE_MONTHS = 'last_3_months';
     case LAST_SIX_MONTHS = 'last_6_months';
     case YTD = 'ytd';
+
+    case MONTH = 'month';
+    case YEAR = 'year';
 }

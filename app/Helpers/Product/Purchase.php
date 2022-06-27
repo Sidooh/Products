@@ -3,8 +3,8 @@
 namespace App\Helpers\Product;
 
 use App\Enums\Status;
-use App\Events\SubscriptionPurchaseEvent;
 use App\Events\SubscriptionPurchaseFailedEvent;
+use App\Events\SubscriptionPurchaseSuccessEvent;
 use App\Events\VoucherPurchaseEvent;
 use App\Helpers\AfricasTalking\AfricasTalkingApi;
 use App\Helpers\Kyanda\KyandaApi;
@@ -88,7 +88,7 @@ class Purchase
             $this->transaction->status = Status::COMPLETED;
             $this->transaction->save();
 
-            SubscriptionPurchaseEvent::dispatch($sub, $this->transaction);
+            SubscriptionPurchaseSuccessEvent::dispatch($sub, $this->transaction);
 
             return $sub;
         });
