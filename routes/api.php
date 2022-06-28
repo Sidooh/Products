@@ -24,7 +24,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::/*middleware('auth.jwt')->*/prefix('/v1')->name('api.')->group(function () {
+Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function () {
     Route::prefix('/products')->group(function () {
         Route::post('/airtime', AirtimeController::class);
         Route::post('/airtime/bulk', [AirtimeController::class, 'bulk']);
