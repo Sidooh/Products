@@ -86,7 +86,8 @@ class DashboardController extends Controller
                 return [$key => $chartAid->chartDataSet($models, $freqCount)];
             };
 
-            return $transactions->groupBy("status")->mapWithKeys($transform)->merge($transform($transactions, "ALL"));
+            return $transactions->groupBy("status")->toBase()->mapWithKeys($transform)
+                ->merge($transform($transactions, "ALL"));
         };
 
         $todayHrs = LocalCarbon::now()->diffInHours(LocalCarbon::now()->startOfDay());
