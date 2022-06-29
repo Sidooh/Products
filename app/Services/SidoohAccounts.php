@@ -8,14 +8,29 @@ use Illuminate\Support\Facades\Log;
 
 class SidoohAccounts extends SidoohService
 {
+
+    /**
+     * @throws \Illuminate\Auth\AuthenticationException
+     */
+    static function getAll(): array
+    {
+        Log::info('...[SRV - ACCOUNTS]: Get All...');
+
+        $url = config('services.sidooh.services.accounts.url') . "/accounts";
+
+        return parent::fetch($url);
+    }
+
     /**
      * @throws Exception
      */
-    static function find(int|string $id): array
+    static function find(int|string $id, $withUser = false): array
     {
         Log::info('...[SRV - ACCOUNTS]: Find Account...', ['id' => $id]);
 
         $url = config('services.sidooh.services.accounts.url') . "/accounts/$id";
+
+        if($withUser) $url .= "?with_user=true";
 
         $acc = Cache::remember($id, (60 * 60 * 24), fn() => parent::fetch($url));
 
@@ -59,7 +74,7 @@ class SidoohAccounts extends SidoohService
 
         $ancestors = Cache::remember("${id}_ancestors", (60 * 60 * 24 * 28), fn() => parent::fetch($url));
 
-        if (!$ancestors) throw new Exception("Account Ancestors don't exist!");
+        if(!$ancestors) throw new Exception("Account Ancestors don't exist!");
 
         return $ancestors;
     }

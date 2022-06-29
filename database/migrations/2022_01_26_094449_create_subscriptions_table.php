@@ -18,9 +18,7 @@ return new class extends Migration
 
             $table->decimal('amount');
             $table->timestamp('start_date');
-
-            // TODO: Find if laravel fixed issue of consecutive timestamps and remove nullable below
-            $table->timestamp('end_date')->nullable();
+            $table->timestamp('end_date');
 
             $table->string('status')->default('PENDING'); // PENDING / ACTIVE / EXPIRED
 
