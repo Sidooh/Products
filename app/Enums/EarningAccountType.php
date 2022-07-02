@@ -4,7 +4,8 @@ namespace App\Enums;
 
 enum EarningAccountType
 {
-    case PURCHASE;
-    case SUBSCRIPTION;
+    case PURCHASES;
+    case SUBSCRIPTIONS;
+    case WITHDRAWALS;
     case MERCHANT;
 }
