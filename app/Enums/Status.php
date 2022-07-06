@@ -10,4 +10,5 @@ enum Status: string
     case REFUNDED = "REFUNDED";
 
     case ACTIVE = "ACTIVE";
+    const EXPIRED = "EXPIRED";
 }

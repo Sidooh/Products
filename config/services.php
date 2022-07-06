@@ -81,4 +81,109 @@ return [
         'country_code' => env('COUNTRY_CODE', 'KE'),
     ],
 
+    'tanda' => [
+        'discounts' => [
+            'SAFARICOM' => [
+                'type' => '%',
+                'value' => .06
+            ],
+            'FAIBA' => [
+                'type' => '%',
+                'value' => .07
+            ],
+            'AIRTEL' => [
+                'type' => '%',
+                'value' => .06
+            ],
+            'TELKOM' => [
+                'type' => '%',
+                'value' => .06
+            ],
+            'KPLC_POSTPAID' => [
+                'type' => '%',
+                'value' => .017
+            ],
+            'KPLC_PREPAID' => [
+                'type' => '%',
+                'value' => .017
+            ],
+            'DSTV' => [
+                'type' => '%',
+                'value' => .003
+            ],
+            'GOTV' => [
+                'type' => '%',
+                'value' => .003
+            ],
+            'ZUKU' => [
+                'type' => '%',
+                'value' => .003
+            ],
+            'STARTIMES' => [
+                'type' => '%',
+                'value' => .003
+            ],
+            'NAIROBI_WTR' => [
+                'type' => '$',
+                'value' => 5
+            ],
+        ]
+    ],
+
+    'kyanda' => [
+        'discounts' => [
+            'SAFARICOM' => [
+                'type' => '%',
+                'value' => .06
+            ],
+            'FAIBA' => [
+                'type' => '%',
+                'value' => .09
+            ],
+            'FAIBA_B' => [
+                'type' => '%',
+                'value' => .09
+            ],
+            'AIRTEL' => [
+                'type' => '%',
+                'value' => .06
+            ],
+            'TELKOM' => [
+                'type' => '%',
+                'value' => .06
+            ],
+            'EQUITEL' => [
+                'type' => '%',
+                'value' => .05
+            ],
+            'KPLC_POSTPAID' => [
+                'type' => '%',
+                'value' => .01
+            ],
+            'KPLC_PREPAID' => [
+                'type' => '%',
+                'value' => .015
+            ],
+            'DSTV' => [
+                'type' => '%',
+                'value' => .0025
+            ],
+            'GOTV' => [
+                'type' => '%',
+                'value' => .0025
+            ],
+            'ZUKU' => [
+                'type' => '%',
+                'value' => .0025
+            ],
+            'STARTIMES' => [
+                'type' => '%',
+                'value' => .0025
+            ],
+            'NAIROBI_WTR' => [
+                'type' => '$',
+                'value' => 5
+            ],
+        ]
+    ]
 ];

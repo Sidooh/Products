@@ -50,6 +50,11 @@ class Subscription extends Model
         'account_id'
     ];
 
+    protected $casts = [
+        'start_date' => 'datetime',
+        'end_date' => 'datetime'
+    ];
+
     /**
      * ---------------------------------------- Relationships ----------------------------------------
      */
@@ -72,6 +77,34 @@ class Subscription extends Model
             ->whereDate('end_date', '>', now())
             ->whereStatus(Status::ACTIVE)
             ->exists();
+    }
+
+    /**
+     * Scope a query to only include almost Expired subscriptions.
+     *
+     * @return Builder
+     */
+    public static function scopeIncludePreExpiry(Builder $query): Builder
+    {
+        return $query
+//            ->orWhereDate('end_date', '<', now()->addDays(5))
+//            ->whereDate('end_date', '>', now())
+            ->orWhereBetween('end_date', [now()->toDateString(), now()->addDays(5)->toDateString()])
+            ->whereStatus(Status::ACTIVE);
+    }
+
+    /**
+     * Scope a query to only include almost Expired subscriptions.
+     *
+     * @return Builder
+     */
+    public static function scopeIncludePostExpiry(Builder $query): Builder
+    {
+        return $query
+//            ->orWhereDate('end_date', '>', now()->subDays(6))
+//            ->whereDate('end_date', '<', now())
+            ->orWhereBetween('end_date', [now()->subDays(6)->toDateString(), now()->toDateString()])
+            ->whereStatus(Status::EXPIRED);
     }
 
     public static function getMany(array $ids)

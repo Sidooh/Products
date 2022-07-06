@@ -4,12 +4,14 @@ namespace App\Repositories;
 
 use App\Enums\EarningAccountType;
 use App\Enums\EarningCategory;
+use App\Enums\EventType;
 use App\Enums\ProductType;
 use App\Models\Cashback;
 use App\Models\EarningAccount;
 use App\Models\Subscription;
 use App\Models\Transaction;
 use App\Services\SidoohAccounts;
+use App\Services\SidoohNotify;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
@@ -24,6 +26,8 @@ class EarningRepository
 
         $account = SidoohAccounts::find($transaction->account_id);
 
+        // TODO: Add DB Transaction
+
         if ($transaction->product_id == ProductType::SUBSCRIPTION) {
             self::computeSubscriptionEarnings($account, $transaction);
             return;
@@ -36,13 +40,19 @@ class EarningRepository
         } else {
             self::computeAccountEarnings($account, $transaction, $earnings);
         }
+
+        // TODO: End DB Transaction
     }
 
-    public static function getPointsEarned(float $discount): string
+    public static function getPointsEarned(Transaction $transaction, float $discount): string
     {
-        $e = $discount * config('services.sidooh.earnings.users_percentage', .6);
+        if (Subscription::active($transaction->account_id)) {
+            $rootEarnings = round($discount * config('services.sidooh.earnings.subscribed_users_percentage', 1), 4);
+        } else {
+            $rootEarnings = round($discount * config('services.sidooh.earnings.users_percentage', .6) / 6, 4);
+        }
 
-        return 'Ksh' . $e / 6;
+        return 'Ksh' . $rootEarnings;
     }
 
     /**
@@ -62,6 +72,8 @@ class EarningRepository
             array_shift($inviters);
 
             if (count($inviters) + 1 > 6) abort(500, "Too many inviters");
+
+            $notifications = [];
 
             foreach ($inviters as $inviter) {
                 $hasActiveSubscription = Subscription::active($inviter['id']);
@@ -86,8 +98,25 @@ class EarningRepository
                 $earningAccount->invite_amount += $earningPerUser;
                 $earningAccount->save();
 
+                $notifications[] = [
+                    'phone' => $inviter['phone'],
+                    'level' => $inviter['level'],
+                    'amount' => $earningPerUser
+                ];
+
                 // Send details to savings service
                 // TODO: savings service
+            }
+
+            // TODO: Can we have bulk notify endpoint?
+            foreach ($notifications as $notification) {
+
+                $message = "Congratulations! ";
+                $message .= "One of your ripple invites at level ${notification['level']} has recently subscribed as a Sidooh Agent.";
+                $message .= config('services.sidooh.tagline');
+
+                SidoohNotify::notify([$notification['phone']], $message, EventType::SUBSCRIPTION_PAYMENT);
+
             }
         }
     }

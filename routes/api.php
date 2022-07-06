@@ -36,6 +36,12 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function () {
             Route::post('/disburse', [VoucherController::class, 'disburse']);
         });
 
+        Route::prefix('/subscription')->group(function () {
+            Route::post('', SubscriptionController::class);
+            Route::post('/check-expiry', [SubscriptionController::class, 'checkExpiry']);
+        });
+
+
         Route::post('/float/top-up', [FloatController::class, 'topUp']);
 
         //  AT Callback Route
