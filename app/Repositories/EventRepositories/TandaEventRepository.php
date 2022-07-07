@@ -100,19 +100,19 @@ class TandaEventRepository extends EventRepository
                 //  Get Points Earned
                 $totalEarnings = ($provider == Providers::FAIBA ? .07 : .06) * $transaction->amount;
 
-                $userEarnings = EarningRepository::getPointsEarned($totalEarnings);
-                $phone = ltrim(PhoneNumber::make($destination, 'KE')->formatE164(), '+');
+                $userEarnings = EarningRepository::getPointsEarned($transaction, $totalEarnings);
+            $phone = ltrim(PhoneNumber::make($destination, 'KE')->formatE164(), '+');
                 $eventType = EventType::AIRTIME_PURCHASE;
 
                 //  Send SMS
                 if($phone != $sender) {
-                    $message = "You have purchased $amount airtime for $phone from your Sidooh account on $date using $method. You have received {$userEarnings} cashback.$vtext";
+                    $message = "You have purchased $amount airtime for $phone from your Sidooh account on $date using $method. You have received $userEarnings cashback.$vtext";
 
                     SidoohNotify::notify([$sender], $message, $eventType);
 
-                    $message = "Congratulations! You have received $amount airtime from Sidooh account {$sender} on {$date}. Sidooh Makes You Money with Every Purchase.\n\nDial $code NOW for FREE on your Safaricom line to BUY AIRTIME & START EARNING from your purchases.";
+                    $message = "Congratulations! You have received $amount airtime from Sidooh account $sender on $date. Sidooh Makes You Money with Every Purchase.\n\nDial $code NOW for FREE on your Safaricom line to BUY AIRTIME & START EARNING from your purchases.";
                 } else {
-                    $message = "You have purchased $amount airtime from your Sidooh account on $date using $method. You have received {$userEarnings} cashback.$vtext";
+                    $message = "You have purchased $amount airtime from your Sidooh account on $date using $method. You have received $userEarnings cashback.$vtext";
                 }
 
                 $sender = $phone;
@@ -121,7 +121,7 @@ class TandaEventRepository extends EventRepository
 
                 //  Get Points Earned
                 $totalEarnings = .017 * $transaction->amount;
-                $userEarnings = EarningRepository::getPointsEarned($totalEarnings);
+                $userEarnings = EarningRepository::getPointsEarned($transaction, $totalEarnings);
 
                 //  Send SMS
                 $message = "You have made a payment to $provider - $destination of $amount from your Sidooh account on $date using $method. You have received $userEarnings cashback.$vtext";
@@ -129,7 +129,7 @@ class TandaEventRepository extends EventRepository
             case Providers::KPLC_PREPAID:
                 //  Get Points Earned
                 $totalEarnings = .017 * $transaction->amount;
-                $userEarnings = EarningRepository::getPointsEarned($totalEarnings);
+                $userEarnings = EarningRepository::getPointsEarned($transaction, $totalEarnings);
 
                 //  Send SMS
                 $details = $tandaRequest->result;
@@ -141,23 +141,23 @@ class TandaEventRepository extends EventRepository
             case Providers::ZUKU:
             case Providers::STARTIMES:
                 //  Get Points Earned
-                $totalEarnings = .003 * $transaction->amount;
-                $userEarnings = EarningRepository::getPointsEarned($totalEarnings);
+            $totalEarnings = .003 * $transaction->amount;
+            $userEarnings = EarningRepository::getPointsEarned($transaction, $totalEarnings);
 
                 //  Send SMS
-                $message = "You have made a payment to $provider - $destination of $amount from your Sidooh account on {$date} using $method. You have received $userEarnings cashback.$vtext";
+            $message = "You have made a payment to $provider - $destination of $amount from your Sidooh account on $date using $method. You have received $userEarnings cashback.$vtext";
                 break;
             case Providers::NAIROBI_WTR:
                 //  Get Points Earned
                 $totalEarnings = 5;
-                $userEarnings = EarningRepository::getPointsEarned($totalEarnings);
+                $userEarnings = EarningRepository::getPointsEarned($transaction, $totalEarnings);
 
                 //  Send SMS
                 $message = "You have made a payment to $provider - $destination of $amount from your Sidooh account on $date using $method. You have received $userEarnings cashback.$vtext";
                 break;
         }
 
-        //  Update Earnings
+        //  Update Transaction & Earnings
         TransactionSuccessEvent::dispatch($transaction, $totalEarnings);
         ProductRepository::syncAccounts($account, $provider, $destination);
         SidoohNotify::notify([$sender], $message, $eventType);
