@@ -31,12 +31,12 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function () {
         Route::post('/utility', UtilityController::class);
         Route::post('/subscription', SubscriptionController::class);
 
-        Route::prefix('/voucher')->group(function () {
+        Route::prefix('/vouchers')->group(function () {
             Route::post('/top-up', [VoucherController::class, 'topUp']);
             Route::post('/disburse', [VoucherController::class, 'disburse']);
         });
 
-        Route::prefix('/subscription')->group(function () {
+        Route::prefix('/subscriptions')->group(function () {
             Route::post('', SubscriptionController::class);
             Route::post('/check-expiry', [SubscriptionController::class, 'checkExpiry']);
         });
