@@ -25,8 +25,6 @@ class JWTAuth
      */
     public function handle(Request $request, Closure $next): JsonResponse|Response
     {
-        if(app()->isLocal()) return $next($request);
-        
         $bearer = $request->bearerToken();
 
         if(!JWT::verify($bearer)) throw new AuthenticationException();
