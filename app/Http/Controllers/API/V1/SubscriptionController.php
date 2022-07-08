@@ -18,6 +18,7 @@ use App\Services\SidoohNotify;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class SubscriptionController extends Controller
 {
@@ -86,6 +87,8 @@ class SubscriptionController extends Controller
             $sub['x'] = $daysPast;
             $sub['y'] = $sub->end_date->diffForHumans();
 
+            Log::info('...[SUB_CTRL]... Past Subs', $sub);
+
             if (in_array($daysPast, [2, 3, 4, 6])) {
                 //notify expired...
 
@@ -102,6 +105,8 @@ class SubscriptionController extends Controller
             $sub['x'] = $daysLeft;
             $sub['y'] = $sub->end_date->diffForHumans();
             $sub['t'] = now();
+
+            Log::info('...[SUB_CTRL]... Future Subs: ', $sub);
 
             if (in_array($daysLeft, [5, 3, 2, 1])) {
                 //notify expiry due...
