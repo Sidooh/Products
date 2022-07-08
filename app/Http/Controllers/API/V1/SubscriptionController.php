@@ -114,7 +114,7 @@ class SubscriptionController extends Controller
             }
         });
 
-        Log::info('...[SUB_CTRL]... Subs: ', [now(), $pastSubs, $futureSubs]);
+        Log::info('...[SUB_CTRL]... Subs: ', [now(), $pastSubs->toArray(), $futureSubs->toArray()]);
 
         return $this->successResponse([$pastSubs, $futureSubs]);
     }
