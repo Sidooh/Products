@@ -87,8 +87,6 @@ class SubscriptionController extends Controller
             $sub['x'] = $daysPast;
             $sub['y'] = $sub->end_date->diffForHumans();
 
-            Log::info('...[SUB_CTRL]... Past Subs', $sub);
-
             if (in_array($daysPast, [2, 3, 4, 6])) {
                 //notify expired...
 
@@ -104,9 +102,6 @@ class SubscriptionController extends Controller
             $daysLeft = now()->diffInDays($sub->end_date);
             $sub['x'] = $daysLeft;
             $sub['y'] = $sub->end_date->diffForHumans();
-            $sub['t'] = now();
-
-            Log::info('...[SUB_CTRL]... Future Subs: ', $sub);
 
             if (in_array($daysLeft, [5, 3, 2, 1])) {
                 //notify expiry due...
@@ -119,6 +114,7 @@ class SubscriptionController extends Controller
             }
         });
 
+        Log::info('...[SUB_CTRL]... Subs: ', [now(), $pastSubs, $futureSubs]);
 
         return $this->successResponse([$pastSubs, $futureSubs]);
     }
