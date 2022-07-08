@@ -38,7 +38,7 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function () {
 
         Route::prefix('/subscriptions')->group(function () {
             Route::post('', SubscriptionController::class);
-            Route::post('/check-expiry', [SubscriptionController::class, 'checkExpiry']);
+//            Route::post('/check-expiry', [SubscriptionController::class, 'checkExpiry']);
         });
 
 
@@ -76,4 +76,13 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function () {
 
     Route::get('/transactions', [TransactionController::class, "index"]);
     Route::get('/transactions/{transaction}', [TransactionController::class, "show"]);
+});
+
+
+Route::prefix('/v1')->name('api.')->group(function () {
+    Route::prefix('/products')->group(function () {
+        Route::prefix('/subscriptions')->group(function () {
+            Route::post('/check-expiry', [SubscriptionController::class, 'checkExpiry']);
+        });
+    });
 });
