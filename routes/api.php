@@ -11,6 +11,7 @@ use App\Http\Controllers\API\V1\SubscriptionController;
 use App\Http\Controllers\API\V1\SubscriptionTypeController;
 use App\Http\Controllers\API\V1\UtilityController;
 use App\Http\Controllers\API\V1\VoucherController;
+use App\Http\Controllers\API\V1\WithdrawController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -30,6 +31,7 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function () {
         Route::post('/airtime/bulk', [AirtimeController::class, 'bulk']);
         Route::post('/utility', UtilityController::class);
         Route::post('/subscription', SubscriptionController::class);
+        Route::post('/withdraw', WithdrawController::class);
 
         Route::prefix('/vouchers')->group(function () {
             Route::post('/top-up', [VoucherController::class, 'topUp']);
@@ -65,7 +67,7 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function () {
         Route::get('/{accountId}/earnings', [ProductController::class, 'earnings']);
     });
 
-    Route::prefix('/savings')->group(function() {
+    Route::prefix('/savings')->group(function () {
         Route::post('/', [EarningController::class, 'save']);
     });
 

@@ -72,6 +72,7 @@ class SubscriptionController extends Controller
         // Get latest IDs
         $latestSubscriptions = Subscription::select('account_id', DB::raw('MAX(id) as latest_subscription_id'))
             ->includePreExpiry()
+            ->orWhere
             ->includePostExpiry()
             ->groupBy('account_id');
 

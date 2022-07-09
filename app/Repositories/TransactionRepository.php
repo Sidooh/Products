@@ -4,9 +4,12 @@ namespace App\Repositories;
 
 use App\Enums\PaymentMethod;
 use App\Enums\ProductType;
+use App\Enums\Status;
 use App\Helpers\Product\Purchase;
+use App\Models\EarningAccount;
 use App\Models\Transaction;
 use App\Services\SidoohPayments;
+use App\Services\SidoohSavings;
 use App\Traits\ApiResponse;
 use Exception;
 use Illuminate\Auth\AuthenticationException;
@@ -77,5 +80,43 @@ class TransactionRepository
         } catch (Exception $err) {
             Log::error($err);
         }
+    }
+
+
+    /**
+     * @throws AuthenticationException
+     * @throws Throwable
+     */
+    public static function createWithdrawalTransactions(array $transactionsData, $data): Collection
+    {
+        $transactions = collect();
+        foreach ($transactionsData as $transactionData) {
+            $transactions->add(Transaction::create($transactionData));
+        }
+
+        return self::initiateSavingsWithdrawal($transactions, $data);
+    }
+
+    /**
+     * @throws \Throwable
+     */
+    public static function initiateSavingsWithdrawal(Collection $transactions, array $data): Collection
+    {
+        $response = SidoohSavings::withdrawEarnings($transactions, $data['method']);
+
+        $transactions->each(function ($tx) use ($response) {
+            if (array_key_exists($tx->id, $response['failed'])) {
+                $tx->status = Status::FAILED;
+                $tx->save();
+            }
+
+            if (array_key_exists($tx->id, $response['completed'])) {
+                $acc = EarningAccount::withdrawal()->accountId($tx->account_id)->first();
+                $acc->update(['self_amount' => $acc->self_amount + $tx->amount]);
+                $tx->refresh();
+            }
+        });
+
+        return $transactions;
     }
 }

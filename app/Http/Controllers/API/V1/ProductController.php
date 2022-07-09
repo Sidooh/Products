@@ -50,7 +50,8 @@ class ProductController extends Controller
 
     public function currentSubscription(Request $request, int $accountId): JsonResponse
     {
-        $subscription = Subscription::whereAccountId($accountId)->latest()->first();
+        // TODO: Handle for subscription not found first or fail?
+        $subscription = Subscription::whereAccountId($accountId)->latest()->firstOrFail();
 
         return $this->successResponse($subscription);
     }

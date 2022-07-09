@@ -82,6 +82,7 @@ class Subscription extends Model
     /**
      * Scope a query to only include almost Expired subscriptions.
      *
+     * @param Builder $query
      * @return Builder
      */
     public static function scopeIncludePreExpiry(Builder $query): Builder
@@ -89,13 +90,14 @@ class Subscription extends Model
         return $query
 //            ->orWhereDate('end_date', '<', now()->addDays(5))
 //            ->whereDate('end_date', '>', now())
-            ->orWhereBetween('end_date', [now()->toDateString(), now()->addDays(5)->toDateString()])
+            ->whereBetween('end_date', [now()->toDateString(), now()->addDays(5)->toDateString()])
             ->whereStatus(Status::ACTIVE);
     }
 
     /**
      * Scope a query to only include almost Expired subscriptions.
      *
+     * @param Builder $query
      * @return Builder
      */
     public static function scopeIncludePostExpiry(Builder $query): Builder
@@ -103,10 +105,11 @@ class Subscription extends Model
         return $query
 //            ->orWhereDate('end_date', '>', now()->subDays(6))
 //            ->whereDate('end_date', '<', now())
-            ->orWhereBetween('end_date', [now()->subDays(6)->toDateString(), now()->toDateString()])
+            ->whereBetween('end_date', [now()->subDays(6)->toDateString(), now()->toDateString()])
             ->whereStatus(Status::EXPIRED);
     }
 
+    // TODO: This doesn't seem to be used anywhere ???...
     public static function getMany(array $ids)
     {
         return self::whereIn('account_id', $ids)->get();

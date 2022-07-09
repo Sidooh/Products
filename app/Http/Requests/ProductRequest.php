@@ -38,6 +38,7 @@ class ProductRequest extends FormRequest
             'amount'               => [
                 Rule::requiredIf(!$this->is('*/products/subscription')),
                 'numeric',
+                'min:20',
                 'max:10000',
             ],
             'method'               => [new Enum(PaymentMethod::class),],
