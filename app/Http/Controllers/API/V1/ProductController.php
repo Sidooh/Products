@@ -22,7 +22,7 @@ class ProductController extends Controller
     public function getAllAirtimeAccounts(Request $request): JsonResponse
     {
         $relations = explode(",", $request->query("with"));
-        $accounts = AirtimeAccount::select(["id", "provider", "priority", "account_id", "account_number"])->latest()
+        $accounts = AirtimeAccount::select(["id", "provider", "priority", "account_id", "account_number", "created_at"])->latest()
             ->get();
 
         if(in_array("account", $relations)) {
@@ -42,7 +42,7 @@ class ProductController extends Controller
     public function getAllUtilityAccounts(Request $request): JsonResponse
     {
         $relations = explode(",", $request->query("with"));
-        $accounts = UtilityAccount::select(["id", "provider", "priority", "account_id", "account_number"])->latest()
+        $accounts = UtilityAccount::select(["id", "provider", "priority", "account_id", "account_number", "created_at"])->latest()
             ->get();
 
         if(in_array("account", $relations)) {
