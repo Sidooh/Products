@@ -1,7 +1,10 @@
 <?php
 
+use App\Services\SidoohAccounts;
+use App\Services\SidoohPayments;
 use DrH\Tanda\Library\Providers;
 use JetBrains\PhpStorm\NoReturn;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
 if(!function_exists('object_to_array')) {
     function object_to_array($obj)
@@ -56,4 +59,22 @@ function getTelcoFromPhone(int $phone): string
 //            preg_match($equReg, $phone) => Providers::EQUITEL,
         default => null,
     };
+}
+
+if(!function_exists('withRelation')) {
+    function withRelation($relation, $parentRecords, $parentKey, $childKey)
+    {
+        $childRecords = match ($relation) {
+            "account" => SidoohAccounts::getAll(),
+            "payment" => SidoohPayments::getAll(),
+            default => throw new BadRequestException("Invalid relation!")
+        };
+
+        $childRecords = collect($childRecords);
+
+        return $parentRecords->transform(function($record) use ($parentKey, $relation, $childKey, $childRecords) {
+            $record[$relation] = $childRecords->firstWhere($childKey, $record[$parentKey]);
+            return $record;
+        });
+    }
 }

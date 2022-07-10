@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\DashboardController;
+use App\Http\Controllers\API\EarningController as DashEarningController;
 use App\Http\Controllers\API\TransactionController;
 use App\Http\Controllers\API\V1\AirtimeController;
 use App\Http\Controllers\API\V1\EarningController;
@@ -25,7 +26,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function () {
+Route::/*middleware('auth.jwt')->*/prefix('/v1')->name('api.')->group(function () {
     Route::prefix('/products')->group(function () {
         Route::post('/airtime', AirtimeController::class);
         Route::post('/airtime/bulk', [AirtimeController::class, 'bulk']);
@@ -50,7 +51,6 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function () {
         Route::post('/airtime/status/callback', [AirtimeController::class, 'airtimeStatusCallback']);
 
         Route::get('/subscription-types/default', SubscriptionTypeController::class);
-
     });
 
     Route::prefix('/payments')->group(function () {
@@ -79,6 +79,9 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function () {
 
     Route::get('/transactions', [TransactionController::class, "index"]);
     Route::get('/transactions/{transaction}', [TransactionController::class, "show"]);
+
+    Route::get('/earnings/accounts', [DashEarningController::class, "getEarningAccounts"]);
+    Route::get('/earnings/cashbacks', [DashEarningController::class, "getCashbacks"]);
 });
 
 
