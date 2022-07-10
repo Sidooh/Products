@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             SubscriptionTypeSeeder::class,
             ProductSeeder::class,
+            EarningAccountSeeder::class,
 //            CashbackSeeder::class,
 //            EnterpriseSeeder::class,
         ]);

@@ -85,6 +85,11 @@ class Transaction extends Model
         return $this->hasOne(TandaRequest::class, 'relation_id');
     }
 
+    public function savingsTransaction(): HasOne
+    {
+        return $this->hasOne(SavingsTransaction::class);
+    }
+
     public static function updateStatus(self $transaction, Status $status = Status::PENDING)
     {
         Log::info('...[TRANSACTION MODEL]: Update Status...', [

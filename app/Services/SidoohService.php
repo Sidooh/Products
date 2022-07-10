@@ -52,8 +52,10 @@ class SidoohService
             : [];
 
         try {
+            $t = microtime(true);
             $response = self::http()->send($method, $url, $options)->throw()->json();
-            Log::info('...[SRV - SIDOOH]: Response...', $response);
+            $latency = round((microtime(true) - $t) * 1000, 2);
+            Log::info('...[SRV - SIDOOH]: Response... ' . $latency . 'ms', [$response]);
             return $response;
         } catch (Exception $err) {
             Log::error($err);

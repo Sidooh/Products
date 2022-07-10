@@ -69,6 +69,7 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function () {
 
     Route::prefix('/savings')->group(function () {
         Route::post('/', [EarningController::class, 'save']);
+        Route::post('/callback', [EarningController::class, 'processSavingsCallback']);
     });
 
 

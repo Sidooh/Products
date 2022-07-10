@@ -5,8 +5,10 @@ namespace App\Repositories;
 use App\Enums\PaymentMethod;
 use App\Enums\ProductType;
 use App\Enums\Status;
+use App\Enums\TransactionType;
 use App\Helpers\Product\Purchase;
 use App\Models\EarningAccount;
+use App\Models\SavingsTransaction;
 use App\Models\Transaction;
 use App\Services\SidoohPayments;
 use App\Services\SidoohSavings;
@@ -102,15 +104,34 @@ class TransactionRepository
      */
     public static function initiateSavingsWithdrawal(Collection $transactions, array $data): Collection
     {
-        $response = SidoohSavings::withdrawEarnings($transactions, $data['method']);
+        $responses = SidoohSavings::withdrawEarnings($transactions, $data['method']);
 
-        $transactions->each(function ($tx) use ($response) {
-            if (array_key_exists($tx->id, $response['failed'])) {
+        $transactions->each(function ($tx) use ($responses) {
+            if (array_key_exists($tx->id, $responses['failed'])) {
+                $response = $responses['failed'][$tx->id];
+
+                SavingsTransaction::create([
+                    'transaction_id' => $tx->id,
+                    'description' => $response,
+                    'type' => TransactionType::DEBIT,
+                    'amount' => $tx->amount,
+                    'status' => Status::FAILED
+                ]);
+
                 $tx->status = Status::FAILED;
                 $tx->save();
             }
 
-            if (array_key_exists($tx->id, $response['completed'])) {
+            if (array_key_exists($tx->id, $responses['completed'])) {
+                $response = $responses['completed'][$tx->id];
+
+                SavingsTransaction::create([
+                    ...$response,
+                    'reference' => $response['id'],
+                    'transaction_id' => $tx->id,
+                    'id' => null,
+                ]);
+
                 $acc = EarningAccount::withdrawal()->accountId($tx->account_id)->first();
                 $acc->update(['self_amount' => $acc->self_amount + $tx->amount]);
                 $tx->refresh();
