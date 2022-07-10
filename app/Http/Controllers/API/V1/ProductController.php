@@ -19,6 +19,46 @@ class ProductController extends Controller
      * @param int                      $accountId
      * @return \Illuminate\Http\JsonResponse
      */
+    public function getAllAirtimeAccounts(Request $request): JsonResponse
+    {
+        $relations = explode(",", $request->query("with"));
+        $accounts = AirtimeAccount::select(["id", "provider", "priority", "account_id", "account_number"])->latest()
+            ->get();
+
+        if(in_array("account", $relations)) {
+            $accounts = withRelation("account", $accounts, "account_id", "id");
+        }
+
+        return response()->json($accounts);
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param Request $request
+     * @param int     $accountId
+     * @return JsonResponse
+     */
+    public function getAllUtilityAccounts(Request $request): JsonResponse
+    {
+        $relations = explode(",", $request->query("with"));
+        $accounts = UtilityAccount::select(["id", "provider", "priority", "account_id", "account_number"])->latest()
+            ->get();
+
+        if(in_array("account", $relations)) {
+            $accounts = withRelation("account", $accounts, "account_id", "id");
+        }
+
+        return response()->json($accounts);
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param int                      $accountId
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function airtimeAccounts(Request $request, int $accountId): JsonResponse
     {
         $accounts = AirtimeAccount::select(["id", "provider", "account_number"])->whereAccountId($accountId);
@@ -41,7 +81,7 @@ class ProductController extends Controller
     {
         $accounts = UtilityAccount::select(["id", "provider", "account_number"])->whereAccountId($accountId);
 
-        if ($request->exists('limit')) $accounts = $accounts->limit($request->input('limit'));
+        if($request->exists('limit')) $accounts = $accounts->limit($request->input('limit'));
 
         $accounts = $accounts->latest()->get();
 
@@ -58,9 +98,7 @@ class ProductController extends Controller
 
     public function earnings(Request $request, int $accountId): JsonResponse
     {
-        $earnings = EarningAccount::select(["type", "self_amount", "invite_amount"])
-            ->whereAccountId($accountId)
-            ->get();
+        $earnings = EarningAccount::select(["type", "self_amount", "invite_amount"])->whereAccountId($accountId)->get();
 
         return $this->successResponse($earnings);
     }

@@ -32,19 +32,19 @@ class EarningController extends Controller
     public function getCashbacks(Request $request): JsonResponse
     {
         $relations = explode(",", $request->query("with"));
-        $earningAccounts = Cashback::select([
+        $cashbacks = Cashback::select([
             "id",
             "amount",
             "type",
             "account_id",
             "transaction_id",
             "updated_at"
-        ])->latest()->with("transaction:id,description,destination")->get();
+        ])->latest()->with("transaction:id,description,amount")->get();
 
         if(in_array("account", $relations)) {
-            $earningAccounts = withRelation("account", $earningAccounts, "account_id", "id");
+            $cashbacks = withRelation("account", $cashbacks, "account_id", "id");
         }
 
-        return response()->json($earningAccounts);
+        return response()->json($cashbacks);
     }
 }
