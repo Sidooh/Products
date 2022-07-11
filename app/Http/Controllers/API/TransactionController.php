@@ -33,7 +33,7 @@ class TransactionController extends Controller
         }
 
         if(in_array("payment", $relations)) {
-            $transactions = withRelation("payment", $transactions, "id", "payable_id" );
+            $transactions = withRelation("payment", $transactions, "id", "payable_id");
         }
 
         return TransactionResource::collection($transactions);

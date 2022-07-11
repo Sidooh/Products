@@ -62,6 +62,9 @@ function getTelcoFromPhone(int $phone): string
 }
 
 if(!function_exists('withRelation')) {
+    /**
+     * @throws \Illuminate\Auth\AuthenticationException
+     */
     function withRelation($relation, $parentRecords, $parentKey, $childKey)
     {
         $childRecords = match ($relation) {
