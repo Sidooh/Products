@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
@@ -78,6 +79,11 @@ class Transaction extends Model
     public function airtimeRequest(): HasOne
     {
         return $this->hasOne(AirtimeRequest::class);
+    }
+
+    public function cashbacks(): HasMany
+    {
+        return $this->hasMany(Cashback::class);
     }
 
     public function request(): HasOne
