@@ -14,18 +14,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('transactions', function (Blueprint $table) {
+        Schema::create("payments", function (Blueprint $table) {
             $table->id();
-
-            $table->string('initiator', 20);
-            $table->string('type', 20); // PAYMENT or WITHDRAWAL : TRANSFER? (P2P, B2B)
-            $table->decimal('amount');
+            $table->foreignId("transaction_id")->constrained()->cascadeOnUpdate()->cascadeOnDelete();
+            $table->unsignedBigInteger("payment_id")->unique();
             $table->string('status', 20)->default(Status::PENDING->value);
-            $table->string('destination')->nullable();
-            $table->string('description');
-
-            $table->foreignId('account_id')->unsigned();
-
             $table->timestamps();
         });
     }
@@ -37,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('transactions');
+        Schema::dropIfExists("payments");
     }
 };

@@ -17,6 +17,7 @@ use App\Services\SidoohAccounts;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Throwable;
 
 class AirtimeController extends Controller
 {
@@ -24,8 +25,8 @@ class AirtimeController extends Controller
      * Handle the incoming request.
      *
      * @param AirtimeRequest $request
+     * @throws Exception|Throwable
      * @return JsonResponse
-     * @throws Exception
      */
     public function __invoke(AirtimeRequest $request): JsonResponse
     {

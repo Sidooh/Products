@@ -74,7 +74,6 @@ Route::/*middleware('auth.jwt')->*/prefix('/v1')->name('api.')->group(function (
         Route::post('/callback', [EarningController::class, 'processSavingsCallback']);
     });
 
-
     //  DASHBOARD ROUTES
     Route::get('/dashboard', [DashboardController::class, "index"]);
     Route::get('/dashboard/revenue-chart', [DashboardController::class, "revenueChart"]);
