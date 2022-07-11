@@ -14,7 +14,6 @@ use App\Models\Transaction;
 use App\Services\SidoohPayments;
 use App\Services\SidoohSavings;
 use App\Traits\ApiResponse;
-use Carbon\Carbon;
 use Exception;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Support\Arr;
@@ -57,10 +56,7 @@ class TransactionRepository
 
         if(!isset($response["data"]["payments"])) throw new Exception("Purchase Failed!");
 
-        Payment::insert(array_map(fn($payment) => [
-            ...$payment,
-            "created_at" => new Carbon($payment["created_at"])
-        ], $response["data"]["payments"]));
+        Payment::insert($response["data"]["payments"]);
 
         if(isset($response["data"]) && $data['method'] === PaymentMethod::VOUCHER->name) {
             self::requestPurchase($transactions, $response["data"]);
@@ -74,6 +70,8 @@ class TransactionRepository
     {
         try {
             foreach($transactions as $transaction) {
+                Payment::firstWhere("transaction_id", $transaction->id)->update(["status" => Status::COMPLETED]);
+
                 $purchase = new Purchase($transaction);
 
                 if(is_int($transaction->product_id)) $transaction->product_id = ProductType::tryFrom($transaction->product_id);
@@ -90,7 +88,6 @@ class TransactionRepository
             Log::error($err);
         }
     }
-
 
     /**
      * @throws AuthenticationException
