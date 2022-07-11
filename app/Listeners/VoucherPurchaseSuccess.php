@@ -28,6 +28,6 @@ class VoucherPurchaseSuccess
     {
         Log::info('...[EVENT]: Voucher Purchase Success...');
 
-        SidoohEventRepository::voucherPurchaseSuccess($event->transaction, $event->vouchers, $event->payment);
+        SidoohEventRepository::voucherPurchaseSuccess($event->transaction, $event->vouchers);
     }
 }

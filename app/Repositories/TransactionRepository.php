@@ -8,6 +8,7 @@ use App\Enums\Status;
 use App\Enums\TransactionType;
 use App\Helpers\Product\Purchase;
 use App\Models\EarningAccount;
+use App\Models\Payment;
 use App\Models\SavingsTransaction;
 use App\Models\Transaction;
 use App\Services\SidoohPayments;
@@ -15,7 +16,6 @@ use App\Services\SidoohSavings;
 use App\Traits\ApiResponse;
 use Exception;
 use Illuminate\Auth\AuthenticationException;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
@@ -34,6 +34,7 @@ class TransactionRepository
     public static function createTransactions(array $transactionsData, $data): array
     {
         $transactions = collect();
+
         foreach($transactionsData as $transactionData) {
             $transactions->add(Transaction::create($transactionData));
         }
@@ -47,17 +48,19 @@ class TransactionRepository
      * @throws AuthenticationException
      * @throws \Throwable
      */
-    public static function initiatePayment(Collection $transactions, array $data): JsonResponse
+    public static function initiatePayment(Collection $transactions, array $data): void
     {
         $totalAmount = collect($transactions)->sum("amount");
 
         $response = SidoohPayments::pay($transactions->toArray(), $data['method'], $totalAmount, $data);
 
+        if(!isset($response["data"]["payments"])) throw new Exception("Purchase Failed!");
+
+        Payment::insert($response["data"]["payments"]);
+
         if(isset($response["data"]) && $data['method'] === PaymentMethod::VOUCHER->name) {
             self::requestPurchase($transactions, $response["data"]);
         }
-
-        return response()->json(["status" => "success", "message" => "Purchase Completed!"]);
     }
 
     /**
@@ -67,6 +70,8 @@ class TransactionRepository
     {
         try {
             foreach($transactions as $transaction) {
+                Payment::firstWhere("transaction_id", $transaction->id)->update(["status" => Status::COMPLETED]);
+
                 $purchase = new Purchase($transaction);
 
                 if(is_int($transaction->product_id)) $transaction->product_id = ProductType::tryFrom($transaction->product_id);
@@ -84,7 +89,6 @@ class TransactionRepository
         }
     }
 
-
     /**
      * @throws AuthenticationException
      * @throws Throwable
@@ -92,7 +96,7 @@ class TransactionRepository
     public static function createWithdrawalTransactions(array $transactionsData, $data): Collection
     {
         $transactions = collect();
-        foreach ($transactionsData as $transactionData) {
+        foreach($transactionsData as $transactionData) {
             $transactions->add(Transaction::create($transactionData));
         }
 
@@ -106,30 +110,30 @@ class TransactionRepository
     {
         $responses = SidoohSavings::withdrawEarnings($transactions, $data['method']);
 
-        $transactions->each(function ($tx) use ($responses) {
-            if (array_key_exists($tx->id, $responses['failed'])) {
+        $transactions->each(function($tx) use ($responses) {
+            if(array_key_exists($tx->id, $responses['failed'])) {
                 $response = $responses['failed'][$tx->id];
 
                 SavingsTransaction::create([
                     'transaction_id' => $tx->id,
-                    'description' => $response,
-                    'type' => TransactionType::DEBIT,
-                    'amount' => $tx->amount,
-                    'status' => Status::FAILED
+                    'description'    => $response,
+                    'type'           => TransactionType::DEBIT,
+                    'amount'         => $tx->amount,
+                    'status'         => Status::FAILED
                 ]);
 
                 $tx->status = Status::FAILED;
                 $tx->save();
             }
 
-            if (array_key_exists($tx->id, $responses['completed'])) {
+            if(array_key_exists($tx->id, $responses['completed'])) {
                 $response = $responses['completed'][$tx->id];
 
                 SavingsTransaction::create([
                     ...$response,
-                    'reference' => $response['id'],
+                    'reference'      => $response['id'],
                     'transaction_id' => $tx->id,
-                    'id' => null,
+                    'id'             => null,
                 ]);
 
                 $acc = EarningAccount::withdrawal()->accountId($tx->account_id)->first();

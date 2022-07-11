@@ -9,7 +9,7 @@ use App\Enums\ProductType;
 use App\Enums\Status;
 use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\ProductRequest;
+use App\Http\Requests\SubscriptionRequest;
 use App\Models\Subscription;
 use App\Models\SubscriptionType;
 use App\Repositories\TransactionRepository;
@@ -25,7 +25,7 @@ class SubscriptionController extends Controller
     /**
      * @throws Exception|\Throwable
      */
-    public function __invoke(ProductRequest $request): JsonResponse
+    public function __invoke(SubscriptionRequest $request): JsonResponse
     {
         $data = $request->all();
 

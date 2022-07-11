@@ -21,7 +21,7 @@ class VoucherPurchaseEvent
      * @param array $voucher
      * @param array $payment
      */
-    public function __construct(public Transaction $transaction, public array $vouchers, public array $payment)
+    public function __construct(public Transaction $transaction, public array $vouchers)
     {
     }
 }

@@ -108,11 +108,11 @@ namespace App\Models{
 /**
  * App\Models\Cashback
  *
- * @property int $id
- * @property string $amount
- * @property string $type
- * @property int|null $account_id
- * @property int $transaction_id
+ * @property int         $id
+ * @property string      $amount
+ * @property string      $type
+ * @property int|null    $account_id
+ * @property int         $transaction_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @method static CashbackFactory factory(...$parameters)
@@ -126,6 +126,7 @@ namespace App\Models{
  * @method static Builder|Cashback whereTransactionId($value)
  * @method static Builder|Cashback whereType($value)
  * @method static Builder|Cashback whereUpdatedAt($value)
+ * @property-read \App\Models\Transaction $transaction
  */
 	class IdeHelperCashback {}
 }
@@ -167,6 +168,7 @@ namespace App\Models{
  * @property int $account_id
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder|EarningAccount accountId(int $accountId)
  * @method static \Database\Factories\EarningAccountFactory factory(...$parameters)
  * @method static \Illuminate\Database\Eloquent\Builder|EarningAccount newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|EarningAccount newQuery()
@@ -178,6 +180,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|EarningAccount whereSelfAmount($value)
  * @method static \Illuminate\Database\Eloquent\Builder|EarningAccount whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|EarningAccount whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|EarningAccount withdrawal()
  */
 	class IdeHelperEarningAccount {}
 }
@@ -266,6 +269,31 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * App\Models\Payment
+ *
+ * @property int $id
+ * @property int $transaction_id
+ * @property int $payment_id
+ * @property string $status
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Transaction|null $transaction
+ * @method static \Database\Factories\PaymentFactory factory(...$parameters)
+ * @method static \Illuminate\Database\Eloquent\Builder|Payment newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Payment newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Payment query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Payment whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Payment whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Payment wherePaymentId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Payment whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Payment whereTransactionId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Payment whereUpdatedAt($value)
+ */
+	class IdeHelperPayment {}
+}
+
+namespace App\Models{
+/**
  * App\Models\Product
  *
  * @property int $id
@@ -284,6 +312,36 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Product whereUpdatedAt($value)
  */
 	class IdeHelperProduct {}
+}
+
+namespace App\Models{
+/**
+ * App\Models\SavingsTransaction
+ *
+ * @property int $id
+ * @property string|null $reference
+ * @property string $type
+ * @property string $amount
+ * @property string $status
+ * @property string $description
+ * @property int $transaction_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Transaction $transaction
+ * @method static \Illuminate\Database\Eloquent\Builder|SavingsTransaction newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|SavingsTransaction newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|SavingsTransaction query()
+ * @method static \Illuminate\Database\Eloquent\Builder|SavingsTransaction whereAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SavingsTransaction whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SavingsTransaction whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SavingsTransaction whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SavingsTransaction whereReference($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SavingsTransaction whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SavingsTransaction whereTransactionId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SavingsTransaction whereType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SavingsTransaction whereUpdatedAt($value)
+ */
+	class IdeHelperSavingsTransaction {}
 }
 
 namespace App\Models{
@@ -313,6 +371,8 @@ namespace App\Models{
  * @method static Builder|Subscription whereStatus($value)
  * @method static Builder|Subscription whereSubscriptionTypeId($value)
  * @method static Builder|Subscription whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Subscription includePostExpiry()
+ * @method static \Illuminate\Database\Eloquent\Builder|Subscription includePreExpiry()
  */
 	class IdeHelperSubscription {}
 }
@@ -343,6 +403,8 @@ namespace App\Models{
  * @method static Builder|SubscriptionType wherePrice($value)
  * @method static Builder|SubscriptionType whereTitle($value)
  * @method static Builder|SubscriptionType whereUpdatedAt($value)
+ * @property string $period
+ * @method static \Illuminate\Database\Eloquent\Builder|SubscriptionType wherePeriod($value)
  */
 	class IdeHelperSubscriptionType {}
 }
@@ -379,8 +441,11 @@ namespace App\Models{
  * @method static Builder|Transaction whereType($value)
  * @method static Builder|Transaction whereUpdatedAt($value)
  * @property int|null $product_id
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Cashback[] $cashbacks
+ * @property-read int|null $cashbacks_count
  * @property-read \App\Models\Product|null $product
  * @property-read \DrH\Tanda\Models\TandaRequest|null $request
+ * @property-read \App\Models\SavingsTransaction|null $savingsTransaction
  * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereProductId($value)
  */
 	class IdeHelperTransaction {}
