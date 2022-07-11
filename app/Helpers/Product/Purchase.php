@@ -104,6 +104,6 @@ class Purchase
         $this->transaction->save();
 
         // TODO: Disparity, what if multiple payments? Only single transaction is passed here...!
-        VoucherPurchaseEvent::dispatch($this->transaction, $paymentsData['vouchers'], $paymentsData['payments'][0]);
+        VoucherPurchaseEvent::dispatch($this->transaction, $paymentsData['vouchers']);
     }
 }

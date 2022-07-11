@@ -96,6 +96,11 @@ class Transaction extends Model
         return $this->hasOne(SavingsTransaction::class);
     }
 
+    public function payment(): HasOne
+    {
+        return $this->hasOne(Payment::class);
+    }
+
     public static function updateStatus(self $transaction, Status $status = Status::PENDING)
     {
         Log::info('...[TRANSACTION MODEL]: Update Status...', [
