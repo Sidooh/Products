@@ -25,7 +25,7 @@ class TransactionController extends Controller
             "account_id",
             "product_id",
             "created_at"
-        ])->latest()->with(["product:id,name", "payment:id,payment_id,transaction_id,status"])->get();
+        ])->latest()->with("product:id,name")->get();
 
         if(in_array("account", $relations)) {
             $transactions = withRelation("account", $transactions, "account_id", "id");

@@ -36,7 +36,7 @@ class DashboardController extends Controller
             "amount",
             "status",
             "updated_at"
-        ])->latest()->with(["product:id,name", "payment:id,payment_id,transaction_id,status"])->get();
+        ])->latest()->with("product:id,name")->get();
 
         $accounts = collect(SidoohAccounts::getAll());
         $transactions->transform(function(Transaction $transaction) use ($accounts) {
