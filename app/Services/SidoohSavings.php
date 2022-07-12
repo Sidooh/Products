@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\Log;
 
 class SidoohSavings extends SidoohService
 {
+    /**
+     * @throws \Illuminate\Auth\AuthenticationException
+     */
     public static function withdrawEarnings(Collection $transactions, string $method): array
     {
         Log::info('...[SRV - SAVINGS]: Withdraw...');

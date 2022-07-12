@@ -154,7 +154,6 @@ class SidoohEventRepository extends EventRepository
             $message .= config('services.sidooh.tagline');
 
             SidoohNotify::notify([$phone], $message, EventType::VOUCHER_PURCHASE);
-
         }
     }
 

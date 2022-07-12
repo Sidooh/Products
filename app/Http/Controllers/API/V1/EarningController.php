@@ -107,7 +107,6 @@ class EarningController extends Controller
 
         }
 
-
         if ($request->status === Status::FAILED->name && $saving->status === Status::PENDING->name) {
             $saving->status = Status::FAILED;
             $saving->save();
