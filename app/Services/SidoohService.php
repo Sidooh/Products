@@ -5,6 +5,8 @@ namespace App\Services;
 use Exception;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Client\PendingRequest;
+use Illuminate\Http\Client\RequestException;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -32,7 +34,7 @@ class SidoohService
             'password' => "12345678"
         ]);
 
-        if ($response->successful()) return $response->json()["access_token"];
+        if($response->successful()) return $response->json()["access_token"];
 
         return $response->throw()->json();
     }
@@ -44,12 +46,10 @@ class SidoohService
     {
         Log::info('...[SRV - SIDOOH]: Fetch...', [
             "method" => $method,
-            "data" => $data
+            "data"   => $data
         ]);
 
-        $options = strtoupper($method) === "POST"
-            ? ["json" => $data]
-            : [];
+        $options = strtoupper($method) === "POST" ? ["json" => $data] : [];
 
         try {
             $t = microtime(true);
@@ -57,10 +57,11 @@ class SidoohService
             $latency = round((microtime(true) - $t) * 1000, 2);
             Log::info('...[SRV - SIDOOH]: Response... ' . $latency . 'ms', [$response]);
             return $response;
-        } catch (Exception $err) {
+        } catch (Exception|RequestException $err) {
             Log::error($err);
 
             if($err->getCode() === 401) throw new AuthenticationException();
+            if($err->getCode() === 422) throw new HttpResponseException(response()->json($err->response->json(), $err->getCode()));
         }
     }
 }

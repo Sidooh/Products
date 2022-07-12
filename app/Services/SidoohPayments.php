@@ -67,10 +67,10 @@ class SidoohPayments extends SidoohService
         $url = config('services.sidooh.services.payments.url') . '/payments/voucher/credit';
 
         return parent::fetch($url, "POST", [
-            "account_id"  => $accountId,
-            "amount"      => $amount,
+            "account_id" => $accountId,
+            "amount" => $amount,
             "description" => $description->value,
-            "notify"      => $notify
+            "notify" => $notify
         ]);
     }
 
@@ -92,9 +92,14 @@ class SidoohPayments extends SidoohService
     /**
      * @throws \Illuminate\Auth\AuthenticationException
      */
-    public static function findPaymentDetails(int $transactionId, int $accountId): ?array
+    public static function findPaymentDetails(int $paymentId, int $accountId): ?array
     {
-        $url = config('services.sidooh.services.payments.url') . "/payments/details/$transactionId/$accountId";
+        Log::info('...[SRV - PAYMENTS]: Find Payment Details...', [
+            "transaction_id" => $paymentId,
+            "account_id"     => $accountId
+        ]);
+
+        $url = config('services.sidooh.services.payments.url') . "/payments/$paymentId/details/$accountId";
 
         return parent::fetch($url);
     }

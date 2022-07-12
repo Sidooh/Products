@@ -13,12 +13,51 @@ use App\Services\SidoohAccounts;
 use App\Services\SidoohNotify;
 use App\Services\SidoohSavings;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class EarningController extends Controller
 {
+    public function getEarningAccounts(Request $request): JsonResponse
+    {
+        $relations = explode(",", $request->query("with"));
+        $earningAccounts = EarningAccount::select([
+            "id",
+            "type",
+            "self_amount",
+            "invite_amount",
+            "account_id",
+            "updated_at"
+        ])->latest()->get();
+
+        if(in_array("account", $relations)) {
+            $earningAccounts = withRelation("account", $earningAccounts, "account_id", "id");
+        }
+
+        return response()->json($earningAccounts);
+    }
+
+    public function getCashbacks(Request $request): JsonResponse
+    {
+        $relations = explode(",", $request->query("with"));
+        $cashbacks = Cashback::select([
+            "id",
+            "amount",
+            "type",
+            "account_id",
+            "transaction_id",
+            "updated_at"
+        ])->latest()->with("transaction:id,description,amount")->get();
+
+        if(in_array("account", $relations)) {
+            $cashbacks = withRelation("account", $cashbacks, "account_id", "id");
+        }
+
+        return response()->json($cashbacks);
+    }
+
     public function save(Request $request)
     {
         $request->validate(["date" => "date|date_format:d-m-Y"]);
@@ -106,7 +145,6 @@ class EarningController extends Controller
             }
 
         }
-
 
         if ($request->status === Status::FAILED->name && $saving->status === Status::PENDING->name) {
             $saving->status = Status::FAILED;
