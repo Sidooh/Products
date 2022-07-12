@@ -1,16 +1,14 @@
 <?php
 
-use App\Http\Controllers\API\DashboardController;
-use App\Http\Controllers\API\EarningController as DashEarningController;
-use App\Http\Controllers\API\SubscriptionController as DashSubscriptionController;
-use App\Http\Controllers\API\TransactionController;
 use App\Http\Controllers\API\V1\AirtimeController;
+use App\Http\Controllers\API\V1\DashboardController;
 use App\Http\Controllers\API\V1\EarningController;
 use App\Http\Controllers\API\V1\FloatController;
 use App\Http\Controllers\API\V1\PaymentsController;
 use App\Http\Controllers\API\V1\ProductController;
 use App\Http\Controllers\API\V1\SubscriptionController;
 use App\Http\Controllers\API\V1\SubscriptionTypeController;
+use App\Http\Controllers\API\V1\TransactionController;
 use App\Http\Controllers\API\V1\UtilityController;
 use App\Http\Controllers\API\V1\VoucherController;
 use App\Http\Controllers\API\V1\WithdrawController;
@@ -81,11 +79,11 @@ Route::/*middleware('auth.jwt')->*/prefix('/v1')->name('api.')->group(function (
     Route::get('/transactions', [TransactionController::class, "index"]);
     Route::get('/transactions/{transaction}', [TransactionController::class, "show"]);
 
-    Route::get('/earnings/accounts', [DashEarningController::class, "getEarningAccounts"]);
-    Route::get('/earnings/cashbacks', [DashEarningController::class, "getCashbacks"]);
+    Route::get('/earnings/accounts', [EarningController::class, "getEarningAccounts"]);
+    Route::get('/earnings/cashbacks', [EarningController::class, "getCashbacks"]);
 
-    Route::get('/subscriptions', [DashSubscriptionController::class, "index"]);
-    Route::get('/subscriptions/subscription-types', [DashSubscriptionController::class, "getSubTypes"]);
+    Route::get('/subscriptions', [SubscriptionController::class, "index"]);
+    Route::get('/subscriptions/subscription-types', [SubscriptionController::class, "getSubTypes"]);
 });
 
 

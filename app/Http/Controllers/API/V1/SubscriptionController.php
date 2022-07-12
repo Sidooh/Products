@@ -17,6 +17,7 @@ use App\Services\SidoohAccounts;
 use App\Services\SidoohNotify;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -63,6 +64,46 @@ class SubscriptionController extends Controller
         $transactionIds = TransactionRepository::createTransactions($transactions, $data);
 
         return $this->successResponse(['transactions' => $transactionIds], 'Subscription Request Successful!');
+    }
+
+    /**
+     * @throws \Illuminate\Auth\AuthenticationException
+     */
+    public function index(Request $request): JsonResponse
+    {
+        $relations = explode(",", $request->query("with"));
+
+        $subscriptions = Subscription::select([
+            "id",
+            "amount",
+            "start_date",
+            "end_date",
+            "status",
+            "account_id",
+            "subscription_type_id",
+            "created_at"
+        ])->latest()->with("subscriptionType:id,title,price,duration,active,period")->get();
+
+        if(in_array("account", $relations)) {
+            $subscriptions = withRelation("account", $subscriptions, "account_id", "id");
+        }
+
+        return response()->json($subscriptions);
+    }
+
+    public function getSubTypes(): JsonResponse
+    {
+        $subTypes = SubscriptionType::select([
+            "id",
+            "title",
+            "price",
+            "level_limit",
+            "duration",
+            "active",
+            "period",
+        ])->latest()->get();
+
+        return response()->json($subTypes);
     }
 
     public function checkExpiry()
