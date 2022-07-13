@@ -70,7 +70,7 @@ class TandaEventRepository extends EventRepository
 
         $account = SidoohAccounts::find($transaction->account_id);
 
-        $paymentDetails = SidoohPayments::findPaymentDetails($transaction->id, $transaction->account_id);
+        $paymentDetails = SidoohPayments::findPaymentDetails($transaction->payment->id, $transaction->account_id);
         $payment = $paymentDetails["payment"];
         $voucher = $paymentDetails["voucher"];
         $method = $payment["subtype"];
@@ -101,7 +101,7 @@ class TandaEventRepository extends EventRepository
                 $totalEarnings = ($provider == Providers::FAIBA ? .07 : .06) * $transaction->amount;
 
                 $userEarnings = EarningRepository::getPointsEarned($transaction, $totalEarnings);
-            $phone = ltrim(PhoneNumber::make($destination, 'KE')->formatE164(), '+');
+                $phone = ltrim(PhoneNumber::make($destination, 'KE')->formatE164(), '+');
                 $eventType = EventType::AIRTIME_PURCHASE;
 
                 //  Send SMS
@@ -141,11 +141,11 @@ class TandaEventRepository extends EventRepository
             case Providers::ZUKU:
             case Providers::STARTIMES:
                 //  Get Points Earned
-            $totalEarnings = .003 * $transaction->amount;
-            $userEarnings = EarningRepository::getPointsEarned($transaction, $totalEarnings);
+                $totalEarnings = .003 * $transaction->amount;
+                $userEarnings = EarningRepository::getPointsEarned($transaction, $totalEarnings);
 
                 //  Send SMS
-            $message = "You have made a payment to $provider - $destination of $amount from your Sidooh account on $date using $method. You have received $userEarnings cashback.$vtext";
+                $message = "You have made a payment to $provider - $destination of $amount from your Sidooh account on $date using $method. You have received $userEarnings cashback.$vtext";
                 break;
             case Providers::NAIROBI_WTR:
                 //  Get Points Earned

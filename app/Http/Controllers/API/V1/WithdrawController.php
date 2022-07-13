@@ -8,7 +8,7 @@ use App\Enums\PaymentMethod;
 use App\Enums\ProductType;
 use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\ProductRequest;
+use App\Http\Requests\EarningRequest;
 use App\Models\EarningAccount;
 use App\Repositories\TransactionRepository;
 use App\Services\SidoohAccounts;
@@ -20,13 +20,13 @@ class WithdrawController extends Controller
     /**
      * @throws Exception|\Throwable
      */
-    public function __invoke(ProductRequest $request): JsonResponse
+    public function __invoke(EarningRequest $request): JsonResponse
     {
-        $data = $request->all();
+        $data = $request->validated();
 
         $account = SidoohAccounts::find($data['account_id']);
 
-        // TODO: Shift to repository function? >>>>
+        // TODO: Shift to repository function?
         $earningAccounts = EarningAccount::select(["type", "self_amount", "invite_amount"])
             ->whereAccountId($account['id'])
             ->get();
@@ -45,7 +45,6 @@ class WithdrawController extends Controller
         if (.2 * ($totalEarned - $totalWithdrawn) - 50 < $data['amount']) {
             return $this->errorResponse("Earning balance is insufficient");
         }
-        // TODO: <<<<
 
         $transactions = [
             [

@@ -49,19 +49,13 @@ class SidoohEventRepository extends EventRepository
     /**
      * @throws Exception
      */
-    public static function voucherPurchaseSuccess(Transaction $transaction, array $vouchers, array $payment)
+    public static function voucherPurchaseSuccess(Transaction $transaction, array $vouchers)
     {
         $amount = 'Ksh' . number_format($transaction->amount, 2);
         $account = SidoohAccounts::find($transaction->account_id);
         $date = $transaction->updated_at
             ->timezone('Africa/Nairobi')
             ->format(config("settings.sms_date_time_format"));
-
-        // Ensure a couple of things are valid first
-        // 1. payment matches transaction
-        if ($payment['payable_type'] !== 'TRANSACTION' || $payment['payable_id'] !== $transaction->id) {
-            throw new Exception('Payment does not match transaction');
-        }
 
         // 2. Vouchers (if many) match accounts in question
         $voucherLen = count($vouchers);
@@ -160,7 +154,6 @@ class SidoohEventRepository extends EventRepository
             $message .= config('services.sidooh.tagline');
 
             SidoohNotify::notify([$phone], $message, EventType::VOUCHER_PURCHASE);
-
         }
     }
 

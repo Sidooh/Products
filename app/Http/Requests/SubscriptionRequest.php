@@ -4,7 +4,6 @@ namespace App\Http\Requests;
 
 use App\Enums\Initiator;
 use App\Enums\PaymentMethod;
-use App\Models\SubscriptionType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
@@ -16,9 +15,9 @@ class SubscriptionRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -29,28 +28,17 @@ class SubscriptionRequest extends FormRequest
     public function rules()
     {
         return [
-            'initiator'        => ['required', new Enum(Initiator::class)],
-            'account_id'       => 'integer',
-            'amount'           => [
-                'required',
-                'numeric',
-                function($attribute, $value, $fail) {
-                    $subPrices = SubscriptionType::pluck('price')->toArray();
-                    $subPricesStr = implode(', ',$subPrices);
-
-                    if(!in_array($value, $subPrices)) {
-                        $fail("The $attribute must be either of: {$subPricesStr}.");
-                    }
-                },
-            ],
-            'method'           => [
+            'initiator'            => ['required', new Enum(Initiator::class)],
+            'account_id'           => 'integer',
+            'method'               => [
                 "required_if:initiator,CONSUMER",
                 new Enum(PaymentMethod::class),
             ],
-            'account_number'   => [Rule::requiredIf($this->is('*/products/utility')), 'integer'],
-            'utility_provider' => ["required_if:product,utility"],
-            'target_number'    => 'phone:KE',
-            'debit_account'     => 'phone:KE',
+            'account_number'       => [Rule::requiredIf($this->is('*/products/utility')), 'integer'],
+            'utility_provider'     => ["required_if:product,utility"],
+            'target_number'        => 'phone:KE',
+            'debit_account'        => 'phone:KE',
+            'subscription_type_id' => "required|exists:subscription_types,id"
         ];
     }
 }

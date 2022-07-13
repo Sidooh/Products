@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\API;
+namespace App\Http\Controllers\API\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\TransactionResource;
 use App\Models\Transaction;
 use App\Services\SidoohAccounts;
-use App\Services\SidoohPayments;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
@@ -29,11 +28,7 @@ class TransactionController extends Controller
         ])->latest()->with("product:id,name")->get();
 
         if(in_array("account", $relations)) {
-            $transactions = withRelation("account", $transactions,  "account_id", "id");
-        }
-
-        if(in_array("payment", $relations)) {
-            $transactions = withRelation("payment", $transactions, "id", "payable_id");
+            $transactions = withRelation("account", $transactions, "account_id", "id");
         }
 
         return TransactionResource::collection($transactions);
@@ -48,10 +43,14 @@ class TransactionController extends Controller
         }
 
         if(in_array("payment", $relations)) {
-            $transaction->payment = SidoohPayments::findByTransactionId($transaction->id);
+            $transaction->load("payment:id,payment_id,transaction_id,status");
         }
 
-        if(in_array("tanda_request", $relations)) $transaction->load("request:request_id,relation_id,receipt_number,amount,provider,destination,message,status,last_modified");
+        if(in_array("tanda_request", $relations)) {
+            $transaction->load("request:request_id,relation_id,receipt_number,amount,provider,destination,message,status,last_modified");
+        }
+
+        if(in_array("product", $relations)) $transaction->load("product:id,name");
 
         return TransactionResource::make($transaction);
     }
