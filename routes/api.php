@@ -27,7 +27,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::/*middleware('auth.jwt')->*/prefix('/v1')->name('api.')->group(function () {
+Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function () {
     Route::prefix('/products')->group(function () {
         Route::post('/airtime', AirtimeController::class);
         Route::post('/airtime/bulk', [AirtimeController::class, 'bulk']);
@@ -70,10 +70,9 @@ Route::/*middleware('auth.jwt')->*/prefix('/v1')->name('api.')->group(function (
     });
 
     Route::prefix('/savings')->group(function () {
-        Route::post('/', [EarningController::class, 'save']);
+//        Route::post('/', [EarningController::class, 'save']);
         Route::post('/callback', [EarningController::class, 'processSavingsCallback']);
     });
-
 
     //  DASHBOARD ROUTES
     Route::get('/dashboard', [DashboardController::class, "index"]);
@@ -94,6 +93,10 @@ Route::prefix('/v1')->name('api.')->group(function () {
     Route::prefix('/products')->group(function () {
         Route::prefix('/subscriptions')->group(function () {
             Route::post('/check-expiry', [SubscriptionController::class, 'checkExpiry']);
+        });
+
+        Route::prefix('/savings')->group(function () {
+            Route::post('/', [EarningController::class, 'save']);
         });
     });
 });

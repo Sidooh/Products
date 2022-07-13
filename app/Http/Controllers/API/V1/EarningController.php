@@ -14,6 +14,7 @@ use App\Services\SidoohNotify;
 use App\Services\SidoohSavings;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
@@ -28,14 +29,44 @@ class EarningController extends Controller
 
         $savings = $this->collectSavings($date);
 
-        SidoohSavings::save($savings);
+        try {
+            $responses = SidoohSavings::save($savings->toArray());
 
-        dump_json($savings);
+            $totalCompleted = count($responses['completed']);
+            $totalFailed = count($responses['failed']);
+
+            //TODO: Store in DB so that we don't repeat saving
+
+            $message = "STATUS:SAVINGS\n\n";
+            if ($totalCompleted > 0)
+                $message .= "Allocated for $totalCompleted accounts\n";
+            if ($totalFailed > 0)
+                $message .= "Failed for $totalFailed accounts\n";
+
+            SidoohNotify::notify([
+                '254714611696',
+                '254711414987',
+                '254110039317'
+            ], $message, EventType::STATUS_UPDATE);
+
+        } catch (\Exception $e) {
+            // Notify failure
+            Log::error($e);
+
+            SidoohNotify::notify([
+                '254714611696',
+                '254711414987',
+                '254110039317'
+            ], "ERROR:SAVINGS\nError Saving Earnings!!!", EventType::ERROR_ALERT);
+
+        }
+
+        return $savings;
     }
 
-    public function collectSavings($date = null): array
+    public function collectSavings($date = null): Collection
     {
-        if(!$date) $date = new Carbon;
+        if (!$date) $date = new Carbon;
 
         $cashbacks = Cashback::selectRaw("SUM(amount) as amount, account_id")->whereNotNull("account_id")
             ->whereDate("created_at", $date->format("Y-m-d"))->groupBy("account_id")->get();
@@ -44,7 +75,7 @@ class EarningController extends Controller
             "account_id" => $cashback->account_id,
             "current_amount" => $cashback->amount * .2,
             "locked_amount" => $cashback->amount * .8
-        ])->toArray();
+        ]);
     }
 
     /**
