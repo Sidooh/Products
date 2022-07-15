@@ -56,6 +56,7 @@ class TransactionRepository
 
         if(!isset($response["data"]["payments"])) throw new Exception("Purchase Failed!");
 
+        // TODO: Fix this, payments doesn't know what product expects, product should modify accordingly
         Payment::insert($response["data"]["payments"]);
 
         if(isset($response["data"]) && $data['method'] === PaymentMethod::VOUCHER->name) {
