@@ -14,7 +14,9 @@ class Payment extends Model
     use HasFactory;
 
     protected $fillable = [
-        "status"
+        "status",
+        'transaction_id',
+        'payment_id'
     ];
 
     public function transaction(): HasOne

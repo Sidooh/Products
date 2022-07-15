@@ -29,12 +29,12 @@ class DatabaseSeeder extends Seeder
             "user_id"  => 7,
         ]);*/
 
-        /*$this->call([
+        $this->call([
             SubscriptionTypeSeeder::class,
             ProductSeeder::class,
             EarningAccountSeeder::class,
 //            CashbackSeeder::class,
 //            EnterpriseSeeder::class,
-        ]);*/
+        ]);
     }
 }

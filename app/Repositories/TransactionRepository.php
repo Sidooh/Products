@@ -35,7 +35,7 @@ class TransactionRepository
     {
         $transactions = collect();
 
-        foreach($transactionsData as $transactionData) {
+        foreach ($transactionsData as $transactionData) {
             $transactions->add(Transaction::create($transactionData));
         }
 
@@ -54,11 +54,16 @@ class TransactionRepository
 
         $response = SidoohPayments::pay($transactions->toArray(), $data['method'], $totalAmount, $data);
 
-        if(!isset($response["data"]["payments"])) throw new Exception("Purchase Failed!");
+        if (!isset($response["data"]["payments"])) throw new Exception("Purchase Failed!");
 
-        Payment::insert($response["data"]["payments"]);
+        $payment = $response["data"]["payments"][0];
+        Payment::create([
+            'transaction_id' => $transactions->toArray()[0]['id'],
+            'payment_id' => $payment['id'],
+            'status' => $payment['status']
+        ]);
 
-        if(isset($response["data"]) && $data['method'] === PaymentMethod::VOUCHER->name) {
+        if (isset($response["data"]) && $data['method'] === PaymentMethod::VOUCHER->name) {
             self::requestPurchase($transactions, $response["data"]);
         }
     }
@@ -69,12 +74,12 @@ class TransactionRepository
     public static function requestPurchase(Collection $transactions, array $paymentsData): void
     {
         try {
-            foreach($transactions as $transaction) {
+            foreach ($transactions as $transaction) {
                 Payment::firstWhere("transaction_id", $transaction->id)->update(["status" => Status::COMPLETED]);
 
                 $purchase = new Purchase($transaction);
 
-                if(is_int($transaction->product_id)) $transaction->product_id = ProductType::tryFrom($transaction->product_id);
+                if (is_int($transaction->product_id)) $transaction->product_id = ProductType::tryFrom($transaction->product_id);
 
                 match ($transaction->product_id) {
                     ProductType::AIRTIME => $purchase->airtime(),
@@ -96,7 +101,7 @@ class TransactionRepository
     public static function createWithdrawalTransactions(array $transactionsData, $data): Collection
     {
         $transactions = collect();
-        foreach($transactionsData as $transactionData) {
+        foreach ($transactionsData as $transactionData) {
             $transactions->add(Transaction::create($transactionData));
         }
 
@@ -110,30 +115,30 @@ class TransactionRepository
     {
         $responses = SidoohSavings::withdrawEarnings($transactions, $data['method']);
 
-        $transactions->each(function($tx) use ($responses) {
-            if(array_key_exists($tx->id, $responses['failed'])) {
+        $transactions->each(function ($tx) use ($responses) {
+            if (array_key_exists($tx->id, $responses['failed'])) {
                 $response = $responses['failed'][$tx->id];
 
                 SavingsTransaction::create([
                     'transaction_id' => $tx->id,
-                    'description'    => $response,
-                    'type'           => TransactionType::DEBIT,
-                    'amount'         => $tx->amount,
-                    'status'         => Status::FAILED
+                    'description' => $response,
+                    'type' => TransactionType::DEBIT,
+                    'amount' => $tx->amount,
+                    'status' => Status::FAILED
                 ]);
 
                 $tx->status = Status::FAILED;
                 $tx->save();
             }
 
-            if(array_key_exists($tx->id, $responses['completed'])) {
+            if (array_key_exists($tx->id, $responses['completed'])) {
                 $response = $responses['completed'][$tx->id];
 
                 SavingsTransaction::create([
                     ...$response,
-                    'reference'      => $response['id'],
+                    'reference' => $response['id'],
                     'transaction_id' => $tx->id,
-                    'id'             => null,
+                    'id' => null,
                 ]);
 
                 $acc = EarningAccount::withdrawal()->accountId($tx->account_id)->first();
