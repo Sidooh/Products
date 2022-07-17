@@ -33,6 +33,9 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function () {
         Route::post('/subscription', SubscriptionController::class);
         Route::post('/withdraw', WithdrawController::class);
 
+//        TODO: Should we have a similar endpoint for voucher purchase?
+//          Route::post('/voucher', WithdrawController::class);
+
         Route::prefix('/vouchers')->group(function () {
             Route::post('/top-up', [VoucherController::class, 'topUp']);
             Route::post('/disburse', [VoucherController::class, 'disburse']);
@@ -40,7 +43,6 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function () {
 
         Route::prefix('/subscriptions')->group(function () {
             Route::post('', SubscriptionController::class);
-//            Route::post('/check-expiry', [SubscriptionController::class, 'checkExpiry']);
         });
 
         Route::post('/float/top-up', [FloatController::class, 'topUp']);
@@ -68,7 +70,6 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function () {
     });
 
     Route::prefix('/savings')->group(function () {
-//        Route::post('/', [EarningController::class, 'save']);
         Route::post('/callback', [EarningController::class, 'processSavingsCallback']);
     });
 
@@ -86,7 +87,7 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function () {
     Route::get('/subscriptions/subscription-types', [SubscriptionController::class, "getSubTypes"]);
 });
 
-
+// TODO: Research on how to secure or throttle unsecured callback endpoints
 Route::prefix('/v1')->name('api.')->group(function () {
     Route::prefix('/products')->group(function () {
         Route::prefix('/subscriptions')->group(function () {
