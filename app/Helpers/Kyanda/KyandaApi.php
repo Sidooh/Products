@@ -23,12 +23,12 @@ class KyandaApi
         return true;
     }
 
-    public static function bill(Transaction $transaction, array $array, string $provider): bool|KyandaRequest|array
+    public static function bill(Transaction $transaction, string $provider): bool|KyandaRequest|array
     {
         Log::info('--- --- --- --- ---   ...[KYANDA-API]: Disburse Utility...   --- --- --- --- ---');
 
         try {
-            return Utility::billPayment($array['account_number'], $transaction->amount, $provider, 700000000, $transaction->id);
+            return Utility::billPayment($transaction->destination, $transaction->amount, $provider, 700000000, $transaction->id);
         } catch (KyandaException $e) {
             Log::error("KyandaError: " . $e->getMessage());
         }

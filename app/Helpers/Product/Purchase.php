@@ -31,12 +31,11 @@ class Purchase
      */
     public function utility(array $billDetails): void
     {
-        $billDetails['account_number'] = $this->transaction->destination;
         $provider = explode(' - ', $this->transaction->description)[1];
 
         match (config('services.sidooh.utilities_provider')) {
-            'KYANDA' => KyandaApi::bill($this->transaction, $billDetails, $provider),
-            'TANDA' => TandaApi::bill($this->transaction, $billDetails, $provider),
+            'KYANDA' => KyandaApi::bill($this->transaction, $provider),
+            'TANDA' => TandaApi::bill($this->transaction, $provider),
             default => throw new Exception('No provider provided for utility purchase')
         };
     }
@@ -46,6 +45,7 @@ class Purchase
      */
     public function airtime(): void
     {
+//        TODO: Notify admins of possible duplicate
         if ($this->transaction->airtime) exit;
 
         $phone = PhoneNumber::make($this->transaction->destination, 'KE')->formatE164();

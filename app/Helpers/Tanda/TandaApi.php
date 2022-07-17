@@ -28,12 +28,12 @@ class TandaApi
         }
     }
 
-    public static function bill(Transaction $transaction, array $array, string $provider): void
+    public static function bill(Transaction $transaction, string $provider): void
     {
         Log::info('...[TANDA-API]: Disburse Utility...');
 
         try {
-            Utility::billPayment($array['account_number'], $transaction->amount, $provider, $transaction->id);
+            Utility::billPayment($transaction->destination, $transaction->amount, $provider, $transaction->id);
         } catch (TandaException $e) {
             Log::error("TandaError: " . $e->getMessage(), [$transaction]);
         }

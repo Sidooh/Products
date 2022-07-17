@@ -25,8 +25,7 @@ class PaymentsController extends Controller
 
         $request->validate([
             "payments" => "required|array",
-            "phone"    => "phone:KE",
-            "provider" => "string"
+            "vouchers" => "array",
         ]);
 
         $payments = $request->collect("payments");
@@ -36,14 +35,14 @@ class PaymentsController extends Controller
             $failedPayments
         ] = $payments->partition(fn($p) => $p['status'] === Status::COMPLETED->value);
 
-        if($failedPayments) {
+        if ($failedPayments) {
             $payments = Payment::whereIn("payment_id", $failedPayments->pluck("id"));
             $payments->update(["status" => Status::FAILED]);
 
             Transaction::whereIn("id", $payments->pluck("transaction_id"))->update(["status" => Status::FAILED]);
         }
 
-        if($completedPayments) {
+        if ($completedPayments) {
             // TODO: Will this work?
             $payments = Payment::whereIn("payment_id", $completedPayments->pluck("id"));
             $payments->update(["status" => Status::COMPLETED]);
