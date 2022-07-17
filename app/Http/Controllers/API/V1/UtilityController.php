@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API\V1;
 
+use App\Enums\Description;
 use App\Enums\PaymentMethod;
 use App\Enums\ProductType;
 use App\Enums\TransactionType;
@@ -29,11 +30,12 @@ class UtilityController extends Controller
 
         $transactions = [
             [
-                "destination" => $data['account_number'],
+                "destination" => $data['target_number'] ?? $account["phone"],
                 "initiator" => $data["initiator"],
                 "amount" => $data["amount"],
                 "type" => TransactionType::PAYMENT,
-                "description" => "{$data['provider']} Payment",
+                //TODO: Use Description::UTILITY_PURCHASE - $data['provider'] format
+                "description" => Description::UTILITY_PURCHASE->value . ' - ' . $data['provider'],
                 "account_id" => $data['account_id'],
                 "product_id" => ProductType::UTILITY,
                 "account" => $account,
