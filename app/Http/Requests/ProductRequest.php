@@ -38,7 +38,7 @@ class ProductRequest extends FormRequest
             'amount' => ["required", 'numeric', 'min:20', 'max:10000',],
             'method' => [new Enum(PaymentMethod::class),],
             'enterprise_id' => ["required_if:initiator," . Initiator::ENTERPRISE->name],
-            'account_number' => [Rule::requiredIf($this->is('*/products/utility')), 'integer'],
+            'account_number' => [Rule::requiredIf($this->is('*/products/utility')), 'numeric'],
             'provider' => [Rule::requiredIf($this->is('*/products/utility'))],
             'target_number' => "phone:$countryCode",
             'debit_account' => "phone:$countryCode",

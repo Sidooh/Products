@@ -32,10 +32,11 @@ class Purchase
     public function utility(array $billDetails): void
     {
         $billDetails['account_number'] = $this->transaction->destination;
+        $provider = explode(' - ', $this->transaction->description)[1];
 
         match (config('services.sidooh.utilities_provider')) {
-            'KYANDA' => KyandaApi::bill($this->transaction, $billDetails, $billDetails["provider"]),
-            'TANDA' => TandaApi::bill($this->transaction, $billDetails, $billDetails["provider"]),
+            'KYANDA' => KyandaApi::bill($this->transaction, $billDetails, $provider),
+            'TANDA' => TandaApi::bill($this->transaction, $billDetails, $provider),
             default => throw new Exception('No provider provided for utility purchase')
         };
     }
