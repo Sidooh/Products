@@ -29,7 +29,7 @@ class Purchase
     /**
      * @throws Exception
      */
-    public function utility(array $billDetails): void
+    public function utility(): void
     {
         $provider = explode(' - ', $this->transaction->description)[1];
 
@@ -101,6 +101,8 @@ class Purchase
      */
     public function voucher(array $paymentsData): void
     {
+        Log::info('...[INTERNAL - PRODUCT]: Voucher...');
+
         $this->transaction->status = Status::COMPLETED;
         $this->transaction->save();
 

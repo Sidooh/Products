@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Enums\EventType;
 use App\Enums\PaymentMethod;
 use App\Enums\ProductType;
 use App\Enums\Status;
@@ -11,6 +12,8 @@ use App\Models\EarningAccount;
 use App\Models\Payment;
 use App\Models\SavingsTransaction;
 use App\Models\Transaction;
+use App\Services\SidoohAccounts;
+use App\Services\SidoohNotify;
 use App\Services\SidoohPayments;
 use App\Services\SidoohSavings;
 use App\Traits\ApiResponse;
@@ -54,12 +57,19 @@ class TransactionRepository
 
         $response = SidoohPayments::pay($transactions->toArray(), $data['method'], $totalAmount, $data);
 
-        if(!isset($response["data"]["payments"])) throw new Exception("Purchase Failed!");
+        if (!isset($response["data"]["payments"])) throw new Exception("Purchase Failed!");
 
         // TODO: Fix this, payments doesn't know what product expects, product should modify accordingly
-        Payment::insert($response["data"]["payments"]);
+        $paymentData = array_map(function ($p) {
+            return [
+                ...$p,
+                'created_at' => now(),
+                'updated_at' => now()
+            ];
+        }, $response["data"]["payments"]);
+        Payment::insert($paymentData);
 
-        if(isset($response["data"]) && $data['method'] === PaymentMethod::VOUCHER->name) {
+        if (isset($response["data"]) && $data['method'] === PaymentMethod::VOUCHER->name) {
             self::requestPurchase($transactions, $response["data"]);
         }
     }
@@ -79,7 +89,7 @@ class TransactionRepository
 
                 match ($transaction->product_id) {
                     ProductType::AIRTIME => $purchase->airtime(),
-                    ProductType::UTILITY => $purchase->utility($paymentsData),
+                    ProductType::UTILITY => $purchase->utility(),
                     ProductType::SUBSCRIPTION => $purchase->subscription(),
                     ProductType::VOUCHER => $purchase->voucher($paymentsData),
                     default => throw new Exception("Invalid product purchase!"),
@@ -144,5 +154,25 @@ class TransactionRepository
         });
 
         return $transactions;
+    }
+
+    public static function handleFailedTransactionPayments(Collection $transactions, Collection $failedPayments): void
+    {
+        $transactions->each(function ($transaction) use ($failedPayments) {
+            $transaction->payment->update(["status" => Status::FAILED]);
+            $transaction->status = Status::FAILED;
+            $transaction->save();
+
+            $result = $failedPayments->firstWhere('id', $transaction->payment->payment_id);
+
+            $message = match ($result['stk_result_code']) {
+                1 => "You have insufficient Mpesa Balance for this transaction. Kindly top up your Mpesa and try again.",
+                default => "Sorry! We failed to complete your transaction. No amount was deducted from your account. We apologize for the inconvenience. Please try again.",
+            };
+
+            $account = SidoohAccounts::find($transaction->account_id);
+
+            SidoohNotify::notify([$account['phone']], $message, EventType::PAYMENT_FAILURE);
+        });
     }
 }
