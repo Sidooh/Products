@@ -30,7 +30,7 @@ class UtilityController extends Controller
 
         $transactions = [
             [
-                "destination" => $data['target_number'] ?? $account["phone"],
+                "destination" => $account["phone"],
                 "initiator" => $data["initiator"],
                 "amount" => $data["amount"],
                 "type" => TransactionType::PAYMENT,
@@ -48,7 +48,8 @@ class UtilityController extends Controller
             "method"          => $data['method'] ?? PaymentMethod::MPESA->value,
         ];
 
-        if($request->input("initiator") === 'ENTERPRISE') $data['method'] = 'FLOAT';
+        if ($request->has("debit_account")) $data["debit_account"] = $request->input("debit_account");
+        if ($request->input("initiator") === 'ENTERPRISE') $data['method'] = 'FLOAT';
 
         $transactionIds = TransactionRepository::createTransactions($transactions, $data);
 
