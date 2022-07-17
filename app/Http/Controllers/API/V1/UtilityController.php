@@ -30,7 +30,7 @@ class UtilityController extends Controller
 
         $transactions = [
             [
-                "destination" => $account["phone"],
+                "destination" => $data["account_number"],
                 "initiator" => $data["initiator"],
                 "amount" => $data["amount"],
                 "type" => TransactionType::PAYMENT,
