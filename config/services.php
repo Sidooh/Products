@@ -105,7 +105,7 @@ return [
             ],
             'KPLC_PREPAID' => [
                 'type' => '%',
-                'value' => .017
+                'value' => .02
             ],
             'DSTV' => [
                 'type' => '%',

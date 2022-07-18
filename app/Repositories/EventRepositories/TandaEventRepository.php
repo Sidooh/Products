@@ -92,7 +92,18 @@ class TandaEventRepository extends EventRepository
         $date = $tandaRequest->updated_at->timezone('Africa/Nairobi')->format(config("settings.sms_date_time_format"));
         $eventType = EventType::UTILITY_PAYMENT;
 
-        switch($provider) {
+        try {
+            $rateConfig = config("services.tanda.discounts." . $provider);
+            $earnings = match ($rateConfig['type']) {
+                '%' => $rateConfig['value'] * $transaction->amount,
+                '$' => $rateConfig['value']
+            };
+            Log::info('...[TANDA EVENT REPOSITORY]: New Calculation...', [$rateConfig, $earnings]);
+        } catch (\Exception $e) {
+            Log::error('...[TANDA EVENT REPOSITORY]: New Calculation... Failed!!!', $e);
+        }
+
+        switch ($provider) {
             case Providers::FAIBA:
             case Providers::SAFARICOM:
             case Providers::AIRTEL:
