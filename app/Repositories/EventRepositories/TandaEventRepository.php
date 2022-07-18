@@ -16,6 +16,7 @@ use App\Services\SidoohNotify;
 use App\Services\SidoohPayments;
 use DrH\Tanda\Library\Providers;
 use DrH\Tanda\Models\TandaRequest;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Log;
 use Propaganistas\LaravelPhone\PhoneNumber;
@@ -26,7 +27,7 @@ class TandaEventRepository extends EventRepository
     {
         $provider = $tandaRequest->provider;
 
-        if(empty($provider)) {
+        if (empty($provider)) {
             $productId = $transaction->product_id;
             $descriptionArray = explode(" ", $transaction->description);
 
@@ -35,7 +36,7 @@ class TandaEventRepository extends EventRepository
 
             $tandaRequest->provider = $provider;
 
-            if(empty($tandaRequest->destination)) {
+            if (empty($tandaRequest->destination)) {
                 $tandaRequest->destination = $descriptionArray[1];
             }
 
@@ -48,7 +49,7 @@ class TandaEventRepository extends EventRepository
     public static function requestSuccess(TandaRequest $tandaRequest)
     {
         // Update Transaction
-        if($tandaRequest->relation_id) {
+        if ($tandaRequest->relation_id) {
             $transaction = Transaction::find($tandaRequest->relation_id);
         } else {
             $transaction = Transaction::whereStatus(Status::PENDING->name)->whereType(TransactionType::PAYMENT->name)
@@ -58,7 +59,7 @@ class TandaEventRepository extends EventRepository
             $tandaRequest->save();
         }
 
-        if($transaction->status == Status::COMPLETED) {
+        if ($transaction->status == Status::COMPLETED) {
             SidoohNotify::notify([
                 '254714611696',
                 '254110039317'
@@ -75,7 +76,7 @@ class TandaEventRepository extends EventRepository
         $voucher = $paymentDetails["voucher"];
         $method = $payment["subtype"];
 
-        if($method === 'VOUCHER') {
+        if ($method === 'VOUCHER') {
             $bal = 'Ksh' . number_format($voucher["balance"], 2);
             $vtext = " New Voucher balance is $bal.";
         } else {
@@ -92,16 +93,16 @@ class TandaEventRepository extends EventRepository
         $date = $tandaRequest->updated_at->timezone('Africa/Nairobi')->format(config("settings.sms_date_time_format"));
         $eventType = EventType::UTILITY_PAYMENT;
 
-        try {
-            $rateConfig = config("services.tanda.discounts." . $provider);
-            $earnings = match ($rateConfig['type']) {
-                '%' => $rateConfig['value'] * $transaction->amount,
-                '$' => $rateConfig['value']
-            };
-            Log::info('...[TANDA EVENT REPOSITORY]: New Calculation...', [$rateConfig, $earnings]);
-        } catch (\Exception $e) {
-            Log::error('...[TANDA EVENT REPOSITORY]: New Calculation... Failed!!!', $e);
+        $rateConfig = config("services.tanda.discounts." . $provider, ['type' => '$', 'value' => 0]);
+        $totalEarnings = match ($rateConfig['type']) {
+            '%' => $rateConfig['value'] * $transaction->amount,
+            '$' => $rateConfig['value']
+        };
+        if ($totalEarnings <= 0) {
+            Log::error('...[REP - TANDA]: New Calculation... Failed!!!', [$rateConfig, $totalEarnings]);
+            return;
         }
+
 
         switch ($provider) {
             case Providers::FAIBA:
@@ -109,14 +110,12 @@ class TandaEventRepository extends EventRepository
             case Providers::AIRTEL:
             case Providers::TELKOM:
                 //  Get Points Earned
-                $totalEarnings = ($provider == Providers::FAIBA ? .07 : .06) * $transaction->amount;
-
                 $userEarnings = EarningRepository::getPointsEarned($transaction, $totalEarnings);
                 $phone = ltrim(PhoneNumber::make($destination, 'KE')->formatE164(), '+');
                 $eventType = EventType::AIRTIME_PURCHASE;
 
                 //  Send SMS
-                if($phone != $sender) {
+                if ($phone != $sender) {
                     $message = "You have purchased $amount airtime for $phone from your Sidooh account on $date using $method. You have received $userEarnings cashback.$vtext";
 
                     SidoohNotify::notify([$sender], $message, $eventType);
@@ -128,18 +127,15 @@ class TandaEventRepository extends EventRepository
 
                 $sender = $phone;
                 break;
-            case Providers::KPLC_POSTPAID:
-
-                //  Get Points Earned
-                $totalEarnings = .017 * $transaction->amount;
-                $userEarnings = EarningRepository::getPointsEarned($transaction, $totalEarnings);
-
-                //  Send SMS
-                $message = "You have made a payment to $provider - $destination of $amount from your Sidooh account on $date using $method. You have received $userEarnings cashback.$vtext";
-                break;
+//            case Providers::KPLC_POSTPAID:
+//                //  Get Points Earned
+//                $userEarnings = EarningRepository::getPointsEarned($transaction, $totalEarnings);
+//
+//                //  Send SMS
+//                $message = "You have made a payment to $provider - $destination of $amount from your Sidooh account on $date using $method. You have received $userEarnings cashback.$vtext";
+//                break;
             case Providers::KPLC_PREPAID:
                 //  Get Points Earned
-                $totalEarnings = .017 * $transaction->amount;
                 $userEarnings = EarningRepository::getPointsEarned($transaction, $totalEarnings);
 
                 //  Send SMS
@@ -151,21 +147,21 @@ class TandaEventRepository extends EventRepository
             case Providers::GOTV:
             case Providers::ZUKU:
             case Providers::STARTIMES:
-                //  Get Points Earned
-                $totalEarnings = .003 * $transaction->amount;
-                $userEarnings = EarningRepository::getPointsEarned($transaction, $totalEarnings);
-
-                //  Send SMS
-                $message = "You have made a payment to $provider - $destination of $amount from your Sidooh account on $date using $method. You have received $userEarnings cashback.$vtext";
-                break;
+            case Providers::KPLC_POSTPAID:
             case Providers::NAIROBI_WTR:
                 //  Get Points Earned
-                $totalEarnings = 5;
                 $userEarnings = EarningRepository::getPointsEarned($transaction, $totalEarnings);
 
                 //  Send SMS
                 $message = "You have made a payment to $provider - $destination of $amount from your Sidooh account on $date using $method. You have received $userEarnings cashback.$vtext";
                 break;
+//            case Providers::NAIROBI_WTR:
+//                //  Get Points Earned
+//                $userEarnings = EarningRepository::getPointsEarned($transaction, $totalEarnings);
+//
+//                //  Send SMS
+//                $message = "You have made a payment to $provider - $destination of $amount from your Sidooh account on $date using $method. You have received $userEarnings cashback.$vtext";
+//                break;
         }
 
         //  Update Transaction & Earnings
@@ -173,11 +169,11 @@ class TandaEventRepository extends EventRepository
         ProductRepository::syncAccounts($account, $provider, $destination);
         SidoohNotify::notify([$sender], $message, $eventType);
 
-        Log::info('...[TANDA EVENT REPOSITORY]: Completed Transaction...');
+        Log::info('...[REP - TANDA]: Completed Transaction...');
     }
 
     /**
-     * @throws RequestException
+     * @throws RequestException|AuthenticationException
      */
     public static function requestFailed(TandaRequest $tandaRequest)
     {

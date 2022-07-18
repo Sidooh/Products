@@ -6,12 +6,15 @@ use App\Enums\ProductType;
 use App\Models\AirtimeAccount;
 use App\Models\UtilityAccount;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 use Nabcellent\Kyanda\Library\Providers;
 
 class ProductRepository
 {
     static function syncAccounts(array $account, string $provider, string $number): Model|UtilityAccount|AirtimeAccount|null
     {
+        Log::info('...[REP - PRODUCT]: Sync Accounts...');
+
         $product = match ($provider) {
             Providers::SAFARICOM, Providers::AIRTEL, Providers::FAIBA, Providers::EQUITEL, Providers::TELKOM => ProductType::AIRTIME,
             default => ProductType::UTILITY

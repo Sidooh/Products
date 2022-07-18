@@ -103,7 +103,7 @@ class Transaction extends Model
 
     public static function updateStatus(self $transaction, Status $status = Status::PENDING)
     {
-        Log::info('...[TRANSACTION MODEL]: Update Status...', [
+        Log::info('...[MDL - TRANSACTION]: Update Status...', [
             "status" => $status->value
         ]);
 
