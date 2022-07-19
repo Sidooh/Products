@@ -51,6 +51,8 @@ class SidoohEventRepository extends EventRepository
      */
     public static function voucherPurchaseSuccess(Transaction $transaction, array $vouchers)
     {
+        // TODO: Add method of payment
+
         $amount = 'Ksh' . number_format($transaction->amount, 2);
         $account = SidoohAccounts::find($transaction->account_id);
         $date = $transaction->updated_at

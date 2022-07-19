@@ -3,16 +3,16 @@
 namespace App\Services;
 
 use App\Enums\Description;
-use Exception;
+use App\Enums\PaymentMethod;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Client\RequestException;
-use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 
 class SidoohPayments extends SidoohService
 {
     /**
-     * @throws \Illuminate\Auth\AuthenticationException
+     * @throws AuthenticationException
      */
     static function getAll(): array
     {
@@ -24,41 +24,23 @@ class SidoohPayments extends SidoohService
     }
 
     /**
-     * @throws Exception
-     */
-    static function findByTransactionId(int|string $id): ?array
-    {
-        Log::info('...[SRV - PAYMENTS]: Find By Transaction Id...', ['Transaction id' => $id]);
-
-        $url = config('services.sidooh.services.payments.url') . "/payments/transaction/$id";
-
-        return Cache::remember($id, (60 * 60 * 24), fn() => parent::fetch($url));
-//        $payment = Cache::remember($id, (60 * 60 * 24), fn() => parent::fetch($url));
-
-//        if(!$payment) throw new Exception("Payment doesn't exist!");
-
-//        return $payment;
-    }
-
-    /**
      * @throws AuthenticationException
      */
-    public static function pay(array $transactions, string $method, $totalAmount, array $data = []): ?array
+    public static function requestPayment(Collection $transactions, PaymentMethod $method, string $debit_account): ?array
     {
-        Log::info('...[SRV - PAYMENTS]: Make Payment...');
+        Log::info('...[SRV - PAYMENTS]: Request Payment...');
 
         $url = config('services.sidooh.services.payments.url') . "/payments";
 
         return parent::fetch($url, "POST", [
-            "transactions" => $transactions,
-            "method"       => $method,
-            "total_amount" => $totalAmount,
-            "data"         => $data,
+            "transactions" => $transactions->toArray(),
+            "payment_mode" => $method->name,
+            "debit_account" => $debit_account
         ]);
     }
 
     /**
-     * @throws RequestException|AuthenticationException
+     * @throws AuthenticationException
      */
     public static function creditVoucher(int $accountId, $amount, Description $description, $notify = false): ?array
     {
@@ -90,22 +72,21 @@ class SidoohPayments extends SidoohService
     }
 
     /**
-     * @throws \Illuminate\Auth\AuthenticationException
+     * @throws AuthenticationException
      */
-    public static function findPaymentDetails(int $paymentId, int $accountId): ?array
+    public static function find(int $paymentId): ?array
     {
-        Log::info('...[SRV - PAYMENTS]: Find Payment Details...', [
-            "transaction_id" => $paymentId,
-            "account_id"     => $accountId
+        Log::info('...[SRV - PAYMENTS]: Find Payment...', [
+            "payment_id" => $paymentId,
         ]);
 
-        $url = config('services.sidooh.services.payments.url') . "/payments/$paymentId/details/$accountId";
+        $url = config('services.sidooh.services.payments.url') . "/payments/$paymentId";
 
         return parent::fetch($url);
     }
 
     /**
-     * @throws \Illuminate\Auth\AuthenticationException
+     * @throws AuthenticationException
      */
     public static function findVoucher(int $voucherId): ?array
     {

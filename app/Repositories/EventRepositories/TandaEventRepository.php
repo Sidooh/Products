@@ -4,6 +4,7 @@ namespace App\Repositories\EventRepositories;
 
 use App\Enums\Description;
 use App\Enums\EventType;
+use App\Enums\PaymentMethod;
 use App\Enums\ProductType;
 use App\Enums\Status;
 use App\Enums\TransactionType;
@@ -63,7 +64,7 @@ class TandaEventRepository extends EventRepository
             SidoohNotify::notify([
                 '254714611696',
                 '254110039317'
-            ], "ERROR:TANDA REQUEST\nTransaction ${transaction} seems to have been completed already. Confirm!!!", EventType::ERROR_ALERT);
+            ], "ERROR:TANDA REQUEST\nTransaction $transaction seems to have been completed already. Confirm!!!", EventType::ERROR_ALERT);
             return;
         }
 
@@ -71,17 +72,27 @@ class TandaEventRepository extends EventRepository
 
         $account = SidoohAccounts::find($transaction->account_id);
 
-        $paymentDetails = SidoohPayments::findPaymentDetails($transaction->payment->id, $transaction->account_id);
-        $payment = $paymentDetails["payment"];
-        $voucher = $paymentDetails["voucher"];
-        $method = $payment["subtype"];
+        // TODO: No need to query payments service unless voucher, we now have payments model in app
+//        $paymentDetails = SidoohPayments::findVoucher($transaction->payment->payment_id);
+//        $payment = $paymentDetails["payment"];
+//        $voucher = $paymentDetails["voucher"];
+//        $method = $payment["subtype"];
 
-        if ($method === 'VOUCHER') {
+        if ($transaction->payment->subtype === PaymentMethod::VOUCHER->name) {
+            $method = PaymentMethod::VOUCHER->name;
+
+            // TODO: Query voucher balance separately
+            $voucher = $transaction->payment->extra;
             $bal = 'Ksh' . number_format($voucher["balance"], 2);
             $vtext = " New Voucher balance is $bal.";
         } else {
-            $method = 'MPESA';
+            $method = $transaction->payment->type;
             $vtext = '';
+
+            $extra = $transaction->payment->extra;
+            if (isset($extra['debit_account']) && $account['phone'] !== $extra['debit_account']) {
+                $method = "OTHER " . $method;
+            }
         }
 
         $code = config('services.at.ussd.code');
@@ -93,7 +104,7 @@ class TandaEventRepository extends EventRepository
         $date = $tandaRequest->updated_at->timezone('Africa/Nairobi')->format(config("settings.sms_date_time_format"));
         $eventType = EventType::UTILITY_PAYMENT;
 
-        $rateConfig = config("services.tanda.discounts." . $provider, ['type' => '$', 'value' => 0]);
+        $rateConfig = config("services.tanda.discounts.$provider", ['type' => '$', 'value' => 0]);
         $totalEarnings = match ($rateConfig['type']) {
             '%' => $rateConfig['value'] * $transaction->amount,
             '$' => $rateConfig['value']

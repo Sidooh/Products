@@ -106,7 +106,11 @@ class Purchase
         $this->transaction->status = Status::COMPLETED;
         $this->transaction->save();
 
+        $vouchers = [];
+        if (isset($paymentsData['debit_voucher'])) $vouchers[] = $paymentsData['debit_voucher'];
+        $vouchers[] = $paymentsData['credit_vouchers'][0];
+
         // TODO: Disparity, what if multiple payments? Only single transaction is passed here...!
-        VoucherPurchaseEvent::dispatch($this->transaction, $paymentsData['vouchers']);
+        VoucherPurchaseEvent::dispatch($this->transaction, $vouchers);
     }
 }

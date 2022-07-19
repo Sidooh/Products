@@ -36,7 +36,7 @@ class VoucherController extends Controller
             return $this->errorResponse('Target number cannot be your account phone number', 422);
         }
 
-        $transactions = [
+        $transactionsData = [
             [
                 "destination" => $data['target_number'] ?? $account["phone"],
                 "initiator" => $data["initiator"],
@@ -51,14 +51,13 @@ class VoucherController extends Controller
 
         $data = [
             "payment_account" => $account,
-            "method" => $data["method"] ?? PaymentMethod::MPESA->value,
+            "method" => $request->has("method") ? PaymentMethod::from($request->input("method")) : PaymentMethod::MPESA,
         ];
 
-        // TODO: Also ensure we can't use other voucher here
-        if ($request->has("debit_account") && $data['method'] === PaymentMethod::MPESA->value)
+        if ($request->has("debit_account") && $data['method'] === PaymentMethod::MPESA)
             $data["debit_account"] = $request->input("debit_account");
 
-        $transactionIds = TransactionRepository::createTransactions($transactions, $data);
+        $transactionIds = TransactionRepository::createTransactions($transactionsData, $data);
 
         return $this->successResponse(['transactions' => $transactionIds], 'Voucher Request Successful!');
     }

@@ -34,19 +34,19 @@ class VoucherRequest extends FormRequest
             'initiator'     => [
                 Rule::requiredIf(!$this->is('*/products/voucher/disburse')),
                 new Enum(Initiator::class),
-                function($attribute, $value, $fail) {
+                function ($attribute, $value, $fail) {
                     $isVoucherDisburse = $this->is('*/products/voucher/disburse');
 
-                    if($isVoucherDisburse && $value !== "ENTERPRISE") $fail("Unauthorized Initiator!");
+                    if ($isVoucherDisburse && $value !== "ENTERPRISE") $fail("Unauthorized Initiator!");
                 },
             ],
             'disburse_type' => ['in:LUNCH,GENERAL'],
-            'account_id'    => ["required", 'integer'],
+            'account_id' => ["required", 'integer'],
             'enterprise_id' => ['required_if:initiator,ENTERPRISE', 'exists:enterprises,id'],
-            'amount'        => ['required', 'numeric'],
-            'accounts'      => ['array'],
-            "method"        => ["exclude_without:target_number", new Enum(PaymentMethod::class)],
-            "target_number" => "phone:$countryCode",
+            'amount' => ['required', 'integer'],
+            'accounts' => ['array'],
+            "method" => ["exclude_without:target_number", new Enum(PaymentMethod::class)],
+            "target_number" => [Rule::requiredIf($this->input("method") === PaymentMethod::VOUCHER->value), "phone:$countryCode"],
             "debit_account" => [
                 Rule::excludeIf($this->input("method") === PaymentMethod::VOUCHER->value),
                 "phone:$countryCode"

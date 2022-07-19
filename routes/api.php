@@ -33,6 +33,8 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function () {
         Route::post('/subscription', SubscriptionController::class);
         Route::post('/withdraw', WithdrawController::class);
 
+        Route::get('/earnings/rates', [ProductController::class, 'getEarningRates']);
+
 //        TODO: Should we have a similar endpoint for voucher purchase?
 //          Route::post('/voucher', WithdrawController::class);
 

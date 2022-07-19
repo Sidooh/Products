@@ -16,7 +16,13 @@ class Payment extends Model
     protected $fillable = [
         "status",
         'transaction_id',
-        'payment_id'
+        'payment_id',
+        'type',
+        'subtype'
+    ];
+
+    protected $casts = [
+        'extra' => 'array'
     ];
 
     public function transaction(): BelongsTo

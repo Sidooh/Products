@@ -18,7 +18,11 @@ return new class extends Migration
             $table->id();
             $table->foreignId("transaction_id")->constrained()->cascadeOnUpdate()->cascadeOnDelete();
             $table->unsignedBigInteger("payment_id")->unique();
-            $table->string('status', 20)->default(Status::PENDING->value);
+            $table->decimal('amount');
+            $table->string('type', 20);
+            $table->string('subtype', 20);
+            $table->string('status', 20)->default(Status::PENDING->name);
+            $table->string('extra'); //e.g. voucher used to pay
             $table->timestamps();
         });
     }

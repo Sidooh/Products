@@ -38,7 +38,7 @@ class TransactionRepository
     {
         $transactions = collect();
 
-        foreach($transactionsData as $transactionData) {
+        foreach ($transactionsData as $transactionData) {
             $transactions->add(Transaction::create($transactionData));
         }
 
@@ -53,23 +53,40 @@ class TransactionRepository
      */
     public static function initiatePayment(Collection $transactions, array $data): void
     {
-        $totalAmount = collect($transactions)->sum("amount");
+        if (isset($data['debit_account'])) {
+            $debit_account = $data['debit_account'];
+        } else {
+            $account = $data['payment_account'];
+            $debit_account = $data['method'] === PaymentMethod::MPESA ? $account['phone'] : $account['id'];
+        }
 
-        $response = SidoohPayments::pay($transactions->toArray(), $data['method'], $totalAmount, $data);
+        $transactionsData = $transactions->map(fn($t) => [
+            'reference' => $t->id,
+            'product_id' => $t->product_id,
+            'amount' => $t->amount,
+            'destination' => $t->destination,
+            'description' => $t->description,
+        ]);
+        $response = SidoohPayments::requestPayment($transactionsData, $data['method'], $debit_account);
 
         if (!isset($response["data"]["payments"])) throw new Exception("Purchase Failed!");
 
-        // TODO: Fix this, payments doesn't know what product expects, product should modify accordingly
-        $paymentData = array_map(function ($p) {
+        $paymentData = array_map(function ($p) use ($response, $debit_account) {
             return [
-                ...$p,
+                'transaction_id' => $p['reference'],
+                'payment_id' => $p['id'],
+                'amount' => $p['amount'],
+                'type' => $p['type'],
+                'subtype' => $p['subtype'],
+                'status' => $p['status'],
+                'extra' => json_encode($response['data']['debit_voucher'] ?? ['debit_account' => $debit_account]),
                 'created_at' => now(),
-                'updated_at' => now()
+                'updated_at' => now(),
             ];
         }, $response["data"]["payments"]);
         Payment::insert($paymentData);
 
-        if (isset($response["data"]) && $data['method'] === PaymentMethod::VOUCHER->name) {
+        if (isset($response["data"]) && $data['method'] === PaymentMethod::VOUCHER) {
             self::requestPurchase($transactions, $response["data"]);
         }
     }
@@ -80,12 +97,11 @@ class TransactionRepository
     public static function requestPurchase(Collection $transactions, array $paymentsData): void
     {
         try {
-            foreach($transactions as $transaction) {
-                Payment::firstWhere("transaction_id", $transaction->id)->update(["status" => Status::COMPLETED]);
+            foreach ($transactions as $transaction) {
 
                 $purchase = new Purchase($transaction);
 
-                if(is_int($transaction->product_id)) $transaction->product_id = ProductType::tryFrom($transaction->product_id);
+                if (is_int($transaction->product_id)) $transaction->product_id = ProductType::tryFrom($transaction->product_id);
 
                 match ($transaction->product_id) {
                     ProductType::AIRTIME => $purchase->airtime(),
@@ -107,7 +123,7 @@ class TransactionRepository
     public static function createWithdrawalTransactions(array $transactionsData, $data): Collection
     {
         $transactions = collect();
-        foreach($transactionsData as $transactionData) {
+        foreach ($transactionsData as $transactionData) {
             $transactions->add(Transaction::create($transactionData));
         }
 
@@ -121,30 +137,30 @@ class TransactionRepository
     {
         $responses = SidoohSavings::withdrawEarnings($transactions, $data['method']);
 
-        $transactions->each(function($tx) use ($responses) {
-            if(array_key_exists($tx->id, $responses['failed'])) {
+        $transactions->each(function ($tx) use ($responses) {
+            if (array_key_exists($tx->id, $responses['failed'])) {
                 $response = $responses['failed'][$tx->id];
 
                 SavingsTransaction::create([
                     'transaction_id' => $tx->id,
-                    'description'    => $response,
-                    'type'           => TransactionType::DEBIT,
-                    'amount'         => $tx->amount,
-                    'status'         => Status::FAILED
+                    'description' => $response,
+                    'type' => TransactionType::DEBIT,
+                    'amount' => $tx->amount,
+                    'status' => Status::FAILED
                 ]);
 
                 $tx->status = Status::FAILED;
                 $tx->save();
             }
 
-            if(array_key_exists($tx->id, $responses['completed'])) {
+            if (array_key_exists($tx->id, $responses['completed'])) {
                 $response = $responses['completed'][$tx->id];
 
                 SavingsTransaction::create([
                     ...$response,
-                    'reference'      => $response['id'],
+                    'reference' => $response['id'],
                     'transaction_id' => $tx->id,
-                    'id'             => null,
+                    'id' => null,
                 ]);
 
                 $acc = EarningAccount::withdrawal()->accountId($tx->account_id)->first();

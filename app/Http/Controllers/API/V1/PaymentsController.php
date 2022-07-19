@@ -44,11 +44,11 @@ class PaymentsController extends Controller
         }
 
         if (count($completedPayments)) {
-            // TODO: Will this work?
+            // TODO: Will this work? Update to be similar to failed payments
             $payments = Payment::whereIn("payment_id", $completedPayments->pluck("id"));
             $payments->update(["status" => Status::COMPLETED]);
 
-            $transactions = Transaction::findMany($payments->pluck("transaction_id"));
+            $transactions = Transaction::find($payments->pluck("transaction_id"));
 
             TransactionRepository::requestPurchase($transactions, $request->all());
         }

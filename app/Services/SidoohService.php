@@ -25,7 +25,7 @@ class SidoohService
      */
     static function authenticate()
     {
-        Log::info('...[SRV - SIDOOH]: Authenticate...');
+        Log::info('...[SRV - SIDOOH]: AUTH...');
 
         $url = config('services.sidooh.services.accounts.url');
 
@@ -44,24 +44,30 @@ class SidoohService
      */
     static function fetch(string $url, string $method = "GET", array $data = [])
     {
-        Log::info('...[SRV - SIDOOH]: Fetch...', [
+        Log::info('...[SRV - SIDOOH]: REQ...', [
+            'url' => $url,
             "method" => $method,
-            "data"   => $data
+            "data" => $data
         ]);
 
         $options = strtoupper($method) === "POST" ? ["json" => $data] : [];
 
+        $t = microtime(true);
         try {
-            $t = microtime(true);
             $response = self::http()->send($method, $url, $options)->throw()->json();
             $latency = round((microtime(true) - $t) * 1000, 2);
-            Log::info('...[SRV - SIDOOH]: Response... ' . $latency . 'ms', [$response]);
+            Log::info('...[SRV - SIDOOH]: RES... ' . $latency . 'ms', [$response]);
             return $response;
         } catch (Exception|RequestException $err) {
-            Log::error($err);
+            $latency = round((microtime(true) - $t) * 1000, 2);
+            if (str_starts_with($err->getCode(), 4)) {
+                Log::error('...[SRV - SIDOOH]: ERR... ' . $latency . 'ms', $err->response->json());
+                throw new HttpResponseException(response()->json($err->response->json(), $err->getCode()));
+            }
 
-            if($err->getCode() === 401) throw new AuthenticationException();
-            if($err->getCode() === 422) throw new HttpResponseException(response()->json($err->response->json(), $err->getCode()));
+            if ($err->getCode() === 401) throw new AuthenticationException();
+            Log::error('...[SRV - SIDOOH]: ERR... ' . $latency . 'ms', [$err]);
+            return null;
         }
     }
 }

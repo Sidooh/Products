@@ -102,4 +102,13 @@ class ProductController extends Controller
 
         return $this->successResponse($earnings);
     }
+
+    public function getEarningRates(Request $request): JsonResponse
+    {
+        $provider = mb_strtolower(config('services.sidooh.utilities_provider'));
+        $discounts = config("services.$provider.discounts");
+
+        return $this->successResponse($discounts);
+    }
+
 }
