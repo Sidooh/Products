@@ -36,8 +36,8 @@ class SubscriptionController extends Controller
 
         //Check Subscription doesn't exist
         $subscription = Subscription::whereAccountId($account['id'])->latest()->first();
-        if ($subscription && $subscription->status === Status::ACTIVE)
-            return $this->errorResponse('Subscription already exists');
+        if ($subscription && $subscription->status === Status::ACTIVE->name)
+            return $this->errorResponse('Account has an existing active subscription');
 
         $transactions = [
             [
@@ -54,12 +54,11 @@ class SubscriptionController extends Controller
 
         $data = [
             "payment_account" => $account,
-            "method" => $data['method'] ?? PaymentMethod::MPESA->value,
+            "method" => $request->has("method") ? PaymentMethod::from($request->input("method")) : PaymentMethod::MPESA,
         ];
 
         // TODO: Also ensure we can't use other voucher here
-        if ($request->has("debit_account") && $data['method'] === PaymentMethod::MPESA->value)
-            $data["debit_account"] = $request->input("debit_account");
+        if ($request->has("debit_account")) $data["debit_account"] = $request->input("debit_account");
 
         $transactionIds = TransactionRepository::createTransactions($transactions, $data);
 
@@ -84,7 +83,7 @@ class SubscriptionController extends Controller
             "created_at"
         ])->latest()->with("subscriptionType:id,title,price,duration,active,period")->get();
 
-        if(in_array("account", $relations)) {
+        if (in_array("account", $relations)) {
             $subscriptions = withRelation("account", $subscriptions, "account_id", "id");
         }
 
