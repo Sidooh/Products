@@ -165,6 +165,7 @@ class TransactionRepository
 
                 $acc = EarningAccount::withdrawal()->accountId($tx->account_id)->first();
                 $acc->update(['self_amount' => $acc->self_amount + $tx->amount]);
+
                 $tx->refresh();
             }
         });

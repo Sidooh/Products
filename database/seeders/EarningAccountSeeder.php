@@ -13,9 +13,8 @@ class EarningAccountSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
-        //
         $accounts = [];
 
         foreach (EarningAccountType::cases() as $accountType) {

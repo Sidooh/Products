@@ -108,10 +108,4 @@ class Subscription extends Model
             ->whereBetween('end_date', [now()->subDays(6)->toDateString(), now()->toDateString()])
             ->whereStatus(Status::EXPIRED);
     }
-
-    // TODO: This doesn't seem to be used anywhere ???...
-    public static function getMany(array $ids)
-    {
-        return self::whereIn('account_id', $ids)->get();
-    }
 }
