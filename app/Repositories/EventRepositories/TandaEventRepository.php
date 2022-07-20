@@ -72,12 +72,6 @@ class TandaEventRepository extends EventRepository
 
         $account = SidoohAccounts::find($transaction->account_id);
 
-        // TODO: No need to query payments service unless voucher, we now have payments model in app
-//        $paymentDetails = SidoohPayments::findVoucher($transaction->payment->payment_id);
-//        $payment = $paymentDetails["payment"];
-//        $voucher = $paymentDetails["voucher"];
-//        $method = $payment["subtype"];
-
         if ($transaction->payment->subtype === PaymentMethod::VOUCHER->name) {
             $method = PaymentMethod::VOUCHER->name;
 

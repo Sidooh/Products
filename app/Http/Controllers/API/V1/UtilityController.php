@@ -34,7 +34,6 @@ class UtilityController extends Controller
                 "initiator" => $data["initiator"],
                 "amount" => $data["amount"],
                 "type" => TransactionType::PAYMENT,
-                //TODO: Use Description::UTILITY_PURCHASE - $data['provider'] format
                 "description" => Description::UTILITY_PURCHASE->value . ' - ' . $data['provider'],
                 "account_id" => $data['account_id'],
                 "product_id" => ProductType::UTILITY,

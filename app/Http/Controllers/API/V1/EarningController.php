@@ -13,6 +13,7 @@ use App\Services\SidoohAccounts;
 use App\Services\SidoohNotify;
 use App\Services\SidoohSavings;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -87,8 +88,7 @@ class EarningController extends Controller
                 '254711414987',
                 '254110039317'
             ], $message, EventType::STATUS_UPDATE);
-
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Notify failure
             Log::error($e);
 

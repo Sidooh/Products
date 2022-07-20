@@ -34,7 +34,7 @@ class SubscriptionController extends Controller
 
         $subscriptionType = SubscriptionType::find($data['subscription_type_id']);
 
-        //Check Subscription doesn't exist
+        // Check Subscription doesn't exist
         $subscription = Subscription::whereAccountId($account['id'])->latest()->first();
         if ($subscription && $subscription->status === Status::ACTIVE->name)
             return $this->errorResponse('Account has an existing active subscription');
