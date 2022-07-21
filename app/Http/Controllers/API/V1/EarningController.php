@@ -60,50 +60,57 @@ class EarningController extends Controller
         return response()->json($cashbacks);
     }
 
-    public function save(Request $request)
+    public function saveEarnings(Request $request): Collection
     {
         $request->validate(["date" => "date|date_format:d-m-Y"]);
 
         $date = null;
         if ($request->has("date")) $date = Carbon::createFromFormat("d-m-Y", $request->input("date"));
 
-        $savings = $this->collectSavings($date);
+        $savings = $this->collectEarnings($date);
 
-        try {
-            $responses = SidoohSavings::save($savings->toArray());
+        $message = "STATUS:SAVINGS\n\n";
 
-            $totalCompleted = count($responses['completed']);
-            $totalFailed = count($responses['failed']);
+        if ($savings->count() > 0) {
+            try {
+                $responses = SidoohSavings::save($savings->toArray());
 
-            //TODO: Store in DB so that we don't repeat saving
+                $totalCompleted = count($responses['completed']);
+                $totalFailed = count($responses['failed']);
 
-            $message = "STATUS:SAVINGS\n\n";
-            if ($totalCompleted > 0)
-                $message .= "Allocated for $totalCompleted accounts\n";
-            if ($totalFailed > 0)
-                $message .= "Failed for $totalFailed accounts\n";
+                //TODO: Store in DB so that we don't repeat saving
 
-            SidoohNotify::notify([
-                '254714611696',
-                '254711414987',
-                '254110039317'
-            ], $message, EventType::STATUS_UPDATE);
-        } catch (Exception $e) {
-            // Notify failure
-            Log::error($e);
+                if ($totalCompleted > 0)
+                    $message .= "Allocated for $totalCompleted accounts\n";
+                if ($totalFailed > 0)
+                    $message .= "Failed for $totalFailed accounts";
 
-            SidoohNotify::notify([
-                '254714611696',
-                '254711414987',
-                '254110039317'
-            ], "ERROR:SAVINGS\nError Saving Earnings!!!", EventType::ERROR_ALERT);
+            } catch (\Exception $e) {
+                // Notify failure
+                Log::error($e);
 
+                SidoohNotify::notify([
+                    '254714611696',
+                    '254711414987',
+                    '254110039317'
+                ], "ERROR:SAVINGS\nError Saving Earnings!!!", EventType::ERROR_ALERT);
+
+                return $savings;
+            }
+        } else {
+            $message .= "No earnings to allocate.";
         }
+
+        SidoohNotify::notify([
+            '254714611696',
+            '254711414987',
+            '254110039317'
+        ], $message, EventType::STATUS_UPDATE);
 
         return $savings;
     }
 
-    public function collectSavings($date = null): Collection
+    public function collectEarnings($date = null): Collection
     {
         if (!$date) $date = new Carbon;
 
@@ -112,8 +119,8 @@ class EarningController extends Controller
 
         return $cashbacks->map(fn(Cashback $cashback) => [
             "account_id" => $cashback->account_id,
-            "current_amount" => $cashback->amount * .2,
-            "locked_amount" => $cashback->amount * .8
+            "current_amount" => round($cashback->amount * .2, 4),
+            "locked_amount" => round($cashback->amount * .8, 4)
         ]);
     }
 

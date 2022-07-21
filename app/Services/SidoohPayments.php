@@ -76,9 +76,7 @@ class SidoohPayments extends SidoohService
      */
     public static function find(int $paymentId): ?array
     {
-        Log::info('...[SRV - PAYMENTS]: Find Payment...', [
-            "payment_id" => $paymentId,
-        ]);
+        Log::info('...[SRV - PAYMENTS]: Find Payment...');
 
         $url = config('services.sidooh.services.payments.url') . "/payments/$paymentId";
 

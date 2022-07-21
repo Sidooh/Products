@@ -96,8 +96,8 @@ Route::prefix('/v1')->name('api.')->group(function () {
             Route::post('/check-expiry', [SubscriptionController::class, 'checkExpiry']);
         });
 
-        Route::prefix('/savings')->group(function () {
-            Route::post('/', [EarningController::class, 'save']);
+        Route::prefix('/earnings')->group(function () {
+            Route::post('/save', [EarningController::class, 'saveEarnings']);
         });
     });
 });
