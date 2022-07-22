@@ -69,7 +69,11 @@ class TransactionRepository
         ]);
         $response = SidoohPayments::requestPayment($transactionsData, $data['method'], $debit_account);
 
-        if (!isset($response["data"]["payments"])) throw new Exception("Purchase Failed!");
+        if (!isset($response["data"]["payments"])) {
+            $transactions->each(fn($t) => $t->update(['status' => Status::FAILED]));
+
+            throw new Exception("Purchase Failed!");
+        }
 
         $paymentData = array_map(function ($p) use ($response, $debit_account) {
             return [

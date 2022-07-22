@@ -17,19 +17,20 @@ class ProductController extends Controller
      *
      * @param \Illuminate\Http\Request $request
      * @param int                      $accountId
+     * @throws \Illuminate\Auth\AuthenticationException
      * @return \Illuminate\Http\JsonResponse
      */
     public function getAllAirtimeAccounts(Request $request): JsonResponse
     {
         $relations = explode(",", $request->query("with"));
-        $accounts = AirtimeAccount::select(["id", "provider", "priority", "account_id", "account_number", "created_at"])->latest()
-            ->get();
+        $accounts = AirtimeAccount::select(["id", "provider", "priority", "account_id", "account_number", "created_at"])
+            ->latest()->get();
 
         if(in_array("account", $relations)) {
             $accounts = withRelation("account", $accounts, "account_id", "id");
         }
 
-        return response()->json($accounts);
+        return $this->successResponse($accounts);
     }
 
     /**
@@ -37,19 +38,20 @@ class ProductController extends Controller
      *
      * @param Request $request
      * @param int     $accountId
+     * @throws \Illuminate\Auth\AuthenticationException
      * @return JsonResponse
      */
     public function getAllUtilityAccounts(Request $request): JsonResponse
     {
         $relations = explode(",", $request->query("with"));
-        $accounts = UtilityAccount::select(["id", "provider", "priority", "account_id", "account_number", "created_at"])->latest()
-            ->get();
+        $accounts = UtilityAccount::select(["id", "provider", "priority", "account_id", "account_number", "created_at"])
+            ->latest()->get();
 
         if(in_array("account", $relations)) {
             $accounts = withRelation("account", $accounts, "account_id", "id");
         }
 
-        return response()->json($accounts);
+        return $this->successResponse($accounts);
     }
 
     /**

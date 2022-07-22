@@ -3,6 +3,7 @@
 namespace App\Rules;
 
 use App\Services\SidoohAccounts;
+use Exception;
 use Illuminate\Contracts\Validation\InvokableRule;
 
 class SidoohAccountExists implements InvokableRule
@@ -24,7 +25,7 @@ class SidoohAccountExists implements InvokableRule
             if (!isset($account['id'])) {
                 $fail('The :attribute must be a valid Sidooh account.');
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $fail('The :attribute must be a valid Sidooh account.');
         }
     }

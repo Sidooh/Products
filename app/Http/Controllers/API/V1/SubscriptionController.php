@@ -87,7 +87,7 @@ class SubscriptionController extends Controller
             $subscriptions = withRelation("account", $subscriptions, "account_id", "id");
         }
 
-        return response()->json($subscriptions);
+        return $this->successResponse($subscriptions);
     }
 
     public function getSubTypes(): JsonResponse
@@ -102,7 +102,7 @@ class SubscriptionController extends Controller
             "period",
         ])->latest()->get();
 
-        return response()->json($subTypes);
+        return $this->successResponse($subTypes);
     }
 
     public function checkExpiry()

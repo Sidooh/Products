@@ -13,7 +13,6 @@ use App\Services\SidoohAccounts;
 use App\Services\SidoohNotify;
 use App\Services\SidoohSavings;
 use Carbon\Carbon;
-use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -22,6 +21,9 @@ use Throwable;
 
 class EarningController extends Controller
 {
+    /**
+     * @throws \Illuminate\Auth\AuthenticationException
+     */
     public function getEarningAccounts(Request $request): JsonResponse
     {
         $relations = explode(",", $request->query("with"));
@@ -38,9 +40,12 @@ class EarningController extends Controller
             $earningAccounts = withRelation("account", $earningAccounts, "account_id", "id");
         }
 
-        return response()->json($earningAccounts);
+        return $this->successResponse($earningAccounts);
     }
 
+    /**
+     * @throws \Illuminate\Auth\AuthenticationException
+     */
     public function getCashbacks(Request $request): JsonResponse
     {
         $relations = explode(",", $request->query("with"));
@@ -57,7 +62,7 @@ class EarningController extends Controller
             $cashbacks = withRelation("account", $cashbacks, "account_id", "id");
         }
 
-        return response()->json($cashbacks);
+        return $this->successResponse($cashbacks);
     }
 
     public function saveEarnings(Request $request): Collection

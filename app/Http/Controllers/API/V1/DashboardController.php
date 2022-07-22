@@ -44,7 +44,7 @@ class DashboardController extends Controller
             return $transaction;
         });
 
-        return response()->json([
+        return $this->successResponse([
             "total_today"     => Transaction::whereStatus(Status::COMPLETED)->whereDate("created_at", Carbon::today())
                 ->sum("amount"),
             "total_yesterday" => Transaction::whereStatus(Status::COMPLETED)
