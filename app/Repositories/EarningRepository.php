@@ -13,12 +13,14 @@ use App\Models\Transaction;
 use App\Services\SidoohAccounts;
 use App\Services\SidoohNotify;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class EarningRepository
 {
     /**
      * @throws \Exception
+     * @throws \Throwable
      */
     public static function calculateEarnings(Transaction $transaction, float $earnings): void
     {
@@ -26,22 +28,20 @@ class EarningRepository
 
         $account = SidoohAccounts::find($transaction->account_id);
 
-        // TODO: Add DB Transaction
+        DB::transaction(function() use ($earnings, $account, $transaction) {
+            if ($transaction->product_id == ProductType::SUBSCRIPTION) {
+                self::computeSubscriptionEarnings($account, $transaction);
+                return;
+            }
 
-        if ($transaction->product_id == ProductType::SUBSCRIPTION) {
-            self::computeSubscriptionEarnings($account, $transaction);
-            return;
-        }
+            $hasActiveSubscription = Subscription::active($transaction->account_id);
 
-        $hasActiveSubscription = Subscription::active($transaction->account_id);
-
-        if ($hasActiveSubscription) {
-            self::computeSubscribedAccountEarnings($account, $transaction, $earnings);
-        } else {
-            self::computeAccountEarnings($account, $transaction, $earnings);
-        }
-
-        // TODO: End DB Transaction
+            if ($hasActiveSubscription) {
+                self::computeSubscribedAccountEarnings($account, $transaction, $earnings);
+            } else {
+                self::computeAccountEarnings($account, $transaction, $earnings);
+            }
+        });
     }
 
     public static function getPointsEarned(Transaction $transaction, float $discount): string

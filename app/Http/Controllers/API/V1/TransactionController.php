@@ -3,18 +3,17 @@
 namespace App\Http\Controllers\API\V1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\TransactionResource;
 use App\Models\Transaction;
 use App\Services\SidoohAccounts;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class TransactionController extends Controller
 {
     /**
      * @throws \Illuminate\Auth\AuthenticationException
      */
-    public function index(Request $request): AnonymousResourceCollection
+    public function index(Request $request): JsonResponse
     {
         $relations = explode(",", $request->query("with"));
         $transactions = Transaction::select([
@@ -27,14 +26,12 @@ class TransactionController extends Controller
             "created_at"
         ])->latest()->with("product:id,name")->get();
 
-        if(in_array("account", $relations)) {
-            $transactions = withRelation("account", $transactions, "account_id", "id");
-        }
+        if(in_array("account", $relations)) $transactions = withRelation("account", $transactions, "account_id", "id");
 
-        return TransactionResource::collection($transactions);
+        return $this->successResponse($transactions);
     }
 
-    public function show(Request $request, Transaction $transaction): TransactionResource
+    public function show(Request $request, Transaction $transaction): JsonResponse
     {
         $relations = explode(",", $request->query("with"));
 
@@ -43,7 +40,7 @@ class TransactionController extends Controller
         }
 
         if(in_array("payment", $relations)) {
-            $transaction->load("payment:id,payment_id,transaction_id,status");
+            $transaction->load("payment:id,payment_id,transaction_id,amount,type,subtype,status");
         }
 
         if(in_array("tanda_request", $relations)) {
@@ -52,6 +49,6 @@ class TransactionController extends Controller
 
         if(in_array("product", $relations)) $transaction->load("product:id,name");
 
-        return TransactionResource::make($transaction);
+        return $this->successResponse($transaction);
     }
 }

@@ -274,19 +274,27 @@ namespace App\Models{
  * @property int $id
  * @property int $transaction_id
  * @property int $payment_id
+ * @property string $amount
+ * @property string $type
+ * @property string $subtype
  * @property string $status
+ * @property array $extra
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Transaction|null $transaction
+ * @property-read \App\Models\Transaction $transaction
  * @method static \Database\Factories\PaymentFactory factory(...$parameters)
  * @method static \Illuminate\Database\Eloquent\Builder|Payment newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Payment newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Payment query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Payment whereAmount($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Payment whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Payment whereExtra($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Payment whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Payment wherePaymentId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Payment whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Payment whereSubtype($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Payment whereTransactionId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Payment whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Payment whereUpdatedAt($value)
  */
 	class IdeHelperPayment {}
@@ -443,6 +451,7 @@ namespace App\Models{
  * @property int|null $product_id
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Cashback[] $cashbacks
  * @property-read int|null $cashbacks_count
+ * @property-read \App\Models\Payment|null $payment
  * @property-read \App\Models\Product|null $product
  * @property-read \DrH\Tanda\Models\TandaRequest|null $request
  * @property-read \App\Models\SavingsTransaction|null $savingsTransaction

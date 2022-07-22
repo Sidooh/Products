@@ -34,7 +34,7 @@ class SubscriptionController extends Controller
 
         $subscriptionType = SubscriptionType::find($data['subscription_type_id']);
 
-        //Check Subscription doesn't exist
+        // Check Subscription doesn't exist
         $subscription = Subscription::whereAccountId($account['id'])->latest()->first();
         if ($subscription && $subscription->status === Status::ACTIVE->name)
             return $this->errorResponse('Account has an existing active subscription');
@@ -87,7 +87,7 @@ class SubscriptionController extends Controller
             $subscriptions = withRelation("account", $subscriptions, "account_id", "id");
         }
 
-        return response()->json($subscriptions);
+        return $this->successResponse($subscriptions);
     }
 
     public function getSubTypes(): JsonResponse
@@ -102,7 +102,7 @@ class SubscriptionController extends Controller
             "period",
         ])->latest()->get();
 
-        return response()->json($subTypes);
+        return $this->successResponse($subTypes);
     }
 
     public function checkExpiry()
