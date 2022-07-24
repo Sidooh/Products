@@ -86,7 +86,6 @@ class Purchase
         $type = SubscriptionType::wherePrice($this->transaction->amount)->firstOrFail();
 
         $subscription = [
-            'amount' => $this->transaction->amount,
             'status' => Status::ACTIVE,
             'account_id' => $this->transaction->account_id,
             'start_date' => now(),
