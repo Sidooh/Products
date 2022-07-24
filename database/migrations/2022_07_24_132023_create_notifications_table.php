@@ -12,15 +12,13 @@ return new class extends Migration {
      */
     public function up()
     {
-        Schema::create('earning_accounts', function (Blueprint $table) {
+        Schema::create('notifications', function (Blueprint $table) {
             $table->id();
 
-            $table->string('type'); //PURCHASES / SUBSCRIPTIONS / MERCHANTS ...
-            $table->decimal('self_amount', 12, 4)->default(0);
-            $table->decimal('invite_amount', 12, 4)->default(0);
-
-            $table->foreignId('account_id')->unsigned();
-            $table->unique(['account_id', 'type']);
+            $table->json('to');
+            $table->string('message');
+            $table->string('event');
+            $table->json('data');
 
             $table->timestamps();
         });
@@ -33,6 +31,6 @@ return new class extends Migration {
      */
     public function down()
     {
-        Schema::dropIfExists('earning_accounts');
+        Schema::dropIfExists('notifications');
     }
 };

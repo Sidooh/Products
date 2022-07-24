@@ -16,7 +16,6 @@ return new class extends Migration
         Schema::create('subscriptions', function (Blueprint $table) {
             $table->id();
 
-            $table->decimal('amount');
             $table->timestamp('start_date');
 
             // TODO: Find if laravel fixed issue of consecutive timestamps and remove nullable below

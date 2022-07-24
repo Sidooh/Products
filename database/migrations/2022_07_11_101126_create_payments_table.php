@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('type', 20);
             $table->string('subtype', 20);
             $table->string('status', 20)->default(Status::PENDING->name);
-            $table->string('extra'); //e.g. voucher used to pay
+            $table->string('extra')->nullable(); //e.g. voucher used to pay
 
             $table->foreignId("transaction_id")->constrained()->cascadeOnUpdate()->cascadeOnDelete();
 
