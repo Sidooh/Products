@@ -14,16 +14,16 @@ class SidoohSavings extends SidoohService
      */
     public static function withdrawEarnings(Collection $transactions, string $method): array
     {
-        Log::info('...[SRV - SAVINGS]: Withdraw...');
+        Log::info('...[SRV - SAVINGS]: Withdraw Earnings...');
 
         $url = config('services.sidooh.services.savings.url') . "/accounts/earnings/withdraw";
 
-        $data = $transactions->map(function ($t) use ($method) {
+        $data = $transactions->map(function($t) use ($method) {
             return [
-                'ref' => "$t->id",
-                'account_id' => $t->account_id,
-                'amount' => $t->amount,
-                'method' => $method,
+                'ref'         => "$t->id",
+                'account_id'  => $t->account_id,
+                'amount'      => $t->amount,
+                'method'      => $method,
                 'destination' => $t->destination
             ];
         });

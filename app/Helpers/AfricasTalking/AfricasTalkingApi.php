@@ -112,7 +112,7 @@ class AfricasTalkingApi
         return $this->AT->airtime()->send([
             'recipients' => [
                 [
-                    'phoneNumber'  => '+254715270660',
+                    'phoneNumber'  => '+254110039317',
                     'currencyCode' => 'KES',
                     'amount'       => 20
                 ],

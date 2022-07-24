@@ -59,6 +59,10 @@ class AirtimeController extends Controller
         return $this->successResponse(['transactions' => $transactionIds], 'Airtime Request Successful!');
     }
 
+    /**
+     * @throws \Illuminate\Auth\AuthenticationException
+     * @throws \Throwable
+     */
     public function bulk(AirtimeRequest $request): JsonResponse
     {
         $data = $request->all();
