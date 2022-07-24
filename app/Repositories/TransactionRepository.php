@@ -163,7 +163,8 @@ class TransactionRepository
                     'id' => null,
                 ]);
 
-                $acc = EarningAccount::withdrawal()->accountId($tx->account_id)->first();
+                //TODO: Fix for new users.
+                $acc = EarningAccount::withdrawal()->accountId($tx->account_id)->firstOrCreate();
                 $acc->update(['self_amount' => $acc->self_amount + $tx->amount]);
                 $tx->refresh();
             }

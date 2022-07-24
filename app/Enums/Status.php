@@ -11,4 +11,12 @@ enum Status: string
 
     case ACTIVE = "ACTIVE";
     const EXPIRED = "EXPIRED";
+
+    // others
+//    const RECONCILED,
+//    const REASSIGNED,
+//    const ALLOCATED,
+//    const SENT,
+//    const SUCCESS,
+
 }
