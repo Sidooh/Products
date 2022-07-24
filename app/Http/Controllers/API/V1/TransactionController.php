@@ -35,19 +35,19 @@ class TransactionController extends Controller
     {
         $relations = explode(",", $request->query("with"));
 
-        if(in_array("account", $relations)) {
+        if (in_array("account", $relations)) {
             $transaction->account = SidoohAccounts::find($transaction->account_id, true);
         }
 
-        if(in_array("payment", $relations)) {
+        if (in_array("payment", $relations)) {
             $transaction->load("payment:id,payment_id,transaction_id,amount,type,subtype,status");
         }
 
-        if(in_array("tanda_request", $relations)) {
-            $transaction->load("request:request_id,relation_id,receipt_number,amount,provider,destination,message,status,last_modified");
+        if (in_array("request", $relations)) {
+            $transaction->load("tandaRequest:request_id,relation_id,receipt_number,amount,provider,destination,message,status,last_modified");
         }
 
-        if(in_array("product", $relations)) $transaction->load("product:id,name");
+        if (in_array("product", $relations)) $transaction->load("product:id,name");
 
         return $this->successResponse($transaction);
     }
