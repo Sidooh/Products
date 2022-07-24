@@ -105,7 +105,7 @@ class SubscriptionController extends Controller
         return response()->json($subTypes);
     }
 
-    public function checkExpiry()
+    public function checkExpiry(): JsonResponse
     {
         // TODO: What if end_date order is not id order? 1,2022-07-07 12:02:59; 2,2022-07-04 12:02:59 ...?
 
@@ -123,10 +123,16 @@ class SubscriptionController extends Controller
 
         [$pastSubs, $futureSubs] = $requiredSubcriptions->partition(fn($s) => $s->end_date < now());
 
-        $pastSubs->each(function ($sub) {
+        $expiredSubs = collect();
+
+        $pastSubs->each(function ($sub) use ($expiredSubs) {
             $daysPast = now()->diffInDays($sub->end_date);
             $sub['x'] = $daysPast;
             $sub['y'] = $sub->end_date->diffForHumans();
+
+            if ($sub->status !== Status::EXPIRED) {
+                $expiredSubs->add($sub);
+            }
 
             if (in_array($daysPast, [2, 3, 4, 6])) {
                 //notify expired...
@@ -157,6 +163,36 @@ class SubscriptionController extends Controller
 
         Log::info('...[SUB_CTRL]... Subs: ', [now(), $pastSubs->toArray(), $futureSubs->toArray()]);
 
-        return $this->successResponse([$pastSubs, $futureSubs]);
+        $adminMsg = "STATUS:SUBSCRIPTIONS\n\n";
+        $adminMsg .= "Processed: {$latestSubscriptions->count()}";
+
+        // Process expired Subs
+        if ($expiredCount = $expiredSubs->count()) {
+            $expiredSubsAccs = collect();
+
+            $expiredSubs->each(function ($sub) use ($expiredSubsAccs) {
+                $account = SidoohAccounts::find($sub->account_id);
+                $expiredSubsAccs->add($account);
+            });
+
+            $message = "Your subscription to Sidooh has expired.\n\n";
+            $message .= "Dial *384*99# NOW for FREE on your Safaricom line to renew your subscription and continue to ";
+            $message .= "earn commissions on airtime and tokens purchased by your invited friends and sub-agents";
+            $message .= config('services.sidooh.tagline');
+
+            SidoohNotify::notify($expiredSubsAccs->pluck('phone')->toArray(), $message, EventType::SUBSCRIPTION_EXPIRY);
+            $adminMsg .= "\nExpired: $expiredCount";
+        }
+
+
+        // Notify admin
+        SidoohNotify::notify([
+            '254714611696',
+            '254711414987',
+            '254110039317'
+        ], $adminMsg, EventType::STATUS_UPDATE);
+
+
+        return $this->successResponse([$pastSubs, $futureSubs, $expiredSubs]);
     }
 }

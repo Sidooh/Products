@@ -88,8 +88,6 @@ class Subscription extends Model
     public static function scopeIncludePreExpiry(Builder $query): Builder
     {
         return $query
-//            ->orWhereDate('end_date', '<', now()->addDays(5))
-//            ->whereDate('end_date', '>', now())
             ->whereBetween('end_date', [now()->toDateString(), now()->addDays(5)->toDateString()])
             ->whereStatus(Status::ACTIVE);
     }
@@ -103,10 +101,7 @@ class Subscription extends Model
     public static function scopeIncludePostExpiry(Builder $query): Builder
     {
         return $query
-//            ->orWhereDate('end_date', '>', now()->subDays(6))
-//            ->whereDate('end_date', '<', now())
-            ->whereBetween('end_date', [now()->subDays(6)->toDateString(), now()->toDateString()])
-            ->whereStatus(Status::EXPIRED);
+            ->whereBetween('end_date', [now()->subDays(6)->toDateString(), now()->toDateString()])/*->whereStatus(Status::EXPIRED)*/ ;
     }
 
     // TODO: This doesn't seem to be used anywhere ???...
