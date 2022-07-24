@@ -6,7 +6,7 @@ use App\Enums\Description;
 use App\Enums\EventType;
 use App\Enums\Status;
 use App\Events\TransactionSuccessEvent;
-use App\Models\AirtimeResponse;
+use App\Models\ATAirtimeResponse;
 use App\Repositories\EarningRepository;
 use App\Services\SidoohAccounts;
 use App\Services\SidoohNotify;
@@ -19,7 +19,7 @@ class ATEventRepository
     /**
      * @throws \Illuminate\Auth\AuthenticationException
      */
-    public static function airtimePurchaseFailed(AirtimeResponse $airtimeResponse): void
+    public static function airtimePurchaseFailed(ATAirtimeResponse $airtimeResponse): void
     {
         try {
             SidoohNotify::notify([
@@ -52,7 +52,7 @@ class ATEventRepository
     /**
      * @throws \Exception
      */
-    public static function airtimePurchaseSuccess(AirtimeResponse $airtimeResponse): void
+    public static function airtimePurchaseSuccess(ATAirtimeResponse $airtimeResponse): void
     {
         $transaction = $airtimeResponse->airtimeRequest->transaction;
 
@@ -103,7 +103,7 @@ class ATEventRepository
         SidoohNotify::notify([$phone], $message, EventType::AIRTIME_PURCHASE);
     }
 
-    public static function statusUpdate(AirtimeResponse $airtimeResponse): void
+    public static function statusUpdate(ATAirtimeResponse $airtimeResponse): void
     {
         Log::info("...[REP - AT] Status Update...");
 
@@ -113,7 +113,7 @@ class ATEventRepository
 
 //        TODO:: Remove Sent from successful
 //        || $value->status == 'Sent'
-        $successful = $responses->filter(fn ($value) => $value->status == 'Success' || $value->status == 'Sent');
+        $successful = $responses->filter(fn($value) => $value->status == 'Success' || $value->status == 'Sent');
 
         if (count($successful) == count($responses)) {
             $totalEarned = explode(" ", $airtimeRequest->discount)[1];

@@ -69,6 +69,9 @@ class TransactionRepository
         ]);
         $response = SidoohPayments::requestPayment($transactionsData, $data['method'], $debit_account);
 
+        // TODO: Revert this to: if (!isset($response["data"]["payments"])) throw new Exception("Purchase Failed!");
+        //  Reason may not be due to payment failure, could be a connection issue etc...
+        //  We would then have to manually check. Or implement a query endpoint that polls payment srv at set intervals
         if (!isset($response["data"]["payments"])) {
             $transactions->each(fn($t) => $t->update(['status' => Status::FAILED]));
 

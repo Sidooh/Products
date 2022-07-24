@@ -2,7 +2,7 @@
 
 namespace App\Events;
 
-use App\Models\AirtimeResponse;
+use App\Models\ATAirtimeResponse;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
@@ -16,9 +16,11 @@ class AirtimePurchaseFailedEvent
     /**
      * Create a new event instance.
      *
-     * @param AirtimeResponse $response
+     * @param ATAirtimeResponse $response
      */
-    public function __construct(public AirtimeResponse $airtime_response) { }
+    public function __construct(public ATAirtimeResponse $airtime_response)
+    {
+    }
 
     /**
      * Get the channels the event should broadcast on.

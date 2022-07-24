@@ -11,7 +11,7 @@ use App\Events\AirtimePurchaseFailedEvent;
 use App\Events\AirtimePurchaseSuccessEvent;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AirtimeRequest;
-use App\Models\AirtimeResponse;
+use App\Models\ATAirtimeResponse;
 use App\Repositories\TransactionRepository;
 use App\Services\SidoohAccounts;
 use Exception;
@@ -103,7 +103,7 @@ class AirtimeController extends Controller
     {
         $callback = $request->all();
 
-        $res = AirtimeResponse::whereRequestId($callback['requestId'])->firstOrFail();
+        $res = ATAirtimeResponse::whereRequestId($callback['requestId'])->firstOrFail();
 
         if($res->status != 'Success') {
             $res->status = Status::tryFrom($callback['status']) ?? strtoupper($callback['status']);
@@ -113,7 +113,7 @@ class AirtimeController extends Controller
         }
     }
 
-    private function fireAirtimePurchaseEvent(AirtimeResponse $response, array $callback)
+    private function fireAirtimePurchaseEvent(ATAirtimeResponse $response, array $callback)
     {
         $callback['status'] == 'Success'
             ? AirtimePurchaseSuccessEvent::dispatch($response)

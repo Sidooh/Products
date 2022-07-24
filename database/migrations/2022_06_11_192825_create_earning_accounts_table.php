@@ -15,9 +15,10 @@ return new class extends Migration {
         Schema::create('earning_accounts', function (Blueprint $table) {
             $table->id();
 
-            $table->string('type'); //PURCHASES / SUBSCRIPTION / MERCHANT ...
-            $table->decimal('self_amount', 7, 4)->default(0);
-            $table->decimal('invite_amount', 7, 4)->default(0);
+            $table->string('type'); //PURCHASES / SUBSCRIPTIONS / MERCHANTS ...
+            $table->decimal('self_amount', 12, 4)->default(0);
+            $table->decimal('invite_amount', 12, 4)->default(0);
+
             $table->foreignId('account_id')->unsigned();
 
             $table->timestamps();

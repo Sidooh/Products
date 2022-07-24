@@ -18,6 +18,7 @@ return new class extends Migration
 
             $table->string('type', 20);
             $table->boolean('active')->default(false);
+
             $table->foreignId('account_id')->unsigned();
             $table->foreignId('enterprise_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
 

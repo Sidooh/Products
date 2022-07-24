@@ -14,8 +14,7 @@ return new class extends Migration {
     {
         Schema::table('transactions', function (Blueprint $table) {
             if (!Schema::hasColumn('transactions', 'product_id')) {
-                $table->unsignedBigInteger('product_id')->nullable()->after('account_id');
-                $table->foreign('product_id')->references('id')->on('products')->onDelete('set null');
+                $table->foreignId('product_id')->constrained()->nullOnDelete()->cascadeOnUpdate();
             }
         });
     }

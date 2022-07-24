@@ -1,7 +1,6 @@
 <?php
 
 use App\Enums\Status;
-use App\Models\Transaction;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -23,7 +22,7 @@ return new class extends Migration {
             $table->string('status', 20)->default(Status::PENDING->name); //    Use enums
             $table->string('description');
 
-            $table->foreignIdFor(Transaction::class, 'transaction_id');
+            $table->foreignId('transaction_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
 
             $table->timestamps();
         });

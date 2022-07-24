@@ -62,7 +62,7 @@ namespace App\Models{
  * @method static Builder|AirtimeRequest whereNumSent($value)
  * @method static Builder|AirtimeRequest whereTransactionId($value)
  * @method static Builder|AirtimeRequest whereUpdatedAt($value)
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\AirtimeResponse[] $airtimeResponses
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ATAirtimeResponse[] $airtimeResponses
  * @property-read int|null $airtime_responses_count
  * @property-read \App\Models\Transaction|null $transaction
  */
@@ -70,37 +70,37 @@ namespace App\Models{
 }
 
 namespace App\Models{
-/**
- * App\Models\AirtimeResponse
- *
- * @property int         $id
- * @property string      $phone
- * @property string      $message
- * @property string      $amount
- * @property string      $status
- * @property string      $request_id
- * @property string      $discount
- * @property int         $airtime_request_id
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @method static AirtimeResponseFactory factory(...$parameters)
- * @method static Builder|AirtimeResponse newModelQuery()
- * @method static Builder|AirtimeResponse newQuery()
- * @method static Builder|AirtimeResponse query()
- * @method static Builder|AirtimeResponse whereAirtimeRequestId($value)
- * @method static Builder|AirtimeResponse whereAmount($value)
- * @method static Builder|AirtimeResponse whereCreatedAt($value)
- * @method static Builder|AirtimeResponse whereDiscount($value)
- * @method static Builder|AirtimeResponse whereId($value)
- * @method static Builder|AirtimeResponse whereMessage($value)
- * @method static Builder|AirtimeResponse wherePhone($value)
- * @method static Builder|AirtimeResponse whereRequestId($value)
- * @method static Builder|AirtimeResponse whereStatus($value)
- * @method static Builder|AirtimeResponse whereUpdatedAt($value)
- * @property string|null $description
- * @property-read \App\Models\AirtimeRequest $airtimeRequest
- * @method static Builder|AirtimeResponse whereDescription($value)
- */
+    /**
+     * App\Models\ATAirtimeResponse
+     *
+     * @property int $id
+     * @property string $phone
+     * @property string $message
+     * @property string $amount
+     * @property string $status
+     * @property string $request_id
+     * @property string $discount
+     * @property int $airtime_request_id
+     * @property Carbon|null $created_at
+     * @property Carbon|null $updated_at
+     * @method static AirtimeResponseFactory factory(...$parameters)
+     * @method static Builder|ATAirtimeResponse newModelQuery()
+     * @method static Builder|ATAirtimeResponse newQuery()
+     * @method static Builder|ATAirtimeResponse query()
+     * @method static Builder|ATAirtimeResponse whereAirtimeRequestId($value)
+     * @method static Builder|ATAirtimeResponse whereAmount($value)
+     * @method static Builder|ATAirtimeResponse whereCreatedAt($value)
+     * @method static Builder|ATAirtimeResponse whereDiscount($value)
+     * @method static Builder|ATAirtimeResponse whereId($value)
+     * @method static Builder|ATAirtimeResponse whereMessage($value)
+     * @method static Builder|ATAirtimeResponse wherePhone($value)
+     * @method static Builder|ATAirtimeResponse whereRequestId($value)
+     * @method static Builder|ATAirtimeResponse whereStatus($value)
+     * @method static Builder|ATAirtimeResponse whereUpdatedAt($value)
+     * @property string|null $description
+     * @property-read \App\Models\AirtimeRequest $airtimeRequest
+     * @method static Builder|ATAirtimeResponse whereDescription($value)
+     */
 	class IdeHelperAirtimeResponse {}
 }
 
