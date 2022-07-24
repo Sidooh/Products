@@ -18,19 +18,19 @@ use Nabcellent\Kyanda\Models\KyandaRequest;
 /**
  * App\Models\Transaction
  *
- * @property int                      $id
- * @property string                   $initiator
- * @property string                   $type
- * @property string                   $amount
- * @property string                   $status
- * @property string|null              $destination
- * @property string                   $description
- * @property int                      $account_id
- * @property Carbon|null              $created_at
- * @property Carbon|null              $updated_at
- * @property-read AirtimeRequest|null $airtime
- * @property-read AirtimeRequest|null $airtimeRequest
- * @property-read KyandaRequest|null  $kyandaTransaction
+ * @property int $id
+ * @property string $initiator
+ * @property string $type
+ * @property string $amount
+ * @property string $status
+ * @property string|null $destination
+ * @property string $description
+ * @property int $account_id
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read ATAirtimeRequest|null $atAirtimeRequest
+ * @property-read KyandaRequest|null $kyandaTransaction
+ * @property-read TandaRequest|null $tandaRequest
  * @method static TransactionFactory factory(...$parameters)
  * @method static Builder|Transaction newModelQuery()
  * @method static Builder|Transaction newQuery()
@@ -61,14 +61,27 @@ class Transaction extends Model
         'description',
     ];
 
-    public function airtime(): HasOne
-    {
-        return $this->hasOne(AirtimeRequest::class);
-    }
-
+    // Internal relations
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
+    }
+
+//    TODO: Is it being used?
+    public function cashbacks(): HasMany
+    {
+        return $this->hasMany(Cashback::class);
+    }
+
+    public function payment(): HasOne
+    {
+        return $this->hasOne(Payment::class);
+    }
+
+    // External service relations
+    public function atAirtimeRequest(): HasOne
+    {
+        return $this->hasOne(ATAirtimeRequest::class);
     }
 
     public function kyandaTransaction(): HasOne
@@ -76,17 +89,7 @@ class Transaction extends Model
         return $this->hasOne(KyandaRequest::class, 'relation_id');
     }
 
-    public function airtimeRequest(): HasOne
-    {
-        return $this->hasOne(AirtimeRequest::class);
-    }
-
-    public function cashbacks(): HasMany
-    {
-        return $this->hasMany(Cashback::class);
-    }
-
-    public function request(): HasOne
+    public function tandaRequest(): HasOne
     {
         return $this->hasOne(TandaRequest::class, 'relation_id');
     }
@@ -96,11 +99,7 @@ class Transaction extends Model
         return $this->hasOne(SavingsTransaction::class);
     }
 
-    public function payment(): HasOne
-    {
-        return $this->hasOne(Payment::class);
-    }
-
+    // Methods
     public static function updateStatus(self $transaction, Status $status = Status::PENDING)
     {
         Log::info('...[MDL - TRANSACTION]: Update Status...', [

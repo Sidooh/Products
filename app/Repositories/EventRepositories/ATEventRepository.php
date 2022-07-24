@@ -11,7 +11,6 @@ use App\Repositories\EarningRepository;
 use App\Services\SidoohAccounts;
 use App\Services\SidoohNotify;
 use App\Services\SidoohPayments;
-use Exception;
 use Illuminate\Support\Facades\Log;
 
 class ATEventRepository
@@ -21,16 +20,13 @@ class ATEventRepository
      */
     public static function airtimePurchaseFailed(ATAirtimeResponse $airtimeResponse): void
     {
-        try {
-            SidoohNotify::notify([
-                '254714611696',
-                '254711414987',
-                '254721309253'
-            ], "ERROR:AIRTIME\n{$airtimeResponse->phone}", EventType::ERROR_ALERT);
-            Log::info("Airtime Failure SMS Sent");
-        } catch (Exception $e) {
-            Log::error($e->getMessage());
-        }
+        SidoohNotify::notify([
+            '254714611696',
+            '254711414987',
+            '254721309253'
+        ], "ERROR:AIRTIME\n$airtimeResponse->phone", EventType::ERROR_ALERT);
+        Log::info("Airtime Failure SMS Sent");
+
 
         $phone = ltrim($airtimeResponse->phone, '+');
 
@@ -75,7 +71,7 @@ class ATEventRepository
 
         $code = config('services.at.ussd.code');
 
-        if($method == 'VOUCHER') {
+        if ($method == 'VOUCHER') {
             $voucher = $transaction->payment->extra;
             $bal = 'Ksh' . number_format($voucher["balance"], 2);
             $vtext = " New Voucher balance is $bal.";
@@ -90,7 +86,7 @@ class ATEventRepository
         $date = $airtimeResponse->updated_at->timezone('Africa/Nairobi')
             ->format(config("settings.sms_date_time_format"));
 
-        if($phone != $sender) {
+        if ($phone != $sender) {
             $message = "You have purchased {$amount} airtime for {$phone} from your Sidooh account on {$date} using $method. You have received {$pointsEarned} cashback.$vtext";
 
             SidoohNotify::notify([$sender], $message, EventType::AIRTIME_PURCHASE);

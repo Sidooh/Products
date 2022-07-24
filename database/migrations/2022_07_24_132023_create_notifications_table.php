@@ -16,9 +16,9 @@ return new class extends Migration {
             $table->id();
 
             $table->json('to');
-            $table->string('message');
+            $table->text('message');
             $table->string('event');
-            $table->json('data');
+            $table->json('response');
 
             $table->timestamps();
         });

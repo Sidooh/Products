@@ -20,8 +20,8 @@ class JWTAuth
      *
      * @param Request $request
      * @param Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next
-     * @throws \Illuminate\Auth\AuthenticationException
-     * @return JsonResponse
+     * @return JsonResponse|Response
+     * @throws AuthenticationException
      */
     public function handle(Request $request, Closure $next): JsonResponse|Response
     {

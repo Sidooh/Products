@@ -52,8 +52,6 @@ class SidoohEventRepository extends EventRepository
      */
     public static function voucherPurchaseSuccess(Transaction $transaction, array $vouchers)
     {
-        // TODO: Add method of payment
-
         $amount = 'Ksh' . number_format($transaction->amount, 2);
         $account = SidoohAccounts::find($transaction->account_id);
         $date = $transaction->updated_at
@@ -139,10 +137,8 @@ class SidoohEventRepository extends EventRepository
             $accountFor = SidoohAccounts::findByPhone($transaction->destination);
 
             if ($vouchers[0]['account_id'] == $account['id'] && $vouchers[1]['account_id'] == $accountFor['id']) {
-                $debitVoucher = $vouchers[0];
                 $creditVoucher = $vouchers[1];
             } else if ($vouchers[1]['account_id'] == $account['id'] && $vouchers[0]['account_id'] == $accountFor['id']) {
-                $debitVoucher = $vouchers[1];
                 $creditVoucher = $vouchers[0];
             } else {
                 throw new Exception('Voucher mismatch with accounts');
@@ -151,7 +147,6 @@ class SidoohEventRepository extends EventRepository
 
             // send notification self
             $phone = $account['phone'];
-            $balance = 'Ksh' . number_format($debitVoucher['balance'], 2);
 
             $message = "You have purchased $amount voucher ";
             $message .= "for $transaction->destination on $date using $method.$vtext\n";

@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Enums\EarningAccountType;
 use App\Enums\EventType;
 use App\Enums\PaymentMethod;
 use App\Enums\ProductType;
@@ -127,14 +128,16 @@ class TransactionRepository
      * @throws AuthenticationException
      * @throws Throwable
      */
-    public static function createWithdrawalTransactions(array $transactionsData, $data): Collection
+    public static function createWithdrawalTransactions(array $transactionsData, $data): array
     {
         $transactions = collect();
         foreach ($transactionsData as $transactionData) {
             $transactions->add(Transaction::create($transactionData));
         }
 
-        return self::initiateSavingsWithdrawal($transactions, $data);
+        self::initiateSavingsWithdrawal($transactions, $data);
+
+        return Arr::pluck($transactions, 'id');
     }
 
     /**
@@ -171,7 +174,10 @@ class TransactionRepository
                 ]);
 
                 //TODO: Fix for new users.
-                $acc = EarningAccount::withdrawal()->accountId($tx->account_id)->firstOrCreate();
+                $acc = EarningAccount::firstOrCreate([
+                    'type' => EarningAccountType::WITHDRAWALS->name,
+                    'account_id' => $tx->account_id
+                ]);
                 $acc->update(['self_amount' => $acc->self_amount + $tx->amount]);
 
                 $tx->refresh();

@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Database\Factories\AirtimeRequestFactory;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
 
 /**
@@ -35,14 +37,16 @@ use Illuminate\Support\Carbon;
  * @method static Builder|ATAirtimeRequest whereNumSent($value)
  * @method static Builder|ATAirtimeRequest whereTransactionId($value)
  * @method static Builder|ATAirtimeRequest whereUpdatedAt($value)
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ATAirtimeResponse[] $airtimeResponses
+ * @property-read Collection|ATAirtimeResponse[] $airtimeResponses
  * @property-read int|null $airtime_responses_count
- * @property-read \App\Models\Transaction|null $transaction
+ * @property-read Transaction|null $transaction
  * @mixin IdeHelperAirtimeRequest
  */
 class ATAirtimeRequest extends Model
 {
     use HasFactory;
+
+    protected $table = 'at_airtime_requests';
 
     protected $fillable = [
         'message',
@@ -57,8 +61,13 @@ class ATAirtimeRequest extends Model
         return $this->belongsTo(Transaction::class);
     }
 
-    public function airtimeResponses(): HasMany
+    public function responses(): HasMany
     {
         return $this->hasMany(ATAirtimeResponse::class);
+    }
+
+    public function response(): HasOne
+    {
+        return $this->hasOne(ATAirtimeResponse::class);
     }
 }

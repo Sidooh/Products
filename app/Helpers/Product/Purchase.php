@@ -2,6 +2,7 @@
 
 namespace App\Helpers\Product;
 
+use App\Enums\EventType;
 use App\Enums\Status;
 use App\Events\SubscriptionPurchaseFailedEvent;
 use App\Events\SubscriptionPurchaseSuccessEvent;
@@ -12,6 +13,7 @@ use App\Helpers\Tanda\TandaApi;
 use App\Models\Subscription;
 use App\Models\SubscriptionType;
 use App\Models\Transaction;
+use App\Services\SidoohNotify;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -46,7 +48,15 @@ class Purchase
     public function airtime(): void
     {
 //        TODO: Notify admins of possible duplicate
-        if ($this->transaction->airtime) exit;
+        if ($this->transaction->atAirtimeRequest || $this->transaction->kyandaTransaction || $this->transaction->tandaRequest) {
+            SidoohNotify::notify([
+                '254714611696',
+                '254711414987',
+                '254721309253'
+            ], "ERROR:AIRTIME\n{$this->transaction->id}", EventType::ERROR_ALERT);
+            Log::info("Possible duplicate airtime request... Confirm!!!");
+            exit;
+        }
 
         $phone = PhoneNumber::make($this->transaction->destination, 'KE')->formatE164();
 

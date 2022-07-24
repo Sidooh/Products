@@ -45,6 +45,8 @@ class ATAirtimeResponse extends Model
 {
     use HasFactory;
 
+    protected $table = 'at_airtime_responses';
+
     protected $fillable = [
         'phone',
         'message',
@@ -53,8 +55,8 @@ class ATAirtimeResponse extends Model
         'request_id'
     ];
 
-    public function airtimeRequest(): BelongsTo
+    public function request(): BelongsTo
     {
-        return $this->belongsTo(AirtimeRequest::class);
+        return $this->belongsTo(ATAirtimeRequest::class);
     }
 }

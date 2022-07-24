@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Enums\EventType;
 use App\Models\Notification;
 use Exception;
-use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Log;
 
 class SidoohNotify extends SidoohService
@@ -31,13 +30,14 @@ class SidoohNotify extends SidoohService
                 'response' => $response
             ]);
 
-        } catch (ConnectionException $e) {
-
-            Log::error("Failed to Connect to Notify!", ["err" => $e->getMessage()]);
-
         } catch (Exception $e) {
 
-            Log::error($e);
+            Notification::create([
+                'to' => $to,
+                'message' => $message,
+                'event' => $eventType,
+                'response' => ["err" => $e->getMessage()]
+            ]);
 
         }
     }
