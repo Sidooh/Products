@@ -25,6 +25,7 @@ return new class extends Migration
             $table->string('description');
 
             $table->foreignId('account_id')->unsigned();
+            $table->foreignId('product_id')->constrained()->cascadeOnUpdate();
 
             $table->timestamps();
         });

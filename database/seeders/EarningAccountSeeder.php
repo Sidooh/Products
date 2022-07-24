@@ -22,7 +22,7 @@ class EarningAccountSeeder extends Seeder
                 'invite_amount' => 0,
                 'account_id' => 0,
                 'created_at' => now(),
-                'updated' => now(),
+                'updated_at' => now(),
             ]
         ];
 
