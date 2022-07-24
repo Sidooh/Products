@@ -3,6 +3,7 @@
 namespace App\Repositories\EventRepositories;
 
 use App\Enums\EventType;
+use App\Enums\PaymentMethod;
 use App\Models\Subscription;
 use App\Models\Transaction;
 use App\Services\SidoohAccounts;
@@ -32,12 +33,12 @@ class SidoohEventRepository extends EventRepository
         switch ($type->duration) {
             case 1:
                 $message = "Congratulations! You have successfully registered as a $type->title on $date, valid until $end_date. ";
-                $message .= "You will earn commissions on every airtime purchased by your referred customers and sub-agents up to your $limit ripple.\n";
+                $message .= "You will earn commissions on airtime and tokens purchased by your invited friends and sub-agents up to your $limit ripple.\n";
                 break;
             default:
                 $level_duration = $type->duration . " MONTHS";
                 $message = "Congratulations! You have successfully pre-registered as a $type->title on $date, valid until $end_date. ";
-                $message .= "You will earn commissions on every airtime purchased by your referred customers and sub-agents up to your ";
+                $message .= "You will earn commissions on airtime and tokens purchased by your invited friends and sub-agents up to your ";
                 $message .= "$limit ripple, for $level_duration WITHOUT PAYING MONTHLY SUBSCRIPTION FEES.\n";
         }
 
@@ -59,6 +60,22 @@ class SidoohEventRepository extends EventRepository
             ->timezone('Africa/Nairobi')
             ->format(config("settings.sms_date_time_format"));
 
+        if ($transaction->payment->subtype === PaymentMethod::VOUCHER->name) {
+            $method = PaymentMethod::VOUCHER->name;
+
+            $voucher = $transaction->payment->extra;
+            $bal = 'Ksh' . number_format($voucher["balance"], 2);
+            $vtext = "\nNew Voucher balance is $bal.";
+        } else {
+            $method = $transaction->payment->type;
+            $vtext = '';
+
+            $extra = $transaction->payment->extra;
+            if (isset($extra['debit_account']) && $account['phone'] !== $extra['debit_account']) {
+                $method = "OTHER " . $method;
+            }
+        }
+
         // 2. Vouchers (if many) match accounts in question
         $voucherLen = count($vouchers);
         if ($voucherLen === 1) {
@@ -76,7 +93,7 @@ class SidoohEventRepository extends EventRepository
                     $phone = $account['phone'];
 
                     $message = "You have purchased $amount voucher ";
-                    $message .= "for $transaction->destination on $date.\n\n";
+                    $message .= "for $transaction->destination on $date using $method.$vtext\n\n";
                     $message .= config('services.sidooh.tagline');
 
                     SidoohNotify::notify([$phone], $message, EventType::VOUCHER_PURCHASE);
@@ -108,7 +125,7 @@ class SidoohEventRepository extends EventRepository
             $balance = 'Ksh' . number_format($debitVoucher['balance'], 2);
 
             $message = "Congratulations! You have successfully topped up your voucher ";
-            $message .= "with $amount on $date.\n";
+            $message .= "with $amount on $date using $method.$vtext\n";
             $message .= "New voucher balance is $balance.\n\n";
             $message .= config('services.sidooh.tagline');
 
@@ -137,15 +154,13 @@ class SidoohEventRepository extends EventRepository
             $balance = 'Ksh' . number_format($debitVoucher['balance'], 2);
 
             $message = "You have purchased $amount voucher ";
-            $message .= "for $transaction->destination on $date.\n";
-            $message .= "New voucher balance is $balance.\n\n";
+            $message .= "for $transaction->destination on $date using $method.$vtext\n";
             $message .= config('services.sidooh.tagline');
 
             SidoohNotify::notify([$phone], $message, EventType::VOUCHER_PURCHASE);
 
 
             // send notification target
-
             $phone = $accountFor['phone'];
             $balance = 'Ksh' . number_format($creditVoucher['balance'], 2);
 
