@@ -68,8 +68,7 @@ class TandaApi
         $response = Utility::requestStatus($requestId);
 
         if (is_null($transaction->tandaRequest)) {
-            // TODO: Add request and Update request method to LIB
-
+            // TODO: Do some validation checks here to ensure this and transaction match to some degree
             $request = TandaRequest::create([
                 'request_id' => $response['id'],
                 'status' => $response['status'],

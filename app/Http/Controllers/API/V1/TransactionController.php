@@ -45,7 +45,7 @@ class TransactionController extends Controller
             $transaction->load("payment:id,payment_id,transaction_id,amount,type,subtype,status");
         }
 
-        if (in_array("request", $relations)) {
+        if (in_array("tanda_request", $relations)) {
             $transaction->load("tandaRequest:request_id,relation_id,receipt_number,amount,provider,destination,message,status,last_modified");
         }
 
@@ -56,6 +56,8 @@ class TransactionController extends Controller
 
     public function process(Request $request, Transaction $transaction): JsonResponse
     {
+        if (!$request->has('request_id') || $request->request_id == "") return $this->errorResponse("request_id is required", 422);
+
         // Check transaction is PENDING ...
         if ($transaction->status !== Status::PENDING->name)
             if (!$transaction->tandaRequest)
