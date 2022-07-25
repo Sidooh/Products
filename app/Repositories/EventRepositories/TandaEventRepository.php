@@ -54,7 +54,7 @@ class TandaEventRepository extends EventRepository
             $transaction = Transaction::find($tandaRequest->relation_id);
         } else {
             $transaction = Transaction::whereStatus(Status::PENDING->name)->whereType(TransactionType::PAYMENT->name)
-                ->whereAmount($tandaRequest->amount)->whereLike('description', 'LIKE', "%" . $tandaRequest->destination)
+                ->whereAmount($tandaRequest->amount)->where('destination', 'LIKE', "%" . $tandaRequest->destination)
                 ->whereDate('createdAt', '<', $tandaRequest->created_at);
             $tandaRequest->relation_id = $transaction->id;
             $tandaRequest->save();
@@ -90,7 +90,7 @@ class TandaEventRepository extends EventRepository
 
         $code = config('services.at.ussd.code');
 
-        $destination = $tandaRequest->destination;
+        $destination = $transaction->destination;
         $sender = $account["phone"];
 
         $amount = 'Ksh' . number_format($transaction->amount, 2);

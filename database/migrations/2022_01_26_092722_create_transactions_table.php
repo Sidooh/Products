@@ -21,8 +21,8 @@ return new class extends Migration
             $table->string('type', 20); // PAYMENT or WITHDRAWAL : TRANSFER? (P2P, B2B)
             $table->decimal('amount');
             $table->string('status', 20)->default(Status::PENDING->value);
-            $table->string('destination')->nullable();
             $table->string('description');
+            $table->string('destination')->nullable();
 
             $table->foreignId('account_id')->unsigned();
             $table->foreignId('product_id')->constrained()->cascadeOnUpdate();

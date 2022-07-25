@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\API\V1;
 
+use App\Enums\Status;
 use App\Http\Controllers\Controller;
 use App\Models\Transaction;
+use App\Repositories\TransactionRepository;
 use App\Services\SidoohAccounts;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -26,7 +28,7 @@ class TransactionController extends Controller
             "created_at"
         ])->latest()->with("product:id,name")->get();
 
-        if(in_array("account", $relations)) $transactions = withRelation("account", $transactions, "account_id", "id");
+        if (in_array("account", $relations)) $transactions = withRelation("account", $transactions, "account_id", "id");
 
         return $this->successResponse($transactions);
     }
@@ -48,6 +50,29 @@ class TransactionController extends Controller
         }
 
         if (in_array("product", $relations)) $transaction->load("product:id,name");
+
+        return $this->successResponse($transaction);
+    }
+
+    public function process(Request $request, Transaction $transaction): JsonResponse
+    {
+        // Check transaction is PENDING ...
+        if ($transaction->status !== Status::PENDING->name)
+            if (!$transaction->tandaRequest)
+                // TODO: there is a problem with this transaction
+                return $this->errorResponse("There is a problem with this transaction. Contact Support.");
+            else
+                return $this->successResponse($transaction);
+
+        // Check payment
+
+
+        // Check request
+        TransactionRepository::checkRequestStatus($transaction, $request->request_id);
+
+
+        // return response
+        $transaction->refresh()->load('tandaRequest');
 
         return $this->successResponse($transaction);
     }

@@ -7,6 +7,7 @@ use App\Models\Transaction;
 use App\Services\SidoohNotify;
 use DrH\Tanda\Exceptions\TandaException;
 use DrH\Tanda\Facades\Utility;
+use DrH\Tanda\Library\EventHelper;
 use DrH\Tanda\Models\TandaRequest;
 use Exception;
 use Illuminate\Support\Facades\Log;
@@ -21,8 +22,8 @@ class TandaApi
         $transaction->amount = 10;
 
         try {
-            $request = Utility::airtimePurchase($phone, $transaction->amount, $transaction->id);
-            self::handleRequestResponse($request);
+            $response = Utility::airtimePurchase($phone, $transaction->amount, $transaction->id);
+            self::handleRequestResponse($response);
         } catch (TandaException $e) {
             Log::error("TandaError: " . $e->getMessage(), [$transaction]);
         }
@@ -33,15 +34,16 @@ class TandaApi
         Log::info('...[TANDA-API]: Disburse Utility...');
 
         try {
-            Utility::billPayment($transaction->destination, $transaction->amount, $provider, $transaction->id);
+            $response = Utility::billPayment($transaction->destination, $transaction->amount, $provider, $transaction->id);
+            self::handleRequestResponse($response);
         } catch (TandaException $e) {
             Log::error("TandaError: " . $e->getMessage(), [$transaction]);
         }
     }
 
-    private static function handleRequestResponse(TandaRequest $request)
+    private static function handleRequestResponse(TandaRequest $request): void
     {
-        if($request->status == 2) {
+        if ($request->status == 2) {
             try {
                 $message = "TN_ERROR-{$request->relation->id}\n";
                 $message .= "{$request->provider} - {$request->destination}\n";
@@ -56,6 +58,33 @@ class TandaApi
             } catch (Exception $e) {
                 Log::error($e->getMessage());
             }
+        }
+    }
+
+    public static function queryStatus(Transaction $transaction, string $requestId): void
+    {
+        Log::info('...[TANDA-API]: Query Status...');
+
+        $response = Utility::requestStatus($requestId);
+
+        if (is_null($transaction->tandaRequest)) {
+            // TODO: Add request and Update request method to LIB
+
+            $request = TandaRequest::create([
+                'request_id' => $response['id'],
+                'status' => $response['status'],
+                'message' => $response['message'],
+                'receipt_number' => $response['receiptNumber'],
+                'command_id' => $response['commandId'],
+                'provider' => $response['serviceProviderId'],
+                'destination' => $transaction->destination,
+                'amount' => $transaction->amount,
+                'result' => $response['resultParameters'],
+                'last_modified' => $response['datetimeLastModified'],
+                'relation_id' => $transaction->id
+            ]);
+
+            EventHelper::fireTandaEvent($request);
         }
     }
 }

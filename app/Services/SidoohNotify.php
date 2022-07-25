@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Enums\EventType;
 use App\Models\Notification;
+use Error;
 use Exception;
 use Illuminate\Support\Facades\Log;
 
@@ -30,7 +31,7 @@ class SidoohNotify extends SidoohService
                 'response' => $response
             ]);
 
-        } catch (Exception $e) {
+        } catch (Exception|Error $e) {
 
             Notification::create([
                 'to' => $to,

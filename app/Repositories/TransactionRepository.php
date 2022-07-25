@@ -9,6 +9,7 @@ use App\Enums\ProductType;
 use App\Enums\Status;
 use App\Enums\TransactionType;
 use App\Helpers\Product\Purchase;
+use App\Helpers\Tanda\TandaApi;
 use App\Models\EarningAccount;
 use App\Models\Payment;
 use App\Models\SavingsTransaction;
@@ -205,5 +206,14 @@ class TransactionRepository
 
             SidoohNotify::notify([$account['phone']], $message, EventType::PAYMENT_FAILURE);
         });
+    }
+
+    public static function checkRequestStatus(Transaction $transaction, string $requestId): void
+    {
+        match (config('services.sidooh.utilities_provider')) {
+//            'AT' => AfricasTalkingApi::airtime($transaction),
+//            'KYANDA' => KyandaApi::airtime($transaction),
+            'TANDA' => TandaApi::queryStatus($transaction, $requestId)
+        };
     }
 }
