@@ -37,7 +37,7 @@ class SubscriptionController extends Controller
         // Check Subscription doesn't exist
         $subscription = Subscription::whereAccountId($account['id'])->latest()->first();
         if ($subscription && $subscription->status === Status::ACTIVE->name)
-            return $this->errorResponse('Account has an existing active subscription');
+            return $this->errorResponse('Account has an existing active subscription', 400);
 
         $transactions = [
             [
@@ -174,6 +174,8 @@ class SubscriptionController extends Controller
                 $account = SidoohAccounts::find($sub->account_id);
                 $expiredSubsAccs->add($account);
             });
+
+            $expiredSubs->update(['status' => Status::EXPIRED]);
 
             $message = "Your subscription to Sidooh has expired.\n\n";
             $message .= "Dial *384*99# NOW for FREE on your Safaricom line to renew your subscription and continue to ";

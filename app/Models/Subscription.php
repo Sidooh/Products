@@ -43,7 +43,6 @@ class Subscription extends Model
     use HasFactory;
 
     protected $fillable = [
-        'amount',
         'status',
         'start_date',
         'end_date',
