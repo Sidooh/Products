@@ -74,7 +74,6 @@ class SubscriptionController extends Controller
 
         $subscriptions = Subscription::select([
             "id",
-            "amount",
             "start_date",
             "end_date",
             "status",
