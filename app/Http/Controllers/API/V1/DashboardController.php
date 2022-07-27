@@ -61,8 +61,11 @@ class DashboardController extends Controller
         $chartAid->setShowFuture(true);
 
         $fetch = function (array $whereBetween, int $freqCount = null) use ($chartAid) {
-            $transactions = Transaction::select(["status", "created_at", "amount"])
-                ->whereBetween('created_at', $whereBetween)->get();
+            $cacheKey = 'transactions_' . implode('_', $whereBetween);
+            $transactions = Cache::remember($cacheKey, 60 * 60, function () use ($whereBetween) {
+                return Transaction::select(["status", "created_at", "amount"])
+                    ->whereBetween('created_at', $whereBetween)->get();
+            });
 
             $transform = function ($transactions, $key) use ($freqCount, $chartAid) {
                 $models = $transactions->groupBy(fn($item) => $chartAid->chartDateFormat($item->created_at));
