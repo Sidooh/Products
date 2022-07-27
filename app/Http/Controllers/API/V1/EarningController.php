@@ -34,7 +34,7 @@ class EarningController extends Controller
             "invite_amount",
             "account_id",
             "updated_at"
-        ])->latest()->get();
+        ])->latest()->paginate();
 
         if(in_array("account", $relations)) {
             $earningAccounts = withRelation("account", $earningAccounts, "account_id", "id");
@@ -56,7 +56,7 @@ class EarningController extends Controller
             "account_id",
             "transaction_id",
             "updated_at"
-        ])->latest()->with("transaction:id,description,amount")->get();
+        ])->latest()->with("transaction:id,description,amount")->paginate();
 
         if(in_array("account", $relations)) {
             $cashbacks = withRelation("account", $cashbacks, "account_id", "id");

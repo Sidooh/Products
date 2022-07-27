@@ -7,6 +7,7 @@ use App\Enums\PaymentMethod;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 class SidoohPayments extends SidoohService
@@ -20,7 +21,9 @@ class SidoohPayments extends SidoohService
 
         $url = config('services.sidooh.services.payments.url') . "/payments";
 
-        return parent::fetch($url);
+        $pays = Cache::remember('all_payments', (60 * 60 * 24), fn() => parent::fetch($url));
+
+        return $pays;
     }
 
     /**
