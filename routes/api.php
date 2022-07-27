@@ -1,6 +1,17 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\API\V1\AirtimeController;
+use App\Http\Controllers\API\V1\DashboardController;
+use App\Http\Controllers\API\V1\EarningController;
+use App\Http\Controllers\API\V1\FloatController;
+use App\Http\Controllers\API\V1\PaymentsController;
+use App\Http\Controllers\API\V1\ProductController;
+use App\Http\Controllers\API\V1\SubscriptionController;
+use App\Http\Controllers\API\V1\SubscriptionTypeController;
+use App\Http\Controllers\API\V1\TransactionController;
+use App\Http\Controllers\API\V1\UtilityController;
+use App\Http\Controllers\API\V1\VoucherController;
+use App\Http\Controllers\API\V1\WithdrawController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,6 +25,80 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function () {
+    Route::prefix('/products')->group(function () {
+        Route::post('/airtime', AirtimeController::class);
+        Route::post('/airtime/bulk', [AirtimeController::class, 'bulk']);
+        Route::post('/utility', UtilityController::class);
+        Route::post('/subscription', SubscriptionController::class);
+        Route::post('/withdraw', WithdrawController::class);
+
+        Route::get('/earnings/rates', [ProductController::class, 'getEarningRates']);
+
+//        TODO: Should we have a similar endpoint for voucher purchase?
+//          Route::post('/voucher', WithdrawController::class);
+
+        Route::prefix('/vouchers')->group(function () {
+            Route::post('/top-up', [VoucherController::class, 'topUp']);
+            Route::post('/disburse', [VoucherController::class, 'disburse']);
+        });
+
+        Route::prefix('/subscriptions')->group(function () {
+            Route::post('', SubscriptionController::class);
+        });
+
+        Route::post('/float/top-up', [FloatController::class, 'topUp']);
+
+        //  AT Callback Route
+        Route::post('/airtime/status/callback', [AirtimeController::class, 'airtimeStatusCallback']);
+
+        Route::get('/subscription-types/default', SubscriptionTypeController::class);
+    });
+
+    Route::prefix('/payments')->group(function () {
+        // Payments service callback
+        Route::post('/callback', [PaymentsController::class, 'processCallback']);
+    });
+
+    Route::prefix('/accounts')->group(function () {
+        Route::get('/airtime-accounts', [ProductController::class, 'getAllAirtimeAccounts']);
+        Route::get('/utility-accounts', [ProductController::class, 'getAllUtilityAccounts']);
+        Route::get('/{accountId}/airtime-accounts', [ProductController::class, 'airtimeAccounts']);
+        Route::get('/{accountId}/utility-accounts', [ProductController::class, 'utilityAccounts']);
+
+        Route::get('/{accountId}/current-subscription', [ProductController::class, 'currentSubscription']);
+
+        Route::get('/{accountId}/earnings', [ProductController::class, 'earnings']);
+    });
+
+    Route::prefix('/savings')->group(function () {
+        Route::post('/callback', [EarningController::class, 'processSavingsCallback']);
+    });
+
+    //  DASHBOARD ROUTES
+    Route::get('/dashboard', [DashboardController::class, "index"]);
+    Route::get('/dashboard/revenue-chart', [DashboardController::class, "revenueChart"]);
+
+    Route::get('/transactions', [TransactionController::class, "index"]);
+    Route::get('/transactions/{transaction}', [TransactionController::class, "show"]);
+    Route::post('/transactions/{transaction}/process', [TransactionController::class, "process"]);
+
+    Route::get('/earnings/accounts', [EarningController::class, "getEarningAccounts"]);
+    Route::get('/earnings/cashbacks', [EarningController::class, "getCashbacks"]);
+
+    Route::get('/subscriptions', [SubscriptionController::class, "index"]);
+    Route::get('/subscriptions/subscription-types', [SubscriptionController::class, "getSubTypes"]);
+});
+
+// TODO: Research on how to secure or throttle unsecured callback endpoints
+Route::prefix('/v1')->name('api.')->group(function () {
+    Route::prefix('/products')->group(function () {
+        Route::prefix('/subscriptions')->group(function () {
+            Route::post('/check-expiry', [SubscriptionController::class, 'checkExpiry']);
+        });
+
+        Route::prefix('/earnings')->group(function () {
+            Route::post('/save', [EarningController::class, 'saveEarnings']);
+        });
+    });
 });
