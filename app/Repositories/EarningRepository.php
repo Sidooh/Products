@@ -26,10 +26,19 @@ class EarningRepository
     {
         Log::info("...[REP - EARNING]: Calculate Earnings($earnings)...");
 
+        // Ensure earnings have not already been allocated
+        if (Cashback::whereTransactionId($transaction->id)->exists()) {
+            SidoohNotify::notify([
+                '254714611696',
+            ], "ERROR:EARNINGS\n$transaction->id", EventType::ERROR_ALERT);
+            Log::critical("Possible duplicate earnings calculation... Confirm!!!");
+            exit;
+        }
+
         $account = SidoohAccounts::find($transaction->account_id);
 
         // TODO: What happens if this fails? Do we get notified? Does it fail silently?
-        DB::transaction(function() use ($earnings, $account, $transaction) {
+        DB::transaction(function () use ($earnings, $account, $transaction) {
             if ($transaction->product_id == ProductType::SUBSCRIPTION) {
                 self::computeSubscriptionEarnings($account, $transaction);
                 return;
