@@ -14,6 +14,7 @@ use App\Repositories\TransactionRepository;
 use App\Services\SidoohAccounts;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
 
 class WithdrawController extends Controller
 {
@@ -22,6 +23,8 @@ class WithdrawController extends Controller
      */
     public function __invoke(EarningRequest $request): JsonResponse
     {
+        Log::info('...[CTRL - WITHDRAW]: Process Withdraw Request...', $request->all());
+
         $data = $request->validated();
 
         $account = SidoohAccounts::find($data['account_id']);
