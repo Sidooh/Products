@@ -24,6 +24,7 @@ class TransactionController extends Controller
             "amount",
             "status",
             "destination",
+            "description",
             "account_id",
             "product_id",
             "created_at",
