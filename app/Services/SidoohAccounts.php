@@ -16,8 +16,9 @@ class SidoohAccounts extends SidoohService
     {
         Log::info('...[SRV - ACCOUNTS]: Get All...');
 
-        $url = config('services.sidooh.services.accounts.url') . "/accounts";
+        $url = config('services.sidooh.services.accounts.url') . "/accounts?with_user=true";
 
+        //TODO: Process accounts to store with id for ease of fetching even one.
         $accs = Cache::remember('all_accounts', (60 * 60 * 24), fn() => parent::fetch($url));
 
         return $accs;
