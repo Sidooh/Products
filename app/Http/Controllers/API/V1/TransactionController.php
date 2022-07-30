@@ -25,7 +25,8 @@ class TransactionController extends Controller
             "destination",
             "account_id",
             "product_id",
-            "created_at"
+            "created_at",
+            "updated_at"
         ])->latest()->with("product:id,name")->limit(100)->get();
 
         if (in_array("account", $relations)) $transactions = withRelation("account", $transactions, "account_id", "id");
