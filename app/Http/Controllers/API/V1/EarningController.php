@@ -56,7 +56,7 @@ class EarningController extends Controller
             "account_id",
             "transaction_id",
             "updated_at"
-        ])->latest()->with("transaction:id,description,amount")->paginate();
+        ])->latest()->with("transaction:id,description,amount")->limit(100)->get();
 
         if(in_array("account", $relations)) {
             $cashbacks = withRelation("account", $cashbacks, "account_id", "id");
