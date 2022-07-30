@@ -4,7 +4,6 @@ namespace App\Http\Controllers\API\V1;
 
 use App\Enums\Status;
 use App\Http\Controllers\Controller;
-use App\Models\Payment;
 use App\Models\Transaction;
 use App\Repositories\TransactionRepository;
 use App\Traits\ApiResponse;
@@ -40,17 +39,15 @@ class PaymentsController extends Controller
                 $query->whereIn("payment_id", $failedPayments->pluck("id"));
             })->get();
 
-            TransactionRepository::handleFailedTransactionPayments($transactions, $failedPayments);
+            TransactionRepository::handleFailedPayments($transactions, $failedPayments);
         }
 
         if (count($completedPayments)) {
-            // TODO: Will this work? Update to be similar to failed payments
-            $payments = Payment::whereIn("payment_id", $completedPayments->pluck("id"));
-            $payments->update(["status" => Status::COMPLETED]);
+            $transactions = Transaction::withWhereHas('payment', function ($query) use ($completedPayments) {
+                $query->whereIn("payment_id", $completedPayments->pluck("id"));
+            })->get();
 
-            $transactions = Transaction::find($payments->pluck("transaction_id"));
-
-            TransactionRepository::requestPurchase($transactions, $request->all());
+            TransactionRepository::handleCompletedPayments($transactions, $failedPayments, $request->all());
         }
     }
 }

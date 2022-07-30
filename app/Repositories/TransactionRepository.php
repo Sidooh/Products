@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Enums\EarningAccountType;
 use App\Enums\EventType;
 use App\Enums\PaymentMethod;
+use App\Enums\PaymentSubtype;
 use App\Enums\ProductType;
 use App\Enums\Status;
 use App\Enums\TransactionType;
@@ -188,7 +189,7 @@ class TransactionRepository
         return $transactions;
     }
 
-    public static function handleFailedTransactionPayments(Collection $transactions, Collection $failedPayments): void
+    public static function handleFailedPayments(Collection $transactions, Collection $failedPayments): void
     {
         $transactions->each(function ($transaction) use ($failedPayments) {
             $transaction->payment->update(["status" => Status::FAILED]);
@@ -197,15 +198,29 @@ class TransactionRepository
 
             $result = $failedPayments->firstWhere('id', $transaction->payment->payment_id);
 
-            $message = match ($result['stk_result_code']) {
-                1 => "You have insufficient Mpesa Balance for this transaction. Kindly top up your Mpesa and try again.",
-                default => "Sorry! We failed to complete your transaction. No amount was deducted from your account. We apologize for the inconvenience. Please try again.",
-            };
+            if ($result['subtype'] === PaymentSubtype::STK->name && isset($result['stk_result_code'])) {
+                $message = match ($result['stk_result_code']) {
+                    1 => "You have insufficient Mpesa Balance for this transaction. Kindly top up your Mpesa and try again.",
+                    default => "Sorry! We failed to complete your transaction. No amount was deducted from your account. We apologize for the inconvenience. Please try again.",
+                };
+            } else {
+                $message = "Sorry! We failed to complete your transaction. No amount was deducted from your account. We apologize for the inconvenience. Please try again.";
+            }
 
             $account = SidoohAccounts::find($transaction->account_id);
 
             SidoohNotify::notify([$account['phone']], $message, EventType::PAYMENT_FAILURE);
         });
+    }
+
+    public static function handleCompletedPayments(Collection $transactions, Collection $completedPayments, array $requestData = []): void
+    {
+        $ids = $completedPayments->pluck("id");
+
+        $payments = Payment::whereIn("payment_id", $ids);
+        $payments->update(["status" => Status::COMPLETED]);
+
+        TransactionRepository::requestPurchase($transactions, $requestData);
     }
 
     public static function checkRequestStatus(Transaction $transaction, string $requestId): void
