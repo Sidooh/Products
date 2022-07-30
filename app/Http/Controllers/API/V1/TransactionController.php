@@ -17,6 +17,7 @@ class TransactionController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
+        // TODO: Review using laravel query builder // or build our own params
         $relations = explode(",", $request->query("with"));
         $transactions = Transaction::select([
             "id",
@@ -27,8 +28,20 @@ class TransactionController extends Controller
             "product_id",
             "created_at",
             "updated_at"
-        ])->latest()->with("product:id,name")->limit(100)->get();
+        ])->with("product:id,name");
 
+        if ($request->has('status') && $status = Status::tryFrom($request->status)) {
+            $transactions->whereStatus($status);
+            if ($status !== Status::PENDING) {
+                $transactions->limit(100); // Other statuses will have too many records
+            }
+        } else {
+            $transactions->limit(100);
+        }
+
+        $transactions = $transactions->latest()->get();
+
+        // TODO: pagination will not work with the process below - review fix for it
         if (in_array("account", $relations)) $transactions = withRelation("account", $transactions, "account_id", "id");
 
         return $this->successResponse($transactions);
@@ -43,11 +56,11 @@ class TransactionController extends Controller
         }
 
         if (in_array("payment", $relations)) {
-            $transaction->load("payment:id,payment_id,transaction_id,amount,type,subtype,status");
+            $transaction->load("payment:id,payment_id,transaction_id,amount,type,subtype,status,created_at,updated_at");
         }
 
         if (in_array("tanda_request", $relations)) {
-            $transaction->load("tandaRequest:request_id,relation_id,receipt_number,amount,provider,destination,message,status,last_modified");
+            $transaction->load("tandaRequest:request_id,relation_id,receipt_number,amount,provider,destination,message,status,last_modified,created_at,updated_at");
         }
 
         if (in_array("product", $relations)) $transaction->load("product:id,name");
@@ -73,6 +86,7 @@ class TransactionController extends Controller
         // Check request
         TransactionRepository::checkRequestStatus($transaction, $request->request_id);
 
+        //TODO: Reimburse if needed. // or have different endpoint?
 
         // return response
         $transaction->refresh()->load('tandaRequest');
