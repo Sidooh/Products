@@ -12,6 +12,7 @@ use App\Repositories\TransactionRepository;
 use App\Services\SidoohAccounts;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
 
 class UtilityController extends Controller
 {
@@ -24,6 +25,8 @@ class UtilityController extends Controller
      */
     public function __invoke(ProductRequest $request): JsonResponse
     {
+        Log::info('...[CTRL - UTILITY]: Process Utility Request...', $request->all());
+
         $data = $request->all();
 
         $account = SidoohAccounts::find($data['account_id']);

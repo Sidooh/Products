@@ -14,6 +14,7 @@ use App\Services\SidoohAccounts;
 use App\Services\SidoohPayments;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class VoucherController extends Controller
@@ -27,6 +28,8 @@ class VoucherController extends Controller
      */
     public function topUp(VoucherRequest $request): JsonResponse
     {
+        Log::info('...[CTRL - VOUCHER]: Process Voucher Request...', $request->all());
+
         $data = $request->validated();
 
         $account = SidoohAccounts::find($data['account_id']);

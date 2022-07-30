@@ -47,7 +47,7 @@ class PaymentsController extends Controller
                 $query->whereIn("payment_id", $completedPayments->pluck("id"));
             })->get();
 
-            TransactionRepository::handleCompletedPayments($transactions, $failedPayments, $request->all());
+            TransactionRepository::handleCompletedPayments($transactions, $completedPayments, $request->all());
         }
     }
 }

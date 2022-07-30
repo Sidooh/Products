@@ -28,6 +28,8 @@ class SubscriptionController extends Controller
      */
     public function __invoke(SubscriptionRequest $request): JsonResponse
     {
+        Log::info('...[CTRL - SUBSCRIPTION]: Process Subscription Request...', $request->all());
+
         $data = $request->all();
 
         $account = SidoohAccounts::find($data['account_id']);
