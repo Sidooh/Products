@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Transaction;
 use App\Repositories\TransactionRepository;
 use App\Services\SidoohAccounts;
+use App\Services\SidoohPayments;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -82,7 +83,9 @@ class TransactionController extends Controller
                 return $this->successResponse($transaction);
 
         // Check payment
-
+//        if ($transaction->payment->status === Status::PENDING->name) {
+//            // TODO: Query status
+//        }
 
         // Check request
         TransactionRepository::checkRequestStatus($transaction, $request->request_id);
@@ -93,5 +96,31 @@ class TransactionController extends Controller
         $transaction->refresh()->load('tandaRequest');
 
         return $this->successResponse($transaction);
+    }
+
+    public function checkPayment(Request $request, Transaction $transaction): JsonResponse
+    {
+        // Check transaction is PENDING ...
+        if ($transaction->status !== Status::PENDING->name)
+            if (!$transaction->payment)
+                // TODO: there is a problem with this transaction
+                return $this->errorResponse("There is a problem with this transaction. Contact Support.");
+            elseif ($transaction->payment?->status !== Status::PENDING->name)
+                return $this->successResponse($transaction->refresh());
+
+        // Check payment
+        $response = SidoohPayments::find($transaction->payment->payment_id);
+
+        if (!$payment = $response['data']) {
+            return $this->errorResponse("There was a problem with your request. Contact Support.");
+        }
+
+        if ($payment['status'] === Status::COMPLETED->name) {
+            TransactionRepository::handleCompletedPayments(collect([$transaction]), collect([$payment]));
+        } elseif ($payment['status'] === Status::FAILED->name) {
+            TransactionRepository::handleFailedPayments(collect([$transaction]), collect([$payment]));
+        }
+
+        return $this->successResponse($transaction->refresh());
     }
 }

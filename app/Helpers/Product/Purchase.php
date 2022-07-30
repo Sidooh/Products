@@ -54,7 +54,7 @@ class Purchase
                 '254711414987',
                 '254721309253'
             ], "ERROR:AIRTIME\n{$this->transaction->id}", EventType::ERROR_ALERT);
-            Log::info("Possible duplicate airtime request... Confirm!!!");
+            Log::error("Possible duplicate airtime request... Confirm!!!");
             exit;
         }
 
