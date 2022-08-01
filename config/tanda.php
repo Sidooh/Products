@@ -98,4 +98,16 @@ return [
             'KPLC_PREPAID.max' => 35000,
         ]
     ],
+
+    'logging' => [
+        'enabled' => env('TANDA_ENABLE_LOGGING', false),
+        'channels' => [
+            'syslog',
+            'single' => [
+                'driver' => 'single',
+                'path' => storage_path('logs/tanda.log'),
+                'level' => env('LOG_LEVEL', 'debug'),
+            ],
+        ]
+    ]
 ];

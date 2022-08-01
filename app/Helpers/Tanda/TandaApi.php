@@ -43,8 +43,8 @@ class TandaApi
         if ($request->status == 2) {
             try {
                 $message = "TN_ERROR-{$request->relation->id}\n";
-                $message .= "{$request->provider} - {$request->destination}\n";
-                $message .= "{$request->message}\n";
+                $message .= "$request->provider - $request->destination\n";
+                $message .= "$request->message\n";
                 $message .= "{$request->created_at->timezone('Africa/Nairobi')->format(config("settings.sms_date_time_format"))}";
 
                 SidoohNotify::notify(

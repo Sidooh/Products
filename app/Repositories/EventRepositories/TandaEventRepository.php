@@ -142,8 +142,7 @@ class TandaEventRepository extends EventRepository
                 //  Get Points Earned
                 $userEarnings = EarningRepository::getPointsEarned($transaction, $totalEarnings);
 
-//                $details = $tandaRequest->result;
-                [$tokens, $units] = array_column($tandaRequest->result, 'value', 'label');
+                ['Token' => $tokens, 'Units' => $units] = array_column($tandaRequest->result, 'value', 'label');
 
                 //  Send SMS
                 $message = "You have made a payment to $provider - $destination of $amount from your Sidooh account on $date using $method. You have received $userEarnings cashback.$vtext";
