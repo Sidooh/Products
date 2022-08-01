@@ -483,16 +483,16 @@
         },
         {
             "name": "drh/laravel-tanda",
-            "version": "v1.4.0",
+            "version": "v1.4.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DrH97/laravel-tanda.git",
-                "reference": "88fc57ac8458da9b628367f69b6da9b556d624b0"
+                "reference": "9c5dc3343034673db5c7e8fd40ea7e1134e1c217"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DrH97/laravel-tanda/zipball/88fc57ac8458da9b628367f69b6da9b556d624b0",
-                "reference": "88fc57ac8458da9b628367f69b6da9b556d624b0",
+                "url": "https://api.github.com/repos/DrH97/laravel-tanda/zipball/9c5dc3343034673db5c7e8fd40ea7e1134e1c217",
+                "reference": "9c5dc3343034673db5c7e8fd40ea7e1134e1c217",
                 "shasum": ""
             },
             "require": {
@@ -541,9 +541,9 @@
             ],
             "support": {
                 "issues": "https://github.com/DrH97/laravel-tanda/issues",
-                "source": "https://github.com/DrH97/laravel-tanda/tree/v1.4.0"
+                "source": "https://github.com/DrH97/laravel-tanda/tree/v1.4.3"
             },
-            "time": "2022-08-01T07:38:07+00:00"
+            "time": "2022-08-01T08:52:19+00:00"
         },
         {
             "name": "egulias/email-validator",
