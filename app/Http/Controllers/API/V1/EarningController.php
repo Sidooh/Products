@@ -86,7 +86,7 @@ class EarningController extends Controller
                 //TODO: Store in DB so that we don't repeat saving
 
                 if ($totalCompleted > 0)
-                    $message .= "Allocated for $totalCompleted accounts\n";
+                    $message .= "Processed earnings for $totalCompleted accounts\n";
                 if ($totalFailed > 0)
                     $message .= "Failed for $totalFailed accounts";
 
