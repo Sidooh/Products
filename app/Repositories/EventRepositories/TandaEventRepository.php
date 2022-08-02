@@ -69,6 +69,7 @@ class TandaEventRepository extends EventRepository
         }
 
         $provider = self::getProvider($tandaRequest, $transaction);
+        // Handle for KPLC provider :: https://products-dashboard-zwwy5he2ia-uc.a.run.app/transactions/13159
 
         $account = SidoohAccounts::find($transaction->account_id);
 
@@ -194,7 +195,8 @@ class TandaEventRepository extends EventRepository
 
         $provider = self::getProvider($tandaRequest, $transaction);
 
-        [$voucher,] = SidoohPayments::creditVoucher($transaction->account_id, $amount, Description::VOUCHER_REFUND);
+        $response = SidoohPayments::creditVoucher($transaction->account_id, $amount, Description::VOUCHER_REFUND);
+        [$voucher,] = $response['data'];
 
         $transaction->status = Status::REFUNDED;
         $transaction->save();
