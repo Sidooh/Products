@@ -2,23 +2,79 @@
 
 namespace App\Http\Controllers\API\V1;
 
+use App\Enums\ProductType;
+use App\Enums\Status;
+use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
 use App\Models\AirtimeAccount;
 use App\Models\EarningAccount;
 use App\Models\Subscription;
+use App\Models\Transaction;
 use App\Models\UtilityAccount;
+use App\Services\SidoohAccounts;
+use App\Services\SidoohPayments;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 class ProductController extends Controller
 {
+    public function getAccount(Request $request, int $accountId): JsonResponse
+    {
+        $account = SidoohAccounts::find($accountId, true);
+
+        $totalTransactions = Transaction::whereAccountId($accountId)->count();
+
+        $totalTransactionsToday = Transaction::whereAccountId($accountId)->whereDate('created_at', Carbon::today())->count();
+        $totalTransactionsWeek = Transaction::whereAccountId($accountId)->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->count();
+        $totalTransactionsMonth = Transaction::whereAccountId($accountId)->whereBetween('created_at', [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()])->count();
+
+        $transactions = Transaction::whereAccountId($accountId)
+            ->whereStatus(Status::COMPLETED)
+            ->whereType(TransactionType::PAYMENT)
+            ->whereNot('product_id', ProductType::VOUCHER)
+            ->latest()
+            ->get();
+
+        $totalRevenue = $transactions->sum('amount');
+        $totalRevenueToday = $transactions->filter(fn($item) => $item->created_at->isToday())->sum('amount');
+        $totalRevenueWeek = $transactions->filter(fn($item) => $item->created_at->isCurrentWeek())->sum('amount');
+        $totalRevenueMonth = $transactions->filter(fn($item) => $item->created_at->isCurrentMonth())->sum('amount');
+
+        $voucher = SidoohPayments::findVoucherByAccount($accountId);
+
+        $earningAccounts = EarningAccount::whereAccountId($accountId)->get();
+
+        $data = [
+            'account' => $account,
+
+            'totalTransactionsToday' => $totalTransactionsToday,
+            'totalTransactionsWeek' => $totalTransactionsWeek,
+            'totalTransactionsMonth' => $totalTransactionsMonth,
+            'totalTransactions' => $totalTransactions,
+
+            'totalRevenueToday' => $totalRevenueToday,
+            'totalRevenueWeek' => $totalRevenueWeek,
+            'totalRevenueMonth' => $totalRevenueMonth,
+            'totalRevenue' => $totalRevenue,
+
+            'recentTransactions' => $transactions,
+
+            'voucher' => $voucher['data'][0],
+            'earningAccounts' => $earningAccounts,
+        ];
+
+        return $this->successResponse($data);
+
+    }
+
     /**
      * Display a listing of the resource.
      *
      * @param \Illuminate\Http\Request $request
-     * @param int                      $accountId
-     * @throws \Illuminate\Auth\AuthenticationException
+     * @param int $accountId
      * @return \Illuminate\Http\JsonResponse
+     * @throws \Illuminate\Auth\AuthenticationException
      */
     public function getAllAirtimeAccounts(Request $request): JsonResponse
     {
@@ -26,7 +82,7 @@ class ProductController extends Controller
         $accounts = AirtimeAccount::select(["id", "provider", "priority", "account_id", "account_number", "created_at"])
             ->latest()->get();
 
-        if(in_array("account", $relations)) {
+        if (in_array("account", $relations)) {
             $accounts = withRelation("account", $accounts, "account_id", "id");
         }
 
@@ -37,9 +93,9 @@ class ProductController extends Controller
      * Store a newly created resource in storage.
      *
      * @param Request $request
-     * @param int     $accountId
-     * @throws \Illuminate\Auth\AuthenticationException
+     * @param int $accountId
      * @return JsonResponse
+     * @throws \Illuminate\Auth\AuthenticationException
      */
     public function getAllUtilityAccounts(Request $request): JsonResponse
     {
@@ -47,7 +103,7 @@ class ProductController extends Controller
         $accounts = UtilityAccount::select(["id", "provider", "priority", "account_id", "account_number", "created_at"])
             ->latest()->get();
 
-        if(in_array("account", $relations)) {
+        if (in_array("account", $relations)) {
             $accounts = withRelation("account", $accounts, "account_id", "id");
         }
 
@@ -58,14 +114,14 @@ class ProductController extends Controller
      * Display a listing of the resource.
      *
      * @param \Illuminate\Http\Request $request
-     * @param int                      $accountId
+     * @param int $accountId
      * @return \Illuminate\Http\JsonResponse
      */
     public function airtimeAccounts(Request $request, int $accountId): JsonResponse
     {
         $accounts = AirtimeAccount::select(["id", "provider", "account_number"])->whereAccountId($accountId);
 
-        if($request->exists('limit')) $accounts = $accounts->limit($request->input('limit'));
+        if ($request->exists('limit')) $accounts = $accounts->limit($request->input('limit'));
 
         $accounts = $accounts->latest()->get();
 
@@ -76,14 +132,14 @@ class ProductController extends Controller
      * Store a newly created resource in storage.
      *
      * @param Request $request
-     * @param int     $accountId
+     * @param int $accountId
      * @return JsonResponse
      */
     public function utilityAccounts(Request $request, int $accountId): JsonResponse
     {
         $accounts = UtilityAccount::select(["id", "provider", "account_number"])->whereAccountId($accountId);
 
-        if($request->exists('limit')) $accounts = $accounts->limit($request->input('limit'));
+        if ($request->exists('limit')) $accounts = $accounts->limit($request->input('limit'));
 
         $accounts = $accounts->latest()->get();
 
