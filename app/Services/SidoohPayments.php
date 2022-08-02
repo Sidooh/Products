@@ -95,4 +95,12 @@ class SidoohPayments extends SidoohService
 
         return parent::fetch($url);
     }
+
+    // TODO: Add by voucher type filter
+    public static function findVoucherByAccount(int $accountId): ?array
+    {
+        $url = config('services.sidooh.services.payments.url') . "/accounts/$accountId/vouchers";
+
+        return parent::fetch($url);
+    }
 }
