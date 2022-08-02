@@ -56,6 +56,7 @@ class SidoohService
             $latency = round((microtime(true) - $t) * 1000, 2);
 
             Log::info('...[SRV - SIDOOH]: RES... ' . $latency . 'ms', [$response]);
+            // TODO: Fix to return response.data
             return $response;
         } catch (Exception|RequestException $err) {
             $latency = round((microtime(true) - $t) * 1000, 2);
