@@ -19,7 +19,10 @@ use Illuminate\Support\Carbon;
 
 class ProductController extends Controller
 {
-    public function getAccount(Request $request, int $accountId): JsonResponse
+    /**
+     * @throws \Exception
+     */
+    public function getAccount(Request $request, $accountId): JsonResponse
     {
         $account = SidoohAccounts::find($accountId, true);
 
@@ -114,10 +117,10 @@ class ProductController extends Controller
      * Display a listing of the resource.
      *
      * @param \Illuminate\Http\Request $request
-     * @param int $accountId
+     * @param                          $accountId
      * @return \Illuminate\Http\JsonResponse
      */
-    public function airtimeAccounts(Request $request, int $accountId): JsonResponse
+    public function airtimeAccounts(Request $request, $accountId): JsonResponse
     {
         $accounts = AirtimeAccount::select(["id", "provider", "account_number"])->whereAccountId($accountId);
 
@@ -132,10 +135,10 @@ class ProductController extends Controller
      * Store a newly created resource in storage.
      *
      * @param Request $request
-     * @param int $accountId
+     * @param         $accountId
      * @return JsonResponse
      */
-    public function utilityAccounts(Request $request, int $accountId): JsonResponse
+    public function utilityAccounts(Request $request, $accountId): JsonResponse
     {
         $accounts = UtilityAccount::select(["id", "provider", "account_number"])->whereAccountId($accountId);
 
