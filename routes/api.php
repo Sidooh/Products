@@ -84,6 +84,7 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function () {
     Route::get('/transactions/{transaction}', [TransactionController::class, "show"]);
     Route::post('/transactions/{transaction}/check-payment', [TransactionController::class, "checkPayment"]);
     Route::post('/transactions/{transaction}/process', [TransactionController::class, "process"]);
+    Route::post('/transactions/{transaction}/refund', [TransactionController::class, "refund"]);
 
     Route::get('/earnings/accounts', [EarningController::class, "getEarningAccounts"]);
     Route::get('/earnings/cashbacks', [EarningController::class, "getCashbacks"]);

@@ -38,7 +38,7 @@ class TandaEventRepository extends EventRepository
             $tandaRequest->provider = $provider;
 
             if (empty($tandaRequest->destination)) {
-                $tandaRequest->destination = $descriptionArray[1];
+                $tandaRequest->destination = $transaction->destination;
             }
 
             $tandaRequest->save();
@@ -187,7 +187,7 @@ class TandaEventRepository extends EventRepository
         $transaction = Transaction::find($tandaRequest->relation_id);
         Transaction::updateStatus($transaction, Status::FAILED);
 
-        $destination = $tandaRequest->destination;
+        $destination = $transaction->destination;
         $sender = SidoohAccounts::find($transaction->account_id)['phone'];
 
         $amount = $transaction->amount;
@@ -202,12 +202,18 @@ class TandaEventRepository extends EventRepository
         $transaction->save();
 
         $amount = "Ksh" . number_format($amount, 2);
+        $balance = "Ksh" . number_format($voucher['balance']);
 
         $message = match ($transaction->product_id) {
-            ProductType::AIRTIME->value => "Sorry! We could not complete your $amount airtime purchase for $destination on $date. We have added $amount to your voucher account. New Voucher balance is {$voucher['balance']}.",
-            ProductType::UTILITY->value => "Sorry! We could not complete your payment to $provider of $amount for $destination on $date. We have added $amount to your voucher account. New Voucher balance is {$voucher["balance"]}."
+            ProductType::AIRTIME->value => "Hi, we have added $amount to your voucher account because we could not complete your $amount airtime purchase for $destination on $date. New voucher balance is $balance.",
+            ProductType::UTILITY->value => "Hi, we have added $amount to your voucher account because we could not complete your payment to $provider of $amount for $destination on $date. New voucher balance is $balance."
         };
 
-        SidoohNotify::notify([$sender], $message, EventType::AIRTIME_PURCHASE_FAILURE);
+        $event = match ($transaction->product_id) {
+            ProductType::AIRTIME->value => EventType::AIRTIME_PURCHASE_FAILURE,
+            ProductType::UTILITY->value => EventType::UTILITY_PAYMENT_FAILURE
+        };
+
+        SidoohNotify::notify([$sender], $message, $event);
     }
 }

@@ -63,7 +63,7 @@ class SidoohEventRepository extends EventRepository
 
             $voucher = $transaction->payment->extra;
             $bal = 'Ksh' . number_format($voucher["balance"], 2);
-            $vtext = "\nNew Voucher balance is $bal.";
+            $vtext = "\nNew voucher balance is $bal.";
         } else {
             $method = $transaction->payment->type;
             $vtext = '';
@@ -149,7 +149,7 @@ class SidoohEventRepository extends EventRepository
             $phone = $account['phone'];
 
             $message = "You have purchased $amount voucher ";
-            $message .= "for $transaction->destination on $date using $method.$vtext\n";
+            $message .= "for $transaction->destination on $date using $method.$vtext\n\n";
             $message .= config('services.sidooh.tagline');
 
             SidoohNotify::notify([$phone], $message, EventType::VOUCHER_PURCHASE);

@@ -16,3 +16,5 @@ yarn-error.log
 
 y.hide
 cloud_sql_proxy
+
+/.run

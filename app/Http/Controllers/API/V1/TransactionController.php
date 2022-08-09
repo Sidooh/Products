@@ -82,15 +82,8 @@ class TransactionController extends Controller
             else
                 return $this->successResponse($transaction);
 
-        // Check payment
-//        if ($transaction->payment->status === Status::PENDING->name) {
-//            // TODO: Query status
-//        }
-
         // Check request
         TransactionRepository::checkRequestStatus($transaction, $request->request_id);
-
-        //TODO: Reimburse if needed. // or have different endpoint?
 
         // return response
         $transaction->refresh()->load('tandaRequest');
@@ -122,5 +115,32 @@ class TransactionController extends Controller
         }
 
         return $this->successResponse($transaction->refresh());
+    }
+
+
+    public function refund(Request $request, Transaction $transaction): JsonResponse
+    {
+        // Check transaction
+        if ($transaction->status !== Status::PENDING->name) {
+            return $this->errorResponse("There is a problem with this transaction - Status. Contact Support.");
+        }
+
+        // Check payment
+        if (!$transaction->payment) {
+            return $this->errorResponse("There is a problem with this transaction - Payment. Contact Support.");
+        }
+
+        // Check request
+        if ($transaction->tandaRequest) {
+            return $this->errorResponse("There is a problem with this transaction - Request. Contact Support.");
+        }
+
+        // Perform Refund
+        TransactionRepository::refundTransaction($transaction);
+
+        // return response
+        $transaction->refresh();
+
+        return $this->successResponse($transaction);
     }
 }
