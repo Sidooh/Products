@@ -22,16 +22,16 @@ class SidoohService
     }
 
     /**
-     * @throws \Illuminate\Http\Client\RequestException
+     * @throws RequestException
      */
-    static function authenticate()
+    static function authenticate(): string
     {
         Log::info('...[SRV - SIDOOH]: AUTH...');
 
         $url = config('services.sidooh.services.accounts.url');
 
         $response = Http::post("$url/users/signin", [
-            'email'    => 'aa@a.a',
+            'email' => 'aa@a.a',
             'password' => "12345678"
         ]);
 
