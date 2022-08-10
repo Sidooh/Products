@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Enums\Description;
 use App\Enums\EarningAccountType;
 use App\Enums\EventType;
 use App\Enums\PaymentMethod;
@@ -230,5 +231,34 @@ class TransactionRepository
 //            'KYANDA' => KyandaApi::airtime($transaction),
             'TANDA' => TandaApi::queryStatus($transaction, $requestId)
         };
+    }
+
+    public static function refundTransaction(Transaction $transaction)
+    {
+        $destination = $transaction->destination;
+        $phone = SidoohAccounts::find($transaction->account_id)['phone'];
+
+        $amount = $transaction->amount;
+        $date = $transaction->updated_at
+            ->timezone('Africa/Nairobi')
+            ->format(config("settings.sms_date_time_format"));
+
+        $provider = getProviderFromTransaction($transaction);
+
+        $response = SidoohPayments::creditVoucher($transaction->account_id, $amount, Description::VOUCHER_REFUND);
+        [$voucher,] = $response['data'];
+
+        $transaction->status = Status::REFUNDED;
+        $transaction->save();
+
+        $amount = "Ksh" . number_format($amount, 2);
+        $balance = "Ksh" . number_format($voucher['balance']);
+
+        $message = match ($transaction->product_id) {
+            ProductType::AIRTIME->value => "Hi, we have added $amount to your voucher account because we could not complete your $amount airtime purchase for $destination on $date. New voucher balance is $balance.",
+            ProductType::UTILITY->value => "Hi, we have added $amount to your voucher account because we could not complete your payment to $provider of $amount for $destination on $date. New voucher balance is $balance."
+        };
+
+        SidoohNotify::notify([$phone], $message, EventType::VOUCHER_REFUND);
     }
 }
