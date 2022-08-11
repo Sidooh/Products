@@ -10,6 +10,7 @@ use App\Services\SidoohAccounts;
 use App\Services\SidoohPayments;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Throwable;
 
 class TransactionController extends Controller
 {
@@ -75,11 +76,9 @@ class TransactionController extends Controller
         if(!$request->has('request_id') || $request->request_id == "") return $this->errorResponse("request_id is required", 422);
 
         // Check transaction is PENDING ...
-        if($transaction->status !== Status::PENDING->name) if(!$transaction->tandaRequest) {
-            return $this->errorResponse("There is a problem with this transaction. Contact Support.");
-        } else {
-            return $this->successResponse($transaction);
-        }
+        if($transaction->status !== Status::PENDING->name) return !$transaction->tandaRequest
+            ? $this->errorResponse("There is a problem with this transaction. Contact Support.")
+            : $this->successResponse($transaction);
 
         // Check request
         TransactionRepository::checkRequestStatus($transaction, $request->request_id);
@@ -90,11 +89,13 @@ class TransactionController extends Controller
         return $this->successResponse($transaction);
     }
 
+    /**
+     * @throws \Illuminate\Auth\AuthenticationException|Throwable
+     */
     public function checkPayment(Request $request, Transaction $transaction): JsonResponse
     {
         // Check transaction is PENDING ...
-        if($transaction->status !== Status::PENDING->name) if(!$transaction->payment)
-            return $this->errorResponse("There is a problem with this transaction. Contact Support."); else if($transaction->payment?->status !== Status::PENDING->name) return $this->successResponse($transaction->refresh());
+        if($transaction->status !== Status::PENDING->name) if(!$transaction->payment) return $this->errorResponse("There is a problem with this transaction. Contact Support."); else if($transaction->payment?->status !== Status::PENDING->name) return $this->successResponse($transaction->refresh());
 
         // Check payment
         $response = SidoohPayments::find($transaction->payment->payment_id);

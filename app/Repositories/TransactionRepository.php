@@ -214,6 +214,9 @@ class TransactionRepository
         });
     }
 
+    /**
+     * @throws \Throwable
+     */
     public static function handleCompletedPayments(Collection $transactions, Collection $completedPayments, array $requestData = []): void
     {
         $ids = $completedPayments->pluck("id");
