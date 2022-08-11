@@ -233,9 +233,11 @@ class TransactionRepository
         };
     }
 
-    public static function refundTransaction(Transaction $transaction)
+    /**
+     * @throws \Illuminate\Auth\AuthenticationException|Exception
+     */
+    public static function refundTransaction(Transaction $transaction): void
     {
-        $destination = $transaction->destination;
         $phone = SidoohAccounts::find($transaction->account_id)['phone'];
 
         $amount = $transaction->amount;
@@ -246,13 +248,15 @@ class TransactionRepository
         $provider = getProviderFromTransaction($transaction);
 
         $response = SidoohPayments::creditVoucher($transaction->account_id, $amount, Description::VOUCHER_REFUND);
-        [$voucher,] = $response['data'];
+        [$voucher] = $response['data'];
 
         $transaction->status = Status::REFUNDED;
         $transaction->save();
 
         $amount = "Ksh" . number_format($amount, 2);
         $balance = "Ksh" . number_format($voucher['balance']);
+
+        $destination = $transaction->destination;
 
         $message = match ($transaction->product_id) {
             ProductType::AIRTIME->value => "Hi, we have added $amount to your voucher account because we could not complete your $amount airtime purchase for $destination on $date. New voucher balance is $balance.",
