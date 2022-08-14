@@ -70,18 +70,18 @@ class TransactionRepository
             'destination' => $t->destination,
             'description' => $t->description,
         ]);
-        $response = SidoohPayments::requestPayment($transactionsData, $data['method'], $debit_account);
+        $responseData = SidoohPayments::requestPayment($transactionsData, $data['method'], $debit_account);
 
         // TODO: Revert this to: if (!isset($response["data"]["payments"])) throw new Exception("Purchase Failed!");
         //  Reason may not be due to payment failure, could be a connection issue etc...
         //  We would then have to manually check. Or implement a query endpoint that polls payment srv at set intervals
-        if (!isset($response["data"]["payments"])) {
-            $transactions->each(fn($t) => $t->update(['status' => Status::FAILED]));
+        if (!isset($responseData["payments"])) {
+//            $transactions->each(fn($t) => $t->update(['status' => Status::FAILED]));
 
             throw new Exception("Purchase Failed!");
         }
 
-        $paymentData = array_map(function ($p) use ($response, $debit_account) {
+        $paymentData = array_map(function ($p) use ($responseData, $debit_account) {
             return [
                 'transaction_id' => $p['reference'],
                 'payment_id' => $p['id'],
@@ -89,15 +89,15 @@ class TransactionRepository
                 'type' => $p['type'],
                 'subtype' => $p['subtype'],
                 'status' => $p['status'],
-                'extra' => json_encode($response['data']['debit_voucher'] ?? ['debit_account' => $debit_account]),
+                'extra' => json_encode($responseData['debit_voucher'] ?? ['debit_account' => $debit_account]),
                 'created_at' => now(),
                 'updated_at' => now(),
             ];
-        }, $response["data"]["payments"]);
+        }, $responseData["payments"]);
         Payment::insert($paymentData);
 
-        if (isset($response["data"]) && $data['method'] === PaymentMethod::VOUCHER) {
-            self::requestPurchase($transactions, $response["data"]);
+        if ($responseData && $data['method'] === PaymentMethod::VOUCHER) {
+            self::requestPurchase($transactions, $responseData);
         }
     }
 
