@@ -61,15 +61,19 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function () {
     });
 
     Route::prefix('/accounts')->group(function () {
-        Route::get('/{accountId}', [ProductController::class, 'getAccount']);
         Route::get('/airtime-accounts', [ProductController::class, 'getAllAirtimeAccounts']);
         Route::get('/utility-accounts', [ProductController::class, 'getAllUtilityAccounts']);
-        Route::get('/{accountId}/airtime-accounts', [ProductController::class, 'airtimeAccounts']);
-        Route::get('/{accountId}/utility-accounts', [ProductController::class, 'utilityAccounts']);
 
-        Route::get('/{accountId}/current-subscription', [ProductController::class, 'currentSubscription']);
+        Route::prefix('/{accountId}')->group(function () {
+            Route::get('/details', [ProductController::class, 'getAccountDetails']);
 
-        Route::get('/{accountId}/earnings', [ProductController::class, 'earnings']);
+            Route::get('/airtime-accounts', [ProductController::class, 'airtimeAccounts']);
+            Route::get('/utility-accounts', [ProductController::class, 'utilityAccounts']);
+
+            Route::get('/current-subscription', [ProductController::class, 'currentSubscription']);
+
+            Route::get('/earnings', [ProductController::class, 'earnings']);
+        });
     });
 
     Route::prefix('/savings')->group(function () {
@@ -83,7 +87,7 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function () {
     Route::get('/transactions', [TransactionController::class, "index"]);
     Route::get('/transactions/{transaction}', [TransactionController::class, "show"]);
     Route::post('/transactions/{transaction}/check-payment', [TransactionController::class, "checkPayment"]);
-    Route::post('/transactions/{transaction}/process', [TransactionController::class, "process"]);
+    Route::post('/transactions/{transaction}/check-request', [TransactionController::class, "checkRequest"]);
     Route::post('/transactions/{transaction}/refund', [TransactionController::class, "refund"]);
 
     Route::get('/earnings/accounts', [EarningController::class, "getEarningAccounts"]);
