@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Enums\Description;
 use App\Enums\EarningAccountType;
 use App\Enums\EventType;
 use App\Enums\PaymentMethod;
@@ -70,18 +71,18 @@ class TransactionRepository
             'destination' => $t->destination,
             'description' => $t->description,
         ]);
-        $response = SidoohPayments::requestPayment($transactionsData, $data['method'], $debit_account);
+        $responseData = SidoohPayments::requestPayment($transactionsData, $data['method'], $debit_account);
 
         // TODO: Revert this to: if (!isset($response["data"]["payments"])) throw new Exception("Purchase Failed!");
         //  Reason may not be due to payment failure, could be a connection issue etc...
         //  We would then have to manually check. Or implement a query endpoint that polls payment srv at set intervals
-        if (!isset($response["data"]["payments"])) {
-            $transactions->each(fn($t) => $t->update(['status' => Status::FAILED]));
+        if (!isset($responseData["payments"])) {
+//            $transactions->each(fn($t) => $t->update(['status' => Status::FAILED]));
 
             throw new Exception("Purchase Failed!");
         }
 
-        $paymentData = array_map(function ($p) use ($response, $debit_account) {
+        $paymentData = array_map(function ($p) use ($responseData, $debit_account) {
             return [
                 'transaction_id' => $p['reference'],
                 'payment_id' => $p['id'],
@@ -89,15 +90,15 @@ class TransactionRepository
                 'type' => $p['type'],
                 'subtype' => $p['subtype'],
                 'status' => $p['status'],
-                'extra' => json_encode($response['data']['debit_voucher'] ?? ['debit_account' => $debit_account]),
+                'extra' => json_encode($responseData['debit_voucher'] ?? ['debit_account' => $debit_account]),
                 'created_at' => now(),
                 'updated_at' => now(),
             ];
-        }, $response["data"]["payments"]);
+        }, $responseData["payments"]);
         Payment::insert($paymentData);
 
-        if (isset($response["data"]) && $data['method'] === PaymentMethod::VOUCHER) {
-            self::requestPurchase($transactions, $response["data"]);
+        if ($responseData && $data['method'] === PaymentMethod::VOUCHER) {
+            self::requestPurchase($transactions, $responseData);
         }
     }
 
@@ -213,6 +214,9 @@ class TransactionRepository
         });
     }
 
+    /**
+     * @throws \Throwable
+     */
     public static function handleCompletedPayments(Collection $transactions, Collection $completedPayments, array $requestData = []): void
     {
         $ids = $completedPayments->pluck("id");
@@ -230,5 +234,38 @@ class TransactionRepository
 //            'KYANDA' => KyandaApi::airtime($transaction),
             'TANDA' => TandaApi::queryStatus($transaction, $requestId)
         };
+    }
+
+    /**
+     * @throws \Illuminate\Auth\AuthenticationException|Exception
+     */
+    public static function refundTransaction(Transaction $transaction): void
+    {
+        $phone = SidoohAccounts::find($transaction->account_id)['phone'];
+
+        $amount = $transaction->amount;
+        $date = $transaction->updated_at
+            ->timezone('Africa/Nairobi')
+            ->format(config("settings.sms_date_time_format"));
+
+        $provider = getProviderFromTransaction($transaction);
+
+        $response = SidoohPayments::creditVoucher($transaction->account_id, $amount, Description::VOUCHER_REFUND);
+        [$voucher] = $response['data'];
+
+        $transaction->status = Status::REFUNDED;
+        $transaction->save();
+
+        $amount = "Ksh" . number_format($amount, 2);
+        $balance = "Ksh" . number_format($voucher['balance']);
+
+        $destination = $transaction->destination;
+
+        $message = match ($transaction->product_id) {
+            ProductType::AIRTIME->value => "Hi, we have added $amount to your voucher account because we could not complete your $amount airtime purchase for $destination on $date. New voucher balance is $balance.",
+            ProductType::UTILITY->value => "Hi, we have added $amount to your voucher account because we could not complete your payment to $provider of $amount for $destination on $date. New voucher balance is $balance."
+        };
+
+        SidoohNotify::notify([$phone], $message, EventType::VOUCHER_REFUND);
     }
 }

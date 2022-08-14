@@ -22,16 +22,16 @@ class SidoohService
     }
 
     /**
-     * @throws \Illuminate\Http\Client\RequestException
+     * @throws RequestException
      */
-    static function authenticate()
+    static function authenticate(): string
     {
         Log::info('...[SRV - SIDOOH]: AUTH...');
 
         $url = config('services.sidooh.services.accounts.url');
 
         $response = Http::post("$url/users/signin", [
-            'email'    => 'aa@a.a',
+            'email' => 'aa@a.a',
             'password' => "12345678"
         ]);
 
@@ -56,8 +56,7 @@ class SidoohService
             $latency = round((microtime(true) - $t) * 1000, 2);
 
             Log::info('...[SRV - SIDOOH]: RES... ' . $latency . 'ms', [$response]);
-            // TODO: Fix to return response.data
-            return $response;
+            return $response['data'];
         } catch (Exception|RequestException $err) {
             $latency = round((microtime(true) - $t) * 1000, 2);
 
