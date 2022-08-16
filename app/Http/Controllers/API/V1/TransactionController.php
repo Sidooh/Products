@@ -79,6 +79,7 @@ class TransactionController extends Controller
         if($transaction->status !== Status::PENDING->name) return !$transaction->tandaRequest
             ? $this->errorResponse("There is a problem with this transaction. Contact Support.")
             : $this->successResponse($transaction);
+
         // Check request
         TransactionRepository::checkRequestStatus($transaction, $request->request_id);
 
@@ -99,8 +100,8 @@ class TransactionController extends Controller
         // Check payment
         $response = SidoohPayments::find($transaction->payment->payment_id);
 
-        if(!$payment = $response['data']) {
-            return $this->errorResponse("There was a problem with your request. Contact Support.");
+        if(!$payment = $response) {
+            return $this->errorResponse("There was a problem with your request. Kindly contact Support.");
         }
 
         if($payment['status'] === Status::COMPLETED->name) {
