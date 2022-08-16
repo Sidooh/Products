@@ -97,7 +97,7 @@ class EarningController extends Controller
                 SidoohNotify::notify([
                     '254714611696',
                     '254711414987',
-                    '254110039317'
+                    '254736388405'
                 ], "ERROR:SAVINGS\nError Saving Earnings!!!", EventType::ERROR_ALERT);
 
                 return $savings;
@@ -109,7 +109,7 @@ class EarningController extends Controller
         SidoohNotify::notify([
             '254714611696',
             '254711414987',
-            '254110039317'
+            '254736388405'
         ], $message, EventType::STATUS_UPDATE);
 
         return $savings;

@@ -192,7 +192,7 @@ class SubscriptionController extends Controller
         SidoohNotify::notify([
             '254714611696',
             '254711414987',
-            '254110039317'
+            '254736388405'
         ], $adminMsg, EventType::STATUS_UPDATE);
 
 
