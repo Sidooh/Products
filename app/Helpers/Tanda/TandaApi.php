@@ -65,7 +65,13 @@ class TandaApi
         $response = Utility::requestStatus($requestId);
 
         if (is_null($transaction->tandaRequest)) {
-            // TODO: Do some validation checks here to ensure this and transaction match to some degree
+            ['accountNumber' => $destination, 'amount' => $amount] = array_column($response['requestParameters'], 'value', 'id');
+
+            if ($destination !== $transaction->destination || (int)$amount !== (int)$transaction->amount) {
+                Log::error("Transaction and Tanda Request mismatch", $transaction->toArray());
+                return;
+            }
+
             $request = TandaRequest::create([
                 'request_id' => $response['id'],
                 'status' => $response['status'],
@@ -73,9 +79,9 @@ class TandaApi
                 'receipt_number' => $response['receiptNumber'],
                 'command_id' => $response['commandId'],
                 'provider' => $response['serviceProviderId'],
-                'destination' => $transaction->destination,
-                'amount' => $transaction->amount,
-                'result' => $response['resultParameters'],
+                'destination' => $destination ?? $transaction->destination,
+                'amount' => $amount ?? $transaction->amount,
+                'result' => $response['resultParameters'] ?? [],
                 'last_modified' => $response['datetimeLastModified'],
                 'relation_id' => $transaction->id
             ]);

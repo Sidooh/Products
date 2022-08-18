@@ -8,6 +8,7 @@ use App\Models\Transaction;
 use App\Repositories\TransactionRepository;
 use App\Services\SidoohAccounts;
 use App\Services\SidoohPayments;
+use DrH\Tanda\Models\TandaRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Throwable;
@@ -71,14 +72,19 @@ class TransactionController extends Controller
         return $this->successResponse($transaction);
     }
 
-    public function process(Request $request, Transaction $transaction): JsonResponse
+    public function checkRequest(Request $request, Transaction $transaction): JsonResponse
     {
-        if(!$request->has('request_id') || $request->request_id == "") return $this->errorResponse("request_id is required", 422);
+        if (!$request->has('request_id') || $request->request_id == "") return $this->errorResponse("request_id is required", 422);
 
         // Check transaction is PENDING ...
-        if($transaction->status !== Status::PENDING->name) return !$transaction->tandaRequest
+        if ($transaction->status !== Status::PENDING->name) return !$transaction->tandaRequest
             ? $this->errorResponse("There is a problem with this transaction. Contact Support.")
             : $this->successResponse($transaction);
+
+        // Check request id is not in tanda request
+        if (TandaRequest::whereRequestId($request->request_id)->doesntExist()) {
+            $this->errorResponse("This request id already exists. Contact Support.");
+        }
 
         // Check request
         TransactionRepository::checkRequestStatus($transaction, $request->request_id);
