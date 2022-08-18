@@ -13,6 +13,8 @@ use App\Models\Transaction;
 use App\Models\UtilityAccount;
 use App\Services\SidoohAccounts;
 use App\Services\SidoohPayments;
+use Exception;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -20,9 +22,9 @@ use Illuminate\Support\Carbon;
 class ProductController extends Controller
 {
     /**
-     * @throws \Exception
+     * @throws Exception
      */
-    public function getAccount(Request $request, $accountId): JsonResponse
+    public function getAccountDetails(Request $request, int $accountId): JsonResponse
     {
         $account = SidoohAccounts::find($accountId, true);
 
@@ -74,10 +76,10 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param Request $request
      * @param int $accountId
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \Illuminate\Auth\AuthenticationException
+     * @return JsonResponse
+     * @throws AuthenticationException
      */
     public function getAllAirtimeAccounts(Request $request): JsonResponse
     {
@@ -96,9 +98,8 @@ class ProductController extends Controller
      * Store a newly created resource in storage.
      *
      * @param Request $request
-     * @param int $accountId
      * @return JsonResponse
-     * @throws \Illuminate\Auth\AuthenticationException
+     * @throws AuthenticationException
      */
     public function getAllUtilityAccounts(Request $request): JsonResponse
     {
@@ -116,11 +117,11 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param                          $accountId
-     * @return \Illuminate\Http\JsonResponse
+     * @param Request $request
+     * @param int $accountId
+     * @return JsonResponse
      */
-    public function airtimeAccounts(Request $request, $accountId): JsonResponse
+    public function airtimeAccounts(Request $request, int $accountId): JsonResponse
     {
         $accounts = AirtimeAccount::select(["id", "provider", "account_number"])->whereAccountId($accountId);
 
@@ -135,10 +136,10 @@ class ProductController extends Controller
      * Store a newly created resource in storage.
      *
      * @param Request $request
-     * @param         $accountId
+     * @param int $accountId
      * @return JsonResponse
      */
-    public function utilityAccounts(Request $request, $accountId): JsonResponse
+    public function utilityAccounts(Request $request, int $accountId): JsonResponse
     {
         $accounts = UtilityAccount::select(["id", "provider", "account_number"])->whereAccountId($accountId);
 
