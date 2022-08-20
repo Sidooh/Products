@@ -56,7 +56,7 @@ class TransactionController extends Controller
         $relations = explode(",", $request->query("with"));
 
         if(in_array("account", $relations)) {
-            $transaction->account = SidoohAccounts::find($transaction->account_id, true);
+            $transaction->account = SidoohAccounts::find($transaction->account_id);
         }
 
         if(in_array("payment", $relations)) {
@@ -106,8 +106,8 @@ class TransactionController extends Controller
         // Check payment
         $response = SidoohPayments::find($transaction->payment->payment_id);
 
-        if(!$payment = $response['data']) {
-            return $this->errorResponse("There was a problem with your request. Contact Support.");
+        if(!$payment = $response) {
+            return $this->errorResponse("There was a problem with your request. Kindly contact Support.");
         }
 
         if($payment['status'] === Status::COMPLETED->name) {

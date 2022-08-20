@@ -65,7 +65,7 @@ class ProductController extends Controller
 
             'recentTransactions' => $transactions,
 
-            'voucher' => $voucher['data'][0] ?? ["balance" => 0],
+            'voucher' => $voucher[0] ?? ["balance" => 0],
             'earningAccounts' => $earningAccounts,
         ];
 

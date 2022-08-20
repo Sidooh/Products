@@ -63,7 +63,7 @@ class TandaEventRepository extends EventRepository
         if ($transaction->status == Status::COMPLETED) {
             SidoohNotify::notify([
                 '254714611696',
-                '254110039317'
+                '254736388405'
             ], "ERROR:TANDA REQUEST\nTransaction $transaction seems to have been completed already. Confirm!!!", EventType::ERROR_ALERT);
             return;
         }
