@@ -43,7 +43,7 @@ class EarningAccountController extends Controller
     {
         $relations = explode(",", $request->query("with"));
 
-        if(in_array("account", $relations)) {
+        if(in_array("account", $relations) && $earningAccount->account_id) {
             $earningAccount->account = SidoohAccounts::find($earningAccount->account_id);
         }
 

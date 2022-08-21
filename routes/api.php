@@ -97,10 +97,11 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function() {
 
     Route::get('/cashbacks', [CashbackController::class, "index"]);
     Route::get('/cashbacks/{cashback}', [CashbackController::class, "show"]);
+    
+    Route::get('/subscription-types', [SubscriptionController::class, "getSubTypes"]);
 
     Route::get('/subscriptions', [SubscriptionController::class, "index"]);
     Route::get('/subscriptions/{subscription}', [SubscriptionController::class, "show"]);
-    Route::get('/subscriptions/subscription-types', [SubscriptionController::class, "getSubTypes"]);
 });
 
 // TODO: Research on how to secure or throttle unsecured callback endpoints
