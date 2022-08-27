@@ -63,7 +63,7 @@ class TandaEventRepository extends EventRepository
         if ($transaction->status == Status::COMPLETED) {
             SidoohNotify::notify([
                 '254714611696',
-                '254110039317'
+                '254736388405'
             ], "ERROR:TANDA REQUEST\nTransaction $transaction seems to have been completed already. Confirm!!!", EventType::ERROR_ALERT);
             return;
         }
@@ -95,7 +95,7 @@ class TandaEventRepository extends EventRepository
         $sender = $account["phone"];
 
         $amount = 'Ksh' . number_format($transaction->amount, 2);
-        $date = $tandaRequest->updated_at->timezone('Africa/Nairobi')->format(config("settings.sms_date_time_format"));
+        $date = $transaction->created_at->timezone('Africa/Nairobi')->format(config("settings.sms_date_time_format"));
         $eventType = EventType::UTILITY_PAYMENT;
 
         $rateConfig = config("services.tanda.discounts.$provider", ['type' => '$', 'value' => 0]);
@@ -191,7 +191,7 @@ class TandaEventRepository extends EventRepository
         $sender = SidoohAccounts::find($transaction->account_id)['phone'];
 
         $amount = $transaction->amount;
-        $date = $tandaRequest->updated_at->timezone('Africa/Nairobi')->format(config("settings.sms_date_time_format"));
+        $date = $transaction->created_at->timezone('Africa/Nairobi')->format(config("settings.sms_date_time_format"));
 
         $provider = self::getProvider($tandaRequest, $transaction);
 

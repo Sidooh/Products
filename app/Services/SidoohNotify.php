@@ -18,7 +18,7 @@ class SidoohNotify extends SidoohService
 
         try {
             $response = parent::fetch($url, "POST", [
-                "channel" => "sms",
+                "channel" => "SMS",
                 "event_type" => $eventType->value,
                 "destination" => $to,
                 "content" => $message

@@ -23,8 +23,8 @@ class VoucherController extends Controller
      * Handle the incoming request.
      *
      * @param VoucherRequest $request
-     * @return JsonResponse
      * @throws Exception|Throwable
+     * @return JsonResponse
      */
     public function topUp(VoucherRequest $request): JsonResponse
     {
@@ -35,30 +35,30 @@ class VoucherController extends Controller
         $account = SidoohAccounts::find($data['account_id']);
 
         // == and not ===  since they are int and string sometimes
-        if (isset($data['target_number']) && $account['phone'] == $data['target_number']) {
-            return $this->errorResponse('Target number cannot be your account phone number', 422);
+        if(isset($data['target_number'])) {
+            if(substr($account["phone"], -9) === substr($data['target_number'], -9)) return $this->errorResponse('Target number cannot be your account phone number', 422);
         }
 
         $transactionsData = [
             [
                 "destination" => $data['target_number'] ?? $account["phone"],
-                "initiator" => $data["initiator"],
-                "amount" => $data["amount"],
-                "type" => TransactionType::PAYMENT,
+                "initiator"   => $data["initiator"],
+                "amount"      => $data["amount"],
+                "type"        => TransactionType::PAYMENT,
                 "description" => Description::VOUCHER_PURCHASE,
-                "account_id" => $data['account_id'],
-                "product_id" => ProductType::VOUCHER,
-                "account" => $account,
+                "account_id"  => $data['account_id'],
+                "product_id"  => ProductType::VOUCHER,
+                "account"     => $account,
             ]
         ];
 
         $data = [
             "payment_account" => $account,
-            "method" => $request->has("method") ? PaymentMethod::from($request->input("method")) : PaymentMethod::MPESA,
+            "method"          => $request->has("method") ? PaymentMethod::from($request->input("method"))
+                : PaymentMethod::MPESA,
         ];
 
-        if ($request->has("debit_account") && $data['method'] === PaymentMethod::MPESA)
-            $data["debit_account"] = $request->input("debit_account");
+        if($request->has("debit_account") && $data['method'] === PaymentMethod::MPESA) $data["debit_account"] = $request->input("debit_account");
 
         $transactionIds = TransactionRepository::createTransactions($transactionsData, $data);
 

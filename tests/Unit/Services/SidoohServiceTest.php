@@ -10,6 +10,13 @@ use Tests\TestCase;
 
 class SidoohServiceTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        config(['SIDOOH_ACCOUNTS_API_URL', 'http://localhost:8000/api/v1']);
+    }
+
     public function test_http()
     {
         Http::fake([

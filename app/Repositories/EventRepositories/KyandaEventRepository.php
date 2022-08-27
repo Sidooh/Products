@@ -36,7 +36,11 @@ class KyandaEventRepository extends EventRepository
             try {
                 $message = "KY_ERR:{$kyandaRequest->provider}\n{$kyandaRequest->message}\n{$account['phone']} - $date";
 
-                SidoohNotify::notify(['254110039317'], $message, EventType::ERROR_ALERT);
+                SidoohNotify::notify([
+                    '254714611696',
+                    '254711414987',
+                    '254736388405'
+                ], $message, EventType::ERROR_ALERT);
                 Log::info("Kyanda Failure SMS Sent");
             } catch (Exception $e) {
                 Log::error($e->getMessage());

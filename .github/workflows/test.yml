@@ -7,17 +7,17 @@ on:
     branches: [ master, develop ]
 
 jobs:
-  laravel-tests:
+  product-tests:
 
     runs-on: ubuntu-latest
 
     steps:
-    - uses: shivammathur/setup-php@15c43e89cdef867065b0213be354c2841860869e
-      with:
-        php-version: '8.1'
-    - uses: actions/checkout@v2
-    - name: Copy .env
-      run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+      - uses: shivammathur/setup-php@15c43e89cdef867065b0213be354c2841860869e
+        with:
+          php-version: '8.1'
+      - uses: actions/checkout@v2
+      - name: Copy .env
+        run: php -r "file_exists('.env') || copy('.env.example', '.env');"
     - name: Install Dependencies
       run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
     - name: Generate key
@@ -32,4 +32,9 @@ jobs:
       env:
         DB_CONNECTION: sqlite
         DB_DATABASE: database/database.sqlite
+        SIDOOH_ACCOUNTS_API_URL: http://localhost:8000/api/v1
+        TANDA_SANDBOX: true
+        TANDA_ORGANIZATION_ID: some_org
+        TANDA_CLIENT_ID: some_client
+        TANDA_CLIENT_SECRET: some_secret
       run: vendor/bin/phpunit
