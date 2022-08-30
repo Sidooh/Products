@@ -13,6 +13,8 @@ use App\Services\SidoohAccounts;
 use App\Services\SidoohNotify;
 use App\Services\SidoohSavings;
 use Carbon\Carbon;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
@@ -43,7 +45,7 @@ class EarningController extends Controller
                 if($totalCompleted > 0) $message .= "Processed earnings for $totalCompleted accounts\n";
                 if($totalFailed > 0) $message .= "Failed for $totalFailed accounts";
 
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 // Notify failure
                 Log::error($e);
 
@@ -77,7 +79,7 @@ class EarningController extends Controller
     /**
      * @throws Throwable
      */
-    public function processSavingsCallback(Request $request)
+    public function processSavingsCallback(Request $request): JsonResponse
     {
         Log::info('...[CONTROLLER - EARNING]: Process Savings Callback...', $request->all());
 
