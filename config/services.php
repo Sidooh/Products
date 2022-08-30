@@ -15,8 +15,8 @@ return [
     */
 
     'mailgun' => [
-        'domain' => env('MAILGUN_DOMAIN'),
-        'secret' => env('MAILGUN_SECRET'),
+        'domain'   => env('MAILGUN_DOMAIN'),
+        'secret'   => env('MAILGUN_SECRET'),
         'endpoint' => env('MAILGUN_ENDPOINT', 'api.mailgun.net'),
     ],
 
@@ -25,106 +25,107 @@ return [
     ],
 
     'ses' => [
-        'key' => env('AWS_ACCESS_KEY_ID'),
+        'key'    => env('AWS_ACCESS_KEY_ID'),
         'secret' => env('AWS_SECRET_ACCESS_KEY'),
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
     'at' => [
-        'key' => 'a828e15f1db322b77d7f57787ea3d390d06f3e5ab6e9254fe80044afaf4b0d82',
+        'key'      => 'a828e15f1db322b77d7f57787ea3d390d06f3e5ab6e9254fe80044afaf4b0d82',
         'username' => 'sandbox',
-        'phone' => null,
-        'env' => 'development',
-        'airtime' => [
-            'key' => '89770c2faea7f33dce6ca5605a0cd7b9e810a999af8ea0c051a5e504d2380928',
+        'phone'    => null,
+        'env'      => 'development',
+        'airtime'  => [
+            'key'      => '89770c2faea7f33dce6ca5605a0cd7b9e810a999af8ea0c051a5e504d2380928',
             'username' => 'sidooh_airtime',
         ],
-        'ussd' => [
+        'ussd'     => [
             'code' => '*384*99#',
         ],
     ],
 
     'sidooh' => [
-        'jwt_key' => env('JWT_KEY'),
-        'earnings' => [
+        'jwt_key'            => env('JWT_KEY'),
+        'earnings'           => [
             'users_percentage' => 0.6,
         ],
-        'tagline' => 'Sidooh, Makes You Money with Every Purchase.',
-        'mpesa' => [
+        'tagline'            => 'Sidooh, Makes You Money with Every Purchase.',
+        'mpesa'              => [
             'env' => 'local',
             'b2c' => [
-                'phone' => '254708374149',
+                'phone'      => '254708374149',
                 'min_amount' => '10',
                 'max_amount' => '70000',
             ],
         ],
-        'utilities_enabled' => true,
+        'utilities_enabled'  => true,
         'utilities_provider' => 'TANDA',
-        'services' => [
+        'services'           => [
             'accounts' => [
                 'enabled' => true,
-                'url' => env("SIDOOH_ACCOUNTS_API_URL")
+                'url'     => env("SIDOOH_ACCOUNTS_API_URL")
             ],
-            'notify' => [
+            'notify'   => [
                 'enabled' => true,
-                'url' => env("SIDOOH_NOTIFY_API_URL"),
+                'url'     => env("SIDOOH_NOTIFY_API_URL"),
             ],
             'payments' => [
                 'enabled' => true,
-                'url' => env("SIDOOH_PAYMENTS_API_URL")
+                'url'     => env("SIDOOH_PAYMENTS_API_URL")
             ],
-            'savings' => [
+            'savings'  => [
                 'enabled' => true,
-                'url' => env("SIDOOH_SAVINGS_API_URL"),
+                'url'     => env("SIDOOH_SAVINGS_API_URL"),
             ],
         ],
-        'country_code' => env('COUNTRY_CODE', 'KE'),
+        'admin_contacts'     => env('ADMIN_CONTACTS', '254110039317,254714611696,254711414987'),
+        'country_code'       => env('COUNTRY_CODE', 'KE'),
     ],
 
     'tanda' => [
         'discounts' => [
-            'SAFARICOM' => [
-                'type' => '%',
+            'SAFARICOM'     => [
+                'type'  => '%',
                 'value' => .06
             ],
-            'FAIBA' => [
-                'type' => '%',
+            'FAIBA'         => [
+                'type'  => '%',
                 'value' => .07
             ],
-            'AIRTEL' => [
-                'type' => '%',
+            'AIRTEL'        => [
+                'type'  => '%',
                 'value' => .06
             ],
-            'TELKOM' => [
-                'type' => '%',
+            'TELKOM'        => [
+                'type'  => '%',
                 'value' => .06
             ],
             'KPLC_POSTPAID' => [
-                'type' => '%',
+                'type'  => '%',
                 'value' => .017
             ],
-            'KPLC_PREPAID' => [
-                'type' => '%',
+            'KPLC_PREPAID'  => [
+                'type'  => '%',
                 'value' => .02
             ],
-            'DSTV' => [
-                'type' => '%',
+            'DSTV'          => [
+                'type'  => '%',
                 'value' => .003
             ],
-            'GOTV' => [
-                'type' => '%',
+            'GOTV'          => [
+                'type'  => '%',
                 'value' => .003
             ],
-            'ZUKU' => [
-                'type' => '%',
+            'ZUKU'          => [
+                'type'  => '%',
                 'value' => .003
             ],
-            'STARTIMES' => [
-                'type' => '%',
+            'STARTIMES'     => [
+                'type'  => '%',
                 'value' => .003
             ],
-            'NAIROBI_WTR' => [
-                'type' => '$',
+            'NAIROBI_WTR'   => [
+                'type'  => '$',
                 'value' => 5
             ],
         ]
@@ -132,56 +133,56 @@ return [
 
     'kyanda' => [
         'discounts' => [
-            'SAFARICOM' => [
-                'type' => '%',
+            'SAFARICOM'     => [
+                'type'  => '%',
                 'value' => .06
             ],
-            'FAIBA' => [
-                'type' => '%',
+            'FAIBA'         => [
+                'type'  => '%',
                 'value' => .09
             ],
-            'FAIBA_B' => [
-                'type' => '%',
+            'FAIBA_B'       => [
+                'type'  => '%',
                 'value' => .09
             ],
-            'AIRTEL' => [
-                'type' => '%',
+            'AIRTEL'        => [
+                'type'  => '%',
                 'value' => .06
             ],
-            'TELKOM' => [
-                'type' => '%',
+            'TELKOM'        => [
+                'type'  => '%',
                 'value' => .06
             ],
-            'EQUITEL' => [
-                'type' => '%',
+            'EQUITEL'       => [
+                'type'  => '%',
                 'value' => .05
             ],
             'KPLC_POSTPAID' => [
-                'type' => '%',
+                'type'  => '%',
                 'value' => .01
             ],
-            'KPLC_PREPAID' => [
-                'type' => '%',
+            'KPLC_PREPAID'  => [
+                'type'  => '%',
                 'value' => .015
             ],
-            'DSTV' => [
-                'type' => '%',
+            'DSTV'          => [
+                'type'  => '%',
                 'value' => .0025
             ],
-            'GOTV' => [
-                'type' => '%',
+            'GOTV'          => [
+                'type'  => '%',
                 'value' => .0025
             ],
-            'ZUKU' => [
-                'type' => '%',
+            'ZUKU'          => [
+                'type'  => '%',
                 'value' => .0025
             ],
-            'STARTIMES' => [
-                'type' => '%',
+            'STARTIMES'     => [
+                'type'  => '%',
                 'value' => .0025
             ],
-            'NAIROBI_WTR' => [
-                'type' => '$',
+            'NAIROBI_WTR'   => [
+                'type'  => '$',
                 'value' => 5
             ],
         ]

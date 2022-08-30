@@ -92,3 +92,10 @@ if (!function_exists('withRelation')) {
         });
     }
 }
+
+if(!function_exists('admin_contacts')) {
+    function admin_contacts(): array
+    {
+        return explode(",", config('services.sidooh.admin_contacts'));
+    }
+}

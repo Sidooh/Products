@@ -91,11 +91,7 @@ class SubscriptionRepository
 
 
         // Notify admin
-        SidoohNotify::notify([
-            '254714611696',
-            '254711414987',
-            '254736388405'
-        ], $adminMsg, EventType::STATUS_UPDATE);
+        SidoohNotify::notify(admin_contacts(), $adminMsg, EventType::STATUS_UPDATE);
 
 
         return [$pastSubs, $futureSubs, $expiredSubs];

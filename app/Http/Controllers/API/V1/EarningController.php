@@ -47,11 +47,7 @@ class EarningController extends Controller
                 // Notify failure
                 Log::error($e);
 
-                SidoohNotify::notify([
-                    '254714611696',
-                    '254711414987',
-                    '254736388405'
-                ], "ERROR:SAVINGS\nError Saving Earnings!!!", EventType::ERROR_ALERT);
+                SidoohNotify::notify(admin_contacts(), "ERROR:SAVINGS\nError Saving Earnings!!!", EventType::ERROR_ALERT);
 
                 return $savings;
             }
@@ -59,11 +55,7 @@ class EarningController extends Controller
             $message .= "No earnings to allocate.";
         }
 
-        SidoohNotify::notify([
-            '254714611696',
-            '254711414987',
-            '254736388405'
-        ], $message, EventType::STATUS_UPDATE);
+        SidoohNotify::notify(admin_contacts(), $message, EventType::STATUS_UPDATE);
 
         return $savings;
     }
@@ -76,9 +68,9 @@ class EarningController extends Controller
             ->whereDate("created_at", $date->format("Y-m-d"))->groupBy("account_id")->get();
 
         return $cashbacks->map(fn(Cashback $cashback) => [
-            "account_id" => $cashback->account_id,
+            "account_id"     => $cashback->account_id,
             "current_amount" => round($cashback->amount * .2, 4),
-            "locked_amount" => round($cashback->amount * .8, 4)
+            "locked_amount"  => round($cashback->amount * .8, 4)
         ]);
     }
 

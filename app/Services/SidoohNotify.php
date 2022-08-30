@@ -30,9 +30,7 @@ class SidoohNotify extends SidoohService
                 'event' => $eventType,
                 'response' => $response
             ]);
-
         } catch (Exception|Error $e) {
-
             Notification::create([
                 'to' => $to,
                 'message' => $message,
