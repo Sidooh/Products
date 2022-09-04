@@ -33,7 +33,7 @@ return [
    |
    */
     'urls' => [
-        'base' => 'https://io-proxy-443.tanda.co.ke',
+        'base' => env('TANDA_BASE_URL', 'https://io-proxy-443.tanda.co.ke'),
         /*
          * --------------------------------------------------------------------------------------
          * Callbacks:
