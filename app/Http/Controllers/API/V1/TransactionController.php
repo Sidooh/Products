@@ -135,12 +135,35 @@ class TransactionController extends Controller
         }
 
         // Check request
-        if($transaction->tandaRequest) {
+        if ($transaction->tandaRequest) {
             return $this->errorResponse("There is a problem with this transaction - Request. Contact Support.");
         }
 
         // Perform Refund
         TransactionRepository::refundTransaction($transaction);
+
+        return $this->successResponse($transaction->refresh());
+    }
+
+    public function retry(Request $request, Transaction $transaction): JsonResponse
+    {
+        // Check transaction
+        if ($transaction->status !== Status::PENDING->name) {
+            return $this->errorResponse("There is a problem with this transaction - Status. Contact Support.");
+        }
+
+        // Check payment
+        if (!$transaction->payment) {
+            return $this->errorResponse("There is a problem with this transaction - Payment. Contact Support.");
+        }
+
+        // Check request
+        if ($transaction->tandaRequest) {
+            return $this->errorResponse("There is a problem with this transaction - Request. Contact Support.");
+        }
+
+        // Perform Refund
+        TransactionRepository::requestPurchase(collect([$transaction]), [$transaction->payment]);
 
         return $this->successResponse($transaction->refresh());
     }

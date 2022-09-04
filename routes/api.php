@@ -91,13 +91,14 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function() {
     Route::post('/transactions/{transaction}/check-payment', [TransactionController::class, "checkPayment"]);
     Route::post('/transactions/{transaction}/check-request', [TransactionController::class, "checkRequest"]);
     Route::post('/transactions/{transaction}/refund', [TransactionController::class, "refund"]);
+    Route::post('/transactions/{transaction}/retry', [TransactionController::class, "retry"]);
 
     Route::get('/earning-accounts', [EarningAccountController::class, "index"]);
     Route::get('/earning-accounts/{earningAccount}', [EarningAccountController::class, "show"]);
 
     Route::get('/cashbacks', [CashbackController::class, "index"]);
     Route::get('/cashbacks/{cashback}', [CashbackController::class, "show"]);
-    
+
     Route::get('/subscription-types', [SubscriptionController::class, "getSubTypes"]);
 
     Route::get('/subscriptions', [SubscriptionController::class, "index"]);
