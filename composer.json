@@ -27,6 +27,7 @@
         "itsgoingd/clockwork": "^5.1",
         "mockery/mockery": "^1.5",
         "nunomaduro/collision": "^6.2",
+        "opcodesio/log-viewer": "^1.2",
         "phpunit/phpunit": "^9.5.20",
         "spatie/laravel-ignition": "^1.0"
     },
