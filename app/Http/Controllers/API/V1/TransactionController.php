@@ -153,7 +153,7 @@ class TransactionController extends Controller
         }
 
         // Check payment
-        if (!$transaction->payment) {
+        if ($transaction->payment?->status != Status::COMPLETED->name) {
             return $this->errorResponse("There is a problem with this transaction - Payment. Contact Support.");
         }
 
