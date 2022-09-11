@@ -53,7 +53,7 @@ class EnterpriseController extends Controller
     {
         $relations = explode(",", $request->query("with"));
 
-        if(in_array("enterprise-accounts", $relations)) {
+        if(in_array("enterprise_accounts", $relations)) {
             $enterprise->load("enterpriseAccounts:id,type,account_id,enterprise_id,created_at");
         }
 

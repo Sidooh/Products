@@ -47,7 +47,7 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function() {
         });
 
         Route::prefix('/subscriptions')->group(function() {
-            Route::post('', SubscriptionController::class);
+            Route::post("/", SubscriptionController::class);
         });
 
         //  AT Callback Route
