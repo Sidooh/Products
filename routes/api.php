@@ -7,7 +7,6 @@ use App\Http\Controllers\API\V1\EarningAccountController;
 use App\Http\Controllers\API\V1\EarningController;
 use App\Http\Controllers\API\V1\EnterpriseAccountController;
 use App\Http\Controllers\API\V1\EnterpriseController;
-use App\Http\Controllers\API\V1\FloatController;
 use App\Http\Controllers\API\V1\PaymentsController;
 use App\Http\Controllers\API\V1\ProductController;
 use App\Http\Controllers\API\V1\SubscriptionController;
@@ -46,8 +45,6 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function() {
             Route::post('/top-up', [VoucherController::class, 'topUp']);
             Route::post('/disburse', [VoucherController::class, 'disburse']);
         });
-
-        Route::post('/float/top-up', [FloatController::class, 'topUp']);
 
         Route::prefix('/subscriptions')->group(function() {
             Route::post('', SubscriptionController::class);

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\API\V1;
 
-use App\Enums\Description;
 use App\Enums\Initiator;
 use App\Enums\PaymentMethod;
 use App\Enums\ProductType;
@@ -41,7 +40,7 @@ class FloatController extends Controller
                 "initiator"   => $data["initiator"],
                 "amount"      => $data["amount"],
                 "type"        => TransactionType::PAYMENT,
-                "description" => Description::FLOAT_PURCHASE,
+//                "description" => Description::FLOAT_PURCHASE,
                 "account_id"  => $data['account_id'],
                 "product_id"  => ProductType::FLOAT,
                 "account"     => $account,
