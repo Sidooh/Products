@@ -47,11 +47,11 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function() {
             Route::post('/disburse', [VoucherController::class, 'disburse']);
         });
 
+        Route::post('/float/top-up', [FloatController::class, 'topUp']);
+
         Route::prefix('/subscriptions')->group(function() {
             Route::post('', SubscriptionController::class);
         });
-
-        Route::post('/float/top-up', [FloatController::class, 'topUp']);
 
         //  AT Callback Route
         Route::post('/airtime/status/callback', [AirtimeController::class, 'airtimeStatusCallback']);

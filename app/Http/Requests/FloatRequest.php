@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Enums\Initiator;
+use App\Rules\SidoohAccountExists;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -13,7 +14,7 @@ class FloatRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
@@ -23,11 +24,11 @@ class FloatRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             'initiator'     => ['required', Rule::in([Initiator::ENTERPRISE->value, Initiator::AGENT->value])],
-            'account_id'    => ['required_if:initiator,AGENT', 'integer', 'exists:enterprises,id'],
+            'account_id'    => ['required_if:initiator,AGENT', 'integer', new SidoohAccountExists],
             'enterprise_id' => ['required_if:initiator,ENTERPRISE', 'integer'],
             'amount'        => ['required_unless:initiator,null', 'numeric'],
         ];

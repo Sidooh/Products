@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers\API\V1;
 
+use App\Enums\Description;
+use App\Enums\Initiator;
+use App\Enums\PaymentMethod;
+use App\Enums\ProductType;
 use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\FloatRequest;
@@ -9,6 +13,7 @@ use App\Repositories\TransactionRepository;
 use App\Services\SidoohAccounts;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
 
 class FloatController extends Controller
 {
@@ -16,24 +21,40 @@ class FloatController extends Controller
      * Handle the incoming request.
      *
      * @param FloatRequest $request
+     * @throws Exception*@throws \Throwable
+     * @throws \Throwable
      * @return JsonResponse
-     * @throws Exception
      */
     public function topUp(FloatRequest $request): JsonResponse
     {
-        $data = $request->all();
+        $data = $request->validated();
 
-        if($data['initiator'] === 'AGENT') {
-            $data['account'] = SidoohAccounts::find($data['account_id']);
+        Log::info('...[CTRL - FLOAT]: Process Float Request...', $data);
+
+        if($data['initiator'] === Initiator::AGENT->value) {
+            $account = SidoohAccounts::find($data['account_id']);
         }
 
-        $data['product'] = 'float';
-        $data['method'] = 'MPESA';
-        $data['type'] = TransactionType::PAYMENT;
-        $data['description'] = "Float Purchase";
+        $transactionsData = [
+            [
+                "destination" => $data['target_number'] ?? $account["phone"],
+                "initiator"   => $data["initiator"],
+                "amount"      => $data["amount"],
+                "type"        => TransactionType::PAYMENT,
+                "description" => Description::FLOAT_PURCHASE,
+                "account_id"  => $data['account_id'],
+                "product_id"  => ProductType::FLOAT,
+                "account"     => $account,
+            ]
+        ];
 
-        $transaction = TransactionRepository::createTransactions($data);
+        $data = [
+            "payment_account" => $account,
+            "method"          => PaymentMethod::MPESA,
+        ];
 
-        return $this->successResponse(['transaction_id' => $transaction->id], 'Voucher Request Successful');
+        $transactionIds = TransactionRepository::createTransactions($transactionsData, $data);
+
+        return $this->successResponse(['transactions' => $transactionIds], 'Float Request Successful!');
     }
 }
