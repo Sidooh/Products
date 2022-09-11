@@ -2,9 +2,10 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\EnterpriseAccountType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use JetBrains\PhpStorm\ArrayShape;
+use Illuminate\Validation\Rules\Enum;
 
 class EnterpriseRequest extends FormRequest
 {
@@ -23,13 +24,13 @@ class EnterpriseRequest extends FormRequest
      *
      * @return array
      */
-    #[ArrayShape(['name' => "array", 'settings' => "string", 'accounts' => "string", 'enterprise_id' => "string[]"])]
     public function rules(): array
     {
         return [
             'name'          => [Rule::requiredIf($this->is('*/enterprises'))],
-            'settings'      => 'array',
-            'accounts'      => 'array',
+            'settings'      => 'required|array',
+            'accounts.id'   => 'integer',
+            'accounts.type' => new Enum(EnterpriseAccountType::class),
             'enterprise_id' => ['exists:enterprises,id']
         ];
     }

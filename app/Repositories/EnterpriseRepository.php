@@ -7,11 +7,17 @@ use Illuminate\Database\Eloquent\Model;
 
 class EnterpriseRepository
 {
-    public function store(string $name, string $setting): Enterprise|Model
+    public function store(string $name, ?array $settings, ?array $accounts): Enterprise|Model
     {
-        return Enterprise::create([
-            'accountable_id' => $accountId,
-            'accountable_type' => $accountType
+        $enterprise =  Enterprise::create([
+            'name'     => $name,
+            'settings' => $settings
         ]);
+
+        if(isset($accounts) && count($accounts) > 0) {
+            $enterprise->enterpriseAccounts()->createMany($accounts);
+        }
+
+        return $enterprise;
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\EnterpriseRequest;
 use App\Models\Enterprise;
 use App\Repositories\EnterpriseRepository;
 use Illuminate\Http\JsonResponse;
@@ -10,7 +11,7 @@ use Illuminate\Http\Request;
 
 class EnterpriseController extends Controller
 {
-    public function __construct(private EnterpriseRepository $repo){}
+    public function __construct(private EnterpriseRepository $repo) { }
 
     /**
      * Display a listing of the resource.
@@ -19,7 +20,7 @@ class EnterpriseController extends Controller
      */
     public function index(): JsonResponse
     {
-        $enterprises = Enterprise::latest()->get();
+        $enterprises = Enterprise::select(["id", "name", "settings", "created_at"])->latest()->get();
 
         return $this->successResponse($enterprises);
     }
@@ -37,12 +38,16 @@ class EnterpriseController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function store(Request $request): JsonResponse
+    public function store(EnterpriseRequest $request): JsonResponse
     {
-        $enterprise = $this->repo->store($request->input("name"), $request->input("settings"));
+        $name = $request->string("name");
+        $settings = $request->input("settings");
+        $accounts = $request->input("accounts");
+
+        $enterprise = $this->repo->store($name, $settings, $accounts);
 
         return $this->errorResponse($enterprise);
     }
@@ -50,7 +55,7 @@ class EnterpriseController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -61,7 +66,7 @@ class EnterpriseController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -72,8 +77,8 @@ class EnterpriseController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param \Illuminate\Http\Request $request
+     * @param int                      $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -84,7 +89,7 @@ class EnterpriseController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)

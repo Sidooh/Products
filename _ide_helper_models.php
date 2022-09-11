@@ -12,6 +12,80 @@
 
 namespace App\Models{
 /**
+ * App\Models\ATAirtimeRequest
+ *
+ * @property int $id
+ * @property string $message
+ * @property int $num_sent
+ * @property string $amount
+ * @property string $discount
+ * @property string $description
+ * @property int|null $transaction_id
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @method static AirtimeRequestFactory factory(...$parameters)
+ * @method static Builder|ATAirtimeRequest newModelQuery()
+ * @method static Builder|ATAirtimeRequest newQuery()
+ * @method static Builder|ATAirtimeRequest query()
+ * @method static Builder|ATAirtimeRequest whereAmount($value)
+ * @method static Builder|ATAirtimeRequest whereCreatedAt($value)
+ * @method static Builder|ATAirtimeRequest whereDescription($value)
+ * @method static Builder|ATAirtimeRequest whereDiscount($value)
+ * @method static Builder|ATAirtimeRequest whereId($value)
+ * @method static Builder|ATAirtimeRequest whereMessage($value)
+ * @method static Builder|ATAirtimeRequest whereNumSent($value)
+ * @method static Builder|ATAirtimeRequest whereTransactionId($value)
+ * @method static Builder|ATAirtimeRequest whereUpdatedAt($value)
+ * @property-read Collection|ATAirtimeResponse[] $airtimeResponses
+ * @property-read int|null $airtime_responses_count
+ * @property-read Transaction|null $transaction
+ * @property-read \App\Models\ATAirtimeResponse|null $response
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ATAirtimeResponse[] $responses
+ * @property-read int|null $responses_count
+ */
+	class IdeHelperATAirtimeRequest {}
+}
+
+namespace App\Models{
+/**
+ * App\Models\ATAirtimeResponse
+ *
+ * @property int $id
+ * @property string $phone
+ * @property string $message
+ * @property string $amount
+ * @property string $status
+ * @property string $request_id
+ * @property string $discount
+ * @property int $airtime_request_id
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @method static AirtimeResponseFactory factory(...$parameters)
+ * @method static Builder|ATAirtimeResponse newModelQuery()
+ * @method static Builder|ATAirtimeResponse newQuery()
+ * @method static Builder|ATAirtimeResponse query()
+ * @method static Builder|ATAirtimeResponse whereAirtimeRequestId($value)
+ * @method static Builder|ATAirtimeResponse whereAmount($value)
+ * @method static Builder|ATAirtimeResponse whereCreatedAt($value)
+ * @method static Builder|ATAirtimeResponse whereDiscount($value)
+ * @method static Builder|ATAirtimeResponse whereId($value)
+ * @method static Builder|ATAirtimeResponse whereMessage($value)
+ * @method static Builder|ATAirtimeResponse wherePhone($value)
+ * @method static Builder|ATAirtimeResponse whereRequestId($value)
+ * @method static Builder|ATAirtimeResponse whereStatus($value)
+ * @method static Builder|ATAirtimeResponse whereUpdatedAt($value)
+ * @property string|null $description
+ * @property-read \App\Models\ATAirtimeRequest $airtimeRequest
+ * @method static Builder|ATAirtimeResponse whereDescription($value)
+ * @property int $at_airtime_request_id
+ * @property-read \App\Models\ATAirtimeRequest|null $request
+ * @method static \Illuminate\Database\Eloquent\Builder|ATAirtimeResponse whereAtAirtimeRequestId($value)
+ */
+	class IdeHelperATAirtimeResponse {}
+}
+
+namespace App\Models{
+/**
  * App\Models\AirtimeAccount
  *
  * @property int $id
@@ -34,74 +108,6 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|AirtimeAccount whereUpdatedAt($value)
  */
 	class IdeHelperAirtimeAccount {}
-}
-
-namespace App\Models{
-/**
- * App\Models\AirtimeRequest
- *
- * @property int                             $id
- * @property string                          $message
- * @property int                             $num_sent
- * @property string                          $amount
- * @property string                          $discount
- * @property string                          $description
- * @property int|null                        $transaction_id
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @method static AirtimeRequestFactory factory(...$parameters)
- * @method static Builder|AirtimeRequest newModelQuery()
- * @method static Builder|AirtimeRequest newQuery()
- * @method static Builder|AirtimeRequest query()
- * @method static Builder|AirtimeRequest whereAmount($value)
- * @method static Builder|AirtimeRequest whereCreatedAt($value)
- * @method static Builder|AirtimeRequest whereDescription($value)
- * @method static Builder|AirtimeRequest whereDiscount($value)
- * @method static Builder|AirtimeRequest whereId($value)
- * @method static Builder|AirtimeRequest whereMessage($value)
- * @method static Builder|AirtimeRequest whereNumSent($value)
- * @method static Builder|AirtimeRequest whereTransactionId($value)
- * @method static Builder|AirtimeRequest whereUpdatedAt($value)
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ATAirtimeResponse[] $airtimeResponses
- * @property-read int|null $airtime_responses_count
- * @property-read \App\Models\Transaction|null $transaction
- */
-	class IdeHelperAirtimeRequest {}
-}
-
-namespace App\Models{
-    /**
-     * App\Models\ATAirtimeResponse
-     *
-     * @property int $id
-     * @property string $phone
-     * @property string $message
-     * @property string $amount
-     * @property string $status
-     * @property string $request_id
-     * @property string $discount
-     * @property int $airtime_request_id
-     * @property Carbon|null $created_at
-     * @property Carbon|null $updated_at
-     * @method static AirtimeResponseFactory factory(...$parameters)
-     * @method static Builder|ATAirtimeResponse newModelQuery()
-     * @method static Builder|ATAirtimeResponse newQuery()
-     * @method static Builder|ATAirtimeResponse query()
-     * @method static Builder|ATAirtimeResponse whereAirtimeRequestId($value)
-     * @method static Builder|ATAirtimeResponse whereAmount($value)
-     * @method static Builder|ATAirtimeResponse whereCreatedAt($value)
-     * @method static Builder|ATAirtimeResponse whereDiscount($value)
-     * @method static Builder|ATAirtimeResponse whereId($value)
-     * @method static Builder|ATAirtimeResponse whereMessage($value)
-     * @method static Builder|ATAirtimeResponse wherePhone($value)
-     * @method static Builder|ATAirtimeResponse whereRequestId($value)
-     * @method static Builder|ATAirtimeResponse whereStatus($value)
-     * @method static Builder|ATAirtimeResponse whereUpdatedAt($value)
-     * @property string|null $description
-     * @property-read \App\Models\AirtimeRequest $airtimeRequest
-     * @method static Builder|ATAirtimeResponse whereDescription($value)
-     */
-	class IdeHelperAirtimeResponse {}
 }
 
 namespace App\Models{
@@ -269,16 +275,42 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * App\Models\Notification
+ *
+ * @property int $id
+ * @property array $to
+ * @property string $message
+ * @property string $event
+ * @property array $response
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder|Notification newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Notification newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Notification query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Notification whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Notification whereEvent($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Notification whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Notification whereMessage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Notification whereResponse($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Notification whereTo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Notification whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
+	class IdeHelperNotification {}
+}
+
+namespace App\Models{
+/**
  * App\Models\Payment
  *
  * @property int $id
- * @property int $transaction_id
  * @property int $payment_id
  * @property string $amount
  * @property string $type
  * @property string $subtype
  * @property string $status
- * @property array $extra
+ * @property array|null $extra
+ * @property int $transaction_id
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\Transaction $transaction
@@ -421,19 +453,19 @@ namespace App\Models{
 /**
  * App\Models\Transaction
  *
- * @property int                      $id
- * @property string                   $initiator
- * @property string                   $type
- * @property string                   $amount
- * @property string                   $status
- * @property string|null              $destination
- * @property string                   $description
- * @property int                      $account_id
- * @property Carbon|null              $created_at
- * @property Carbon|null              $updated_at
- * @property-read AirtimeRequest|null $airtime
- * @property-read AirtimeRequest|null $airtimeRequest
- * @property-read KyandaRequest|null  $kyandaTransaction
+ * @property int $id
+ * @property string $initiator
+ * @property string $type
+ * @property string $amount
+ * @property string $status
+ * @property string|null $destination
+ * @property string $description
+ * @property int $account_id
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read ATAirtimeRequest|null $atAirtimeRequest
+ * @property-read KyandaRequest|null $kyandaTransaction
+ * @property-read TandaRequest|null $tandaRequest
  * @method static TransactionFactory factory(...$parameters)
  * @method static Builder|Transaction newModelQuery()
  * @method static Builder|Transaction newQuery()
@@ -448,12 +480,11 @@ namespace App\Models{
  * @method static Builder|Transaction whereStatus($value)
  * @method static Builder|Transaction whereType($value)
  * @method static Builder|Transaction whereUpdatedAt($value)
- * @property int|null $product_id
+ * @property int $product_id
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Cashback[] $cashbacks
  * @property-read int|null $cashbacks_count
  * @property-read \App\Models\Payment|null $payment
- * @property-read \App\Models\Product|null $product
- * @property-read \DrH\Tanda\Models\TandaRequest|null $request
+ * @property-read \App\Models\Product $product
  * @property-read \App\Models\SavingsTransaction|null $savingsTransaction
  * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereProductId($value)
  */
