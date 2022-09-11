@@ -5,6 +5,7 @@ use App\Http\Controllers\API\V1\CashbackController;
 use App\Http\Controllers\API\V1\DashboardController;
 use App\Http\Controllers\API\V1\EarningAccountController;
 use App\Http\Controllers\API\V1\EarningController;
+use App\Http\Controllers\API\V1\EnterpriseController;
 use App\Http\Controllers\API\V1\FloatController;
 use App\Http\Controllers\API\V1\PaymentsController;
 use App\Http\Controllers\API\V1\ProductController;
@@ -55,6 +56,11 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function() {
         Route::post('/airtime/status/callback', [AirtimeController::class, 'airtimeStatusCallback']);
 
         Route::get('/subscription-types/default', SubscriptionTypeController::class);
+    });
+
+    Route::prefix('/enterprises')->group(function() {
+        Route::get("/", [EnterpriseController::class, 'index']);
+        Route::post("/", [EnterpriseController::class, 'store']);
     });
 
     Route::prefix('/payments')->group(function() {
