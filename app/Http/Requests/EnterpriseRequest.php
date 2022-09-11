@@ -3,8 +3,8 @@
 namespace App\Http\Requests;
 
 use App\Enums\EnterpriseAccountType;
+use App\Rules\SidoohAccountExists;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
 
 class EnterpriseRequest extends FormRequest
@@ -27,11 +27,10 @@ class EnterpriseRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'          => [Rule::requiredIf($this->is('*/enterprises'))],
-            'settings'      => 'required|array',
-            'accounts.id'   => 'integer',
-            'accounts.type' => new Enum(EnterpriseAccountType::class),
-            'enterprise_id' => ['exists:enterprises,id']
+            'name'                  => 'required|string',
+            'settings'              => 'required|array',
+            'accounts.*.account_id' => ['bail', 'required', 'distinct', 'integer', new SidoohAccountExists],
+            'accounts.*.type'       => ['required', new Enum(EnterpriseAccountType::class)],
         ];
     }
 }

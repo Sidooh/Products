@@ -5,6 +5,7 @@ use App\Http\Controllers\API\V1\CashbackController;
 use App\Http\Controllers\API\V1\DashboardController;
 use App\Http\Controllers\API\V1\EarningAccountController;
 use App\Http\Controllers\API\V1\EarningController;
+use App\Http\Controllers\API\V1\EnterpriseAccountController;
 use App\Http\Controllers\API\V1\EnterpriseController;
 use App\Http\Controllers\API\V1\FloatController;
 use App\Http\Controllers\API\V1\PaymentsController;
@@ -61,6 +62,9 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function() {
     Route::prefix('/enterprises')->group(function() {
         Route::get("/", [EnterpriseController::class, 'index']);
         Route::post("/", [EnterpriseController::class, 'store']);
+
+        Route::get("/{enterprise}/accounts", [EnterpriseAccountController::class, 'index']);
+        Route::post("/{enterprise}/accounts", [EnterpriseAccountController::class, 'store']);
     });
 
     Route::prefix('/payments')->group(function() {
