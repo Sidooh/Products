@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 
 class EnterpriseController extends Controller
 {
-    public function __construct(private EnterpriseRepository $repo) { }
+    public function __construct(private readonly EnterpriseRepository $repo) { }
 
     /**
      * Display a listing of the resource.
@@ -23,16 +23,6 @@ class EnterpriseController extends Controller
         $enterprises = Enterprise::select(["id", "name", "settings", "created_at"])->latest()->get();
 
         return $this->successResponse($enterprises);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -55,23 +45,19 @@ class EnterpriseController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param int $id
-     * @return \Illuminate\Http\Response
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Models\Enterprise   $enterprise
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function show($id)
+    public function show(Request $request, Enterprise $enterprise): JsonResponse
     {
-        //
-    }
+        $relations = explode(",", $request->query("with"));
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
+        if(in_array("enterprise-accounts", $relations)) {
+            $enterprise->load("enterpriseAccounts:id,type,account_id,enterprise_id,created_at");
+        }
+
+        return $this->successResponse($enterprise);
     }
 
     /**

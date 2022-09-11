@@ -5,13 +5,15 @@ namespace App\Http\Controllers\API\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EnterpriseAccountRequest;
 use App\Models\Enterprise;
+use App\Models\EnterpriseAccount;
 use App\Repositories\EnterpriseAccountRepository;
+use App\Services\SidoohAccounts;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class EnterpriseAccountController extends Controller
 {
-    public function __construct(private EnterpriseAccountRepository $repo) { }
+    public function __construct(private readonly EnterpriseAccountRepository $repo) { }
 
     /**
      * Display a listing of the resource.
@@ -52,12 +54,20 @@ class EnterpriseAccountController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param int $id
-     * @return \Illuminate\Http\Response
+     * @param \Illuminate\Http\Request      $request
+     * @param \App\Models\EnterpriseAccount $enterpriseAccount
+     * @throws \Exception
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function show($id)
+    public function show(Request $request, EnterpriseAccount $enterpriseAccount): JsonResponse
     {
-        //
+        $relations = explode(",", $request->query("with"));
+
+        if(in_array("account", $relations)) {
+            $enterpriseAccount->account = SidoohAccounts::find($enterpriseAccount->account_id);
+        }
+
+        return $this->successResponse($enterpriseAccount);
     }
 
     /**
