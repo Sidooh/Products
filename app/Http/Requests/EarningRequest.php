@@ -23,7 +23,7 @@ class EarningRequest extends FormRequest
      *
      * @return array<string, mixed>
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             'initiator'  => ['required', new Enum(Initiator::class)],

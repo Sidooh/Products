@@ -59,7 +59,7 @@ class Enterprise extends Model
     protected function admin(): Attribute
     {
         return Attribute::get(function() {
-            $admin = $this->enterpriseAccounts()->where("type", EnterpriseAccountType::ENTERPRISE)
+            $admin = $this->enterpriseAccounts()->where("type", EnterpriseAccountType::ADMIN)
                 ->oldest("id")->first();
 
             $admin->account = SidoohAccounts::find($admin->account_id);

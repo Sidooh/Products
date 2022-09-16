@@ -64,7 +64,7 @@ class SubscriptionRepository
             }
         });
 
-        Log::info('...[SUB_CTRL]... Subs: ', [now(), $pastSubs->toArray(), $futureSubs->toArray()]);
+        Log::info('...[SUB CTRL]... Subs: ', [now(), $pastSubs->toArray(), $futureSubs->toArray()]);
 
         $adminMsg = "STATUS:SUBSCRIPTIONS\n\n";
         $adminMsg .= "Processed: {$latestSubscriptions->count()}";

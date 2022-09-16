@@ -198,12 +198,10 @@ namespace App\Models{
  * @property int                                 $id
  * @property string                              $name
  * @property array                               $settings
- * @property Carbon|null     $created_at
- * @property Carbon|null     $updated_at
+ * @property Carbon|null                         $created_at
+ * @property Carbon|null                         $updated_at
  * @property-read Collection|EnterpriseAccount[] $enterpriseAccounts
  * @property-read int|null                       $enterprise_accounts_count
- * @property-read FloatAccount|null              $floatAccount
- * @property-read Collection|Voucher[]           $vouchers
  * @property-read int|null                       $vouchers_count
  * @method static EnterpriseFactory factory(...$parameters)
  * @method static Builder|Enterprise newModelQuery()
@@ -294,7 +292,6 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Notification whereResponse($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Notification whereTo($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Notification whereUpdatedAt($value)
- * @mixin \Eloquent
  */
 	class IdeHelperNotification {}
 }

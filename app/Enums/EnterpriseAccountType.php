@@ -4,6 +4,6 @@ namespace App\Enums;
 
 enum EnterpriseAccountType: string
 {
-    case EMPLOYEE = 'EMPLOYEE';
-    case ENTERPRISE = 'ENTERPRISE';
+    case USER = "USER";
+    case ADMIN = "ADMIN";
 }
