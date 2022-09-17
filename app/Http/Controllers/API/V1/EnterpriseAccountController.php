@@ -13,7 +13,9 @@ use Illuminate\Http\Request;
 
 class EnterpriseAccountController extends Controller
 {
-    public function __construct(private readonly EnterpriseAccountRepository $repo) { }
+    public function __construct(private readonly EnterpriseAccountRepository $repo)
+    {
+    }
 
     /**
      * Display a listing of the resource.
