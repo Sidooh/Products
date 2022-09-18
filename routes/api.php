@@ -5,7 +5,8 @@ use App\Http\Controllers\API\V1\CashbackController;
 use App\Http\Controllers\API\V1\DashboardController;
 use App\Http\Controllers\API\V1\EarningAccountController;
 use App\Http\Controllers\API\V1\EarningController;
-use App\Http\Controllers\API\V1\FloatController;
+use App\Http\Controllers\API\V1\EnterpriseAccountController;
+use App\Http\Controllers\API\V1\EnterpriseController;
 use App\Http\Controllers\API\V1\PaymentsController;
 use App\Http\Controllers\API\V1\ProductController;
 use App\Http\Controllers\API\V1\SubscriptionController;
@@ -42,19 +43,29 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function() {
 
         Route::prefix('/vouchers')->group(function() {
             Route::post('/top-up', [VoucherController::class, 'topUp']);
-            Route::post('/disburse', [VoucherController::class, 'disburse']);
         });
 
         Route::prefix('/subscriptions')->group(function() {
-            Route::post('', SubscriptionController::class);
+            Route::post("/", SubscriptionController::class);
         });
-
-        Route::post('/float/top-up', [FloatController::class, 'topUp']);
 
         //  AT Callback Route
         Route::post('/airtime/status/callback', [AirtimeController::class, 'airtimeStatusCallback']);
 
         Route::get('/subscription-types/default', SubscriptionTypeController::class);
+    });
+
+    Route::prefix('/enterprises')->group(function() {
+        Route::get("/", [EnterpriseController::class, 'index']);
+        Route::post("/", [EnterpriseController::class, 'store']);
+        Route::get("/{enterprise}", [EnterpriseController::class, 'show']);
+
+        Route::get("/{enterprise}/accounts", [EnterpriseAccountController::class, 'index']);
+        Route::post("/{enterprise}/accounts", [EnterpriseAccountController::class, 'store']);
+    });
+
+    Route::prefix('/enterprise-accounts')->group(function() {
+        Route::get("/{enterpriseAccount}", [EnterpriseAccountController::class, "show"]);
     });
 
     Route::prefix('/payments')->group(function() {
@@ -91,13 +102,14 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function() {
     Route::post('/transactions/{transaction}/check-payment', [TransactionController::class, "checkPayment"]);
     Route::post('/transactions/{transaction}/check-request', [TransactionController::class, "checkRequest"]);
     Route::post('/transactions/{transaction}/refund', [TransactionController::class, "refund"]);
+    Route::post('/transactions/{transaction}/retry', [TransactionController::class, "retry"]);
 
     Route::get('/earning-accounts', [EarningAccountController::class, "index"]);
     Route::get('/earning-accounts/{earningAccount}', [EarningAccountController::class, "show"]);
 
     Route::get('/cashbacks', [CashbackController::class, "index"]);
     Route::get('/cashbacks/{cashback}', [CashbackController::class, "show"]);
-    
+
     Route::get('/subscription-types', [SubscriptionController::class, "getSubTypes"]);
 
     Route::get('/subscriptions', [SubscriptionController::class, "index"]);

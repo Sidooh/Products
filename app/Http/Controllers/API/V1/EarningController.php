@@ -13,6 +13,8 @@ use App\Services\SidoohAccounts;
 use App\Services\SidoohNotify;
 use App\Services\SidoohSavings;
 use Carbon\Carbon;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
@@ -43,15 +45,11 @@ class EarningController extends Controller
                 if($totalCompleted > 0) $message .= "Processed earnings for $totalCompleted accounts\n";
                 if($totalFailed > 0) $message .= "Failed for $totalFailed accounts";
 
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 // Notify failure
                 Log::error($e);
 
-                SidoohNotify::notify([
-                    '254714611696',
-                    '254711414987',
-                    '254736388405'
-                ], "ERROR:SAVINGS\nError Saving Earnings!!!", EventType::ERROR_ALERT);
+                SidoohNotify::notify(admin_contacts(), "ERROR:SAVINGS\nError Saving Earnings!!!", EventType::ERROR_ALERT);
 
                 return $savings;
             }
@@ -59,11 +57,7 @@ class EarningController extends Controller
             $message .= "No earnings to allocate.";
         }
 
-        SidoohNotify::notify([
-            '254714611696',
-            '254711414987',
-            '254736388405'
-        ], $message, EventType::STATUS_UPDATE);
+        SidoohNotify::notify(admin_contacts(), $message, EventType::STATUS_UPDATE);
 
         return $savings;
     }
@@ -76,16 +70,16 @@ class EarningController extends Controller
             ->whereDate("created_at", $date->format("Y-m-d"))->groupBy("account_id")->get();
 
         return $cashbacks->map(fn(Cashback $cashback) => [
-            "account_id" => $cashback->account_id,
+            "account_id"     => $cashback->account_id,
             "current_amount" => round($cashback->amount * .2, 4),
-            "locked_amount" => round($cashback->amount * .8, 4)
+            "locked_amount"  => round($cashback->amount * .8, 4)
         ]);
     }
 
     /**
      * @throws Throwable
      */
-    public function processSavingsCallback(Request $request)
+    public function processSavingsCallback(Request $request): JsonResponse
     {
         Log::info('...[CONTROLLER - EARNING]: Process Savings Callback...', $request->all());
 

@@ -64,10 +64,11 @@ class SubscriptionRepository
             }
         });
 
-        Log::info('...[SUB_CTRL]... Subs: ', [now(), $pastSubs->toArray(), $futureSubs->toArray()]);
+        Log::info('...[SUB CTRL]... Subs: ', [now(), $pastSubs->toArray(), $futureSubs->toArray()]);
 
         $adminMsg = "STATUS:SUBSCRIPTIONS\n\n";
         $adminMsg .= "Processed: {$latestSubscriptions->count()}";
+        $adminMsg .= "\nUpcoming: {$futureSubs->count()}";
 
         // Process expired Subs
         if($expiredCount = $expiredSubs->count()) {
@@ -78,7 +79,7 @@ class SubscriptionRepository
                 $expiredSubsAccs->add($account);
             });
 
-            $expiredSubs->update(['status' => Status::EXPIRED]);
+            Subscription::whereIn('id', $expiredSubs->pluck('id'))->update(['status' => Status::EXPIRED]);
 
             $message = "Your subscription to Sidooh has expired.\n\n";
             $message .= "Dial *384*99# NOW for FREE on your Safaricom line to renew your subscription and continue to ";
@@ -91,11 +92,7 @@ class SubscriptionRepository
 
 
         // Notify admin
-        SidoohNotify::notify([
-            '254714611696',
-            '254711414987',
-            '254736388405'
-        ], $adminMsg, EventType::STATUS_UPDATE);
+        SidoohNotify::notify(admin_contacts(), $adminMsg, EventType::STATUS_UPDATE);
 
 
         return [$pastSubs, $futureSubs, $expiredSubs];

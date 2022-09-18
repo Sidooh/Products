@@ -39,7 +39,7 @@ use Illuminate\Support\Carbon;
  * @property string|null $description
  * @property-read \App\Models\ATAirtimeRequest $airtimeRequest
  * @method static Builder|ATAirtimeResponse whereDescription($value)
- * @mixin IdeHelperAirtimeResponse
+ * @mixin IdeHelperATAirtimeResponse
  */
 class ATAirtimeResponse extends Model
 {

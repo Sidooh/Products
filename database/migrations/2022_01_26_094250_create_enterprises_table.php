@@ -11,12 +11,12 @@ return new class extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('enterprises', function (Blueprint $table) {
+        Schema::create("enterprises", function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->json('settings');
+            $table->string("name")->unique();
+            $table->json("settings");
             $table->timestamps();
         });
     }
@@ -26,7 +26,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('enterprises');
     }

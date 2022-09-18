@@ -61,10 +61,7 @@ class TandaEventRepository extends EventRepository
         }
 
         if ($transaction->status == Status::COMPLETED) {
-            SidoohNotify::notify([
-                '254714611696',
-                '254736388405'
-            ], "ERROR:TANDA REQUEST\nTransaction $transaction seems to have been completed already. Confirm!!!", EventType::ERROR_ALERT);
+            SidoohNotify::notify(admin_contacts(), "ERROR:TANDA REQUEST\nTransaction $transaction seems to have been completed already. Confirm!!!", EventType::ERROR_ALERT);
             return;
         }
 
@@ -185,7 +182,6 @@ class TandaEventRepository extends EventRepository
     {
         // Update Transaction
         $transaction = Transaction::find($tandaRequest->relation_id);
-        Transaction::updateStatus($transaction, Status::FAILED);
 
         $destination = $transaction->destination;
         $sender = SidoohAccounts::find($transaction->account_id)['phone'];
@@ -196,7 +192,7 @@ class TandaEventRepository extends EventRepository
         $provider = self::getProvider($tandaRequest, $transaction);
 
         $response = SidoohPayments::creditVoucher($transaction->account_id, $amount, Description::VOUCHER_REFUND);
-        [$voucher,] = $response['data'];
+        [$voucher,] = $response;
 
         $transaction->status = Status::REFUNDED;
         $transaction->save();

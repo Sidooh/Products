@@ -10,4 +10,5 @@ enum ProductType: int
     case WITHDRAWAL = 4;
     case UTILITY = 5;
     case MERCHANT = 6;
+    case FLOAT = 7;
 }

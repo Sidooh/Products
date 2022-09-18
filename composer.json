@@ -14,7 +14,7 @@
         "drh/laravel-tanda": "^1.4",
         "fruitcake/laravel-cors": "^2.2",
         "guzzlehttp/guzzle": "^7.4",
-        "laravel/framework": "^9.9",
+        "laravel/framework": "^9.28",
         "laravel/sanctum": "^2.15",
         "laravel/tinker": "^2.7",
         "nabcellent/laravel-kyanda": "^2.0",

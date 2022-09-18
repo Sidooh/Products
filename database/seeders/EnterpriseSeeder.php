@@ -13,7 +13,7 @@ class EnterpriseSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
         $enterprise = Enterprise::create([
             "name"     => "Walmart",
@@ -23,7 +23,6 @@ class EnterpriseSeeder extends Seeder
             ]
         ]);
 
-        $enterprise->enterpriseAccounts()->create(['account_id' => 46, 'type' => EnterpriseAccountType::EMPLOYEE]);
-        $enterprise->floatAccount()->create(['balance' => 100000]);
+        $enterprise->enterpriseAccounts()->create(['account_id' => 46, 'type' => EnterpriseAccountType::USER]);
     }
 }
