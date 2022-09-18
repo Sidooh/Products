@@ -13,9 +13,7 @@ use Illuminate\Http\Request;
 
 class EnterpriseAccountController extends Controller
 {
-    public function __construct(private readonly EnterpriseAccountRepository $repo)
-    {
-    }
+    public function __construct(private readonly EnterpriseAccountRepository $repo) { }
 
     /**
      * Display a listing of the resource.
@@ -40,8 +38,8 @@ class EnterpriseAccountController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param \App\Models\Enterprise   $enterprise
+     * @param \App\Http\Requests\EnterpriseAccountRequest $request
+     * @param \App\Models\Enterprise                      $enterprise
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(EnterpriseAccountRequest $request, Enterprise $enterprise): JsonResponse
@@ -70,28 +68,5 @@ class EnterpriseAccountController extends Controller
         }
 
         return $this->successResponse($enterpriseAccount);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param int                      $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
     }
 }
