@@ -8,6 +8,7 @@ use App\Models\Transaction;
 use App\Repositories\TransactionRepository;
 use App\Services\SidoohAccounts;
 use App\Services\SidoohPayments;
+use DrH\Tanda\Library\EventHelper as TandaEventHelper;
 use DrH\Tanda\Models\TandaRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -34,9 +35,9 @@ class TransactionController extends Controller
             "updated_at"
         ])->with("product:id,name");
 
-        if($request->has('status') && $status = Status::tryFrom($request->status)) {
+        if ($request->has('status') && $status = Status::tryFrom($request->status)) {
             $transactions->whereStatus($status);
-            if($status !== Status::PENDING) {
+            if ($status !== Status::PENDING) {
                 $transactions->limit(100); // Other statuses will have too many records
             }
         } else {
@@ -46,7 +47,7 @@ class TransactionController extends Controller
         $transactions = $transactions->latest()->get();
 
         // TODO: pagination will not work with the process below - review fix for it
-        if(in_array("account", $relations)) $transactions = withRelation("account", $transactions, "account_id", "id");
+        if (in_array("account", $relations)) $transactions = withRelation("account", $transactions, "account_id", "id");
 
         return $this->successResponse($transactions);
     }
@@ -58,19 +59,19 @@ class TransactionController extends Controller
     {
         $relations = explode(",", $request->query("with"));
 
-        if(in_array("account", $relations)) {
+        if (in_array("account", $relations)) {
             $transaction->account = SidoohAccounts::find($transaction->account_id);
         }
 
-        if(in_array("payment", $relations)) {
+        if (in_array("payment", $relations)) {
             $transaction->load("payment:id,payment_id,transaction_id,amount,type,subtype,status,created_at,updated_at");
         }
 
-        if(in_array("tanda_request", $relations)) {
+        if (in_array("tanda_request", $relations)) {
             $transaction->load("tandaRequest:request_id,relation_id,receipt_number,amount,provider,destination,message,status,last_modified,created_at,updated_at");
         }
 
-        if(in_array("product", $relations)) $transaction->load("product:id,name");
+        if (in_array("product", $relations)) $transaction->load("product:id,name");
 
         return $this->successResponse($transaction);
     }
@@ -104,18 +105,18 @@ class TransactionController extends Controller
     public function checkPayment(Request $request, Transaction $transaction): JsonResponse
     {
         // Check transaction is PENDING ...
-        if($transaction->status !== Status::PENDING->name) if(!$transaction->payment) return $this->errorResponse("There is a problem with this transaction. Contact Support."); else if($transaction->payment?->status !== Status::PENDING->name) return $this->successResponse($transaction->refresh());
+        if ($transaction->status !== Status::PENDING->name) if (!$transaction->payment) return $this->errorResponse("There is a problem with this transaction. Contact Support."); else if ($transaction->payment?->status !== Status::PENDING->name) return $this->successResponse($transaction->refresh());
 
         // Check payment
         $response = SidoohPayments::find($transaction->payment->payment_id);
 
-        if(!$payment = $response) {
+        if (!$payment = $response) {
             return $this->errorResponse("There was a problem with your request. Kindly contact Support.");
         }
 
-        if($payment['status'] === Status::COMPLETED->name) {
+        if ($payment['status'] === Status::COMPLETED->name) {
             TransactionRepository::handleCompletedPayments(collect([$transaction]), collect([$payment]));
-        } else if($payment['status'] === Status::FAILED->name) {
+        } else if ($payment['status'] === Status::FAILED->name) {
             TransactionRepository::handleFailedPayments(collect([$transaction]), collect([$payment]));
         }
 
@@ -128,12 +129,12 @@ class TransactionController extends Controller
     public function refund(Request $request, Transaction $transaction): JsonResponse
     {
         // Check transaction
-        if($transaction->status !== Status::PENDING->name) {
+        if ($transaction->status !== Status::PENDING->name) {
             return $this->errorResponse("There is a problem with this transaction - Status. Contact Support.");
         }
 
         // Check payment
-        if(!$transaction->payment) {
+        if (!$transaction->payment) {
             return $this->errorResponse("There is a problem with this transaction - Payment. Contact Support.");
         }
 
@@ -167,6 +168,64 @@ class TransactionController extends Controller
 
         // Perform Refund
         TransactionRepository::requestPurchase(collect([$transaction]), [$transaction->payment]);
+
+        return $this->successResponse($transaction->refresh());
+    }
+
+    public function complete(Request $request, Transaction $transaction): JsonResponse
+    {
+        // Check transaction
+        if ($transaction->status !== Status::PENDING->name) {
+            return $this->errorResponse("There is a problem with this transaction - Status. Contact Support.");
+        }
+
+        // Check payment
+        if (!$transaction->payment || $transaction->payment->status !== Status::COMPLETED->name) {
+            return $this->errorResponse("There is a problem with this transaction - Payment. Contact Support.");
+        }
+
+
+        // Check request
+        // TODO: Handle for all other SPs - and future SPs possibilities
+        if ($transaction->tandaRequest) {
+            if ($transaction->tandaRequest->status !== 000000) {
+                return $this->errorResponse("There is a problem with this transaction - Request. Contact Support.");
+            }
+
+            Transaction::updateStatus($transaction, Status::COMPLETED);
+
+        } else {
+            return $this->errorResponse("There is a problem with this transaction - Request. Contact Support.");
+        }
+
+        return $this->successResponse($transaction->refresh());
+    }
+
+    public function fail(Request $request, Transaction $transaction): JsonResponse
+    {
+        // Check transaction
+        if ($transaction->status !== Status::PENDING->name) {
+            return $this->errorResponse("There is a problem with this transaction - Status. Contact Support.");
+        }
+
+        // Check payment
+        if ($transaction->payment && $transaction->payment->status !== Status::FAILED->name) {
+            return $this->errorResponse("There is a problem with this transaction - Payment. Contact Support.");
+        }
+
+        // Check request
+        // TODO: Handle for all other SPs - and future SPs possibilities
+        if ($transaction->tandaRequest) {
+            if ($transaction->tandaRequest->status === 000000) {
+                return $this->errorResponse("There is a problem with this transaction - Request. Contact Support.");
+            }
+
+            TandaEventHelper::fireTandaEvent($transaction->tandaRequest);
+
+        } else {
+            Transaction::updateStatus($transaction, Status::FAILED);
+
+        }
 
         return $this->successResponse($transaction->refresh());
     }

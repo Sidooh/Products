@@ -101,7 +101,7 @@ class TandaEventRepository extends EventRepository
             '$' => $rateConfig['value']
         };
         if ($totalEarnings <= 0) {
-            Log::error('...[REP - TANDA]: New Calculation... Failed!!!', [$rateConfig, $totalEarnings]);
+            Log::error("...[REP - TANDA]: New Calculation... Failed!!!", [$rateConfig, $totalEarnings]);
             return;
         }
 

@@ -103,6 +103,8 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function() {
     Route::post('/transactions/{transaction}/check-request', [TransactionController::class, "checkRequest"]);
     Route::post('/transactions/{transaction}/refund', [TransactionController::class, "refund"]);
     Route::post('/transactions/{transaction}/retry', [TransactionController::class, "retry"]);
+    Route::post('/transactions/{transaction}/complete', [TransactionController::class, "complete"]);
+    Route::post('/transactions/{transaction}/fail', [TransactionController::class, "fail"]);
 
     Route::get('/earning-accounts', [EarningAccountController::class, "index"]);
     Route::get('/earning-accounts/{earningAccount}', [EarningAccountController::class, "show"]);
