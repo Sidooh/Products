@@ -6,6 +6,7 @@ use App\Enums\EventType;
 use App\Models\Transaction;
 use App\Services\SidoohNotify;
 use DrH\Tanda\Exceptions\TandaException;
+use DrH\Tanda\Facades\Account;
 use DrH\Tanda\Facades\Utility;
 use DrH\Tanda\Library\EventHelper;
 use DrH\Tanda\Models\TandaRequest;
@@ -14,6 +15,17 @@ use Illuminate\Support\Facades\Log;
 
 class TandaApi
 {
+    public static function balance()
+    {
+        Log::info('...[TANDA-API]: Disburse Airtime...');
+
+        try {
+            return Account::balance();
+        } catch (TandaException $e) {
+            Log::error("TandaError: " . $e->getMessage());
+        }
+    }
+
     public static function airtime(Transaction $transaction, int $phone): void
     {
         Log::info('...[TANDA-API]: Disburse Airtime...');
