@@ -17,7 +17,7 @@ class TandaApi
 {
     public static function balance()
     {
-        Log::info('...[TANDA-API]: Disburse Airtime...');
+        Log::info('...[TANDA-API]: Balance...');
 
         try {
             return Account::balance();
