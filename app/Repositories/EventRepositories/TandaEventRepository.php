@@ -192,7 +192,7 @@ class TandaEventRepository extends EventRepository
         $provider = self::getProvider($tandaRequest, $transaction);
 
         $response = SidoohPayments::creditVoucher($transaction->account_id, $amount, Description::VOUCHER_REFUND);
-        [$voucher,] = $response;
+        [$voucher] = $response;
 
         $transaction->status = Status::REFUNDED;
         $transaction->save();

@@ -4,13 +4,15 @@
 namespace App\Helpers\AfricasTalking;
 
 
+use App\Enums\Description;
 use App\Enums\EventType;
 use App\Enums\Status;
-use App\Enums\VoucherType;
 use App\Models\Transaction;
 use App\Models\Voucher;
 use App\Services\SidoohAccounts;
 use App\Services\SidoohNotify;
+use App\Services\SidoohPayments;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Throwable;
@@ -56,10 +58,21 @@ class AfricasTalkingApi
         $this->AT = new AfricasTalkingSubClass($this->username, $this->apiKey);
     }
 
+    public static function balance()
+    {
+        Log::info('...[AFRICASTALKING-API]: Balance...');
+
+        try {
+            return (new AfricasTalkingApi)->AT->application()->fetchApplicationData();
+        } catch (Exception $e) {
+            Log::error("ATError: " . $e->getMessage());
+        }
+    }
+
     /**
      * @throws Throwable
      */
-    public static function airtime(Transaction $transaction, string $phone)
+    public static function airtime(Transaction $transaction, string $phone): void
     {
         Log::info('--- --- --- --- ---   ...[AFRICASTALKING-API]: Disburse Airtime...   --- --- --- --- ---');
 
@@ -93,14 +106,16 @@ class AfricasTalkingApi
             $phone = SidoohAccounts::findPhone($transaction->account_id);
             $date = $req->updated_at->timezone('Africa/Nairobi')->format(config("settings.sms_date_time_format"));
 
-            $voucher = Voucher::whereType(VoucherType::SIDOOH)->whereAccountId($transaction->account_id)->firstOrFail();
-            $voucher->balance += (double)$amount;
-            $voucher->save();
+            $response = SidoohPayments::creditVoucher($transaction->account_id, $amount, Description::VOUCHER_REFUND);
+            [$voucher] = $response;
+
+            $amount = "Ksh" . number_format($amount, 2);
+            $balance = "Ksh" . number_format($voucher['balance']);
 
             $transaction->status = Status::REFUNDED;
             $transaction->save();
 
-            $message = "Sorry! We could not complete your airtime purchase for {$phone} worth {$amount} on {$date}. We have credited your voucher {$amount} and your balance is now {$voucher->balance}.";
+            $message = "Sorry! We could not complete your airtime purchase for $phone worth $amount on $date. We have credited your voucher $amount and your balance is now $balance.";
 
             SidoohNotify::notify([$phone], $message, EventType::AIRTIME_PURCHASE_FAILURE);
         }

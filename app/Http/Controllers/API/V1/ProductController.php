@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\V1;
 use App\Enums\ProductType;
 use App\Enums\Status;
 use App\Enums\TransactionType;
+use App\Helpers\AfricasTalking\AfricasTalkingApi;
 use App\Helpers\Tanda\TandaApi;
 use App\Http\Controllers\Controller;
 use App\Models\AirtimeAccount;
@@ -180,7 +181,8 @@ class ProductController extends Controller
     public function getServiceProviderBalance(): JsonResponse
     {
         return $this->successResponse([
-            "tanda" => TandaApi::balance()
+            "tanda" => TandaApi::balance(),
+            "at"    => AfricasTalkingApi::balance()
         ]);
     }
 }
