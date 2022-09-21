@@ -10,7 +10,7 @@
     "require": {
         "php": "^8.1",
         "ext-intl": "*",
-        "africastalking/africastalking": "^3.0",
+        "afriqazstalking/africastalking": "^3.0",
         "drh/laravel-tanda": "^1.4",
         "fruitcake/laravel-cors": "^2.2",
         "guzzlehttp/guzzle": "^7.4",

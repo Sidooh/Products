@@ -184,16 +184,14 @@ class TransactionController extends Controller
             return $this->errorResponse("There is a problem with this transaction - Payment. Contact Support.");
         }
 
-
         // Check request
         // TODO: Handle for all other SPs - and future SPs possibilities
         if ($transaction->tandaRequest) {
-            if ($transaction->tandaRequest->status !== 000000) {
+            if ($transaction->tandaRequest->status !== "000000") {
                 return $this->errorResponse("There is a problem with this transaction - Request. Contact Support.");
             }
 
             Transaction::updateStatus($transaction, Status::COMPLETED);
-
         } else {
             return $this->errorResponse("There is a problem with this transaction - Request. Contact Support.");
         }
@@ -221,10 +219,8 @@ class TransactionController extends Controller
             }
 
             TandaEventHelper::fireTandaEvent($transaction->tandaRequest);
-
         } else {
             Transaction::updateStatus($transaction, Status::FAILED);
-
         }
 
         return $this->successResponse($transaction->refresh());
