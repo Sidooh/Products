@@ -32,7 +32,7 @@ class KyandaEventRepository extends EventRepository
         $phone = ltrim($account['phone'], '+');
         $amount = $transaction->amount;
 
-        if (!in_array($kyandaRequest->status_code, ['0000', '1100'])) {
+        if (! in_array($kyandaRequest->status_code, ['0000', '1100'])) {
             try {
                 $message = "KY_ERR:{$kyandaRequest->provider}\n{$kyandaRequest->message}\n{$account['phone']} - $date";
 
@@ -75,7 +75,7 @@ class KyandaEventRepository extends EventRepository
         $method = $payment['subtype'];
 
         if ($method === 'VOUCHER') {
-            $bal = 'Ksh' . number_format($voucher['balance'], 2);
+            $bal = 'Ksh'.number_format($voucher['balance'], 2);
             $vtext = " New Voucher balance is $bal.";
         } else {
             $method = 'MPESA';
@@ -146,7 +146,7 @@ class KyandaEventRepository extends EventRepository
                 $userEarnings = EarningRepository::getPointsEarned($transaction, $totalEarnings);
 
 //                Send SMS
-                $details = (object)$kyandaTransaction->details;
+                $details = (object) $kyandaTransaction->details;
                 $message = "You have made a payment to {$provider} - {$destination} of {$amount} from your Sidooh account on {$date} using $method. You have received {$userEarnings} cashback.$vText";
                 $message .= "\nTokens: {$details->tokens}\nUnits: {$details->units}";
 

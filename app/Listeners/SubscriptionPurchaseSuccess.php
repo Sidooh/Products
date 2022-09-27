@@ -24,7 +24,7 @@ class SubscriptionPurchaseSuccess
     /**
      * Handle the event.
      *
-     * @param SubscriptionPurchaseSuccessEvent $event
+     * @param  SubscriptionPurchaseSuccessEvent  $event
      * @return void
      *
      * @throws Exception

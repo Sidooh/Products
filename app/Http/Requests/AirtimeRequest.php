@@ -45,7 +45,7 @@ class AirtimeRequest extends FormRequest
             'amount'          => 'required|integer',
             'initiator'       => ['required', new Enum(Initiator::class)],
             'account_id'      => ['integer', 'required'],
-            'enterprise_id'   => ['required_if:initiator,' . Initiator::ENTERPRISE->name],
+            'enterprise_id'   => ['required_if:initiator,'.Initiator::ENTERPRISE->name],
             'recipients_data' => ['array', Rule::requiredIf($this->is('*/products/airtime/bulk'))],
             'method'          => [new Enum(PaymentMethod::class)],
             'target_number'   => "phone:$countryCode",

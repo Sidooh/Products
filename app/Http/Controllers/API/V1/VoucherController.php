@@ -20,7 +20,7 @@ class VoucherController extends Controller
     /**
      * Handle the incoming request.
      *
-     * @param VoucherRequest $request
+     * @param  VoucherRequest  $request
      * @return JsonResponse
      *
      * @throws Exception|Throwable

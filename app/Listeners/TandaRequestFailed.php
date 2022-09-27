@@ -21,7 +21,7 @@ class TandaRequestFailed
     /**
      * Handle the event.
      *
-     * @param TandaRequestFailedEvent $event
+     * @param  TandaRequestFailedEvent  $event
      * @return void
      *
      * @throws Exception

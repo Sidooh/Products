@@ -7,7 +7,7 @@ use Carbon\Carbon;
 class LocalCarbon
 {
     /**
-     * @param string|null $timezone
+     * @param  string|null  $timezone
      */
     public function __construct(private ?string $timezone = null)
     {

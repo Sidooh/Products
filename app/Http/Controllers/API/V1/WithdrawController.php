@@ -39,10 +39,10 @@ class WithdrawController extends Controller
         }
 
         [$creditAccounts, $debitAccounts] = $earningAccounts
-            ->partition(fn($a) => $a->type !== EarningAccountType::WITHDRAWALS->name);
+            ->partition(fn ($a) => $a->type !== EarningAccountType::WITHDRAWALS->name);
 
-        $totalEarned = $creditAccounts->reduce(fn($total, $account) => $total + $account->balance);
-        $totalWithdrawn = $debitAccounts->reduce(fn($total, $account) => $total + $account->balance);
+        $totalEarned = $creditAccounts->reduce(fn ($total, $account) => $total + $account->balance);
+        $totalWithdrawn = $debitAccounts->reduce(fn ($total, $account) => $total + $account->balance);
 
         // 20% for current account and 50 for charges
         if (.2 * ($totalEarned - $totalWithdrawn) - 50 < $data['amount']) {

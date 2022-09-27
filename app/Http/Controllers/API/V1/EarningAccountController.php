@@ -33,8 +33,8 @@ class EarningAccountController extends Controller
     }
 
     /**
-     * @param \Illuminate\Http\Request $request
-     * @param \App\Models\EarningAccount $earningAccount
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\EarningAccount  $earningAccount
      * @return \Illuminate\Http\JsonResponse
      *
      * @throws \Exception

@@ -20,7 +20,7 @@ class TandaRequestSuccess
     /**
      * Handle the event.
      *
-     * @param TandaRequestSuccessEvent $event
+     * @param  TandaRequestSuccessEvent  $event
      * @return void
      */
     public function handle(TandaRequestSuccessEvent $event)

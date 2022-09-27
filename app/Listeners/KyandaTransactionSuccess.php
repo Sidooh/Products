@@ -21,7 +21,7 @@ class KyandaTransactionSuccess
     /**
      * Handle the event.
      *
-     * @param KyandaTransactionSuccessEvent $event
+     * @param  KyandaTransactionSuccessEvent  $event
      * @return void
      *
      * @throws Exception

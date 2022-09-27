@@ -18,7 +18,7 @@ class JWTAuth
     /**
      * Handle an incoming request.
      *
-     * @param Request $request
+     * @param  Request  $request
      * @param Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse) $next
      * @return JsonResponse|Response
      *
@@ -28,7 +28,7 @@ class JWTAuth
     {
         $bearer = $request->bearerToken();
 
-        if (!JWT::verify($bearer)) {
+        if (! JWT::verify($bearer)) {
             throw new AuthenticationException();
         }
 

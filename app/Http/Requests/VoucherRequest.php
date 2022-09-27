@@ -30,8 +30,8 @@ class VoucherRequest extends FormRequest
         $countryCode = config('services.sidooh.country_code');
 
         return [
-            'initiator'     => [
-                Rule::requiredIf(!$this->is('*/products/voucher/disburse')),
+            'initiator' => [
+                Rule::requiredIf(! $this->is('*/products/voucher/disburse')),
                 new Enum(Initiator::class),
             ],
             'account_id'    => ['required', 'integer'],

@@ -22,7 +22,7 @@ class TandaApi
         try {
             return Account::balance();
         } catch (TandaException $e) {
-            Log::error('TandaError: ' . $e->getMessage());
+            Log::error('TandaError: '.$e->getMessage());
         }
     }
 
@@ -35,7 +35,7 @@ class TandaApi
 
             self::handleRequestResponse($response);
         } catch (TandaException $e) {
-            Log::error('TandaError: ' . $e->getMessage(), [$transaction]);
+            Log::error('TandaError: '.$e->getMessage(), [$transaction]);
         }
     }
 
@@ -48,7 +48,7 @@ class TandaApi
 
             self::handleRequestResponse($response);
         } catch (TandaException $e) {
-            Log::error('TandaError: ' . $e->getMessage(), [$transaction]);
+            Log::error('TandaError: '.$e->getMessage(), [$transaction]);
         }
     }
 
@@ -82,7 +82,7 @@ class TandaApi
                 'amount'        => $amount
             ] = array_column($response['requestParameters'], 'value', 'id');
 
-            if ($destination !== $transaction->destination || (int)$amount !== (int)$transaction->amount) {
+            if ($destination !== $transaction->destination || (int) $amount !== (int) $transaction->amount) {
                 Log::error('Transaction and Tanda Request mismatch', $transaction->toArray());
 
                 return;

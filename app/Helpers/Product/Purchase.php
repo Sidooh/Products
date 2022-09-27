@@ -36,8 +36,8 @@ class Purchase
 
         match (config('services.sidooh.utilities_provider')) {
             'KYANDA' => KyandaApi::bill($this->transaction, $provider),
-            'TANDA' => TandaApi::bill($this->transaction, $provider),
-            default => throw new Exception('No provider provided for utility purchase')
+            'TANDA'  => TandaApi::bill($this->transaction, $provider),
+            default  => throw new Exception('No provider provided for utility purchase')
         };
     }
 
@@ -47,7 +47,7 @@ class Purchase
     public function airtime(): void
     {
 //        TODO: Notify admins of possible duplicate
-        if($this->transaction->atAirtimeRequest || $this->transaction->kyandaTransaction || $this->transaction->tandaRequest) {
+        if ($this->transaction->atAirtimeRequest || $this->transaction->kyandaTransaction || $this->transaction->tandaRequest) {
             SidoohNotify::notify(admin_contacts(), "ERROR:AIRTIME\n{$this->transaction->id}\nPossible duplicate airtime request... Confirm!!!", EventType::ERROR_ALERT);
             Log::error('Possible duplicate airtime request... Confirm!!!');
             exit;
@@ -56,10 +56,10 @@ class Purchase
         $phone = PhoneNumber::make($this->transaction->destination, 'KE')->formatE164();
 
         match (config('services.sidooh.utilities_provider')) {
-            'AT' => AfricasTalkingApi::airtime($this->transaction, $phone),
+            'AT'     => AfricasTalkingApi::airtime($this->transaction, $phone),
             'KYANDA' => KyandaApi::airtime($this->transaction, $phone),
-            'TANDA' => TandaApi::airtime($this->transaction, $phone),
-            default => throw new Exception('No provider provided for airtime purchase')
+            'TANDA'  => TandaApi::airtime($this->transaction, $phone),
+            default  => throw new Exception('No provider provided for airtime purchase')
         };
     }
 
@@ -70,7 +70,7 @@ class Purchase
     {
         Log::info('...[INTERNAL - PRODUCT]: Subscribe...');
 
-        if(Subscription::active($this->transaction->account_id)) {
+        if (Subscription::active($this->transaction->account_id)) {
             // TODO: Handle for subscription failure.
             //       Also, should we not check this during the initial API call and reject it?
             SubscriptionPurchaseFailedEvent::dispatch($this->transaction);
@@ -87,7 +87,7 @@ class Purchase
             'end_date'   => now()->addMonths($type->duration),
         ];
 
-        return DB::transaction(function() use ($type, $subscription) {
+        return DB::transaction(function () use ($type, $subscription) {
             $sub = $type->subscription()->create($subscription);
 
             $this->transaction->status = Status::COMPLETED;
@@ -100,7 +100,7 @@ class Purchase
     }
 
     /**
-     * @param array $paymentsData
+     * @param  array  $paymentsData
      *
      * @throws \Throwable
      */
@@ -112,7 +112,7 @@ class Purchase
         $this->transaction->save();
 
         $vouchers = [];
-        if(isset($paymentsData['debit_voucher'])) {
+        if (isset($paymentsData['debit_voucher'])) {
             $vouchers[] = $paymentsData['debit_voucher'];
         }
         $vouchers[] = $paymentsData['credit_vouchers'][0];

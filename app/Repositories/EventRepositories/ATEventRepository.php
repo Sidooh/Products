@@ -69,7 +69,7 @@ class ATEventRepository
 
         if ($method == 'VOUCHER') {
             $voucher = $transaction->payment->extra;
-            $bal = 'Ksh' . number_format($voucher['balance'], 2);
+            $bal = 'Ksh'.number_format($voucher['balance'], 2);
             $vtext = " New Voucher balance is $bal.";
         } else {
             $method = 'MPESA';
@@ -105,7 +105,7 @@ class ATEventRepository
 
 //        TODO:: Remove Sent from successful
 //        || $value->status == 'Sent'
-        $successful = $responses->filter(fn($value) => $value->status == 'Success' || $value->status == 'Sent');
+        $successful = $responses->filter(fn ($value) => $value->status == 'Success' || $value->status == 'Sent');
 
         if (count($successful) == count($responses)) {
             $totalEarned = explode(' ', $airtimeRequest->discount)[1];

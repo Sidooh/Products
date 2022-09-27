@@ -33,8 +33,8 @@ class CashbackController extends Controller
     }
 
     /**
-     * @param \Illuminate\Http\Request $request
-     * @param \App\Models\Cashback $cashback
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Cashback  $cashback
      * @return \Illuminate\Http\JsonResponse
      *
      * @throws \Exception

@@ -22,7 +22,7 @@ class TransactionSuccess
     /**
      * Handle the event.
      *
-     * @param TransactionSuccessEvent $event
+     * @param  TransactionSuccessEvent  $event
      * @return void
      *
      * @throws \Exception

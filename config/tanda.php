@@ -33,7 +33,7 @@ return [
    |
    */
     'urls' => [
-        'base'     => env('TANDA_BASE_URL', 'https://io-proxy-443.tanda.co.ke'),
+        'base' => env('TANDA_BASE_URL', 'https://io-proxy-443.tanda.co.ke'),
         /*
          * --------------------------------------------------------------------------------------
          * Callbacks:
@@ -42,7 +42,7 @@ return [
          * Note: This package has already routes for handling this callback.
          * You should leave this values as they are unless you know what you are doing.
          */
-        'callback' => config('app.url') . '/tanda/callbacks/notification',
+        'callback' => config('app.url').'/tanda/callbacks/notification',
     ],
 
     /*
