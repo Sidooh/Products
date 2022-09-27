@@ -61,11 +61,7 @@ class TandaApi
                 $message .= "$request->message\n";
                 $message .= "{$request->created_at->timezone('Africa/Nairobi')->format(config('settings.sms_date_time_format'))}";
 
-                SidoohNotify::notify([
-                    '254714611696',
-                    '254711414987',
-                    '254721309253',
-                ], $message, EventType::ERROR_ALERT);
+                SidoohNotify::notify(admin_contacts(), $message, EventType::ERROR_ALERT);
 
                 Log::info('...[TANDA-API]: Airtime/Utility Failure SMS Sent...');
             } catch (Exception $e) {

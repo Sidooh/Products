@@ -20,11 +20,7 @@ class ATEventRepository
      */
     public static function airtimePurchaseFailed(ATAirtimeResponse $airtimeResponse): void
     {
-        SidoohNotify::notify([
-            '254714611696',
-            '254711414987',
-            '254721309253',
-        ], "ERROR:AIRTIME\n$airtimeResponse->phone", EventType::ERROR_ALERT);
+        SidoohNotify::notify(admin_contacts(), "ERROR:AIRTIME\n$airtimeResponse->phone", EventType::ERROR_ALERT);
         Log::info('Airtime Failure SMS Sent');
 
         $phone = ltrim($airtimeResponse->phone, '+');

@@ -47,16 +47,8 @@ class Purchase
     public function airtime(): void
     {
 //        TODO: Notify admins of possible duplicate
-        if ($this->transaction->atAirtimeRequest || $this->transaction->kyandaTransaction || $this->transaction->tandaRequest) {
-            SidoohNotify::notify(
-                [
-                    '254714611696',
-                    '254711414987',
-                    '254721309253',
-                ],
-                "ERROR:AIRTIME\n{$this->transaction->id}\nPossible duplicate airtime request... Confirm!!!",
-                EventType::ERROR_ALERT
-            );
+        if($this->transaction->atAirtimeRequest || $this->transaction->kyandaTransaction || $this->transaction->tandaRequest) {
+            SidoohNotify::notify(admin_contacts(), "ERROR:AIRTIME\n{$this->transaction->id}\nPossible duplicate airtime request... Confirm!!!", EventType::ERROR_ALERT);
             Log::error('Possible duplicate airtime request... Confirm!!!');
             exit;
         }
@@ -78,7 +70,7 @@ class Purchase
     {
         Log::info('...[INTERNAL - PRODUCT]: Subscribe...');
 
-        if (Subscription::active($this->transaction->account_id)) {
+        if(Subscription::active($this->transaction->account_id)) {
             // TODO: Handle for subscription failure.
             //       Also, should we not check this during the initial API call and reject it?
             SubscriptionPurchaseFailedEvent::dispatch($this->transaction);
@@ -89,13 +81,13 @@ class Purchase
         $type = SubscriptionType::wherePrice($this->transaction->amount)->firstOrFail();
 
         $subscription = [
-            'status' => Status::ACTIVE,
+            'status'     => Status::ACTIVE,
             'account_id' => $this->transaction->account_id,
             'start_date' => now(),
-            'end_date' => now()->addMonths($type->duration),
+            'end_date'   => now()->addMonths($type->duration),
         ];
 
-        return DB::transaction(function () use ($type, $subscription) {
+        return DB::transaction(function() use ($type, $subscription) {
             $sub = $type->subscription()->create($subscription);
 
             $this->transaction->status = Status::COMPLETED;
@@ -120,7 +112,7 @@ class Purchase
         $this->transaction->save();
 
         $vouchers = [];
-        if (isset($paymentsData['debit_voucher'])) {
+        if(isset($paymentsData['debit_voucher'])) {
             $vouchers[] = $paymentsData['debit_voucher'];
         }
         $vouchers[] = $paymentsData['credit_vouchers'][0];
