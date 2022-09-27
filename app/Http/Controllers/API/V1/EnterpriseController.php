@@ -11,7 +11,9 @@ use Illuminate\Http\Request;
 
 class EnterpriseController extends Controller
 {
-    public function __construct(private readonly EnterpriseRepository $repo) { }
+    public function __construct(private readonly EnterpriseRepository $repo)
+    {
+    }
 
     /**
      * Display a listing of the resource.
@@ -20,7 +22,7 @@ class EnterpriseController extends Controller
      */
     public function index(): JsonResponse
     {
-        $enterprises = Enterprise::select(["id", "name", "settings", "created_at"])->latest()->get();
+        $enterprises = Enterprise::select(['id', 'name', 'settings', 'created_at'])->latest()->get();
 
         return $this->successResponse($enterprises);
     }
@@ -33,9 +35,9 @@ class EnterpriseController extends Controller
      */
     public function store(EnterpriseRequest $request): JsonResponse
     {
-        $name = $request->string("name");
-        $settings = $request->input("settings");
-        $accounts = $request->input("accounts");
+        $name = $request->string('name');
+        $settings = $request->input('settings');
+        $accounts = $request->input('accounts');
 
         $enterprise = $this->repo->store($name, $settings, $accounts);
 
@@ -46,15 +48,15 @@ class EnterpriseController extends Controller
      * Display the specified resource.
      *
      * @param \Illuminate\Http\Request $request
-     * @param \App\Models\Enterprise   $enterprise
+     * @param \App\Models\Enterprise $enterprise
      * @return \Illuminate\Http\JsonResponse
      */
     public function show(Request $request, Enterprise $enterprise): JsonResponse
     {
-        $relations = explode(",", $request->query("with"));
+        $relations = explode(',', $request->query('with'));
 
-        if(in_array("enterprise_accounts", $relations)) {
-            $enterprise->load("enterpriseAccounts:id,type,account_id,enterprise_id,created_at");
+        if (in_array('enterprise_accounts', $relations)) {
+            $enterprise->load('enterpriseAccounts:id,type,account_id,enterprise_id,created_at');
         }
 
         return $this->successResponse($enterprise);

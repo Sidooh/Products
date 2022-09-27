@@ -36,5 +36,4 @@ class EventRepository
 //
 //        TransactionSuccessEvent::dispatch($transaction, $amount);
 //    }
-
 }

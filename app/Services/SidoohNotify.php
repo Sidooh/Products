@@ -14,30 +14,29 @@ class SidoohNotify extends SidoohService
     {
         Log::info('...[SRV - NOTIFY]: Send Notification...');
 
-        $url = config('services.sidooh.services.notify.url') . "/notifications";
+        $url = config('services.sidooh.services.notify.url') . '/notifications';
 
         try {
-            $response = parent::fetch($url, "POST", [
-                "channel" => "SMS",
-                "event_type" => $eventType->value,
-                "destination" => $to,
-                "content" => $message
+            $response = parent::fetch($url, 'POST', [
+                'channel'     => 'SMS',
+                'event_type'  => $eventType->value,
+                'destination' => $to,
+                'content'     => $message,
             ]);
 
             Notification::create([
-                'to' => $to,
-                'message' => $message,
-                'event' => $eventType,
-                'response' => $response
+                'to'       => $to,
+                'message'  => $message,
+                'event'    => $eventType,
+                'response' => $response,
             ]);
         } catch (Exception|Error $e) {
             Notification::create([
-                'to' => $to,
-                'message' => $message,
-                'event' => $eventType,
-                'response' => ["err" => $e->getMessage()]
+                'to'       => $to,
+                'message'  => $message,
+                'event'    => $eventType,
+                'response' => ['err' => $e->getMessage()],
             ]);
-
         }
     }
 }

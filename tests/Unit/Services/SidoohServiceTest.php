@@ -22,7 +22,7 @@ class SidoohServiceTest extends TestCase
         Http::fake([
             'localhost:8000/api/v1/users/signin' => Http::sequence()
                 ->push(['access_token' => 'test-token'])
-                ->push()
+                ->push(),
         ]);
 
         $pendingRequest = SidoohService::http();
@@ -42,7 +42,6 @@ class SidoohServiceTest extends TestCase
                 $request->url() == 'http://localhost:8000/api/v1/users/signin';
         });
     }
-
 
     public function test_authentication()
     {
@@ -65,7 +64,6 @@ class SidoohServiceTest extends TestCase
 
         $this->assertEquals($response, 'test-token');
 
-
         // Test 401
         $this->assertThrows(fn() => SidoohService::authenticate(), RequestException::class);
 
@@ -78,9 +76,7 @@ class SidoohServiceTest extends TestCase
 //                $request['password'] == '12345678';
 //        });
 
-
         // Test 400
         $this->assertThrows(fn() => SidoohService::authenticate(), RequestException::class);
-
     }
 }

@@ -56,18 +56,16 @@ class SubscriptionTypeSeeder extends Seeder
 //            ],
 //        ];
 
-
         $types = [
             [
-                'title' => 'Sidooh Agent',
-                'price' => 395,
-                'active' => 1,
+                'title'       => 'Sidooh Agent',
+                'price'       => 395,
+                'active'      => 1,
                 'level_limit' => 5,
-                'created_at' => now(),
-                'updated_at' => now()
+                'created_at'  => now(),
+                'updated_at'  => now(),
             ],
         ];
-
 
         SubscriptionType::insert($types);
     }

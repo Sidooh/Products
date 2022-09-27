@@ -16,11 +16,11 @@ class EnterpriseSeeder extends Seeder
     public function run(): void
     {
         $enterprise = Enterprise::create([
-            "name"     => "Walmart",
-            "settings" => [
-                ["type" => "lunch", "max" => 2000],
-                ["type" => "general", "max" => 5000],
-            ]
+            'name'     => 'Walmart',
+            'settings' => [
+                ['type' => 'lunch', 'max' => 2000],
+                ['type' => 'general', 'max' => 5000],
+            ],
         ]);
 
         $enterprise->enterpriseAccounts()->create(['account_id' => 46, 'type' => EnterpriseAccountType::USER]);

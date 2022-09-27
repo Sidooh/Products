@@ -33,19 +33,19 @@ class ProductRequest extends FormRequest
         $countryCode = config('services.sidooh.country_code');
 
         return [
-            'initiator' => ['required', new Enum(Initiator::class)],
-            'account_id' => 'integer',
-            'amount' => ["required", 'numeric', 'min:20', 'max:10000',],
-            'method' => [new Enum(PaymentMethod::class),],
-            'enterprise_id' => ["required_if:initiator," . Initiator::ENTERPRISE->name],
+            'initiator'      => ['required', new Enum(Initiator::class)],
+            'account_id'     => 'integer',
+            'amount'         => ['required', 'numeric', 'min:20', 'max:10000'],
+            'method'         => [new Enum(PaymentMethod::class)],
+            'enterprise_id'  => ['required_if:initiator,' . Initiator::ENTERPRISE->name],
             'account_number' => [Rule::requiredIf($this->is('*/products/utility')), 'numeric'],
-            'provider' => [Rule::requiredIf($this->is('*/products/utility'))],
-            'target_number' => "phone:$countryCode",
-            'debit_account' => "phone:$countryCode",
+            'provider'       => [Rule::requiredIf($this->is('*/products/utility'))],
+            'target_number'  => "phone:$countryCode",
+            'debit_account'  => "phone:$countryCode",
         ];
     }
 
-    #[ArrayShape(['product.in' => "string", 'debit_account.phone' => "string", 'target_number.phone' => "string"])]
+    #[ArrayShape(['product.in' => 'string', 'debit_account.phone' => 'string', 'target_number.phone' => 'string'])]
     public function messages(): array
     {
         return [
@@ -59,7 +59,7 @@ class ProductRequest extends FormRequest
         throw new HttpResponseException(response()->json([
             'success' => false,
             'message' => 'Validation errors',
-            'data'    => $validator->errors()->all()
+            'data'    => $validator->errors()->all(),
         ], 422));
     }
 }

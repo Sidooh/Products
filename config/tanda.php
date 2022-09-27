@@ -33,7 +33,7 @@ return [
    |
    */
     'urls' => [
-        'base' => env('TANDA_BASE_URL', 'https://io-proxy-443.tanda.co.ke'),
+        'base'     => env('TANDA_BASE_URL', 'https://io-proxy-443.tanda.co.ke'),
         /*
          * --------------------------------------------------------------------------------------
          * Callbacks:
@@ -55,7 +55,6 @@ return [
    */
     'organization_id' => env('TANDA_ORGANIZATION_ID'),
 
-
     /*
    |--------------------------------------------------------------------------
    | Client Identification
@@ -66,7 +65,6 @@ return [
    */
     'client_id' => env('TANDA_CLIENT_ID'),
 
-
     /*
    |--------------------------------------------------------------------------
    | Client Secret
@@ -76,7 +74,6 @@ return [
    |
    */
     'client_secret' => env('TANDA_CLIENT_SECRET'),
-
 
     /*
    |--------------------------------------------------------------------------
@@ -96,18 +93,18 @@ return [
 
             'KPLC_PREPAID.min' => 100,
             'KPLC_PREPAID.max' => 35000,
-        ]
+        ],
     ],
 
     'logging' => [
-        'enabled' => env('TANDA_ENABLE_LOGGING', false),
+        'enabled'  => env('TANDA_ENABLE_LOGGING', false),
         'channels' => [
             'syslog',
             'single' => [
                 'driver' => 'single',
-                'path' => storage_path('logs/tanda.log'),
-                'level' => env('LOG_LEVEL', 'debug'),
+                'path'   => storage_path('logs/tanda.log'),
+                'level'  => env('LOG_LEVEL', 'debug'),
             ],
-        ]
-    ]
+        ],
+    ],
 ];

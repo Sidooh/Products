@@ -65,9 +65,9 @@ class TransactionRepository
         }
 
         $transactionsData = $transactions->map(fn($t) => [
-            'reference' => $t->id,
-            'product_id' => $t->product_id,
-            'amount' => $t->amount,
+            'reference'   => $t->id,
+            'product_id'  => $t->product_id,
+            'amount'      => $t->amount,
             'destination' => $t->destination,
             'description' => $t->description,
         ]);
@@ -76,25 +76,25 @@ class TransactionRepository
         // TODO: Revert this to: if (!isset($response["data"]["payments"])) throw new Exception("Purchase Failed!");
         //  Reason may not be due to payment failure, could be a connection issue etc...
         //  We would then have to manually check. Or implement a query endpoint that polls payment srv at set intervals
-        if (!isset($responseData["payments"])) {
+        if (!isset($responseData['payments'])) {
 //            $transactions->each(fn($t) => $t->update(['status' => Status::FAILED]));
 
-            throw new Exception("Purchase Failed!");
+            throw new Exception('Purchase Failed!');
         }
 
         $paymentData = array_map(function ($p) use ($responseData, $debit_account) {
             return [
                 'transaction_id' => $p['reference'],
-                'payment_id' => $p['id'],
-                'amount' => $p['amount'],
-                'type' => $p['type'],
-                'subtype' => $p['subtype'],
-                'status' => $p['status'],
-                'extra' => json_encode($responseData['debit_voucher'] ?? ['debit_account' => $debit_account]),
-                'created_at' => now(),
-                'updated_at' => now(),
+                'payment_id'     => $p['id'],
+                'amount'         => $p['amount'],
+                'type'           => $p['type'],
+                'subtype'        => $p['subtype'],
+                'status'         => $p['status'],
+                'extra'          => json_encode($responseData['debit_voucher'] ?? ['debit_account' => $debit_account]),
+                'created_at'     => now(),
+                'updated_at'     => now(),
             ];
-        }, $responseData["payments"]);
+        }, $responseData['payments']);
         Payment::insert($paymentData);
 
         if ($responseData && $data['method'] === PaymentMethod::VOUCHER) {
@@ -109,17 +109,18 @@ class TransactionRepository
     {
         try {
             foreach ($transactions as $transaction) {
-
                 $purchase = new Purchase($transaction);
 
-                if (is_int($transaction->product_id)) $transaction->product_id = ProductType::tryFrom($transaction->product_id);
+                if (is_int($transaction->product_id)) {
+                    $transaction->product_id = ProductType::tryFrom($transaction->product_id);
+                }
 
                 match ($transaction->product_id) {
                     ProductType::AIRTIME => $purchase->airtime(),
                     ProductType::UTILITY => $purchase->utility(),
                     ProductType::SUBSCRIPTION => $purchase->subscription(),
                     ProductType::VOUCHER => $purchase->voucher($paymentsData),
-                    default => throw new Exception("Invalid product purchase!"),
+                    default => throw new Exception('Invalid product purchase!'),
                 };
             }
         } catch (Exception $err) {
@@ -156,10 +157,10 @@ class TransactionRepository
 
                 SavingsTransaction::create([
                     'transaction_id' => $tx->id,
-                    'description' => $response,
-                    'type' => TransactionType::DEBIT,
-                    'amount' => $tx->amount,
-                    'status' => Status::FAILED
+                    'description'    => $response,
+                    'type'           => TransactionType::DEBIT,
+                    'amount'         => $tx->amount,
+                    'status'         => Status::FAILED,
                 ]);
 
                 $tx->status = Status::FAILED;
@@ -178,8 +179,8 @@ class TransactionRepository
 
                 //TODO: Fix for new users.
                 $acc = EarningAccount::firstOrCreate([
-                    'type' => EarningAccountType::WITHDRAWALS->name,
-                    'account_id' => $tx->account_id
+                    'type'       => EarningAccountType::WITHDRAWALS->name,
+                    'account_id' => $tx->account_id,
                 ]);
                 $acc->update(['self_amount' => $acc->self_amount + $tx->amount]);
 
@@ -193,7 +194,7 @@ class TransactionRepository
     public static function handleFailedPayments(Collection $transactions, Collection $failedPayments): void
     {
         $transactions->each(function ($transaction) use ($failedPayments) {
-            $transaction->payment->update(["status" => Status::FAILED]);
+            $transaction->payment->update(['status' => Status::FAILED]);
             $transaction->status = Status::FAILED;
             $transaction->save();
 
@@ -201,11 +202,11 @@ class TransactionRepository
 
             if ($result['subtype'] === PaymentSubtype::STK->name && isset($result['stk_result_code'])) {
                 $message = match ($result['stk_result_code']) {
-                    1 => "You have insufficient Mpesa Balance for this transaction. Kindly top up your Mpesa and try again.",
-                    default => "Sorry! We failed to complete your transaction. No amount was deducted from your account. We apologize for the inconvenience. Please try again.",
+                    1 => 'You have insufficient Mpesa Balance for this transaction. Kindly top up your Mpesa and try again.',
+                    default => 'Sorry! We failed to complete your transaction. No amount was deducted from your account. We apologize for the inconvenience. Please try again.',
                 };
             } else {
-                $message = "Sorry! We failed to complete your transaction. No amount was deducted from your account. We apologize for the inconvenience. Please try again.";
+                $message = 'Sorry! We failed to complete your transaction. No amount was deducted from your account. We apologize for the inconvenience. Please try again.';
             }
 
             $account = SidoohAccounts::find($transaction->account_id);
@@ -219,10 +220,10 @@ class TransactionRepository
      */
     public static function handleCompletedPayments(Collection $transactions, Collection $completedPayments, array $requestData = []): void
     {
-        $ids = $completedPayments->pluck("id");
+        $ids = $completedPayments->pluck('id');
 
-        $payments = Payment::whereIn("payment_id", $ids);
-        $payments->update(["status" => Status::COMPLETED]);
+        $payments = Payment::whereIn('payment_id', $ids);
+        $payments->update(['status' => Status::COMPLETED]);
 
         TransactionRepository::requestPurchase($transactions, $requestData);
     }
@@ -246,7 +247,7 @@ class TransactionRepository
         $amount = $transaction->amount;
         $date = $transaction->updated_at
             ->timezone('Africa/Nairobi')
-            ->format(config("settings.sms_date_time_format"));
+            ->format(config('settings.sms_date_time_format'));
 
         $provider = getProviderFromTransaction($transaction);
 
@@ -256,8 +257,8 @@ class TransactionRepository
         $transaction->status = Status::REFUNDED;
         $transaction->save();
 
-        $amount = "Ksh" . number_format($amount, 2);
-        $balance = "Ksh" . number_format($voucher['balance']);
+        $amount = 'Ksh' . number_format($amount, 2);
+        $balance = 'Ksh' . number_format($voucher['balance']);
 
         $destination = $transaction->destination;
 

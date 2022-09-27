@@ -28,23 +28,23 @@ class EnterpriseAccountRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "account_id" => [
-                "required",
-                "integer",
+            'account_id' => [
+                'required',
+                'integer',
                 new SidoohAccountExists,
-                Rule::unique("enterprise_accounts")->where("enterprise_id", $this->route("enterprise")?->id)
-                    ->where("account_id", $this->input("account_id"))
+                Rule::unique('enterprise_accounts')->where('enterprise_id', $this->route('enterprise')?->id)
+                    ->where('account_id', $this->input('account_id')),
             ],
-            "type"       => ["required", new Enum(EnterpriseAccountType::class)],
+            'type'       => ['required', new Enum(EnterpriseAccountType::class)],
         ];
     }
 
     public function messages(): array
     {
         return [
-            "account_id" => [
-                "unique" => "Account already belongs to enterprise."
-            ]
+            'account_id' => [
+                'unique' => 'Account already belongs to enterprise.',
+            ],
         ];
     }
 }

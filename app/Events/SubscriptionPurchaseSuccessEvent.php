@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Events;
-
 
 use App\Models\Subscription;
 use App\Models\Transaction;

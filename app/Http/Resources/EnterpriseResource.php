@@ -17,11 +17,11 @@ class EnterpriseResource extends JsonResource
      * @return array|Arrayable|JsonSerializable
      */
     #[ArrayShape([
-        'id'            => "mixed",
-        'name'          => "mixed",
-        'settings'      => "mixed",
-        'created_at'    => "mixed",
-        'float_account' => "\App\Http\Resources\FloatAccountResource"
+        'id'            => 'mixed',
+        'name'          => 'mixed',
+        'settings'      => 'mixed',
+        'created_at'    => 'mixed',
+        'float_account' => "\App\Http\Resources\FloatAccountResource",
     ])]
     public function toArray($request): array|JsonSerializable|Arrayable
     {

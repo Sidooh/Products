@@ -15,6 +15,6 @@ class AirtimeAccount extends Model
     protected $fillable = [
         'account_id',
         'provider',
-        'account_number'
+        'account_number',
     ];
 }

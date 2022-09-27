@@ -13,7 +13,9 @@ class AirtimePurchaseFailed
      *
      * @return void
      */
-    public function __construct() { }
+    public function __construct()
+    {
+    }
 
     /**
      * Handle the event.
@@ -24,7 +26,7 @@ class AirtimePurchaseFailed
     public function handle(AirtimePurchaseFailedEvent $event)
     {
         Log::info('...[EVENT]: Airtime Purchase Failed...', [
-            "response" => $event->airtime_response
+            'response' => $event->airtime_response,
         ]);
 
         ATEventRepository::airtimePurchaseFailed($event->airtime_response);

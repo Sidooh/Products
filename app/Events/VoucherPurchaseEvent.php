@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Events;
-
 
 use App\Models\Transaction;
 use Illuminate\Broadcasting\InteractsWithSockets;
@@ -12,7 +10,6 @@ use Illuminate\Queue\SerializesModels;
 class VoucherPurchaseEvent
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
-
 
     /**
      * Create a new event instance.

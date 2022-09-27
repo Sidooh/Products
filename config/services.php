@@ -63,19 +63,19 @@ return [
         'services'           => [
             'accounts' => [
                 'enabled' => true,
-                'url'     => env("SIDOOH_ACCOUNTS_API_URL")
+                'url'     => env('SIDOOH_ACCOUNTS_API_URL'),
             ],
             'notify'   => [
                 'enabled' => true,
-                'url'     => env("SIDOOH_NOTIFY_API_URL"),
+                'url'     => env('SIDOOH_NOTIFY_API_URL'),
             ],
             'payments' => [
                 'enabled' => true,
-                'url'     => env("SIDOOH_PAYMENTS_API_URL")
+                'url'     => env('SIDOOH_PAYMENTS_API_URL'),
             ],
             'savings'  => [
                 'enabled' => true,
-                'url'     => env("SIDOOH_SAVINGS_API_URL"),
+                'url'     => env('SIDOOH_SAVINGS_API_URL'),
             ],
         ],
         'admin_contacts'     => env('ADMIN_CONTACTS', '254110039317,254714611696,254711414987'),
@@ -86,105 +86,105 @@ return [
         'discounts' => [
             'SAFARICOM'     => [
                 'type'  => '%',
-                'value' => .06
+                'value' => .06,
             ],
             'FAIBA'         => [
                 'type'  => '%',
-                'value' => .07
+                'value' => .07,
             ],
             'AIRTEL'        => [
                 'type'  => '%',
-                'value' => .06
+                'value' => .06,
             ],
             'TELKOM'        => [
                 'type'  => '%',
-                'value' => .06
+                'value' => .06,
             ],
             'KPLC_POSTPAID' => [
                 'type'  => '%',
-                'value' => .017
+                'value' => .017,
             ],
             'KPLC_PREPAID'  => [
                 'type'  => '%',
-                'value' => .02
+                'value' => .02,
             ],
             'DSTV'          => [
                 'type'  => '%',
-                'value' => .003
+                'value' => .003,
             ],
             'GOTV'          => [
                 'type'  => '%',
-                'value' => .003
+                'value' => .003,
             ],
             'ZUKU'          => [
                 'type'  => '%',
-                'value' => .003
+                'value' => .003,
             ],
             'STARTIMES'     => [
                 'type'  => '%',
-                'value' => .003
+                'value' => .003,
             ],
             'NAIROBI_WTR'   => [
                 'type'  => '$',
-                'value' => 5
+                'value' => 5,
             ],
-        ]
+        ],
     ],
 
     'kyanda' => [
         'discounts' => [
             'SAFARICOM'     => [
                 'type'  => '%',
-                'value' => .06
+                'value' => .06,
             ],
             'FAIBA'         => [
                 'type'  => '%',
-                'value' => .09
+                'value' => .09,
             ],
             'FAIBA_B'       => [
                 'type'  => '%',
-                'value' => .09
+                'value' => .09,
             ],
             'AIRTEL'        => [
                 'type'  => '%',
-                'value' => .06
+                'value' => .06,
             ],
             'TELKOM'        => [
                 'type'  => '%',
-                'value' => .06
+                'value' => .06,
             ],
             'EQUITEL'       => [
                 'type'  => '%',
-                'value' => .05
+                'value' => .05,
             ],
             'KPLC_POSTPAID' => [
                 'type'  => '%',
-                'value' => .01
+                'value' => .01,
             ],
             'KPLC_PREPAID'  => [
                 'type'  => '%',
-                'value' => .015
+                'value' => .015,
             ],
             'DSTV'          => [
                 'type'  => '%',
-                'value' => .0025
+                'value' => .0025,
             ],
             'GOTV'          => [
                 'type'  => '%',
-                'value' => .0025
+                'value' => .0025,
             ],
             'ZUKU'          => [
                 'type'  => '%',
-                'value' => .0025
+                'value' => .0025,
             ],
             'STARTIMES'     => [
                 'type'  => '%',
-                'value' => .0025
+                'value' => .0025,
             ],
             'NAIROBI_WTR'   => [
                 'type'  => '$',
-                'value' => 5
+                'value' => 5,
             ],
-        ]
-    ]
+        ],
+    ],
 ];

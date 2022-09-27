@@ -42,26 +42,26 @@ class TandaApiTest extends TestCase
             new Response(200, ['Content_type' => 'application/json'],
                 json_encode(
                     [
-                        "id" => "b2eda99c-5c32-4a5a-a28e-7a9497d131fa",
-                        "status" => "000000",
-                        "message" => "Payment completed successfully.",
-                        "receiptNumber" => "01222081809FJHGM",
-                        "commandId" => "TopupFlexi",
-                        "serviceProviderId" => "SAFARICOM",
-                        "datetimeCreated" => "2022-08-18 09:48:13.797 +0200",
-                        "datetimeLastModified" => "2022-08-18 09:48:16.081 +0200",
-                        "datetimeCompleted" => "2022-08-18 09:48:16.081 +0200",
-                        "requestParameters" => [
+                        'id'                   => 'b2eda99c-5c32-4a5a-a28e-7a9497d131fa',
+                        'status'               => '000000',
+                        'message'              => 'Payment completed successfully.',
+                        'receiptNumber'        => '01222081809FJHGM',
+                        'commandId'            => 'TopupFlexi',
+                        'serviceProviderId'    => 'SAFARICOM',
+                        'datetimeCreated'      => '2022-08-18 09:48:13.797 +0200',
+                        'datetimeLastModified' => '2022-08-18 09:48:16.081 +0200',
+                        'datetimeCompleted'    => '2022-08-18 09:48:16.081 +0200',
+                        'requestParameters'    => [
                             [
-                                "id" => "accountNumber",
-                                "value" => "254712345678",
-                                "label" => "Customer's phone number"
+                                'id'    => 'accountNumber',
+                                'value' => '254712345678',
+                                'label' => "Customer's phone number",
                             ],
                             [
-                                "id" => "amount",
-                                "value" => "100",
-                                "label" => "Amount"
-                            ]
+                                'id'    => 'amount',
+                                'value' => '100',
+                                'label' => 'Amount',
+                            ],
                         ],
                     ],
                 )));
@@ -82,26 +82,26 @@ class TandaApiTest extends TestCase
             new Response(200, ['Content_type' => 'application/json'],
                 json_encode(
                     [
-                        "id" => "2dc0a2c8-d616-4650-b105-15eaa1adcba3",
-                        "status" => "500000",
-                        "message" => "Unexpected error occurred.",
-                        "receiptNumber" => "01222081618ECCHR",
-                        "commandId" => "TopupFlexi",
-                        "serviceProviderId" => "SAFARICOM",
-                        "datetimeCreated" => "2022-08-18 09:48:13.797 +0200",
-                        "datetimeLastModified" => "2022-08-18 09:48:16.081 +0200",
-                        "datetimeCompleted" => "2022-08-18 09:48:16.081 +0200",
-                        "requestParameters" => [
+                        'id'                   => '2dc0a2c8-d616-4650-b105-15eaa1adcba3',
+                        'status'               => '500000',
+                        'message'              => 'Unexpected error occurred.',
+                        'receiptNumber'        => '01222081618ECCHR',
+                        'commandId'            => 'TopupFlexi',
+                        'serviceProviderId'    => 'SAFARICOM',
+                        'datetimeCreated'      => '2022-08-18 09:48:13.797 +0200',
+                        'datetimeLastModified' => '2022-08-18 09:48:16.081 +0200',
+                        'datetimeCompleted'    => '2022-08-18 09:48:16.081 +0200',
+                        'requestParameters'    => [
                             [
-                                "id" => "accountNumber",
-                                "value" => "254712345678",
-                                "label" => "Customer's phone number"
+                                'id'    => 'accountNumber',
+                                'value' => '254712345678',
+                                'label' => "Customer's phone number",
                             ],
                             [
-                                "id" => "amount",
-                                "value" => "100",
-                                "label" => "Amount"
-                            ]
+                                'id'    => 'amount',
+                                'value' => '100',
+                                'label' => 'Amount',
+                            ],
                         ],
                     ],
                 )
@@ -112,29 +112,29 @@ class TandaApiTest extends TestCase
     private function createSampleTransaction(int $amount = 100, string $destination = '254712345678', Status $status = Status::PENDING): Transaction
     {
         return Transaction::create([
-            "initiator" => Initiator::CONSUMER,
-            "type" => TransactionType::PAYMENT,
-            "amount" => $amount,
-            "destination" => $destination,
-            "description" => "TEST",
-            "status" => $status,
-            "account_id" => 0,
-            "product_id" => ProductType::AIRTIME,
+            'initiator'   => Initiator::CONSUMER,
+            'type'        => TransactionType::PAYMENT,
+            'amount'      => $amount,
+            'destination' => $destination,
+            'description' => 'TEST',
+            'status'      => $status,
+            'account_id'  => 0,
+            'product_id'  => ProductType::AIRTIME,
         ]);
     }
 
     private function createSampleTandaRequest(Transaction $transaction, string $requestId, bool $successful = true): TandaRequest
     {
         return TandaRequest::create([
-            'request_id' => $requestId,
-            'status' => $successful ? '000000' : '500000',
-            'message' => 'message',
-            'command_id' => 'TopupFlexi',
-            'provider' => 'SAFARICOM',
-            'destination' => $transaction->destination,
-            'amount' => $transaction->amount,
+            'request_id'    => $requestId,
+            'status'        => $successful ? '000000' : '500000',
+            'message'       => 'message',
+            'command_id'    => 'TopupFlexi',
+            'provider'      => 'SAFARICOM',
+            'destination'   => $transaction->destination,
+            'amount'        => $transaction->amount,
             'last_modified' => now(),
-            'relation_id' => $transaction->id
+            'relation_id'   => $transaction->id,
         ]);
     }
 
@@ -173,7 +173,6 @@ class TandaApiTest extends TestCase
 
         TandaApi::queryStatus($tx, 'b2eda99c-5c32-4a5a-a28e-7a9497d131fa');
 
-
         Event::assertNotDispatched(TandaRequest::class);
         Event::assertNotDispatched(TandaRequestSuccessEvent::class);
         Event::assertNotDispatched(TandaRequestFailed::class);
@@ -200,7 +199,6 @@ class TandaApiTest extends TestCase
 
         // 3. Pending transaction // no TandaReq
         // 4. Mismatch transaction // no TandaReq
-
     }
 
     public function test_query_status_pending_tx()
@@ -236,7 +234,6 @@ class TandaApiTest extends TestCase
 
         TandaApi::queryStatus($tx, 'b2eda99c-5c32-4a5a-a28e-7a9497d131fa');
 
-
         Event::assertNotDispatched(TandaRequest::class);
         Event::assertNotDispatched(TandaRequestSuccessEvent::class);
         Event::assertNotDispatched(TandaRequestFailed::class);
@@ -256,7 +253,6 @@ class TandaApiTest extends TestCase
 
         TandaApi::queryStatus($tx, 'b2eda99c-5c32-4a5a-a28e-7a9497d131fa');
 
-
         Event::assertNotDispatched(TandaRequest::class);
         Event::assertNotDispatched(TandaRequestSuccessEvent::class);
         Event::assertNotDispatched(TandaRequestFailed::class);
@@ -264,5 +260,4 @@ class TandaApiTest extends TestCase
         $tx->refresh();
         $this->assertNull($tx->tandaRequest);
     }
-
 }

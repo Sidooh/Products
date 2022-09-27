@@ -1,14 +1,11 @@
 <?php
 
-
 namespace App\Helpers\AfricasTalking;
-
 
 use App\Enums\Description;
 use App\Enums\EventType;
 use App\Enums\Status;
 use App\Models\Transaction;
-use App\Models\Voucher;
 use App\Services\SidoohAccounts;
 use App\Services\SidoohNotify;
 use App\Services\SidoohPayments;
@@ -47,9 +44,9 @@ class AfricasTalkingApi
      */
     public function __construct()
     {
-        if(config('services.at.env') == 'production') {
-            $this->username = config("services.at.airtime.username");
-            $this->apiKey = config("services.at.airtime.key");
+        if (config('services.at.env') == 'production') {
+            $this->username = config('services.at.airtime.username');
+            $this->apiKey = config('services.at.airtime.key');
         } else {
             $this->username = config('services.at.username');
             $this->apiKey = config('services.at.key');
@@ -65,7 +62,7 @@ class AfricasTalkingApi
         try {
             return (new AfricasTalkingApi)->AT->application()->fetchApplicationData();
         } catch (Exception $e) {
-            Log::error("ATError: " . $e->getMessage());
+            Log::error('ATError: ' . $e->getMessage());
         }
     }
 
@@ -86,7 +83,7 @@ class AfricasTalkingApi
             'discount' => $response['data']['totalDiscount'],
         ]);
 
-        DB::transaction(function() use ($req, $response) {
+        DB::transaction(function () use ($req, $response) {
             $req->save();
 
             $responses = collect($response['data']['responses'])->map(fn(array $response) => [
@@ -95,22 +92,22 @@ class AfricasTalkingApi
                 'amount'     => str_ireplace('KES ', '', $response['amount']),
                 'discount'   => $response['discount'],
                 'request_id' => $response['requestId'],
-                'status'     => Status::tryFrom(strtoupper($response['status'])) ?? $response['status']
+                'status'     => Status::tryFrom(strtoupper($response['status'])) ?? $response['status'],
             ])->toArray();
 
             $req->airtimeResponses()->createMany($responses);
         });
 
-        if($response['data']['errorMessage'] != "None") {
+        if ($response['data']['errorMessage'] != 'None') {
             $amount = $transaction->amount;
             $phone = SidoohAccounts::findPhone($transaction->account_id);
-            $date = $req->updated_at->timezone('Africa/Nairobi')->format(config("settings.sms_date_time_format"));
+            $date = $req->updated_at->timezone('Africa/Nairobi')->format(config('settings.sms_date_time_format'));
 
             $response = SidoohPayments::creditVoucher($transaction->account_id, $amount, Description::VOUCHER_REFUND);
             [$voucher] = $response;
 
-            $amount = "Ksh" . number_format($amount, 2);
-            $balance = "Ksh" . number_format($voucher['balance']);
+            $amount = 'Ksh' . number_format($amount, 2);
+            $balance = 'Ksh' . number_format($voucher['balance']);
 
             $transaction->status = Status::REFUNDED;
             $transaction->save();
@@ -129,9 +126,9 @@ class AfricasTalkingApi
                 [
                     'phoneNumber'  => '+254110039317',
                     'currencyCode' => 'KES',
-                    'amount'       => 20
+                    'amount'       => 20,
                 ],
-            ]
+            ],
         ]);
     }
 
@@ -141,6 +138,6 @@ class AfricasTalkingApi
         $transaction = $this->AT->transaction();
 
         // Use the service
-        return $transaction->check(['transactionId' => $transactionId,]);
+        return $transaction->check(['transactionId' => $transactionId]);
     }
 }

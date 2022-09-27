@@ -19,7 +19,6 @@ return new class extends Migration
             $table->decimal('amount', 7, 4);
             $table->string('type'); //SELF / INVITE / SYSTEM
 
-
             $table->foreignId('account_id')->unsigned()->nullable();
             $table->foreignId('transaction_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
 

@@ -27,10 +27,10 @@ class EnterpriseRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "name"         => "required|string",
-            "settings"     => "required|array",
-            "account_id"   => ["bail", "required", "integer", new SidoohAccountExists],
-            "account_type" => ["required", new Enum(EnterpriseAccountType::class)],
+            'name'         => 'required|string',
+            'settings'     => 'required|array',
+            'account_id'   => ['bail', 'required', 'integer', new SidoohAccountExists],
+            'account_type' => ['required', new Enum(EnterpriseAccountType::class)],
         ];
     }
 }

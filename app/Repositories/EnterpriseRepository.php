@@ -9,12 +9,12 @@ class EnterpriseRepository
 {
     public function store(string $name, ?array $settings, ?array $accounts): Enterprise|Model
     {
-        $enterprise =  Enterprise::create([
+        $enterprise = Enterprise::create([
             'name'     => $name,
-            'settings' => $settings
+            'settings' => $settings,
         ]);
 
-        if(isset($accounts) && count($accounts) > 0) {
+        if (isset($accounts) && count($accounts) > 0) {
             $enterprise->enterpriseAccounts()->createMany($accounts);
         }
 

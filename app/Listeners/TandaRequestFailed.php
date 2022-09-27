@@ -14,20 +14,23 @@ class TandaRequestFailed
      *
      * @return void
      */
-    public function __construct() { }
+    public function __construct()
+    {
+    }
 
     /**
      * Handle the event.
      *
      * @param TandaRequestFailedEvent $event
      * @return void
+     *
      * @throws Exception
      */
     public function handle(TandaRequestFailedEvent $event)
     {
         Log::info('...[EVENT]: Tanda Request Failed...', [
-            'id' => $event->request->id,
-            'message' => $event->request->message
+            'id'      => $event->request->id,
+            'message' => $event->request->message,
         ]);
 
         TandaEventRepository::requestFailed($event->request);

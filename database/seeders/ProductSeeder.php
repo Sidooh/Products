@@ -22,13 +22,12 @@ class ProductSeeder extends Seeder
 
         $products = [];
 
-        foreach(ProductType::cases() as $product) {
+        foreach (ProductType::cases() as $product) {
             $products[] = [
-                'name' => $product->name
+                'name' => $product->name,
             ];
         }
 
         Product::insert($products);
-
     }
 }

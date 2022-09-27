@@ -22,7 +22,7 @@ class TandaApi
         try {
             return Account::balance();
         } catch (TandaException $e) {
-            Log::error("TandaError: " . $e->getMessage());
+            Log::error('TandaError: ' . $e->getMessage());
         }
     }
 
@@ -35,7 +35,7 @@ class TandaApi
 
             self::handleRequestResponse($response);
         } catch (TandaException $e) {
-            Log::error("TandaError: " . $e->getMessage(), [$transaction]);
+            Log::error('TandaError: ' . $e->getMessage(), [$transaction]);
         }
     }
 
@@ -48,23 +48,23 @@ class TandaApi
 
             self::handleRequestResponse($response);
         } catch (TandaException $e) {
-            Log::error("TandaError: " . $e->getMessage(), [$transaction]);
+            Log::error('TandaError: ' . $e->getMessage(), [$transaction]);
         }
     }
 
     private static function handleRequestResponse(TandaRequest $request): void
     {
-        if($request->status == 2) {
+        if ($request->status == 2) {
             try {
                 $message = "TN_ERROR-{$request->relation->id}\n";
                 $message .= "$request->provider - $request->destination\n";
                 $message .= "$request->message\n";
-                $message .= "{$request->created_at->timezone('Africa/Nairobi')->format(config("settings.sms_date_time_format"))}";
+                $message .= "{$request->created_at->timezone('Africa/Nairobi')->format(config('settings.sms_date_time_format'))}";
 
                 SidoohNotify::notify([
                     '254714611696',
                     '254711414987',
-                    '254721309253'
+                    '254721309253',
                 ], $message, EventType::ERROR_ALERT);
 
                 Log::info('...[TANDA-API]: Airtime/Utility Failure SMS Sent...');
@@ -80,14 +80,15 @@ class TandaApi
 
         $response = Utility::requestStatus($requestId);
 
-        if(is_null($transaction->tandaRequest)) {
+        if (is_null($transaction->tandaRequest)) {
             [
                 'accountNumber' => $destination,
                 'amount'        => $amount
             ] = array_column($response['requestParameters'], 'value', 'id');
 
-            if($destination !== $transaction->destination || (int)$amount !== (int)$transaction->amount) {
-                Log::error("Transaction and Tanda Request mismatch", $transaction->toArray());
+            if ($destination !== $transaction->destination || (int)$amount !== (int)$transaction->amount) {
+                Log::error('Transaction and Tanda Request mismatch', $transaction->toArray());
+
                 return;
             }
 
@@ -102,7 +103,7 @@ class TandaApi
                 'amount'         => $amount ?? $transaction->amount,
                 'result'         => $response['resultParameters'] ?? [],
                 'last_modified'  => $response['datetimeLastModified'],
-                'relation_id'    => $transaction->id
+                'relation_id'    => $transaction->id,
             ]);
 
             EventHelper::fireTandaEvent($request);

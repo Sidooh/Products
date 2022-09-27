@@ -27,17 +27,17 @@ class KyandaEventRepository extends EventRepository
     public static function request(KyandaRequest $kyandaRequest)
     {
         $transaction = Transaction::find($kyandaRequest->relation_id);
-        $date = $kyandaRequest->created_at->timezone('Africa/Nairobi')->format(config("settings.sms_date_time_format"));
+        $date = $kyandaRequest->created_at->timezone('Africa/Nairobi')->format(config('settings.sms_date_time_format'));
         $account = SidoohAccounts::find($transaction->account_id);
         $phone = ltrim($account['phone'], '+');
         $amount = $transaction->amount;
 
-        if(!in_array($kyandaRequest->status_code, ['0000', '1100'])) {
+        if (!in_array($kyandaRequest->status_code, ['0000', '1100'])) {
             try {
                 $message = "KY_ERR:{$kyandaRequest->provider}\n{$kyandaRequest->message}\n{$account['phone']} - $date";
 
                 SidoohNotify::notify(admin_contacts(), $message, EventType::ERROR_ALERT);
-                Log::info("Kyanda Failure SMS Sent");
+                Log::info('Kyanda Failure SMS Sent');
             } catch (Exception $e) {
                 Log::error($e->getMessage());
             }
@@ -70,12 +70,12 @@ class KyandaEventRepository extends EventRepository
         $method = $transaction->payment->subtype;
 
         $paymentDetails = SidoohPayments::findPaymentDetails($transaction->id, $transaction->account_id);
-        $payment = $paymentDetails["payment"];
-        $voucher = $paymentDetails["voucher"];
-        $method = $payment["subtype"];
+        $payment = $paymentDetails['payment'];
+        $voucher = $paymentDetails['voucher'];
+        $method = $payment['subtype'];
 
         if ($method === 'VOUCHER') {
-            $bal = 'Ksh' . number_format($voucher["balance"], 2);
+            $bal = 'Ksh' . number_format($voucher['balance'], 2);
             $vtext = " New Voucher balance is $bal.";
         } else {
             $method = 'MPESA';
@@ -89,7 +89,7 @@ class KyandaEventRepository extends EventRepository
 
         $amount = $transaction->amount;
         $date = $kyandaTransaction->updated_at->timezone('Africa/Nairobi')
-            ->format(config("settings.sms_date_time_format"));
+            ->format(config('settings.sms_date_time_format'));
 
         $provider = $kyandaTransaction->request->provider;
 
@@ -100,15 +100,15 @@ class KyandaEventRepository extends EventRepository
             case Providers::TELKOM:
             case Providers::EQUITEL:
 //                Get Points Earned
-                if($provider == Providers::FAIBA) {
+                if ($provider == Providers::FAIBA) {
                     $totalEarnings = .09 * $transaction->amount;
-                } else if($provider == Providers::EQUITEL) {
+                } elseif ($provider == Providers::EQUITEL) {
                     $totalEarnings = .05 * $transaction->amount;
                 } else {
                     $totalEarnings = .06 * $transaction->amount;
                 }
 
-            $userEarnings = EarningRepository::getPointsEarned($transaction, $totalEarnings);
+                $userEarnings = EarningRepository::getPointsEarned($transaction, $totalEarnings);
 
 //                Update Earnings
                 TransactionSuccessEvent::dispatch($transaction, $totalEarnings);
@@ -116,7 +116,7 @@ class KyandaEventRepository extends EventRepository
                 $phone = ltrim(PhoneNumber::make($destination, 'KE')->formatE164(), '+');
 
 //                Send SMS
-                if($phone != $sender) {
+                if ($phone != $sender) {
                     $message = "You have purchased {$amount} airtime for {$phone} from your Sidooh account on {$date} using $method. You have received {$userEarnings} cashback.$vText";
 
                     SidoohNotify::notify([$sender], $message, EventType::AIRTIME_PURCHASE);
@@ -159,8 +159,8 @@ class KyandaEventRepository extends EventRepository
             case Providers::ZUKU:
             case Providers::STARTIMES:
 //                Get Points Earned
-            $totalEarnings = .0025 * $transaction->amount;
-            $userEarnings = EarningRepository::getPointsEarned($transaction, $totalEarnings);
+                $totalEarnings = .0025 * $transaction->amount;
+                $userEarnings = EarningRepository::getPointsEarned($transaction, $totalEarnings);
 
 //                Send SMS
                 $message = "You have made a payment to {$provider} - {$destination} of {$amount} from your Sidooh account on {$date} using $method. You have received {$userEarnings} cashback.$vText";
@@ -199,7 +199,6 @@ class KyandaEventRepository extends EventRepository
         TransactionSuccessEvent::dispatch($transaction, $totalEarnings);
     }
 
-
     /**
      * @throws Exception
      */
@@ -213,7 +212,7 @@ class KyandaEventRepository extends EventRepository
 
         $amount = $transaction->amount;
         $date = $kyandaTransaction->updated_at->timezone('Africa/Nairobi')
-            ->format(config("settings.sms_date_time_format"));
+            ->format(config('settings.sms_date_time_format'));
 
         $provider = $kyandaTransaction->request->provider;
 

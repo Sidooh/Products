@@ -24,6 +24,7 @@ use Illuminate\Support\Carbon;
  * @property-read Collection|EnterpriseAccount[] $enterpriseAccounts
  * @property-read int|null                       $enterprise_accounts_count
  * @property-read int|null                       $vouchers_count
+ *
  * @method static EnterpriseFactory factory(...$parameters)
  * @method static Builder|Enterprise newModelQuery()
  * @method static Builder|Enterprise newQuery()
@@ -40,12 +41,12 @@ class Enterprise extends Model
     use HasFactory;
 
     protected $fillable = [
-        "name",
-        "settings"
+        'name',
+        'settings',
     ];
 
     protected $casts = [
-        'settings' => 'array'
+        'settings' => 'array',
     ];
 
     /**
@@ -53,14 +54,13 @@ class Enterprise extends Model
      *
      * @var array
      */
-    protected $appends = ["max_lunch", "max_general", "admin"];
-
+    protected $appends = ['max_lunch', 'max_general', 'admin'];
 
     protected function admin(): Attribute
     {
-        return Attribute::get(function() {
-            $admin = $this->enterpriseAccounts()->where("type", EnterpriseAccountType::ADMIN)
-                ->oldest("id")->first();
+        return Attribute::get(function () {
+            $admin = $this->enterpriseAccounts()->where('type', EnterpriseAccountType::ADMIN)
+                ->oldest('id')->first();
 
             $admin->account = SidoohAccounts::find($admin->account_id);
 
@@ -70,22 +70,23 @@ class Enterprise extends Model
 
     protected function maxLunch(): Attribute
     {
-        return new Attribute(get: function($value, $attributes) {
+        return new Attribute(get: function ($value, $attributes) {
             $settings = json_decode($attributes['settings'], true);
             $setting = collect($settings)->firstWhere('type', 'lunch');
+
             return $setting['max'] ?? null;
         });
     }
 
     protected function maxGeneral(): Attribute
     {
-        return new Attribute(get: function($value, $attributes) {
+        return new Attribute(get: function ($value, $attributes) {
             $settings = json_decode($attributes['settings'], true);
             $setting = collect($settings)->firstWhere('type', 'general');
+
             return $setting['max'] ?? null;
         });
     }
-
 
     /**
      * ---------------------------------------- Relationships ----------------------------------------

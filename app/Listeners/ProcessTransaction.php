@@ -24,6 +24,7 @@ class ProcessTransaction
      *
      * @param TransactionCreated $event
      * @return void
+     *
      * @throws Exception|Throwable
      */
     public function handle(TransactionCreated $event)

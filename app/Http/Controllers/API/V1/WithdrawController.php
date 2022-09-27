@@ -30,12 +30,12 @@ class WithdrawController extends Controller
         $account = SidoohAccounts::find($data['account_id']);
 
         // TODO: Shift to repository function?
-        $earningAccounts = EarningAccount::select(["type", "self_amount", "invite_amount"])
+        $earningAccounts = EarningAccount::select(['type', 'self_amount', 'invite_amount'])
             ->whereAccountId($account['id'])
             ->get();
 
         if ($earningAccounts->count() === 0) {
-            return $this->errorResponse("No earnings found for user");
+            return $this->errorResponse('No earnings found for user');
         }
 
         [$creditAccounts, $debitAccounts] = $earningAccounts
@@ -46,24 +46,24 @@ class WithdrawController extends Controller
 
         // 20% for current account and 50 for charges
         if (.2 * ($totalEarned - $totalWithdrawn) - 50 < $data['amount']) {
-            return $this->errorResponse("Earning balance is insufficient");
+            return $this->errorResponse('Earning balance is insufficient');
         }
 
         $transactions = [
             [
-                "initiator" => $data["initiator"],
-                "amount" => $data["amount"],
-                "destination" => $data['target_number'] ?? $account["phone"],
-                "type" => TransactionType::WITHDRAWAL,
-                "description" => Description::EARNINGS_WITHDRAWAL,
-                "account_id" => $data['account_id'],
-                "product_id" => ProductType::WITHDRAWAL,
-                "account" => $account,
-            ]
+                'initiator'   => $data['initiator'],
+                'amount'      => $data['amount'],
+                'destination' => $data['target_number'] ?? $account['phone'],
+                'type'        => TransactionType::WITHDRAWAL,
+                'description' => Description::EARNINGS_WITHDRAWAL,
+                'account_id'  => $data['account_id'],
+                'product_id'  => ProductType::WITHDRAWAL,
+                'account'     => $account,
+            ],
         ];
 
         $data = [
-            "method" => $request->has("method") ? PaymentMethod::from($request->input("method")) : PaymentMethod::MPESA,
+            'method' => $request->has('method') ? PaymentMethod::from($request->input('method')) : PaymentMethod::MPESA,
         ];
 
         $transactions = TransactionRepository::createWithdrawalTransactions($transactions, $data);

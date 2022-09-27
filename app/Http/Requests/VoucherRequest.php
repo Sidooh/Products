@@ -34,17 +34,17 @@ class VoucherRequest extends FormRequest
                 Rule::requiredIf(!$this->is('*/products/voucher/disburse')),
                 new Enum(Initiator::class),
             ],
-            'account_id'    => ["required", 'integer'],
+            'account_id'    => ['required', 'integer'],
             'amount'        => ['required', 'integer'],
-            "method"        => ["exclude_without:target_number", new Enum(PaymentMethod::class)],
-            "target_number" => [
-                Rule::requiredIf($this->input("method") === PaymentMethod::VOUCHER->value),
-                "phone:$countryCode"
+            'method'        => ['exclude_without:target_number', new Enum(PaymentMethod::class)],
+            'target_number' => [
+                Rule::requiredIf($this->input('method') === PaymentMethod::VOUCHER->value),
+                "phone:$countryCode",
             ],
-            "debit_account" => [
-                Rule::excludeIf($this->input("method") === PaymentMethod::VOUCHER->value),
-                "phone:$countryCode"
-            ]
+            'debit_account' => [
+                Rule::excludeIf($this->input('method') === PaymentMethod::VOUCHER->value),
+                "phone:$countryCode",
+            ],
         ];
     }
 }

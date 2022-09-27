@@ -13,23 +13,25 @@ use Illuminate\Http\Request;
 
 class EnterpriseAccountController extends Controller
 {
-    public function __construct(private readonly EnterpriseAccountRepository $repo) { }
+    public function __construct(private readonly EnterpriseAccountRepository $repo)
+    {
+    }
 
     /**
      * Display a listing of the resource.
      *
      * @param \Illuminate\Http\Request $request
-     * @param \App\Models\Enterprise   $enterprise
+     * @param \App\Models\Enterprise $enterprise
      * @return \Illuminate\Http\JsonResponse
      */
     public function index(Enterprise $enterprise): JsonResponse
     {
         $enterprises = $enterprise->enterpriseAccounts()->select([
-            "id",
-            "type",
-            "account_id",
-            "enterprise_id",
-            "created_at"
+            'id',
+            'type',
+            'account_id',
+            'enterprise_id',
+            'created_at',
         ])->latest()->get();
 
         return $this->successResponse($enterprises);
@@ -39,14 +41,14 @@ class EnterpriseAccountController extends Controller
      * Store a newly created resource in storage.
      *
      * @param \App\Http\Requests\EnterpriseAccountRequest $request
-     * @param \App\Models\Enterprise                      $enterprise
+     * @param \App\Models\Enterprise $enterprise
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(EnterpriseAccountRequest $request, Enterprise $enterprise): JsonResponse
     {
         $data = $request->validated();
 
-        $enterpriseAccount = $this->repo->store($enterprise, $data["type"], $data["account_id"]);
+        $enterpriseAccount = $this->repo->store($enterprise, $data['type'], $data['account_id']);
 
         return $this->successResponse($enterpriseAccount);
     }
@@ -54,16 +56,17 @@ class EnterpriseAccountController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param \Illuminate\Http\Request      $request
+     * @param \Illuminate\Http\Request $request
      * @param \App\Models\EnterpriseAccount $enterpriseAccount
-     * @throws \Exception
      * @return \Illuminate\Http\JsonResponse
+     *
+     * @throws \Exception
      */
     public function show(Request $request, EnterpriseAccount $enterpriseAccount): JsonResponse
     {
-        $relations = explode(",", $request->query("with"));
+        $relations = explode(',', $request->query('with'));
 
-        if(in_array("account", $relations)) {
+        if (in_array('account', $relations)) {
             $enterpriseAccount->account = SidoohAccounts::find($enterpriseAccount->account_id);
         }
 

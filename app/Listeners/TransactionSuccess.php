@@ -23,9 +23,10 @@ class TransactionSuccess
      * Handle the event.
      *
      * @param TransactionSuccessEvent $event
+     * @return void
+     *
      * @throws \Exception
      * @throws \Throwable
-     * @return void
      */
     public function handle(TransactionSuccessEvent $event): void
     {

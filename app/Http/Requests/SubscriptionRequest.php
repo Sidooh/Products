@@ -28,14 +28,14 @@ class SubscriptionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'initiator' => ['required', new Enum(Initiator::class)],
-            'account_id' => 'integer',
-            'method' => [new Enum(PaymentMethod::class)],
-            'account_number' => [Rule::requiredIf($this->is('*/products/utility')), 'integer'],
-            'utility_provider' => ["required_if:product,utility"],
-            'target_number' => 'phone:KE',
-            'debit_account' => 'phone:KE',
-            'subscription_type_id' => "required|exists:subscription_types,id"
+            'initiator'            => ['required', new Enum(Initiator::class)],
+            'account_id'           => 'integer',
+            'method'               => [new Enum(PaymentMethod::class)],
+            'account_number'       => [Rule::requiredIf($this->is('*/products/utility')), 'integer'],
+            'utility_provider'     => ['required_if:product,utility'],
+            'target_number'        => 'phone:KE',
+            'debit_account'        => 'phone:KE',
+            'subscription_type_id' => 'required|exists:subscription_types,id',
         ];
     }
 }

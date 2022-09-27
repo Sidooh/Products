@@ -8,13 +8,14 @@ use Illuminate\Support\Facades\Log;
 
 class AirtimePurchaseSuccess
 {
-
     /**
      * Create the event listener.
      *
      * @return void
      */
-    public function __construct() { }
+    public function __construct()
+    {
+    }
 
     /**
      * Handle the event.

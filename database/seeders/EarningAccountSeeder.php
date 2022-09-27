@@ -21,13 +21,13 @@ class EarningAccountSeeder extends Seeder
 
         $accounts = [
             [
-                'type' => 'SYSTEM',
-                'self_amount' => 0,
+                'type'          => 'SYSTEM',
+                'self_amount'   => 0,
                 'invite_amount' => 0,
-                'account_id' => 0,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]
+                'account_id'    => 0,
+                'created_at'    => now(),
+                'updated_at'    => now(),
+            ],
         ];
 
 //        foreach (EarningAccountType::cases() as $accountType) {

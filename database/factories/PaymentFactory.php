@@ -15,13 +15,13 @@ class PaymentFactory extends Factory
     public function definition(): array
     {
         return [
-            "payment_id"     => $this->faker->unique()->randomNumber(),
-            "transaction_id" => Transaction::factory(),
-            "amount"         => $this->faker->numberBetween(20, 100),
-            "type"           => $this->faker->randomElement(["MPESA", "SIDOOH"]),
-            "subtype"        => fn(array $attributes) => match ($attributes["type"]) {
-                "MPESA" => "STK",
-                "SIDOOH" => "VOUCHER",
+            'payment_id'     => $this->faker->unique()->randomNumber(),
+            'transaction_id' => Transaction::factory(),
+            'amount'         => $this->faker->numberBetween(20, 100),
+            'type'           => $this->faker->randomElement(['MPESA', 'SIDOOH']),
+            'subtype'        => fn(array $attributes) => match ($attributes['type']) {
+                'MPESA' => 'STK',
+                'SIDOOH' => 'VOUCHER',
             },
         ];
     }

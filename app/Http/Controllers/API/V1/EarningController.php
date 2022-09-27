@@ -24,16 +24,18 @@ class EarningController extends Controller
 {
     public function saveEarnings(Request $request): Collection
     {
-        $request->validate(["date" => "date|date_format:d-m-Y"]);
+        $request->validate(['date' => 'date|date_format:d-m-Y']);
 
         $date = null;
-        if($request->has("date")) $date = Carbon::createFromFormat("d-m-Y", $request->input("date"));
+        if ($request->has('date')) {
+            $date = Carbon::createFromFormat('d-m-Y', $request->input('date'));
+        }
 
         $savings = $this->collectEarnings($date);
 
         $message = "STATUS:SAVINGS\n\n";
 
-        if($savings->count() > 0) {
+        if ($savings->count() > 0) {
             try {
                 $responses = SidoohSavings::save($savings->toArray());
 
@@ -42,9 +44,12 @@ class EarningController extends Controller
 
                 //TODO: Store in DB so that we don't repeat saving
 
-                if($totalCompleted > 0) $message .= "Processed earnings for $totalCompleted accounts\n";
-                if($totalFailed > 0) $message .= "Failed for $totalFailed accounts";
-
+                if ($totalCompleted > 0) {
+                    $message .= "Processed earnings for $totalCompleted accounts\n";
+                }
+                if ($totalFailed > 0) {
+                    $message .= "Failed for $totalFailed accounts";
+                }
             } catch (Exception $e) {
                 // Notify failure
                 Log::error($e);
@@ -54,7 +59,7 @@ class EarningController extends Controller
                 return $savings;
             }
         } else {
-            $message .= "No earnings to allocate.";
+            $message .= 'No earnings to allocate.';
         }
 
         SidoohNotify::notify(admin_contacts(), $message, EventType::STATUS_UPDATE);
@@ -64,15 +69,17 @@ class EarningController extends Controller
 
     public function collectEarnings($date = null): Collection
     {
-        if(!$date) $date = new Carbon;
+        if (!$date) {
+            $date = new Carbon;
+        }
 
-        $cashbacks = Cashback::selectRaw("SUM(amount) as amount, account_id")->whereNotNull("account_id")
-            ->whereDate("created_at", $date->format("Y-m-d"))->groupBy("account_id")->get();
+        $cashbacks = Cashback::selectRaw('SUM(amount) as amount, account_id')->whereNotNull('account_id')
+            ->whereDate('created_at', $date->format('Y-m-d'))->groupBy('account_id')->get();
 
         return $cashbacks->map(fn(Cashback $cashback) => [
-            "account_id"     => $cashback->account_id,
-            "current_amount" => round($cashback->amount * .2, 4),
-            "locked_amount"  => round($cashback->amount * .8, 4)
+            'account_id'     => $cashback->account_id,
+            'current_amount' => round($cashback->amount * .2, 4),
+            'locked_amount'  => round($cashback->amount * .8, 4),
         ]);
     }
 
@@ -85,7 +92,7 @@ class EarningController extends Controller
 
         $saving = SavingsTransaction::whereReference($request->id)->firstOrFail();
 
-        if($request->status === Status::COMPLETED->name && $saving->status === Status::PENDING->name) {
+        if ($request->status === Status::COMPLETED->name && $saving->status === Status::PENDING->name) {
             $saving->status = Status::COMPLETED;
             $saving->save();
 
@@ -97,13 +104,13 @@ class EarningController extends Controller
             $destination = $saving->transaction->destination;
             $amount = $saving->transaction->amount;
             $date = $saving->transaction->updated_at->timezone('Africa/Nairobi')
-                ->format(config("settings.sms_date_time_format"));
+                ->format(config('settings.sms_date_time_format'));
 
-            $earningAccounts = EarningAccount::select(["type", "self_amount", "invite_amount"])
+            $earningAccounts = EarningAccount::select(['type', 'self_amount', 'invite_amount'])
                 ->whereAccountId($account['id'])->get();
 
-            if($earningAccounts->count() === 0) {
-                return $this->errorResponse("No earnings found for user");
+            if ($earningAccounts->count() === 0) {
+                return $this->errorResponse('No earnings found for user');
             }
 
             [
@@ -120,7 +127,7 @@ class EarningController extends Controller
 
             $method = 'MPESA';
 
-            if($destination !== $account['phone']) {
+            if ($destination !== $account['phone']) {
                 $message = "You have redeemed KES$amount to MPESA $destination from your Sidooh account on $date. Your earnings balance is $earning_balance.";
 
                 SidoohNotify::notify([$account['phone']], $message, EventType::WITHDRAWAL_PAYMENT);
@@ -128,16 +135,14 @@ class EarningController extends Controller
                 $message = "Congratulations! You have received KES$amount via $method from Sidooh account ${account['phone']} on $date. Sidooh Makes You Money with Every Purchase.\n\nDial $code NOW for FREE on your Safaricom line to BUY AIRTIME & START EARNING from your purchases.";
 
                 SidoohNotify::notify([$destination], $message, EventType::WITHDRAWAL_PAYMENT);
-
             } else {
                 $message = "You have redeemed KES$amount from your Sidooh account on $date to $method. Your earnings balance is $earning_balance.";
 
                 SidoohNotify::notify([$account['phone']], $message, EventType::WITHDRAWAL_PAYMENT);
             }
-
         }
 
-        if($request->status === Status::FAILED->name && $saving->status === Status::PENDING->name) {
+        if ($request->status === Status::FAILED->name && $saving->status === Status::PENDING->name) {
             $saving->status = Status::FAILED;
             $saving->save();
 
@@ -146,7 +151,7 @@ class EarningController extends Controller
 
             $account = SidoohAccounts::find($saving->transaction->account_id);
 
-            $message = "Sorry! We failed to complete your earnings withdrawal. ";
+            $message = 'Sorry! We failed to complete your earnings withdrawal. ';
             $message .= "No amount was deducted from your account.\nWe apologize for the inconvenience. Please try again.";
 
             SidoohNotify::notify([$account['phone']], $message, EventType::WITHDRAWAL_FAILURE);
