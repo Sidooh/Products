@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Enums\Description;
-use App\Enums\Initiator;
 use App\Enums\PaymentMethod;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Support\Collection;
@@ -80,15 +79,5 @@ class SidoohPayments extends SidoohService
     public static function findVoucherByAccount(int $accountId): ?array
     {
         return parent::fetch(self::baseUrl() . "/accounts/$accountId/vouchers");
-    }
-
-    public static function createFloatAccount(Initiator $initiator, int $floatableId)
-    {
-        Log::info('...[SRV - PAYMENTS]: Create Float Account...');
-
-        return parent::fetch(self::baseUrl() . "/float-accounts", "POST", [
-            "initiator"    => $initiator,
-            "floatable_id" => $floatableId,
-        ]);
     }
 }

@@ -8,9 +8,8 @@ use AfricasTalking\SDK\AfricasTalking;
 
 class AfricasTalkingSubClass extends AfricasTalking
 {
-    public function transaction()
+    public function transaction(): Transaction
     {
-        $transaction = new Transaction($this->tokenClient, $this->username, $this->apiKey);
-        return $transaction;
+        return new Transaction($this->tokenClient, $this->username, $this->apiKey);
     }
 }

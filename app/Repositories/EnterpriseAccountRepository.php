@@ -9,13 +9,9 @@ class EnterpriseAccountRepository
 {
     public function store(Enterprise $enterprise, string $type, int $accountId): Enterprise|Model
     {
-        $enterpriseAccount = $enterprise->enterpriseAccounts()->create([
+        return $enterprise->enterpriseAccounts()->create([
             "type"       => $type,
             "account_id" => $accountId
         ]);
-
-//        $enterpriseAccount->float_account = SidoohPayments::createFloatAccount(Initiator::ENTERPRISE, $enterprise->id);
-
-        return $enterpriseAccount;
     }
 }

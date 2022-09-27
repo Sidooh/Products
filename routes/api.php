@@ -40,7 +40,6 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function() {
 
 //        TODO: Should we have a similar endpoint for voucher purchase?
 //          Route::post('/voucher', WithdrawController::class);
-
         Route::prefix('/vouchers')->group(function() {
             Route::post('/top-up', [VoucherController::class, 'topUp']);
         });
@@ -92,6 +91,9 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function() {
     Route::prefix('/savings')->group(function() {
         Route::post('/callback', [EarningController::class, 'processSavingsCallback']);
     });
+
+    Route::get("/service-providers/balance", [ProductController::class, "getServiceProviderBalance"]);
+
 
     //  DASHBOARD ROUTES
     Route::get('/dashboard', [DashboardController::class, "index"]);
