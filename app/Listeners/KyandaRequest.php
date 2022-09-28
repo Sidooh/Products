@@ -21,7 +21,7 @@ class KyandaRequest
     /**
      * Handle the event.
      *
-     * @param KyandaTransactionSuccessEvent $event
+     * @param  KyandaTransactionSuccessEvent  $event
      * @return void
      */
     public function handle(KyandaRequestEvent $event)

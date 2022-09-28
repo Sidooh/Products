@@ -36,8 +36,8 @@ class Purchase
 
         match (config('services.sidooh.utilities_provider')) {
             'KYANDA' => KyandaApi::bill($this->transaction, $provider),
-            'TANDA' => TandaApi::bill($this->transaction, $provider),
-            default => throw new Exception('No provider provided for utility purchase')
+            'TANDA'  => TandaApi::bill($this->transaction, $provider),
+            default  => throw new Exception('No provider provided for utility purchase')
         };
     }
 
@@ -48,15 +48,7 @@ class Purchase
     {
 //        TODO: Notify admins of possible duplicate
         if ($this->transaction->atAirtimeRequest || $this->transaction->kyandaTransaction || $this->transaction->tandaRequest) {
-            SidoohNotify::notify(
-                [
-                    '254714611696',
-                    '254711414987',
-                    '254721309253',
-                ],
-                "ERROR:AIRTIME\n{$this->transaction->id}\nPossible duplicate airtime request... Confirm!!!",
-                EventType::ERROR_ALERT
-            );
+            SidoohNotify::notify(admin_contacts(), "ERROR:AIRTIME\n{$this->transaction->id}\nPossible duplicate airtime request... Confirm!!!", EventType::ERROR_ALERT);
             Log::error('Possible duplicate airtime request... Confirm!!!');
             exit;
         }
@@ -64,10 +56,10 @@ class Purchase
         $phone = PhoneNumber::make($this->transaction->destination, 'KE')->formatE164();
 
         match (config('services.sidooh.utilities_provider')) {
-            'AT' => AfricasTalkingApi::airtime($this->transaction, $phone),
+            'AT'     => AfricasTalkingApi::airtime($this->transaction, $phone),
             'KYANDA' => KyandaApi::airtime($this->transaction, $phone),
-            'TANDA' => TandaApi::airtime($this->transaction, $phone),
-            default => throw new Exception('No provider provided for airtime purchase')
+            'TANDA'  => TandaApi::airtime($this->transaction, $phone),
+            default  => throw new Exception('No provider provided for airtime purchase')
         };
     }
 
@@ -89,10 +81,10 @@ class Purchase
         $type = SubscriptionType::wherePrice($this->transaction->amount)->firstOrFail();
 
         $subscription = [
-            'status' => Status::ACTIVE,
+            'status'     => Status::ACTIVE,
             'account_id' => $this->transaction->account_id,
             'start_date' => now(),
-            'end_date' => now()->addMonths($type->duration),
+            'end_date'   => now()->addMonths($type->duration),
         ];
 
         return DB::transaction(function () use ($type, $subscription) {
@@ -108,7 +100,7 @@ class Purchase
     }
 
     /**
-     * @param array $paymentsData
+     * @param  array  $paymentsData
      *
      * @throws \Throwable
      */

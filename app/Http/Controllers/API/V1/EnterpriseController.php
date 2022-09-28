@@ -30,7 +30,7 @@ class EnterpriseController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(EnterpriseRequest $request): JsonResponse
@@ -47,8 +47,8 @@ class EnterpriseController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param \App\Models\Enterprise $enterprise
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Enterprise  $enterprise
      * @return \Illuminate\Http\JsonResponse
      */
     public function show(Request $request, Enterprise $enterprise): JsonResponse

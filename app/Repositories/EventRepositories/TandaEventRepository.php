@@ -54,7 +54,7 @@ class TandaEventRepository extends EventRepository
             $transaction = Transaction::find($tandaRequest->relation_id);
         } else {
             $transaction = Transaction::whereStatus(Status::PENDING->name)->whereType(TransactionType::PAYMENT->name)
-                ->whereAmount($tandaRequest->amount)->where('destination', 'LIKE', '%' . $tandaRequest->destination)
+                ->whereAmount($tandaRequest->amount)->where('destination', 'LIKE', '%'.$tandaRequest->destination)
                 ->whereDate('createdAt', '<', $tandaRequest->created_at);
             $tandaRequest->relation_id = $transaction->id;
             $tandaRequest->save();
@@ -75,7 +75,7 @@ class TandaEventRepository extends EventRepository
             $method = PaymentMethod::VOUCHER->name;
 
             $voucher = $transaction->payment->extra;
-            $bal = 'Ksh' . number_format($voucher['balance'], 2);
+            $bal = 'Ksh'.number_format($voucher['balance'], 2);
             $vtext = " New Voucher balance is $bal.";
         } else {
             $method = $transaction->payment->type;
@@ -83,7 +83,7 @@ class TandaEventRepository extends EventRepository
 
             $extra = $transaction->payment->extra;
             if (isset($extra['debit_account']) && $account['phone'] !== $extra['debit_account']) {
-                $method = 'OTHER ' . $method;
+                $method = 'OTHER '.$method;
             }
         }
 
@@ -92,7 +92,7 @@ class TandaEventRepository extends EventRepository
         $destination = $transaction->destination;
         $sender = $account['phone'];
 
-        $amount = 'Ksh' . number_format($transaction->amount, 2);
+        $amount = 'Ksh'.number_format($transaction->amount, 2);
         $date = $transaction->created_at->timezone('Africa/Nairobi')->format(config('settings.sms_date_time_format'));
         $eventType = EventType::UTILITY_PAYMENT;
 
@@ -198,8 +198,8 @@ class TandaEventRepository extends EventRepository
         $transaction->status = Status::REFUNDED;
         $transaction->save();
 
-        $amount = 'Ksh' . number_format($amount, 2);
-        $balance = 'Ksh' . number_format($voucher['balance']);
+        $amount = 'Ksh'.number_format($amount, 2);
+        $balance = 'Ksh'.number_format($voucher['balance']);
 
         $message = match ($transaction->product_id) {
             ProductType::AIRTIME->value => "Hi, we have added $amount to your voucher account because we could not complete your $amount airtime purchase for $destination on $date. New voucher balance is $balance.",

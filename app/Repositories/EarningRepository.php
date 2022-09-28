@@ -63,7 +63,7 @@ class EarningRepository
             $rootEarnings = round($discount * config('services.sidooh.earnings.users_percentage', .6) / 6, 4);
         }
 
-        return 'Ksh' . $rootEarnings;
+        return 'Ksh'.$rootEarnings;
     }
 
     /**
@@ -91,7 +91,7 @@ class EarningRepository
             foreach ($inviters as $inviter) {
                 $hasActiveSubscription = Subscription::active($inviter['id']);
                 $isLevelOneInviter = $inviter['level'] == 1;
-                if (!$hasActiveSubscription && !$isLevelOneInviter) {
+                if (! $hasActiveSubscription && ! $isLevelOneInviter) {
                     continue;
                 }
 
@@ -179,7 +179,7 @@ class EarningRepository
             foreach ($inviters as $inviter) {
                 $hasActiveSubscription = Subscription::active($inviter['id']);
                 $isLevelOneInviter = $inviter['level'] == 1;
-                if (!$hasActiveSubscription && !$isLevelOneInviter) {
+                if (! $hasActiveSubscription && ! $isLevelOneInviter) {
                     continue;
                 }
 
@@ -236,7 +236,7 @@ class EarningRepository
                 foreach ($inviters as $inviter) {
                     $hasActiveSubscription = Subscription::active($inviter['id']);
                     $isLevelOneInviter = $inviter['level'] == 1;
-                    if (!$hasActiveSubscription && !$isLevelOneInviter) {
+                    if (! $hasActiveSubscription && ! $isLevelOneInviter) {
                         continue;
                     }
 

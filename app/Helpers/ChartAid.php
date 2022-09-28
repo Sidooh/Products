@@ -35,8 +35,8 @@ class ChartAid
     }
 
     /**
-     * @param Collection $models
-     * @param null $frequencyCount
+     * @param  Collection  $models
+     * @param  null  $frequencyCount
      * @return array
      */
     #[ArrayShape(['labels' => 'array', 'datasets' => 'array'])]
@@ -46,20 +46,20 @@ class ChartAid
 
         if (is_null($frequencyCount)) {
             $frequencyCount = match ($this->period) {
-                Period::TODAY => 24,
-                Period::LAST_SEVEN_DAYS => 7,
+                Period::TODAY            => 24,
+                Period::LAST_SEVEN_DAYS  => 7,
                 Period::LAST_THIRTY_DAYS => match ($this->frequency) {
                     Frequency::WEEKLY => now()->subDays(30)->diffInWeeks(),
-                    default => 30,
+                    default           => 30,
                 },
                 Period::LAST_THREE_MONTHS => match ($this->frequency) {
                     Frequency::MONTHLY => 3,
-                    default => now()->subMonths(3)->diffInWeeks(),
+                    default            => now()->subMonths(3)->diffInWeeks(),
                 },
                 Period::LAST_SIX_MONTHS => 6,
-                Period::YTD => match ($this->frequency) {
+                Period::YTD             => match ($this->frequency) {
                     Frequency::QUARTERLY => 4,
-                    default => 13,
+                    default              => 13,
                 },
             };
         }
@@ -72,7 +72,7 @@ class ChartAid
 
             $data[$dateString] = $this->aggregate($dateString);
 
-            switch ($this->frequency->value) {
+            switch($this->frequency->value) {
                 case 'hourly':
                     $date->subHour();
                     break;
@@ -120,12 +120,8 @@ class ChartAid
     public function aggregate($dateString): int
     {
         return match ($this->aggregateType) {
-            'sum' => isset($this->models[$dateString])
-                ? $this->models[$dateString]->sum($this->aggregateColumn)
-                : 0,
-            default => isset($this->models[$dateString])
-                ? $this->models[$dateString]->count()
-                : 0,
+            'sum'   => isset($this->models[$dateString]) ? $this->models[$dateString]->sum($this->aggregateColumn) : 0,
+            default => isset($this->models[$dateString]) ? $this->models[$dateString]->count() : 0,
         };
     }
 
@@ -134,9 +130,9 @@ class ChartAid
         return match ($this->frequency) {
             Frequency::YEARLY => Carbon::createFromDate($time, tz: 'Africa/Nairobi'),
             Frequency::WEEKLY => Carbon::now()->setISODate(now()->year, $time),
-            Frequency::DAILY => Carbon::createFromDate(day: $time, tz: 'Africa/Nairobi'),
+            Frequency::DAILY  => Carbon::createFromDate(day: $time, tz: 'Africa/Nairobi'),
             Frequency::HOURLY => Carbon::createFromTime($time, tz: 'Africa/Nairobi'),
-            default => Carbon::parse($time, 'Africa/Nairobi')
+            default           => Carbon::parse($time, 'Africa/Nairobi')
         };
     }
 
@@ -153,9 +149,7 @@ class ChartAid
                 $name = $date->year;
             }
         } elseif ($freq === 'quarterly') {
-            $endDate = $date->isCurrentMonth()
-                ? 'Current Month'
-                : $date->shortMonthName;
+            $endDate = $date->isCurrentMonth() ? 'Current Month' : $date->shortMonthName;
             $startDate = $date->subMonths(2)->shortMonthName;
 
             $name = "$startDate - $endDate";
@@ -173,9 +167,7 @@ class ChartAid
             } elseif ($date->isLastWeek()) {
                 $name = 'Last week';
             } else {
-                $name = "{$date->diffInWeeks()} week" . ($date->diffInWeeks() > 1
-                        ? 's'
-                        : '') . ' ago';
+                $name = "{$date->diffInWeeks()} week".($date->diffInWeeks() > 1 ? 's' : '').' ago';
             }
         } elseif ($freq === 'daily') {
             if ($date->isCurrentDay()) {
@@ -183,9 +175,7 @@ class ChartAid
             } elseif ($date->isYesterday()) {
                 $name = 'Yesterday';
             } else {
-                $name = $this->period === Period::LAST_SEVEN_DAYS
-                    ? $date->shortDayName
-                    : $date->format('dS');
+                $name = $this->period === Period::LAST_SEVEN_DAYS ? $date->shortDayName : $date->format('dS');
             }
         } else {
             if ($date->isCurrentHour()) {
@@ -214,9 +204,9 @@ class ChartAid
             Frequency::YEARLY => $carbonDate->format('Y'),
             Frequency::QUARTERLY, Frequency::MONTHLY => $carbonDate->format('Y-m'),
             Frequency::WEEKLY => $carbonDate->format('W'),
-            Frequency::DAILY => $carbonDate->format('d'),
+            Frequency::DAILY  => $carbonDate->format('d'),
             Frequency::HOURLY => $carbonDate->format('H'),
-            default => $carbonDate->toDateString()
+            default           => $carbonDate->toDateString()
         };
     }
 
@@ -225,12 +215,12 @@ class ChartAid
         $carbonDate = \LocalCarbon::now();
 
         return match ($this->period) {
-            Period::TODAY => $carbonDate->subDay(),
-            Period::LAST_SEVEN_DAYS => $carbonDate->subWeek(),
-            Period::LAST_THIRTY_DAYS => $carbonDate->subDays(30),
+            Period::TODAY             => $carbonDate->subDay(),
+            Period::LAST_SEVEN_DAYS   => $carbonDate->subWeek(),
+            Period::LAST_THIRTY_DAYS  => $carbonDate->subDays(30),
             Period::LAST_THREE_MONTHS => $carbonDate->subMonths(3),
-            Period::LAST_SIX_MONTHS => $carbonDate->subMonths(6),
-            Period::YTD => $carbonDate->subYear(),
+            Period::LAST_SIX_MONTHS   => $carbonDate->subMonths(6),
+            Period::YTD               => $carbonDate->subYear(),
         };
     }
 }

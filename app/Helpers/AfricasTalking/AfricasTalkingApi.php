@@ -62,7 +62,7 @@ class AfricasTalkingApi
         try {
             return (new AfricasTalkingApi)->AT->application()->fetchApplicationData();
         } catch (Exception $e) {
-            Log::error('ATError: ' . $e->getMessage());
+            Log::error('ATError: '.$e->getMessage());
         }
     }
 
@@ -86,7 +86,7 @@ class AfricasTalkingApi
         DB::transaction(function () use ($req, $response) {
             $req->save();
 
-            $responses = collect($response['data']['responses'])->map(fn(array $response) => [
+            $responses = collect($response['data']['responses'])->map(fn (array $response) => [
                 'phone'      => str_ireplace('+', '', $response['phoneNumber']),
                 'message'    => $response['errorMessage'],
                 'amount'     => str_ireplace('KES ', '', $response['amount']),
@@ -106,8 +106,8 @@ class AfricasTalkingApi
             $response = SidoohPayments::creditVoucher($transaction->account_id, $amount, Description::VOUCHER_REFUND);
             [$voucher] = $response;
 
-            $amount = 'Ksh' . number_format($amount, 2);
-            $balance = 'Ksh' . number_format($voucher['balance']);
+            $amount = 'Ksh'.number_format($amount, 2);
+            $balance = 'Ksh'.number_format($voucher['balance']);
 
             $transaction->status = Status::REFUNDED;
             $transaction->save();
@@ -124,7 +124,7 @@ class AfricasTalkingApi
         return $this->AT->airtime()->send([
             'recipients' => [
                 [
-                    'phoneNumber'  => '+254110039317',
+                    'phoneNumber'  => $to,
                     'currencyCode' => 'KES',
                     'amount'       => 20,
                 ],

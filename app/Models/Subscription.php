@@ -66,7 +66,7 @@ class Subscription extends Model
     /**
      * Scope a query to only include active subscriptions.
      *
-     * @param int $accountId
+     * @param  int  $accountId
      * @return bool
      */
     public static function active(int $accountId): bool
@@ -81,7 +81,7 @@ class Subscription extends Model
     /**
      * Scope a query to only include almost Expired subscriptions.
      *
-     * @param Builder $query
+     * @param  Builder  $query
      * @return Builder
      */
     public static function scopeIncludePreExpiry(Builder $query): Builder
@@ -94,7 +94,7 @@ class Subscription extends Model
     /**
      * Scope a query to only include almost Expired subscriptions.
      *
-     * @param Builder $query
+     * @param  Builder  $query
      * @return Builder
      */
     public static function scopeIncludePostExpiry(Builder $query): Builder

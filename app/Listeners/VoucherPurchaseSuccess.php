@@ -21,7 +21,7 @@ class VoucherPurchaseSuccess
     /**
      * Handle the event.
      *
-     * @param VoucherPurchaseEvent $event
+     * @param  VoucherPurchaseEvent  $event
      * @return void
      *
      * @throws Exception

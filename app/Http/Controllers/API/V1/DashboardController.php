@@ -55,20 +55,20 @@ class DashboardController extends Controller
 
     public function revenueChart(Request $request): JsonResponse
     {
-        $frequency = Frequency::tryFrom((string)$request->input('frequency')) ?? Frequency::HOURLY;
+        $frequency = Frequency::tryFrom((string) $request->input('frequency')) ?? Frequency::HOURLY;
 
         $chartAid = new ChartAid(Period::TODAY, $frequency, 'sum', 'amount');
         $chartAid->setShowFuture(true);
 
         $fetch = function (array $whereBetween, int $freqCount = null) use ($chartAid) {
-            $cacheKey = 'transactions_' . implode('_', $whereBetween);
+            $cacheKey = 'transactions_'.implode('_', $whereBetween);
             $transactions = Cache::remember($cacheKey, 60 * 60, function () use ($whereBetween) {
                 return Transaction::select(['status', 'created_at', 'amount'])
                     ->whereBetween('created_at', $whereBetween)->get();
             });
 
             $transform = function ($transactions, $key) use ($freqCount, $chartAid) {
-                $models = $transactions->groupBy(fn($item) => $chartAid->chartDateFormat($item->created_at));
+                $models = $transactions->groupBy(fn ($item) => $chartAid->chartDateFormat($item->created_at));
 
                 return [$key => $chartAid->chartDataSet($models, $freqCount)];
             };
@@ -80,7 +80,7 @@ class DashboardController extends Controller
         $todayHrs = LocalCarbon::now()->diffInHours(LocalCarbon::now()->startOfDay());
 
         return response()->json([
-            'today'     => $fetch([
+            'today' => $fetch([
                 LocalCarbon::today()->startOfDay()->utc(),
                 LocalCarbon::today()->endOfDay()->utc(),
             ], $todayHrs + 1),

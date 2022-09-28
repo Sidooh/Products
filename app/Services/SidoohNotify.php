@@ -14,7 +14,7 @@ class SidoohNotify extends SidoohService
     {
         Log::info('...[SRV - NOTIFY]: Send Notification...');
 
-        $url = config('services.sidooh.services.notify.url') . '/notifications';
+        $url = config('services.sidooh.services.notify.url').'/notifications';
 
         try {
             $response = parent::fetch($url, 'POST', [
