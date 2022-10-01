@@ -47,9 +47,9 @@ class ProductController extends Controller
             ->whereType(TransactionType::PAYMENT)->whereNot('product_id', ProductType::VOUCHER)->latest()->get();
 
         $totalRevenue = $transactions->sum('amount');
-        $totalRevenueToday = $transactions->filter(fn ($item) => $item->created_at->isToday())->sum('amount');
-        $totalRevenueWeek = $transactions->filter(fn ($item) => $item->created_at->isCurrentWeek())->sum('amount');
-        $totalRevenueMonth = $transactions->filter(fn ($item) => $item->created_at->isCurrentMonth())->sum('amount');
+        $totalRevenueToday = $transactions->filter(fn($item) => $item->created_at->isToday())->sum('amount');
+        $totalRevenueWeek = $transactions->filter(fn($item) => $item->created_at->isCurrentWeek())->sum('amount');
+        $totalRevenueMonth = $transactions->filter(fn($item) => $item->created_at->isCurrentMonth())->sum('amount');
 
         $voucher = SidoohPayments::findVoucherByAccount($accountId);
 

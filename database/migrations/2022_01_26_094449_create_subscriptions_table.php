@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('subscriptions', function (Blueprint $table) {
+        Schema::create('subscriptions', function(Blueprint $table) {
             $table->id();
 
             $table->timestamp('start_date');

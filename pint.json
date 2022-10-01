@@ -5,6 +5,9 @@
             "operators": {
                 "=>": "align"
             }
+        },
+        "function_declaration": {
+            "closure_function_spacing": "none"
         }
     }
 }

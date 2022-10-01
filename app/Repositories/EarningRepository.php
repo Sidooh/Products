@@ -38,7 +38,7 @@ class EarningRepository
         $account = SidoohAccounts::find($transaction->account_id);
 
         // TODO: What happens if this fails? Do we get notified? Does it fail silently?
-        DB::transaction(function () use ($earnings, $account, $transaction) {
+        DB::transaction(function() use ($earnings, $account, $transaction) {
             if ($transaction->product_id == ProductType::SUBSCRIPTION) {
                 self::computeSubscriptionEarnings($account, $transaction);
 
