@@ -19,7 +19,7 @@ class PaymentFactory extends Factory
             'transaction_id' => Transaction::factory(),
             'amount'         => $this->faker->numberBetween(20, 100),
             'type'           => $this->faker->randomElement(['MPESA', 'SIDOOH']),
-            'subtype' => fn(array $attributes) => match ($attributes['type']) {
+            'subtype'        => fn(array $attributes) => match ($attributes['type']) {
                 'MPESA' => 'STK',
                 'SIDOOH' => 'VOUCHER',
             },
