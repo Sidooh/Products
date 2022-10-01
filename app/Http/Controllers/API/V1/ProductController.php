@@ -26,9 +26,9 @@ class ProductController extends Controller
     /**
      * @throws Exception
      */
-    public function getAccountDetails(Request $request, int $accountId): JsonResponse
+    public function getAccountDetails(int $accountId): JsonResponse
     {
-        $account = SidoohAccounts::find($accountId, true);
+        $account = SidoohAccounts::find($accountId);
 
         $totalTransactions = Transaction::whereAccountId($accountId)->count();
 
