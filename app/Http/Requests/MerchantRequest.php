@@ -3,7 +3,11 @@
 namespace App\Http\Requests;
 
 use App\Enums\Initiator;
+use App\Enums\MerchantType;
+use App\Enums\PaymentMethod;
+use App\Rules\SidoohAccountExists;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
 
 class MerchantRequest extends FormRequest
@@ -25,11 +29,27 @@ class MerchantRequest extends FormRequest
      */
     public function rules(): array
     {
+        $countryCode = config('services.sidooh.country_code');
+
         return [
-            'initiator'     => ['required', new Enum(Initiator::class)],
-            'account_id'    => ['required'],
-            'amount'        => ['required'],
-            'merchant_code' => ['required', 'exists:merchants,code'],
+            'amount'          => 'required|integer',
+            'initiator'       => ['required', new Enum(Initiator::class)],
+            'account_id'      => ['integer', 'required'],
+            'method'          => [new Enum(PaymentMethod::class)],
+            'merchant_type'   => [new Enum(MerchantType::class)],
+            'business_number' => [
+                Rule::requiredIf(
+                    $this->input('merchant_type') === MerchantType::MPESA_PAY_BILL->name,
+                ),],
+            'account_number'  => [
+                Rule::requiredIf(
+                    $this->input('merchant_type') === MerchantType::MPESA_PAY_BILL->name,
+                ),],
+            'debit_account'   => [Rule::when(
+                $this->input('method') === PaymentMethod::MPESA->value,
+                "phone:$countryCode",
+                [new SidoohAccountExists]
+            )],
         ];
     }
 }

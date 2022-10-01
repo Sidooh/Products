@@ -42,14 +42,14 @@ class AirtimeRequest extends FormRequest
         $countryCode = config('services.sidooh.country_code');
 
         return [
-            'amount'          => 'required|integer',
-            'initiator'       => ['required', new Enum(Initiator::class)],
-            'account_id'      => ['integer', 'required'],
-            'enterprise_id'   => ['required_if:initiator,' . Initiator::ENTERPRISE->name],
-            'recipients_data' => ['array', Rule::requiredIf($this->is('*/products/airtime/bulk'))],
-            'method'          => [new Enum(PaymentMethod::class)],
-            'target_number'   => "phone:$countryCode",
-            'debit_account'   => [Rule::when(
+            'amount'        => 'required|integer',
+            'initiator'     => ['required', new Enum(Initiator::class)],
+            'account_id'    => ['integer', 'required'],
+            //            'enterprise_id'   => ['required_if:initiator,' . Initiator::ENTERPRISE->name],
+            //            'recipients_data' => ['array', Rule::requiredIf($this->is('*/products/airtime/bulk'))],
+            'method'        => [new Enum(PaymentMethod::class)],
+            'target_number' => "phone:$countryCode",
+            'debit_account' => [Rule::when(
                 $this->input('method') === PaymentMethod::MPESA->value,
                 "phone:$countryCode",
                 [new SidoohAccountExists]

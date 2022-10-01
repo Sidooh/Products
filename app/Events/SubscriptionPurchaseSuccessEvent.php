@@ -25,8 +25,8 @@ class SubscriptionPurchaseSuccessEvent
     /**
      * Create a new event instance.
      *
-     * @param Subscription $subscription
-     * @param Transaction $transaction
+     * @param  Subscription  $subscription
+     * @param  Transaction  $transaction
      */
     public function __construct(Subscription $subscription, Transaction $transaction)
     {

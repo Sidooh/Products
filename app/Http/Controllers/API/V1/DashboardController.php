@@ -80,7 +80,7 @@ class DashboardController extends Controller
         $todayHrs = LocalCarbon::now()->diffInHours(LocalCarbon::now()->startOfDay());
 
         return response()->json([
-            'today'     => $fetch([
+            'today' => $fetch([
                 LocalCarbon::today()->startOfDay()->utc(),
                 LocalCarbon::today()->endOfDay()->utc(),
             ], $todayHrs + 1),

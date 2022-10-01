@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Enums\Description;
 use App\Enums\EarningAccountType;
 use App\Enums\EventType;
+use App\Enums\MerchantType;
 use App\Enums\PaymentMethod;
 use App\Enums\PaymentSubtype;
 use App\Enums\ProductType;
@@ -71,7 +72,8 @@ class TransactionRepository
             'destination' => $t->destination,
             'description' => $t->description,
         ]);
-        $responseData = SidoohPayments::requestPayment($transactionsData, $data['method'], $debit_account);
+
+        $responseData = SidoohPayments::requestPayment($transactionsData, $data['method'], $debit_account, $data['merchant_type']);
 
         // TODO: Revert this to: if (!isset($response["data"]["payments"])) throw new Exception("Purchase Failed!");
         //  Reason may not be due to payment failure, could be a connection issue etc...
@@ -172,9 +174,9 @@ class TransactionRepository
 
                 SavingsTransaction::create([
                     ...$response,
-                    'reference' => $response['id'],
+                    'reference'      => $response['id'],
                     'transaction_id' => $tx->id,
-                    'id' => null,
+                    'id'             => null,
                 ]);
 
                 //TODO: Fix for new users.
@@ -205,6 +207,9 @@ class TransactionRepository
                     1 => 'You have insufficient Mpesa Balance for this transaction. Kindly top up your Mpesa and try again.',
                     default => 'Sorry! We failed to complete your transaction. No amount was deducted from your account. We apologize for the inconvenience. Please try again.',
                 };
+            } elseif (ProductType::tryFrom($transaction->product_id) === ProductType::MERCHANT) {
+                $destination = $transaction->destination;
+                $message = "Sorry! We failed to complete your transaction to merchant: $destination. No amount was deducted from your account. We apologize for the inconvenience. Please try again.";
             } else {
                 $message = 'Sorry! We failed to complete your transaction. No amount was deducted from your account. We apologize for the inconvenience. Please try again.';
             }
@@ -268,5 +273,75 @@ class TransactionRepository
         };
 
         SidoohNotify::notify([$phone], $message, EventType::VOUCHER_REFUND);
+    }
+
+    /**
+     * @throws AuthenticationException
+     * @throws Throwable
+     */
+    public static function createB2bTransaction(array $transactionData, array $data): int
+    {
+        $transaction = Transaction::create($transactionData);
+
+        self::initiateB2bPayment($transaction, $data);
+
+        return $transaction->id;
+    }
+
+    /**
+     * @throws AuthenticationException
+     * @throws \Throwable
+     */
+    public static function initiateB2bPayment(Transaction $transaction, array $data): void
+    {
+        if (isset($data['debit_account'])) {
+            $debit_account = $data['debit_account'];
+        } else {
+            $account = $data['payment_account'];
+            $debit_account = $data['method'] === PaymentMethod::MPESA ? $account['phone'] : $account['id'];
+        }
+
+        $transactionData = [
+            'reference'   => $transaction->id,
+            'product_id'  => $transaction->product_id,
+            'amount'      => $transaction->amount,
+            'destination' => $transaction->destination,
+            'description' => $transaction->description,
+        ];
+
+        $merchantDetails = [
+            'merchant_type' => $data['merchant_type'],
+        ];
+
+        if ($data['merchant_type'] === MerchantType::MPESA_PAY_BILL) {
+            $merchantDetails += [
+                'paybill_number' => $data['business_number'],
+                'account_number' => $data['account_number'],
+            ];
+        } else {
+            $merchantDetails += [
+                'till_number'    => $data['business_number'],
+                'account_number' => '',
+            ];
+        }
+
+        $responseData = SidoohPayments::requestB2bPayment($transactionData, $data['method'], $debit_account, $merchantDetails);
+
+        if (!isset($responseData['payments']) && !isset($responseData['b2b_payment'])) {
+            throw new Exception('Purchase Failed!');
+        }
+
+        $p = $responseData['b2b_payment'];
+        Payment::insert([
+            'transaction_id' => $p['reference'],
+            'payment_id'     => $p['id'],
+            'amount'         => $p['amount'],
+            'type'           => $p['type'],
+            'subtype'        => $p['subtype'],
+            'status'         => $p['status'],
+            'extra'          => json_encode($responseData['debit_voucher'] ?? ['debit_account' => $debit_account]),
+            'created_at'     => now(),
+            'updated_at'     => now(),
+        ]);
     }
 }

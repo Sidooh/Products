@@ -7,6 +7,7 @@ use App\Http\Controllers\API\V1\EarningAccountController;
 use App\Http\Controllers\API\V1\EarningController;
 use App\Http\Controllers\API\V1\EnterpriseAccountController;
 use App\Http\Controllers\API\V1\EnterpriseController;
+use App\Http\Controllers\API\V1\MerchantController;
 use App\Http\Controllers\API\V1\PaymentsController;
 use App\Http\Controllers\API\V1\ProductController;
 use App\Http\Controllers\API\V1\SubscriptionController;
@@ -35,6 +36,7 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function () {
         Route::post('/utility', UtilityController::class);
         Route::post('/subscription', SubscriptionController::class);
         Route::post('/withdraw', WithdrawController::class);
+        Route::post('/merchant', MerchantController::class);
 
         Route::get('/earnings/rates', [ProductController::class, 'getEarningRates']);
 

@@ -36,7 +36,7 @@ class SidoohEventRepository extends EventRepository
                 $message .= "You will earn commissions on airtime and tokens purchased by your invited friends and sub-agents up to your $limit ripple.\n";
                 break;
             default:
-                $level_duration = $type->duration . ' MONTHS';
+                $level_duration = $type->duration.' MONTHS';
                 $message = "Congratulations! You have successfully pre-registered as a $type->title on $date, valid until $end_date. ";
                 $message .= 'You will earn commissions on airtime and tokens purchased by your invited friends and sub-agents up to your ';
                 $message .= "$limit ripple, for $level_duration WITHOUT PAYING MONTHLY SUBSCRIPTION FEES.\n";
@@ -52,7 +52,7 @@ class SidoohEventRepository extends EventRepository
      */
     public static function voucherPurchaseSuccess(Transaction $transaction, array $vouchers)
     {
-        $amount = 'Ksh' . number_format($transaction->amount, 2);
+        $amount = 'Ksh'.number_format($transaction->amount, 2);
         $account = SidoohAccounts::find($transaction->account_id);
         $date = $transaction->updated_at
             ->timezone('Africa/Nairobi')
@@ -62,7 +62,7 @@ class SidoohEventRepository extends EventRepository
             $method = PaymentMethod::VOUCHER->name;
 
             $voucher = $transaction->payment->extra;
-            $bal = 'Ksh' . number_format($voucher['balance'], 2);
+            $bal = 'Ksh'.number_format($voucher['balance'], 2);
             $vtext = "\nNew voucher balance is $bal.";
         } else {
             $method = $transaction->payment->type;
@@ -70,7 +70,7 @@ class SidoohEventRepository extends EventRepository
 
             $extra = $transaction->payment->extra;
             if (isset($extra['debit_account']) && $account['phone'] !== $extra['debit_account']) {
-                $method = 'OTHER ' . $method;
+                $method = 'OTHER '.$method;
             }
         }
 
@@ -97,7 +97,7 @@ class SidoohEventRepository extends EventRepository
 
                     // Send to purchasee
                     $phone = $accountFor['phone'];
-                    $balance = 'Ksh' . number_format($creditVoucher['balance'], 2);
+                    $balance = 'Ksh'.number_format($creditVoucher['balance'], 2);
 
                     $message = "You have received $amount voucher ";
                     $message .= "from Sidooh account {$account['phone']} on $date.\n";
@@ -118,7 +118,7 @@ class SidoohEventRepository extends EventRepository
 
             // send notification
             $phone = $account['phone'];
-            $balance = 'Ksh' . number_format($debitVoucher['balance'], 2);
+            $balance = 'Ksh'.number_format($debitVoucher['balance'], 2);
 
             $message = 'Congratulations! You have successfully topped up your voucher ';
             $message .= "with $amount on $date using $method.$vtext\n";
@@ -152,7 +152,7 @@ class SidoohEventRepository extends EventRepository
 
             // send notification target
             $phone = $accountFor['phone'];
-            $balance = 'Ksh' . number_format($creditVoucher['balance'], 2);
+            $balance = 'Ksh'.number_format($creditVoucher['balance'], 2);
 
             $message = "You have received $amount voucher ";
             $message .= "from Sidooh account {$account['phone']} on $date.\n";

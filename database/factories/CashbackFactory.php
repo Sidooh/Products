@@ -18,7 +18,7 @@ class CashbackFactory extends Factory
         $types = array_map(fn(EarningCategory $type) => $type->name, EarningCategory::cases());
 
         return [
-            'account_id'     => fn(array $attributes) => match ($attributes['type']) {
+            'account_id' => fn(array $attributes) => match ($attributes['type']) {
                 EarningCategory::SYSTEM => null,
                 default => $this->faker->randomElement([45, 46, 12, 47, 44]),
             },

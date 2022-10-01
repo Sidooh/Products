@@ -14,12 +14,12 @@ use App\Models\Subscription;
 use App\Models\SubscriptionType;
 use App\Models\Transaction;
 use App\Services\SidoohNotify;
+use function config;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Propaganistas\LaravelPhone\PhoneNumber;
 use Throwable;
-use function config;
 
 class Purchase
 {
@@ -36,8 +36,8 @@ class Purchase
 
         match (config('services.sidooh.utilities_provider')) {
             'KYANDA' => KyandaApi::bill($this->transaction, $provider),
-            'TANDA' => TandaApi::bill($this->transaction, $provider),
-            default => throw new Exception('No provider provided for utility purchase')
+            'TANDA'  => TandaApi::bill($this->transaction, $provider),
+            default  => throw new Exception('No provider provided for utility purchase')
         };
     }
 
@@ -64,10 +64,10 @@ class Purchase
         $phone = PhoneNumber::make($this->transaction->destination, 'KE')->formatE164();
 
         match (config('services.sidooh.utilities_provider')) {
-            'AT' => AfricasTalkingApi::airtime($this->transaction, $phone),
+            'AT'     => AfricasTalkingApi::airtime($this->transaction, $phone),
             'KYANDA' => KyandaApi::airtime($this->transaction, $phone),
-            'TANDA' => TandaApi::airtime($this->transaction, $phone),
-            default => throw new Exception('No provider provided for airtime purchase')
+            'TANDA'  => TandaApi::airtime($this->transaction, $phone),
+            default  => throw new Exception('No provider provided for airtime purchase')
         };
     }
 
@@ -89,10 +89,10 @@ class Purchase
         $type = SubscriptionType::wherePrice($this->transaction->amount)->firstOrFail();
 
         $subscription = [
-            'status' => Status::ACTIVE,
+            'status'     => Status::ACTIVE,
             'account_id' => $this->transaction->account_id,
             'start_date' => now(),
-            'end_date' => now()->addMonths($type->duration),
+            'end_date'   => now()->addMonths($type->duration),
         ];
 
         return DB::transaction(function () use ($type, $subscription) {
@@ -108,7 +108,7 @@ class Purchase
     }
 
     /**
-     * @param array $paymentsData
+     * @param  array  $paymentsData
      *
      * @throws \Throwable
      */

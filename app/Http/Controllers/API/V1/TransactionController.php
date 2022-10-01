@@ -82,13 +82,13 @@ class TransactionController extends Controller
 
     public function checkRequest(Request $request, Transaction $transaction): JsonResponse
     {
-        if (!$request->has('request_id') || $request->request_id == '') {
+        if (! $request->has('request_id') || $request->request_id == '') {
             return $this->errorResponse('request_id is required', 422);
         }
 
         // Check transaction is PENDING ...
         if ($transaction->status !== Status::PENDING->name) {
-            return !$transaction->tandaRequest
+            return ! $transaction->tandaRequest
                 ? $this->errorResponse('There is a problem with this transaction. Contact Support.')
                 : $this->successResponse($transaction);
         }
@@ -114,7 +114,7 @@ class TransactionController extends Controller
     {
         // Check transaction is PENDING ...
         if ($transaction->status !== Status::PENDING->name) {
-            if (!$transaction->payment) {
+            if (! $transaction->payment) {
                 return $this->errorResponse('There is a problem with this transaction. Contact Support.');
             } elseif ($transaction->payment?->status !== Status::PENDING->name) {
                 return $this->successResponse($transaction->refresh());
@@ -124,7 +124,7 @@ class TransactionController extends Controller
         // Check payment
         $response = SidoohPayments::find($transaction->payment->payment_id);
 
-        if (!$payment = $response) {
+        if (! $payment = $response) {
             return $this->errorResponse('There was a problem with your request. Kindly contact Support.');
         }
 
@@ -148,7 +148,7 @@ class TransactionController extends Controller
         }
 
         // Check payment
-        if (!$transaction->payment) {
+        if (! $transaction->payment) {
             return $this->errorResponse('There is a problem with this transaction - Payment. Contact Support.');
         }
 
@@ -194,7 +194,7 @@ class TransactionController extends Controller
         }
 
         // Check payment
-        if (!$transaction->payment || $transaction->payment->status !== Status::COMPLETED->name) {
+        if (! $transaction->payment || $transaction->payment->status !== Status::COMPLETED->name) {
             return $this->errorResponse('There is a problem with this transaction - Payment. Contact Support.');
         }
 

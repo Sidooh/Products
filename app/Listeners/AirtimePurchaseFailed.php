@@ -20,7 +20,7 @@ class AirtimePurchaseFailed
     /**
      * Handle the event.
      *
-     * @param AirtimePurchaseFailedEvent $event
+     * @param  AirtimePurchaseFailedEvent  $event
      * @return void
      */
     public function handle(AirtimePurchaseFailedEvent $event)

@@ -13,4 +13,6 @@ enum Description: string
 
     case SUBSCRIPTION_PURCHASE = 'Subscription Purchase';
     case EARNINGS_WITHDRAWAL = 'Earnings Withdrawal';
+
+    case MERCHANT_PAYMENT = 'Merchant Payment';
 }

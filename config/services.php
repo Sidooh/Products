@@ -39,7 +39,7 @@ return [
             'key'      => '89770c2faea7f33dce6ca5605a0cd7b9e810a999af8ea0c051a5e504d2380928',
             'username' => 'sidooh_airtime',
         ],
-        'ussd'     => [
+        'ussd' => [
             'code' => '*384*99#',
         ],
     ],
@@ -84,19 +84,19 @@ return [
 
     'tanda' => [
         'discounts' => [
-            'SAFARICOM'     => [
+            'SAFARICOM'    => [
                 'type'  => '%',
                 'value' => .06,
             ],
-            'FAIBA'         => [
+            'FAIBA'        => [
                 'type'  => '%',
                 'value' => .07,
             ],
-            'AIRTEL'        => [
+            'AIRTEL'       => [
                 'type'  => '%',
                 'value' => .06,
             ],
-            'TELKOM'        => [
+            'TELKOM'       => [
                 'type'  => '%',
                 'value' => .06,
             ],
@@ -104,27 +104,27 @@ return [
                 'type'  => '%',
                 'value' => .017,
             ],
-            'KPLC_PREPAID'  => [
+            'KPLC_PREPAID' => [
                 'type'  => '%',
                 'value' => .02,
             ],
-            'DSTV'          => [
+            'DSTV'         => [
                 'type'  => '%',
                 'value' => .003,
             ],
-            'GOTV'          => [
+            'GOTV'         => [
                 'type'  => '%',
                 'value' => .003,
             ],
-            'ZUKU'          => [
+            'ZUKU'         => [
                 'type'  => '%',
                 'value' => .003,
             ],
-            'STARTIMES'     => [
+            'STARTIMES'    => [
                 'type'  => '%',
                 'value' => .003,
             ],
-            'NAIROBI_WTR'   => [
+            'NAIROBI_WTR'  => [
                 'type'  => '$',
                 'value' => 5,
             ],
@@ -133,27 +133,27 @@ return [
 
     'kyanda' => [
         'discounts' => [
-            'SAFARICOM'     => [
+            'SAFARICOM'    => [
                 'type'  => '%',
                 'value' => .06,
             ],
-            'FAIBA'         => [
+            'FAIBA'        => [
                 'type'  => '%',
                 'value' => .09,
             ],
-            'FAIBA_B'       => [
+            'FAIBA_B'      => [
                 'type'  => '%',
                 'value' => .09,
             ],
-            'AIRTEL'        => [
+            'AIRTEL'       => [
                 'type'  => '%',
                 'value' => .06,
             ],
-            'TELKOM'        => [
+            'TELKOM'       => [
                 'type'  => '%',
                 'value' => .06,
             ],
-            'EQUITEL'       => [
+            'EQUITEL'      => [
                 'type'  => '%',
                 'value' => .05,
             ],
@@ -161,27 +161,27 @@ return [
                 'type'  => '%',
                 'value' => .01,
             ],
-            'KPLC_PREPAID'  => [
+            'KPLC_PREPAID' => [
                 'type'  => '%',
                 'value' => .015,
             ],
-            'DSTV'          => [
+            'DSTV'         => [
                 'type'  => '%',
                 'value' => .0025,
             ],
-            'GOTV'          => [
+            'GOTV'         => [
                 'type'  => '%',
                 'value' => .0025,
             ],
-            'ZUKU'          => [
+            'ZUKU'         => [
                 'type'  => '%',
                 'value' => .0025,
             ],
-            'STARTIMES'     => [
+            'STARTIMES'    => [
                 'type'  => '%',
                 'value' => .0025,
             ],
-            'NAIROBI_WTR'   => [
+            'NAIROBI_WTR'  => [
                 'type'  => '$',
                 'value' => 5,
             ],

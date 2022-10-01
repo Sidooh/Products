@@ -34,7 +34,7 @@ class TandaApiTest extends TestCase
                 json_encode(
                     [
                         'access_token' => 'token',
-                        'expires_in' => 3599,
+                        'expires_in'   => 3599,
                     ],
                 )));
 
@@ -74,7 +74,7 @@ class TandaApiTest extends TestCase
                 json_encode(
                     [
                         'access_token' => 'token',
-                        'expires_in' => 3599,
+                        'expires_in'   => 3599,
                     ],
                 )));
 
