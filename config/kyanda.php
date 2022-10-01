@@ -35,7 +35,7 @@ return [
    |
    */
     'urls' => [
-        'base'     => 'https://api.kyanda.app',
+        'base' => 'https://api.kyanda.app',
         /*
          * --------------------------------------------------------------------------------------
          * Callbacks:
@@ -44,7 +44,7 @@ return [
          * Note: This package has already routes for handling this callback.
          * You should leave this values as they are unless you know what you are doing.
          */
-        'callback' => env('APP_URL') . '/kyanda/callbacks/notification',
+        'callback' => env('APP_URL').'/kyanda/callbacks/notification',
     ],
 
     /*

@@ -30,7 +30,7 @@ class JWT extends Guard
         try {
             $secret = config('services.sidooh.jwt_key');
 
-            if (!isset($secret)) {
+            if (! isset($secret)) {
                 exit('Invalid JWT key!');
             }
 
@@ -47,7 +47,7 @@ class JWT extends Guard
             // build a signature based on the header and payload using the secret
             $base64UrlHeader = base_64_url_encode($header);
             $base64UrlPayload = base_64_url_encode($payload);
-            $signature = hash_hmac('sha256', $base64UrlHeader . '.' . $base64UrlPayload, $secret, true);
+            $signature = hash_hmac('sha256', $base64UrlHeader.'.'.$base64UrlPayload, $secret, true);
             $base64UrlSignature = base_64_url_encode($signature);
 
             // verify it matches the signature provided in the token
@@ -59,7 +59,7 @@ class JWT extends Guard
                 Log::debug('Token is invalid.');
             }
 
-            return !$tokenExpired && $base64UrlSignature === $signatureProvided;
+            return ! $tokenExpired && $base64UrlSignature === $signatureProvided;
         } catch (Exception $err) {
             Log::error('--- --- --- --- ---   ...[JWT]: Unable to verify auth token...   --- --- --- --- ---', [$err]);
 

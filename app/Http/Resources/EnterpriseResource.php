@@ -13,7 +13,7 @@ class EnterpriseResource extends JsonResource
     /**
      * Transform the resource into an array.
      *
-     * @param Request $request
+     * @param  Request  $request
      * @return array|Arrayable|JsonSerializable
      */
     #[ArrayShape([

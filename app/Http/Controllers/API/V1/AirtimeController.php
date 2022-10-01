@@ -25,7 +25,7 @@ class AirtimeController extends Controller
     /**
      * Handle the incoming request.
      *
-     * @param AirtimeRequest $request
+     * @param  AirtimeRequest  $request
      * @return JsonResponse
      *
      * @throws Exception|Throwable
@@ -52,7 +52,8 @@ class AirtimeController extends Controller
         ];
         $data = [
             'payment_account' => $account,
-            'method'          => $request->has('method') ? PaymentMethod::from($request->input('method')) : PaymentMethod::MPESA,
+            'method'          => $request->has('method') ? PaymentMethod::from($request->input('method'))
+                : PaymentMethod::MPESA,
         ];
 
         if ($request->has('debit_account')) {
@@ -102,7 +103,7 @@ class AirtimeController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param Request $request
+     * @param  Request  $request
      * @return void
      */
     public function airtimeStatusCallback(Request $request): void
@@ -121,8 +122,7 @@ class AirtimeController extends Controller
 
     private function fireAirtimePurchaseEvent(ATAirtimeResponse $response, array $callback)
     {
-        $callback['status'] == 'Success'
-            ? AirtimePurchaseSuccessEvent::dispatch($response)
+        $callback['status'] == 'Success' ? AirtimePurchaseSuccessEvent::dispatch($response)
             : AirtimePurchaseFailedEvent::dispatch($response);
     }
 }

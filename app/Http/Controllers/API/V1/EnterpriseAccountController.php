@@ -20,8 +20,8 @@ class EnterpriseAccountController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param \App\Models\Enterprise $enterprise
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Enterprise  $enterprise
      * @return \Illuminate\Http\JsonResponse
      */
     public function index(Enterprise $enterprise): JsonResponse
@@ -40,8 +40,8 @@ class EnterpriseAccountController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param \App\Http\Requests\EnterpriseAccountRequest $request
-     * @param \App\Models\Enterprise $enterprise
+     * @param  \App\Http\Requests\EnterpriseAccountRequest  $request
+     * @param  \App\Models\Enterprise  $enterprise
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(EnterpriseAccountRequest $request, Enterprise $enterprise): JsonResponse
@@ -56,8 +56,8 @@ class EnterpriseAccountController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param \App\Models\EnterpriseAccount $enterpriseAccount
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\EnterpriseAccount  $enterpriseAccount
      * @return \Illuminate\Http\JsonResponse
      *
      * @throws \Exception

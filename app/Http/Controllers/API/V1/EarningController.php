@@ -69,14 +69,14 @@ class EarningController extends Controller
 
     public function collectEarnings($date = null): Collection
     {
-        if (!$date) {
+        if (! $date) {
             $date = new Carbon;
         }
 
         $cashbacks = Cashback::selectRaw('SUM(amount) as amount, account_id')->whereNotNull('account_id')
             ->whereDate('created_at', $date->format('Y-m-d'))->groupBy('account_id')->get();
 
-        return $cashbacks->map(fn(Cashback $cashback) => [
+        return $cashbacks->map(fn (Cashback $cashback) => [
             'account_id'     => $cashback->account_id,
             'current_amount' => round($cashback->amount * .2, 4),
             'locked_amount'  => round($cashback->amount * .8, 4),
@@ -116,10 +116,10 @@ class EarningController extends Controller
             [
                 $creditAccounts,
                 $debitAccounts
-            ] = $earningAccounts->partition(fn($a) => $a->type !== EarningAccountType::WITHDRAWALS->name);
+            ] = $earningAccounts->partition(fn ($a) => $a->type !== EarningAccountType::WITHDRAWALS->name);
 
-            $totalEarned = $creditAccounts->reduce(fn($total, $account) => $total + $account->balance);
-            $totalWithdrawn = $debitAccounts->reduce(fn($total, $account) => $total + $account->balance);
+            $totalEarned = $creditAccounts->reduce(fn ($total, $account) => $total + $account->balance);
+            $totalWithdrawn = $debitAccounts->reduce(fn ($total, $account) => $total + $account->balance);
 
             $earning_balance = $totalEarned - $totalWithdrawn;
 

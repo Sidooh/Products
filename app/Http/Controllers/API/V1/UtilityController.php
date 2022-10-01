@@ -19,7 +19,7 @@ class UtilityController extends Controller
     /**
      * Handle the incoming request.
      *
-     * @param ProductRequest $request
+     * @param  ProductRequest  $request
      * @return JsonResponse
      *
      * @throws Exception
@@ -38,7 +38,7 @@ class UtilityController extends Controller
                 'initiator'   => $data['initiator'],
                 'amount'      => $data['amount'],
                 'type'        => TransactionType::PAYMENT,
-                'description' => Description::UTILITY_PURCHASE->value . ' - ' . $data['provider'],
+                'description' => Description::UTILITY_PURCHASE->value.' - '.$data['provider'],
                 'account_id'  => $data['account_id'],
                 'product_id'  => ProductType::UTILITY,
                 'account'     => $account,

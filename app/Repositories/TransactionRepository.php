@@ -65,7 +65,7 @@ class TransactionRepository
             $debit_account = $data['method'] === PaymentMethod::MPESA ? $account['phone'] : $account['id'];
         }
 
-        $transactionsData = $transactions->map(fn($t) => [
+        $transactionsData = $transactions->map(fn ($t) => [
             'reference'   => $t->id,
             'product_id'  => $t->product_id,
             'amount'      => $t->amount,
@@ -78,7 +78,7 @@ class TransactionRepository
         // TODO: Revert this to: if (!isset($response["data"]["payments"])) throw new Exception("Purchase Failed!");
         //  Reason may not be due to payment failure, could be a connection issue etc...
         //  We would then have to manually check. Or implement a query endpoint that polls payment srv at set intervals
-        if (!isset($responseData['payments'])) {
+        if (! isset($responseData['payments'])) {
 //            $transactions->each(fn($t) => $t->update(['status' => Status::FAILED]));
 
             throw new Exception('Purchase Failed!');
@@ -118,11 +118,11 @@ class TransactionRepository
                 }
 
                 match ($transaction->product_id) {
-                    ProductType::AIRTIME => $purchase->airtime(),
-                    ProductType::UTILITY => $purchase->utility(),
+                    ProductType::AIRTIME      => $purchase->airtime(),
+                    ProductType::UTILITY      => $purchase->utility(),
                     ProductType::SUBSCRIPTION => $purchase->subscription(),
-                    ProductType::VOUCHER => $purchase->voucher($paymentsData),
-                    default => throw new Exception('Invalid product purchase!'),
+                    ProductType::VOUCHER      => $purchase->voucher($paymentsData),
+                    default                   => throw new Exception('Invalid product purchase!'),
                 };
             }
         } catch (Exception $err) {
@@ -204,7 +204,7 @@ class TransactionRepository
 
             if ($result['subtype'] === PaymentSubtype::STK->name && isset($result['stk_result_code'])) {
                 $message = match ($result['stk_result_code']) {
-                    1 => 'You have insufficient Mpesa Balance for this transaction. Kindly top up your Mpesa and try again.',
+                    1       => 'You have insufficient Mpesa Balance for this transaction. Kindly top up your Mpesa and try again.',
                     default => 'Sorry! We failed to complete your transaction. No amount was deducted from your account. We apologize for the inconvenience. Please try again.',
                 };
             } elseif (ProductType::tryFrom($transaction->product_id) === ProductType::MERCHANT) {
@@ -262,8 +262,8 @@ class TransactionRepository
         $transaction->status = Status::REFUNDED;
         $transaction->save();
 
-        $amount = 'Ksh' . number_format($amount, 2);
-        $balance = 'Ksh' . number_format($voucher['balance']);
+        $amount = 'Ksh'.number_format($amount, 2);
+        $balance = 'Ksh'.number_format($voucher['balance']);
 
         $destination = $transaction->destination;
 

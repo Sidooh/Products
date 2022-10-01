@@ -19,7 +19,7 @@ class SubscriptionPurchaseFailedEvent
     /**
      * Create a new event instance.
      *
-     * @param Transaction $transaction
+     * @param  Transaction  $transaction
      */
     public function __construct(Transaction $transaction)
     {

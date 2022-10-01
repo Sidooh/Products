@@ -14,9 +14,9 @@ class VoucherPurchaseEvent
     /**
      * Create a new event instance.
      *
-     * @param Transaction $transaction
-     * @param array $voucher
-     * @param array $payment
+     * @param  Transaction  $transaction
+     * @param  array  $voucher
+     * @param  array  $payment
      */
     public function __construct(public Transaction $transaction, public array $vouchers)
     {

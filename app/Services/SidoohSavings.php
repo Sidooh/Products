@@ -17,7 +17,7 @@ class SidoohSavings extends SidoohService
     {
         Log::info('...[SRV - SAVINGS]: Withdraw Earnings...');
 
-        $url = config('services.sidooh.services.savings.url') . '/accounts/earnings/withdraw';
+        $url = config('services.sidooh.services.savings.url').'/accounts/earnings/withdraw';
 
         $data = $transactions->map(function ($t) use ($method) {
             return [
@@ -36,7 +36,7 @@ class SidoohSavings extends SidoohService
     {
         Log::info('...[SRV - SAVINGS]: Save...', ['savings' => $savings]);
 
-        $url = config('services.sidooh.services.savings.url') . '/accounts/earnings';
+        $url = config('services.sidooh.services.savings.url').'/accounts/earnings';
 
         try {
             $response = parent::http()->post($url, $savings)->json();

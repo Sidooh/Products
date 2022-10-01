@@ -12,7 +12,7 @@ class Transaction extends Service
             return $this->error('transactionId must be specified');
         }
 
-        $response = $this->client->get('query/transaction/find?username=' . $this->username . '&transactionId=' . $parameters['transactionId']);
+        $response = $this->client->get('query/transaction/find?username='.$this->username.'&transactionId='.$parameters['transactionId']);
 
         return $this->success($response);
     }
