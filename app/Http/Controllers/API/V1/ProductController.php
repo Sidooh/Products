@@ -52,8 +52,8 @@ class ProductController extends Controller
         $totalRevenueMonth = $transactions->filter(fn($item) => $item->created_at->isCurrentMonth())->sum('amount');
 
         $voucher = SidoohPayments::findVoucherByAccount($accountId);
-
         $earningAccounts = EarningAccount::whereAccountId($accountId)->get();
+        $subscriptions = Subscription::whereAccountId($accountId)->latest()->get();
 
         $data = [
             'account' => $account,
@@ -72,6 +72,7 @@ class ProductController extends Controller
 
             'voucher'         => $voucher[0] ?? ['balance' => 0],
             'earningAccounts' => $earningAccounts,
+            'subscription'    => $subscriptions
         ];
 
         return $this->successResponse($data);
@@ -80,11 +81,11 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param  Request  $request
-     * @param  int  $accountId
+     * @param Request $request
+     * @param int     $accountId
+     * @throws AuthenticationException
      * @return JsonResponse
      *
-     * @throws AuthenticationException
      */
     public function getAllAirtimeAccounts(Request $request): JsonResponse
     {
@@ -92,7 +93,7 @@ class ProductController extends Controller
         $accounts = AirtimeAccount::select(['id', 'provider', 'priority', 'account_id', 'account_number', 'created_at'])
             ->latest()->get();
 
-        if (in_array('account', $relations)) {
+        if(in_array('account', $relations)) {
             $accounts = withRelation('account', $accounts, 'account_id', 'id');
         }
 
@@ -102,10 +103,10 @@ class ProductController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  Request  $request
+     * @param Request $request
+     * @throws AuthenticationException
      * @return JsonResponse
      *
-     * @throws AuthenticationException
      */
     public function getAllUtilityAccounts(Request $request): JsonResponse
     {
@@ -113,7 +114,7 @@ class ProductController extends Controller
         $accounts = UtilityAccount::select(['id', 'provider', 'priority', 'account_id', 'account_number', 'created_at'])
             ->latest()->get();
 
-        if (in_array('account', $relations)) {
+        if(in_array('account', $relations)) {
             $accounts = withRelation('account', $accounts, 'account_id', 'id');
         }
 
@@ -123,15 +124,15 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param  Request  $request
-     * @param  int  $accountId
+     * @param Request $request
+     * @param int     $accountId
      * @return JsonResponse
      */
     public function airtimeAccounts(Request $request, int $accountId): JsonResponse
     {
         $accounts = AirtimeAccount::select(['id', 'provider', 'account_number'])->whereAccountId($accountId);
 
-        if ($request->exists('limit')) {
+        if($request->exists('limit')) {
             $accounts = $accounts->limit($request->input('limit'));
         }
 
@@ -143,15 +144,15 @@ class ProductController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  Request  $request
-     * @param  int  $accountId
+     * @param Request $request
+     * @param int     $accountId
      * @return JsonResponse
      */
     public function utilityAccounts(Request $request, int $accountId): JsonResponse
     {
         $accounts = UtilityAccount::select(['id', 'provider', 'account_number'])->whereAccountId($accountId);
 
-        if ($request->exists('limit')) {
+        if($request->exists('limit')) {
             $accounts = $accounts->limit($request->input('limit'));
         }
 
