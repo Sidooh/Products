@@ -25,7 +25,7 @@ class EarningAccount extends Model
     protected function balance(): Attribute
     {
         return Attribute::make(
-            get: fn ($value, $attributes) => $attributes['self_amount'] + $attributes['invite_amount']
+            get: fn($value, $attributes) => $attributes['self_amount'] + $attributes['invite_amount']
         );
     }
 

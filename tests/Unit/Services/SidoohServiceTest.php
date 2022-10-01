@@ -27,7 +27,7 @@ class SidoohServiceTest extends TestCase
 
         $pendingRequest = SidoohService::http();
 
-        Http::assertSent(function (Request $request) {
+        Http::assertSent(function(Request $request) {
             return $request->hasHeader('Content-Type', 'application/json') &&
                 ! in_array('Authorization', $request->headers()) &&
                 $request->url() == 'http://localhost:8000/api/v1/users/signin' &&
@@ -37,7 +37,7 @@ class SidoohServiceTest extends TestCase
 
         $pendingRequest->send('POST', 'localhost:8000/api/v1/users/signin');
 
-        Http::assertSent(function (Request $request) {
+        Http::assertSent(function(Request $request) {
             return $request->hasHeader('Authorization', 'Bearer test-token') &&
                 $request->url() == 'http://localhost:8000/api/v1/users/signin';
         });
@@ -55,7 +55,7 @@ class SidoohServiceTest extends TestCase
         // Test Successful
         $response = SidoohService::authenticate();
 
-        Http::assertSent(function (Request $request) {
+        Http::assertSent(function(Request $request) {
             return $request->hasHeader('Content-Type', 'application/json') &&
                 $request->url() == 'http://localhost:8000/api/v1/users/signin' &&
                 $request['email'] == 'aa@a.a' &&
@@ -65,7 +65,7 @@ class SidoohServiceTest extends TestCase
         $this->assertEquals($response, 'test-token');
 
         // Test 401
-        $this->assertThrows(fn () => SidoohService::authenticate(), RequestException::class);
+        $this->assertThrows(fn() => SidoohService::authenticate(), RequestException::class);
 
 //        $response = SidoohService::authenticate();
 
@@ -77,6 +77,6 @@ class SidoohServiceTest extends TestCase
 //        });
 
         // Test 400
-        $this->assertThrows(fn () => SidoohService::authenticate(), RequestException::class);
+        $this->assertThrows(fn() => SidoohService::authenticate(), RequestException::class);
     }
 }

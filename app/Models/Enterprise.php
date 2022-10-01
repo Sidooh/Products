@@ -58,7 +58,7 @@ class Enterprise extends Model
 
     protected function admin(): Attribute
     {
-        return Attribute::get(function () {
+        return Attribute::get(function() {
             $admin = $this->enterpriseAccounts()->where('type', EnterpriseAccountType::ADMIN)
                 ->oldest('id')->first();
 
@@ -70,7 +70,7 @@ class Enterprise extends Model
 
     protected function maxLunch(): Attribute
     {
-        return new Attribute(get: function ($value, $attributes) {
+        return new Attribute(get: function($value, $attributes) {
             $settings = json_decode($attributes['settings'], true);
             $setting = collect($settings)->firstWhere('type', 'lunch');
 
@@ -80,7 +80,7 @@ class Enterprise extends Model
 
     protected function maxGeneral(): Attribute
     {
-        return new Attribute(get: function ($value, $attributes) {
+        return new Attribute(get: function($value, $attributes) {
             $settings = json_decode($attributes['settings'], true);
             $setting = collect($settings)->firstWhere('type', 'general');
 

@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('commissions', function (Blueprint $table) {
+        Schema::create('commissions', function(Blueprint $table) {
             $table->id();
 
             $table->decimal('amount');

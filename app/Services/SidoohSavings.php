@@ -19,7 +19,7 @@ class SidoohSavings extends SidoohService
 
         $url = config('services.sidooh.services.savings.url').'/accounts/earnings/withdraw';
 
-        $data = $transactions->map(function ($t) use ($method) {
+        $data = $transactions->map(function($t) use ($method) {
             return [
                 'ref'         => "$t->id",
                 'account_id'  => $t->account_id,

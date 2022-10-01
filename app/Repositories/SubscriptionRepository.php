@@ -21,14 +21,14 @@ class SubscriptionRepository
             ->includePreExpiry()->orWhere->includePostExpiry()->groupBy('account_id');
 
         // Get subscription data based on latest IDs sub query
-        $requiredSubcriptions = Subscription::joinSub($latestSubscriptions, 'latest_subs', fn ($join) => $join->on('id', '=', 'latest_subs.latest_subscription_id'))
+        $requiredSubcriptions = Subscription::joinSub($latestSubscriptions, 'latest_subs', fn($join) => $join->on('id', '=', 'latest_subs.latest_subscription_id'))
             ->get();
 
-        [$pastSubs, $futureSubs] = $requiredSubcriptions->partition(fn ($s) => $s->end_date < now());
+        [$pastSubs, $futureSubs] = $requiredSubcriptions->partition(fn($s) => $s->end_date < now());
 
         $expiredSubs = collect();
 
-        $pastSubs->each(function ($sub) use ($expiredSubs) {
+        $pastSubs->each(function($sub) use ($expiredSubs) {
             $daysPast = now()->diffInDays($sub->end_date);
             $sub['x'] = $daysPast;
             $sub['y'] = $sub->end_date->diffForHumans();
@@ -48,7 +48,7 @@ class SubscriptionRepository
             }
         });
 
-        $futureSubs->each(function ($sub) {
+        $futureSubs->each(function($sub) {
             $daysLeft = now()->diffInDays($sub->end_date);
             $sub['x'] = $daysLeft;
             $sub['y'] = $sub->end_date->diffForHumans();
@@ -74,7 +74,7 @@ class SubscriptionRepository
         if ($expiredCount = $expiredSubs->count()) {
             $expiredSubsAccs = collect();
 
-            $expiredSubs->each(function ($sub) use ($expiredSubsAccs) {
+            $expiredSubs->each(function($sub) use ($expiredSubsAccs) {
                 $account = SidoohAccounts::find($sub->account_id);
                 $expiredSubsAccs->add($account);
             });

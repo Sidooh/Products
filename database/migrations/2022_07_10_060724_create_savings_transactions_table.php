@@ -14,7 +14,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('savings_transactions', function (Blueprint $table) {
+        Schema::create('savings_transactions', function(Blueprint $table) {
             $table->id();
 
             $table->string('reference')->nullable();
