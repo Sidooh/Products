@@ -53,7 +53,7 @@ class ProductController extends Controller
 
         $voucher = SidoohPayments::findVoucherByAccount($accountId);
         $earningAccounts = EarningAccount::whereAccountId($accountId)->get();
-        $subscriptions = Subscription::whereAccountId($accountId)->latest()->get();
+        $subscriptions = Subscription::whereAccountId($accountId)->with("subscriptionType:id,title")->latest()->get();
 
         $data = [
             'account' => $account,
@@ -72,7 +72,7 @@ class ProductController extends Controller
 
             'voucher'         => $voucher[0] ?? ['balance' => 0],
             'earningAccounts' => $earningAccounts,
-            'subscription'    => $subscriptions
+            'subscriptions'   => $subscriptions
         ];
 
         return $this->successResponse($data);
