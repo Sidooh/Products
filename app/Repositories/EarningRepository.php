@@ -100,7 +100,7 @@ class EarningRepository
                     'account_id'     => $inviter['id'],
                     'transaction_id' => $transaction->id,
                     'amount'         => $earningPerUser,
-                    'type'           => EarningCategory::INVITE->name,
+                    'type'           => EarningCategory::INVITE->value,
                 ]);
 
                 // Update Earning Account
@@ -148,7 +148,7 @@ class EarningRepository
             'account_id'     => $transaction->account_id,
             'transaction_id' => $transaction->id,
             'amount'         => $rootEarnings,
-            'type'           => EarningCategory::SELF->name,
+            'type'           => EarningCategory::SELF_EARNING->value,
         ]);
 
         // Update Earning Account
@@ -188,7 +188,7 @@ class EarningRepository
                     'account_id'     => $inviter['id'],
                     'transaction_id' => $transaction->id,
                     'amount'         => $userEarnings,
-                    'type'           => EarningCategory::INVITE->name,
+                    'type'           => EarningCategory::INVITE->value,
                 ]);
 
                 // Update Earning Account
@@ -245,7 +245,7 @@ class EarningRepository
                         'account_id'     => $inviter['id'],
                         'transaction_id' => $transaction->id,
                         'amount'         => $userEarnings,
-                        'type'           => EarningCategory::INVITE->name,
+                        'type'           => EarningCategory::INVITE->value,
                     ]);
 
                     // Update Earning Account
@@ -271,7 +271,7 @@ class EarningRepository
                 [
                     'transaction_id' => $transaction->id,
                     'amount'         => $earnings - $groupEarnings,
-                    'type'           => EarningCategory::SYSTEM->name,
+                    'type'           => EarningCategory::SYSTEM->value,
                     'created_at'     => $now,
                     'updated_at'     => $now,
                 ],
@@ -281,7 +281,7 @@ class EarningRepository
                 $systemEarnings[] = [
                     'transaction_id' => $transaction->id,
                     'amount'         => $totalLeftOverEarnings,
-                    'type'           => EarningCategory::SYSTEM->name,
+                    'type'           => EarningCategory::SYSTEM->value,
                     'created_at'     => $now,
                     'updated_at'     => $now,
                 ];
@@ -298,7 +298,7 @@ class EarningRepository
             'account_id'     => $transaction->account_id,
             'transaction_id' => $transaction->id,
             'amount'         => $earningPerUser,
-            'type'           => EarningCategory::SELF->name,
+            'type'           => EarningCategory::SELF_EARNING->value,
         ]);
 
         // Update Earning Account
@@ -322,7 +322,7 @@ class EarningRepository
             'account_id'     => $transaction->account_id,
             'transaction_id' => $transaction->id,
             'amount'         => $userEarnings,
-            'type'           => EarningCategory::SELF->name,
+            'type'           => EarningCategory::SELF_EARNING->value,
         ]);
 
         // Update Earning Account
