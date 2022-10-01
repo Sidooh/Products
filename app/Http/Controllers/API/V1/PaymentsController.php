@@ -23,20 +23,20 @@ class PaymentsController extends Controller
         Log::info('...[CTRL - PAYMENT]: Process Payment Callback...', $request->all());
 
         $request->validate([
-            "payments" => "required|array",
-            "vouchers" => "array",
+            'payments' => 'required|array',
+            'vouchers' => 'array',
         ]);
 
-        $payments = $request->collect("payments");
+        $payments = $request->collect('payments');
 
         [
             $completedPayments,
             $failedPayments
-        ] = $payments->partition(fn($p) => $p['status'] === Status::COMPLETED->value);
+        ] = $payments->partition(fn ($p) => $p['status'] === Status::COMPLETED->value);
 
         if (count($failedPayments)) {
             $transactions = Transaction::withWhereHas('payment', function ($query) use ($failedPayments) {
-                $query->whereIn("payment_id", $failedPayments->pluck("id"));
+                $query->whereIn('payment_id', $failedPayments->pluck('id'));
             })->get();
 
             TransactionRepository::handleFailedPayments($transactions, $failedPayments);
@@ -44,7 +44,7 @@ class PaymentsController extends Controller
 
         if (count($completedPayments)) {
             $transactions = Transaction::withWhereHas('payment', function ($query) use ($completedPayments) {
-                $query->whereIn("payment_id", $completedPayments->pluck("id"));
+                $query->whereIn('payment_id', $completedPayments->pluck('id'));
             })->get();
 
             TransactionRepository::handleCompletedPayments($transactions, $completedPayments, $request->all());

@@ -14,15 +14,15 @@ class Payment extends Model
     use HasFactory;
 
     protected $fillable = [
-        "status",
+        'status',
         'transaction_id',
         'payment_id',
         'type',
-        'subtype'
+        'subtype',
     ];
 
     protected $casts = [
-        'extra' => 'array'
+        'extra' => 'array',
     ];
 
     public function transaction(): BelongsTo

@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\EarningAccount;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Schema;
 
 class EarningAccountSeeder extends Seeder
 {
@@ -14,16 +15,19 @@ class EarningAccountSeeder extends Seeder
      */
     public function run()
     {
-        //
+        Schema::disableForeignKeyConstraints();
+        EarningAccount::truncate();
+        Schema::enableForeignKeyConstraints();
+
         $accounts = [
             [
-                'type' => 'SYSTEM',
-                'self_amount' => 0,
+                'type'          => 'SYSTEM',
+                'self_amount'   => 0,
                 'invite_amount' => 0,
-                'account_id' => 0,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]
+                'account_id'    => 0,
+                'created_at'    => now(),
+                'updated_at'    => now(),
+            ],
         ];
 
 //        foreach (EarningAccountType::cases() as $accountType) {

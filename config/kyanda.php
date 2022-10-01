@@ -44,7 +44,7 @@ return [
          * Note: This package has already routes for handling this callback.
          * You should leave this values as they are unless you know what you are doing.
          */
-        'callback' => env('APP_URL') . '/kyanda/callbacks/notification',
+        'callback' => env('APP_URL').'/kyanda/callbacks/notification',
     ],
 
     /*
@@ -57,7 +57,6 @@ return [
    */
     'merchant_id' => env('KYANDA_MERCHANT_ID'),
 
-
     /*
    |--------------------------------------------------------------------------
    | API Key
@@ -67,7 +66,6 @@ return [
    |
    */
     'api_key' => env('KYANDA_API_KEY'),
-
 
     /*
    |--------------------------------------------------------------------------
@@ -87,6 +85,6 @@ return [
 
             'KPLC_PREPAID.min' => 100,
             'KPLC_PREPAID.max' => 35000,
-        ]
+        ],
     ],
 ];

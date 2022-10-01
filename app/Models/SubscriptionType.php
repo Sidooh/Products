@@ -23,6 +23,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null                              $updated_at
  * @property-read Collection|Subscription[] $subscription
  * @property-read int|null                                                $subscription_count
+ *
  * @method static SubscriptionTypeFactory factory(...$parameters)
  * @method static Builder|SubscriptionType newModelQuery()
  * @method static Builder|SubscriptionType newQuery()
@@ -42,8 +43,8 @@ class SubscriptionType extends Model
     use HasFactory;
 
     protected $casts = [
-        "price" => 'int',
-        "active" => 'bool'
+        'price'  => 'int',
+        'active' => 'bool',
     ];
 
     /**

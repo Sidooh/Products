@@ -16,7 +16,7 @@ class AirtimePurchaseFailedEvent
     /**
      * Create a new event instance.
      *
-     * @param ATAirtimeResponse $response
+     * @param  ATAirtimeResponse  $response
      */
     public function __construct(public ATAirtimeResponse $airtime_response)
     {

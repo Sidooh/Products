@@ -23,12 +23,12 @@ class EarningRequest extends FormRequest
      *
      * @return array<string, mixed>
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             'initiator'  => ['required', new Enum(Initiator::class)],
             'account_id' => 'required|integer',
-            'amount'     => ["required", 'numeric', 'min:20', 'max:10000']
+            'amount'     => ['required', 'numeric', 'min:20', 'max:10000'],
         ];
     }
 }

@@ -31,6 +31,7 @@ use Nabcellent\Kyanda\Models\KyandaRequest;
  * @property-read ATAirtimeRequest|null $atAirtimeRequest
  * @property-read KyandaRequest|null $kyandaTransaction
  * @property-read TandaRequest|null $tandaRequest
+ *
  * @method static TransactionFactory factory(...$parameters)
  * @method static Builder|Transaction newModelQuery()
  * @method static Builder|Transaction newQuery()
@@ -103,7 +104,7 @@ class Transaction extends Model
     public static function updateStatus(self $transaction, Status $status = Status::PENDING)
     {
         Log::info('...[MDL - TRANSACTION]: Update Status...', [
-            "status" => $status->value
+            'status' => $status->value,
         ]);
 
         $transaction->status = $status;

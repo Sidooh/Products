@@ -17,7 +17,7 @@ class KyandaApi
         try {
             return Utility::airtimePurchase($phone, $transaction->amount, $transaction->id);
         } catch (KyandaException $e) {
-            Log::error("KyandaError: " . $e->getMessage());
+            Log::error('KyandaError: '.$e->getMessage());
         }
 
         return true;
@@ -30,7 +30,7 @@ class KyandaApi
         try {
             return Utility::billPayment($transaction->destination, $transaction->amount, $provider, 700000000, $transaction->id);
         } catch (KyandaException $e) {
-            Log::error("KyandaError: " . $e->getMessage());
+            Log::error('KyandaError: '.$e->getMessage());
         }
 
         return true;

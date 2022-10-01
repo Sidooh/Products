@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Events;
-
 
 use App\Models\Transaction;
 use Illuminate\Broadcasting\InteractsWithSockets;
@@ -13,13 +11,12 @@ class VoucherPurchaseEvent
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-
     /**
      * Create a new event instance.
      *
-     * @param Transaction $transaction
-     * @param array $voucher
-     * @param array $payment
+     * @param  Transaction  $transaction
+     * @param  array  $voucher
+     * @param  array  $payment
      */
     public function __construct(public Transaction $transaction, public array $vouchers)
     {

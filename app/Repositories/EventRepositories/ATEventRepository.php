@@ -20,19 +20,14 @@ class ATEventRepository
      */
     public static function airtimePurchaseFailed(ATAirtimeResponse $airtimeResponse): void
     {
-        SidoohNotify::notify([
-            '254714611696',
-            '254711414987',
-            '254721309253'
-        ], "ERROR:AIRTIME\n$airtimeResponse->phone", EventType::ERROR_ALERT);
-        Log::info("Airtime Failure SMS Sent");
-
+        SidoohNotify::notify(admin_contacts(), "ERROR:AIRTIME\n$airtimeResponse->phone", EventType::ERROR_ALERT);
+        Log::info('Airtime Failure SMS Sent');
 
         $phone = ltrim($airtimeResponse->phone, '+');
 
-        $amount = explode(".", explode(" ", $airtimeResponse->amount)[1])[0];
+        $amount = explode('.', explode(' ', $airtimeResponse->amount)[1])[0];
         $date = $airtimeResponse->airtimeRequest->created_at->timezone('Africa/Nairobi')
-            ->format(config("settings.sms_date_time_format"));
+            ->format(config('settings.sms_date_time_format'));
 
         $transaction = $airtimeResponse->airtimeRequest->transaction;
         $transaction->status = Status::REFUNDED;
@@ -53,7 +48,7 @@ class ATEventRepository
         $transaction = $airtimeResponse->airtimeRequest->transaction;
 
         $phone = ltrim($airtimeResponse->phone, '+');
-        $sender = SidoohAccounts::find($transaction->account_id)["phone"];
+        $sender = SidoohAccounts::find($transaction->account_id)['phone'];
         $method = $transaction->payment->subtype;
         $provider = getTelcoFromPhone($transaction->destination);
 
@@ -64,6 +59,7 @@ class ATEventRepository
         };
         if ($totalEarnings <= 0) {
             Log::error('...[REP - AT]: New Calculation... Failed!!!', [$rateConfig, $totalEarnings]);
+
             return;
         }
 
@@ -73,7 +69,7 @@ class ATEventRepository
 
         if ($method == 'VOUCHER') {
             $voucher = $transaction->payment->extra;
-            $bal = 'Ksh' . number_format($voucher["balance"], 2);
+            $bal = 'Ksh'.number_format($voucher['balance'], 2);
             $vtext = " New Voucher balance is $bal.";
         } else {
             $method = 'MPESA';
@@ -82,9 +78,9 @@ class ATEventRepository
 
         self::statusUpdate($airtimeResponse);
 
-        $amount = str_replace(' ', '', explode(".", $airtimeResponse->amount)[0]);
+        $amount = str_replace(' ', '', explode('.', $airtimeResponse->amount)[0]);
         $date = $airtimeResponse->updated_at->timezone('Africa/Nairobi')
-            ->format(config("settings.sms_date_time_format"));
+            ->format(config('settings.sms_date_time_format'));
 
         if ($phone != $sender) {
             $message = "You have purchased {$amount} airtime for {$phone} from your Sidooh account on {$date} using $method. You have received {$pointsEarned} cashback.$vtext";
@@ -101,7 +97,7 @@ class ATEventRepository
 
     public static function statusUpdate(ATAirtimeResponse $airtimeResponse): void
     {
-        Log::info("...[REP - AT] Status Update...");
+        Log::info('...[REP - AT] Status Update...');
 
         $airtimeRequest = $airtimeResponse->airtimeRequest;
 
@@ -109,10 +105,10 @@ class ATEventRepository
 
 //        TODO:: Remove Sent from successful
 //        || $value->status == 'Sent'
-        $successful = $responses->filter(fn($value) => $value->status == 'Success' || $value->status == 'Sent');
+        $successful = $responses->filter(fn ($value) => $value->status == 'Success' || $value->status == 'Sent');
 
         if (count($successful) == count($responses)) {
-            $totalEarned = explode(" ", $airtimeRequest->discount)[1];
+            $totalEarned = explode(' ', $airtimeRequest->discount)[1];
 
             TransactionSuccessEvent::dispatch($airtimeRequest->transaction, $totalEarned);
         }

@@ -13,18 +13,20 @@ class TandaRequestSuccess
      *
      * @return void
      */
-    public function __construct() { }
+    public function __construct()
+    {
+    }
 
     /**
      * Handle the event.
      *
-     * @param TandaRequestSuccessEvent $event
+     * @param  TandaRequestSuccessEvent  $event
      * @return void
      */
     public function handle(TandaRequestSuccessEvent $event)
     {
         Log::info('...[EVENT]: Tanda Request Success...', [
-            "id" => $event->request->id
+            'id' => $event->request->id,
         ]);
 
         TandaEventRepository::requestSuccess($event->request);

@@ -9,19 +9,21 @@ use Illuminate\Support\Facades\Log;
 
 class VoucherPurchaseSuccess
 {
-
     /**
      * Create the event listener.
      *
      * @return void
      */
-    public function __construct() { }
+    public function __construct()
+    {
+    }
 
     /**
      * Handle the event.
      *
-     * @param VoucherPurchaseEvent $event
+     * @param  VoucherPurchaseEvent  $event
      * @return void
+     *
      * @throws Exception
      */
     public function handle(VoucherPurchaseEvent $event): void

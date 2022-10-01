@@ -12,7 +12,7 @@ class TransactionResource extends JsonResource
     /**
      * Transform the resource into an array.
      *
-     * @param Request $request
+     * @param  Request  $request
      * @return array|Arrayable|JsonSerializable
      */
     public function toArray($request): array|JsonSerializable|Arrayable
@@ -26,11 +26,11 @@ class TransactionResource extends JsonResource
             'destination' => $this->destination,
             'description' => $this->description,
             'account_id'  => $this->account_id,
-            "account"     => $this->account,
-            "payment"     => $this->payment,
-            "product"     => $this->product->name,
-            "request"     => $this->request,
-            "created_at"  => $this->created_at,
+            'account'     => $this->account,
+            'payment'     => $this->payment,
+            'product'     => $this->product->name,
+            'request'     => $this->request,
+            'created_at'  => $this->created_at,
         ];
     }
 }

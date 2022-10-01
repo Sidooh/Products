@@ -14,19 +14,22 @@ class KyandaTransactionFailed
      *
      * @return void
      */
-    public function __construct() { }
+    public function __construct()
+    {
+    }
 
     /**
      * Handle the event.
      *
-     * @param KyandaTransactionFailedEvent $event
+     * @param  KyandaTransactionFailedEvent  $event
      * @return void
+     *
      * @throws Exception
      */
     public function handle(KyandaTransactionFailedEvent $event)
     {
         Log::info('...[EVENT]: Kyanda Transaction Failed...', [
-            "transaction" => $event->transaction
+            'transaction' => $event->transaction,
         ]);
 
         KyandaEventRepository::transactionFailed($event->transaction);

@@ -17,26 +17,26 @@ class SidoohSavings extends SidoohService
     {
         Log::info('...[SRV - SAVINGS]: Withdraw Earnings...');
 
-        $url = config('services.sidooh.services.savings.url') . "/accounts/earnings/withdraw";
+        $url = config('services.sidooh.services.savings.url').'/accounts/earnings/withdraw';
 
         $data = $transactions->map(function ($t) use ($method) {
             return [
-                'ref' => "$t->id",
-                'account_id' => $t->account_id,
-                'amount' => $t->amount,
-                'method' => $method->name,
-                'destination' => $t->destination
+                'ref'         => "$t->id",
+                'account_id'  => $t->account_id,
+                'amount'      => $t->amount,
+                'method'      => $method->name,
+                'destination' => $t->destination,
             ];
         });
 
-        return parent::fetch($url, "POST", $data->toArray());
+        return parent::fetch($url, 'POST', $data->toArray());
     }
 
     public static function save(array $savings)
     {
-        Log::info('...[SRV - SAVINGS]: Save...', ["savings" => $savings]);
+        Log::info('...[SRV - SAVINGS]: Save...', ['savings' => $savings]);
 
-        $url = config('services.sidooh.services.savings.url') . "/accounts/earnings";
+        $url = config('services.sidooh.services.savings.url').'/accounts/earnings';
 
         try {
             $response = parent::http()->post($url, $savings)->json();
@@ -45,10 +45,10 @@ class SidoohSavings extends SidoohService
 
             return $response;
         } catch (ConnectionException $e) {
-            Log::error("Failed to Connect to Savings!", ["err" => $e->getMessage()]);
+            Log::error('Failed to Connect to Savings!', ['err' => $e->getMessage()]);
         } catch (Exception $e) {
             Log::error($e);
         }
-        throw new \Error("Failed to save earnings");
+        throw new \Error('Failed to save earnings');
     }
 }

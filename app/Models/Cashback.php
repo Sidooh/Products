@@ -19,6 +19,7 @@ use Illuminate\Support\Carbon;
  * @property int         $transaction_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ *
  * @method static CashbackFactory factory(...$parameters)
  * @method static Builder|Cashback newModelQuery()
  * @method static Builder|Cashback newQuery()
@@ -37,10 +38,10 @@ class Cashback extends Model
     use HasFactory;
 
     protected $fillable = [
-        "account_id",
-        "amount",
-        "type",
-        "transaction_id"
+        'account_id',
+        'amount',
+        'type',
+        'transaction_id',
     ];
 
     public function transaction(): BelongsTo

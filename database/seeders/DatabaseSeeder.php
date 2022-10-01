@@ -33,8 +33,9 @@ class DatabaseSeeder extends Seeder
             SubscriptionTypeSeeder::class,
             ProductSeeder::class,
             EarningAccountSeeder::class,
-//            CashbackSeeder::class,
-//            EnterpriseSeeder::class,
+            //            CashbackSeeder::class,
+            //            EnterpriseSeeder::class,
+            //            TransactionSeeder::class
         ]);
     }
 }

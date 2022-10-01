@@ -5,6 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @mixin IdeHelperNotification
+ */
 class Notification extends Model
 {
     use HasFactory;
@@ -12,7 +15,7 @@ class Notification extends Model
     protected $guarded = [];
 
     protected $casts = [
-        'to' => 'array',
-        'response' => 'array'
+        'to'       => 'array',
+        'response' => 'array',
     ];
 }

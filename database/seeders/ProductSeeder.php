@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Enums\ProductType;
 use App\Models\Product;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Schema;
 
 class ProductSeeder extends Seeder
 {
@@ -15,17 +16,18 @@ class ProductSeeder extends Seeder
      */
     public function run()
     {
-        //
+        Schema::disableForeignKeyConstraints();
+        Product::truncate();
+        Schema::enableForeignKeyConstraints();
 
         $products = [];
 
         foreach (ProductType::cases() as $product) {
             $products[] = [
-                'name' => $product->name
+                'name' => $product->name,
             ];
         }
 
         Product::insert($products);
-
     }
 }

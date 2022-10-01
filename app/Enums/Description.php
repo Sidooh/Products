@@ -11,6 +11,6 @@ enum Description: string
     case VOUCHER_REFUND = 'Voucher Refund';
     case VOUCHER_PURCHASE = 'Voucher Purchase';
 
-    case SUBSCRIPTION_PURCHASE = "Subscription Purchase";
-    case EARNINGS_WITHDRAWAL = "Earnings Withdrawal";
+    case SUBSCRIPTION_PURCHASE = 'Subscription Purchase';
+    case EARNINGS_WITHDRAWAL = 'Earnings Withdrawal';
 }

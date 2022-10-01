@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Events;
-
 
 use App\Models\Subscription;
 use App\Models\Transaction;
@@ -27,8 +25,8 @@ class SubscriptionPurchaseSuccessEvent
     /**
      * Create a new event instance.
      *
-     * @param Subscription $subscription
-     * @param Transaction $transaction
+     * @param  Subscription  $subscription
+     * @param  Transaction  $transaction
      */
     public function __construct(Subscription $subscription, Transaction $transaction)
     {
