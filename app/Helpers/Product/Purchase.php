@@ -87,7 +87,7 @@ class Purchase
             'end_date'   => now()->addMonths($type->duration),
         ];
 
-        return DB::transaction(function () use ($type, $subscription) {
+        return DB::transaction(function() use ($type, $subscription) {
             $sub = $type->subscription()->create($subscription);
 
             $this->transaction->status = Status::COMPLETED;

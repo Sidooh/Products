@@ -25,7 +25,7 @@ class SidoohPayments extends SidoohService
 
         $url = self::baseUrl().'/payments';
 
-        return Cache::remember('all_payments', (60 * 60 * 24), fn () => parent::fetch($url));
+        return Cache::remember('all_payments', (60 * 60 * 24), fn() => parent::fetch($url));
     }
 
     /**
@@ -58,7 +58,8 @@ class SidoohPayments extends SidoohService
     }
 
     /**
-     * @throws AuthenticationException
+     * @param  int  $paymentId
+     * @return array|null
      */
     public static function find(int $paymentId): ?array
     {

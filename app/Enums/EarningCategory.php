@@ -2,9 +2,10 @@
 
 namespace App\Enums;
 
-enum EarningCategory
+enum EarningCategory: string
 {
-    case self;
-    case INVITE;
-    case SYSTEM;
+    //self is a reserved keyword so will be reformatted to lowercase: psr-12 lowercase_static_reference
+    case SELF_EARNING = 'SELF';
+    case INVITE = 'INVITE';
+    case SYSTEM = 'SYSTEM';
 }

@@ -32,10 +32,10 @@ class PaymentsController extends Controller
         [
             $completedPayments,
             $failedPayments
-        ] = $payments->partition(fn ($p) => $p['status'] === Status::COMPLETED->value);
+        ] = $payments->partition(fn($p) => $p['status'] === Status::COMPLETED->value);
 
         if (count($failedPayments)) {
-            $transactions = Transaction::withWhereHas('payment', function ($query) use ($failedPayments) {
+            $transactions = Transaction::withWhereHas('payment', function($query) use ($failedPayments) {
                 $query->whereIn('payment_id', $failedPayments->pluck('id'));
             })->get();
 
@@ -43,7 +43,7 @@ class PaymentsController extends Controller
         }
 
         if (count($completedPayments)) {
-            $transactions = Transaction::withWhereHas('payment', function ($query) use ($completedPayments) {
+            $transactions = Transaction::withWhereHas('payment', function($query) use ($completedPayments) {
                 $query->whereIn('payment_id', $completedPayments->pluck('id'));
             })->get();
 

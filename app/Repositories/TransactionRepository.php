@@ -65,7 +65,7 @@ class TransactionRepository
             $debit_account = $data['method'] === PaymentMethod::MPESA ? $account['phone'] : $account['id'];
         }
 
-        $transactionsData = $transactions->map(fn ($t) => [
+        $transactionsData = $transactions->map(fn($t) => [
             'reference'   => $t->id,
             'product_id'  => $t->product_id,
             'amount'      => $t->amount,
@@ -84,7 +84,7 @@ class TransactionRepository
             throw new Exception('Purchase Failed!');
         }
 
-        $paymentData = array_map(function ($p) use ($responseData, $debit_account) {
+        $paymentData = array_map(function($p) use ($responseData, $debit_account) {
             return [
                 'transaction_id' => $p['reference'],
                 'payment_id'     => $p['id'],
@@ -153,7 +153,7 @@ class TransactionRepository
     {
         $responses = SidoohSavings::withdrawEarnings($transactions, $data['method']);
 
-        $transactions->each(function ($tx) use ($responses) {
+        $transactions->each(function($tx) use ($responses) {
             if (array_key_exists($tx->id, $responses['failed'])) {
                 $response = $responses['failed'][$tx->id];
 
@@ -195,7 +195,7 @@ class TransactionRepository
 
     public static function handleFailedPayments(Collection $transactions, Collection $failedPayments): void
     {
-        $transactions->each(function ($transaction) use ($failedPayments) {
+        $transactions->each(function($transaction) use ($failedPayments) {
             $transaction->payment->update(['status' => Status::FAILED]);
             $transaction->status = Status::FAILED;
             $transaction->save();
