@@ -71,6 +71,7 @@ class TransactionRepository
             'destination' => $t->destination,
             'description' => $t->description,
         ]);
+
         $responseData = SidoohPayments::requestPayment($transactionsData, $data['method'], $debit_account);
 
         // TODO: Revert this to: if (!isset($response["data"]["payments"])) throw new Exception("Purchase Failed!");

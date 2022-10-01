@@ -58,7 +58,8 @@ class SidoohPayments extends SidoohService
     }
 
     /**
-     * @throws AuthenticationException
+     * @param  int  $paymentId
+     * @return array|null
      */
     public static function find(int $paymentId): ?array
     {

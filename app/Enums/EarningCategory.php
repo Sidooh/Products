@@ -4,7 +4,7 @@ namespace App\Enums;
 
 enum EarningCategory
 {
-    case self;
+    case SELF;
     case INVITE;
     case SYSTEM;
 }
