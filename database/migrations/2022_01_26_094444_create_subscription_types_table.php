@@ -14,7 +14,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('subscription_types', function (Blueprint $table) {
+        Schema::create('subscription_types', function(Blueprint $table) {
             $table->id();
 
             $table->string('title', 32);

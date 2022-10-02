@@ -149,7 +149,7 @@ class TandaApiTest extends TestCase
 
         $handlerStack = HandlerStack::create($this->mock);
 
-        $this->app->singleton(BaseClient::class, function () use ($handlerStack) {
+        $this->app->singleton(BaseClient::class, function() use ($handlerStack) {
             return new BaseClient(new Client(['handler' => $handlerStack]));
         });
     }

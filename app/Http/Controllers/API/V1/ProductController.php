@@ -26,9 +26,9 @@ class ProductController extends Controller
     /**
      * @throws Exception
      */
-    public function getAccountDetails(Request $request, int $accountId): JsonResponse
+    public function getAccountDetails(int $accountId): JsonResponse
     {
-        $account = SidoohAccounts::find($accountId, true);
+        $account = SidoohAccounts::find($accountId);
 
         $totalTransactions = Transaction::whereAccountId($accountId)->count();
 
@@ -47,13 +47,13 @@ class ProductController extends Controller
             ->whereType(TransactionType::PAYMENT)->whereNot('product_id', ProductType::VOUCHER)->latest()->get();
 
         $totalRevenue = $transactions->sum('amount');
-        $totalRevenueToday = $transactions->filter(fn ($item) => $item->created_at->isToday())->sum('amount');
-        $totalRevenueWeek = $transactions->filter(fn ($item) => $item->created_at->isCurrentWeek())->sum('amount');
-        $totalRevenueMonth = $transactions->filter(fn ($item) => $item->created_at->isCurrentMonth())->sum('amount');
+        $totalRevenueToday = $transactions->filter(fn($item) => $item->created_at->isToday())->sum('amount');
+        $totalRevenueWeek = $transactions->filter(fn($item) => $item->created_at->isCurrentWeek())->sum('amount');
+        $totalRevenueMonth = $transactions->filter(fn($item) => $item->created_at->isCurrentMonth())->sum('amount');
 
         $voucher = SidoohPayments::findVoucherByAccount($accountId);
-
         $earningAccounts = EarningAccount::whereAccountId($accountId)->get();
+        $subscriptions = Subscription::whereAccountId($accountId)->with('subscriptionType:id,title')->latest()->get();
 
         $data = [
             'account' => $account,
@@ -72,6 +72,7 @@ class ProductController extends Controller
 
             'voucher'         => $voucher[0] ?? ['balance' => 0],
             'earningAccounts' => $earningAccounts,
+            'subscriptions'   => $subscriptions,
         ];
 
         return $this->successResponse($data);

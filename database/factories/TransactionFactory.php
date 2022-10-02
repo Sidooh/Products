@@ -20,7 +20,7 @@ class TransactionFactory extends Factory
     {
         return [
             'account_id' => $this->faker->randomElement([12, 44, 45, 46, 47]),
-            'product_id' => fn (array $attributes) => match ($attributes['description']) {
+            'product_id' => fn(array $attributes) => match ($attributes['description']) {
                 Description::AIRTIME_PURCHASE      => ProductType::AIRTIME,
                 Description::UTILITY_PURCHASE      => ProductType::UTILITY,
                 Description::VOUCHER_PURCHASE      => ProductType::VOUCHER,

@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('earning_accounts', function (Blueprint $table) {
+        Schema::create('earning_accounts', function(Blueprint $table) {
             $table->id();
 
             $table->string('type'); //PURCHASES / SUBSCRIPTIONS / MERCHANTS ...

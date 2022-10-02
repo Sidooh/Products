@@ -74,7 +74,7 @@ class AirtimeController extends Controller
     {
         $data = $request->all();
 
-        $transactions = array_map(function ($recipient) use ($data) {
+        $transactions = array_map(function($recipient) use ($data) {
             $account = SidoohAccounts::find($recipient['account_id']);
 
             return [

@@ -105,7 +105,7 @@ class ATEventRepository
 
 //        TODO:: Remove Sent from successful
 //        || $value->status == 'Sent'
-        $successful = $responses->filter(fn ($value) => $value->status == 'Success' || $value->status == 'Sent');
+        $successful = $responses->filter(fn($value) => $value->status == 'Success' || $value->status == 'Sent');
 
         if (count($successful) == count($responses)) {
             $totalEarned = explode(' ', $airtimeRequest->discount)[1];

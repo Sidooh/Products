@@ -86,7 +86,7 @@ if (! function_exists('withRelation')) {
 
         $childRecords = collect($childRecords);
 
-        return $parentRecords->transform(function ($record) use ($parentKey, $relation, $childKey, $childRecords) {
+        return $parentRecords->transform(function($record) use ($parentKey, $relation, $childKey, $childRecords) {
             $record[$relation] = $childRecords->firstWhere($childKey, $record[$parentKey]);
 
             return $record;

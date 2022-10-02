@@ -14,12 +14,12 @@ use App\Models\Subscription;
 use App\Models\SubscriptionType;
 use App\Models\Transaction;
 use App\Services\SidoohNotify;
+use function config;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Propaganistas\LaravelPhone\PhoneNumber;
 use Throwable;
-use function config;
 
 class Purchase
 {
@@ -87,7 +87,7 @@ class Purchase
             'end_date'   => now()->addMonths($type->duration),
         ];
 
-        return DB::transaction(function () use ($type, $subscription) {
+        return DB::transaction(function() use ($type, $subscription) {
             $sub = $type->subscription()->create($subscription);
 
             $this->transaction->status = Status::COMPLETED;
