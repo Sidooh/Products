@@ -19,7 +19,7 @@ class SidoohPayments extends SidoohService
     {
         Log::info('...[SRV - PAYMENTS]: Get All...');
 
-        $url = self::baseUrl() . '/payments';
+        $url = self::baseUrl().'/payments';
 
         return Cache::remember('all_payments', (60 * 60 * 24), fn() => parent::fetch($url));
     }
@@ -28,7 +28,7 @@ class SidoohPayments extends SidoohService
     {
         Log::info('...[SRV - PAYMENTS]: Request Payment...');
 
-        return parent::fetch(self::baseUrl() . '/payments', 'POST', [
+        return parent::fetch(self::baseUrl().'/payments', 'POST', [
             'transactions'  => $transactions->toArray(),
             'payment_mode'  => $method->name,
             'debit_account' => $debit_account,
@@ -39,7 +39,7 @@ class SidoohPayments extends SidoohService
     {
         Log::info('...[SRV - PAYMENTS]: Request B2B Payment...');
 
-        return parent::fetch(self::baseUrl() . '/payments/b2b', 'POST', [
+        return parent::fetch(self::baseUrl().'/payments/b2b', 'POST', [
             'transactions'  => [$transaction],
             'payment_mode'  => $method->name,
             'debit_account' => $debit_account,
@@ -51,7 +51,7 @@ class SidoohPayments extends SidoohService
     {
         Log::info('...[SRV - PAYMENTS]: Credit Voucher...');
 
-        return parent::fetch(self::baseUrl() . '/payments/voucher/credit', 'POST', [
+        return parent::fetch(self::baseUrl().'/payments/voucher/credit', 'POST', [
             'account_id'  => $accountId,
             'amount'      => $amount,
             'description' => $description->value,
@@ -63,12 +63,12 @@ class SidoohPayments extends SidoohService
     {
         Log::info('...[SRV - PAYMENTS]: Find Payment...');
 
-        return parent::fetch(self::baseUrl() . "/payments/$paymentId");
+        return parent::fetch(self::baseUrl()."/payments/$paymentId");
     }
 
     // TODO: Add by voucher type filter
     public static function findVoucherByAccount(int $accountId): ?array
     {
-        return parent::fetch(self::baseUrl() . "/accounts/$accountId/vouchers");
+        return parent::fetch(self::baseUrl()."/accounts/$accountId/vouchers");
     }
 }

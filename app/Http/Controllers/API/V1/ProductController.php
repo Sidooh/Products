@@ -53,7 +53,7 @@ class ProductController extends Controller
 
         $voucher = SidoohPayments::findVoucherByAccount($accountId);
         $earningAccounts = EarningAccount::whereAccountId($accountId)->get();
-        $subscriptions = Subscription::whereAccountId($accountId)->latest()->get();
+        $subscriptions = Subscription::whereAccountId($accountId)->with('subscriptionType:id,title')->latest()->get();
 
         $data = [
             'account' => $account,
@@ -72,7 +72,7 @@ class ProductController extends Controller
 
             'voucher'         => $voucher[0] ?? ['balance' => 0],
             'earningAccounts' => $earningAccounts,
-            'subscription'    => $subscriptions,
+            'subscriptions'   => $subscriptions,
         ];
 
         return $this->successResponse($data);
@@ -81,8 +81,8 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param Request $request
-     * @param int $accountId
+     * @param  Request  $request
+     * @param  int  $accountId
      * @return JsonResponse
      *
      * @throws AuthenticationException
@@ -103,7 +103,7 @@ class ProductController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param Request $request
+     * @param  Request  $request
      * @return JsonResponse
      *
      * @throws AuthenticationException
@@ -124,8 +124,8 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param Request $request
-     * @param int $accountId
+     * @param  Request  $request
+     * @param  int  $accountId
      * @return JsonResponse
      */
     public function airtimeAccounts(Request $request, int $accountId): JsonResponse
@@ -144,8 +144,8 @@ class ProductController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param Request $request
-     * @param int $accountId
+     * @param  Request  $request
+     * @param  int  $accountId
      * @return JsonResponse
      */
     public function utilityAccounts(Request $request, int $accountId): JsonResponse
