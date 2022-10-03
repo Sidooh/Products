@@ -40,11 +40,11 @@ class MerchantRequest extends FormRequest
             'business_number' => [
                 Rule::requiredIf(
                     $this->input('merchant_type') === MerchantType::MPESA_PAY_BILL->name,
-                ),],
+                ), ],
             'account_number'  => [
                 Rule::requiredIf(
                     $this->input('merchant_type') === MerchantType::MPESA_PAY_BILL->name,
-                ),],
+                ), ],
             'debit_account'   => [Rule::when(
                 $this->input('method') === PaymentMethod::MPESA->value,
                 "phone:$countryCode",

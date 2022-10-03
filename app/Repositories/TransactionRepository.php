@@ -73,7 +73,7 @@ class TransactionRepository
             'description' => $t->description,
         ]);
 
-        $responseData = SidoohPayments::requestPayment($transactionsData, $data['method'], $debit_account, $data['merchant_type']);
+        $responseData = SidoohPayments::requestPayment($transactionsData, $data['method'], $debit_account);
 
         // TODO: Revert this to: if (!isset($response["data"]["payments"])) throw new Exception("Purchase Failed!");
         //  Reason may not be due to payment failure, could be a connection issue etc...
@@ -327,7 +327,7 @@ class TransactionRepository
 
         $responseData = SidoohPayments::requestB2bPayment($transactionData, $data['method'], $debit_account, $merchantDetails);
 
-        if (!isset($responseData['payments']) && !isset($responseData['b2b_payment'])) {
+        if (! isset($responseData['payments']) && ! isset($responseData['b2b_payment'])) {
             throw new Exception('Purchase Failed!');
         }
 
