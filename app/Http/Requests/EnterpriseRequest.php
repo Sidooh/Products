@@ -27,7 +27,7 @@ class EnterpriseRequest extends FormRequest
         return [
             'name'         => 'required|string',
             'settings'     => 'required|array',
-            'account_id'   => ['bail', 'required', 'integer', new SidoohAccountExists]
+            'account_id'   => ['bail', 'required', 'integer', new SidoohAccountExists],
         ];
     }
 }

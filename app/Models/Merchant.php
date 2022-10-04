@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $balance
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ *
  * @method static \Database\Factories\MerchantFactory factory(...$parameters)
  * @method static \Illuminate\Database\Eloquent\Builder|Merchant newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Merchant newQuery()

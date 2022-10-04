@@ -20,6 +20,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Enterprise                 $enterprise
+ *
  * @method static EnterpriseAccountFactory factory(...$parameters)
  * @method static Builder|EnterpriseAccount newModelQuery()
  * @method static Builder|EnterpriseAccount newQuery()

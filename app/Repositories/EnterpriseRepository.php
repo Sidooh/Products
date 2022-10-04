@@ -10,14 +10,14 @@ class EnterpriseRepository
     public function store(string $name, ?array $settings, int $accountId): Enterprise
     {
         $enterprise = Enterprise::create([
-            'name' => $name,
+            'name'     => $name,
             'settings' => $settings,
         ]);
 
         $enterprise->enterpriseAccounts()->create([
-            "account_id" => $accountId,
-            "type"       => EnterpriseAccountType::ADMIN,
-            "active"     => true
+            'account_id' => $accountId,
+            'type'       => EnterpriseAccountType::ADMIN,
+            'active'     => true,
         ]);
 
         return $enterprise;
