@@ -24,7 +24,6 @@ use Illuminate\Support\Carbon;
  * @property-read Collection|EnterpriseAccount[] $enterpriseAccounts
  * @property-read int|null                       $enterprise_accounts_count
  * @property-read int|null                       $vouchers_count
- *
  * @method static EnterpriseFactory factory(...$parameters)
  * @method static Builder|Enterprise newModelQuery()
  * @method static Builder|Enterprise newQuery()

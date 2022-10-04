@@ -37,11 +37,11 @@ class EnterpriseController extends Controller
     {
         $name = $request->string('name');
         $settings = $request->input('settings');
-        $accounts = $request->input('accounts');
+        $accounts = $request->integer('account_id');
 
         $enterprise = $this->repo->store($name, $settings, $accounts);
 
-        return $this->errorResponse($enterprise);
+        return $this->successResponse($enterprise);
     }
 
     /**

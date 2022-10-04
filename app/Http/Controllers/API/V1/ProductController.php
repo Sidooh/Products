@@ -86,10 +86,8 @@ class ProductController extends Controller
      * Display a listing of the resource.
      *
      * @param Request $request
-     * @param int     $accountId
-     * @throws AuthenticationException
+     * @throws \Illuminate\Auth\AuthenticationException
      * @return JsonResponse
-     *
      */
     public function getAllAirtimeAccounts(Request $request): JsonResponse
     {

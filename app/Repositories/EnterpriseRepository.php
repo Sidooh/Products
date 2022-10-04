@@ -2,21 +2,23 @@
 
 namespace App\Repositories;
 
+use App\Enums\EnterpriseAccountType;
 use App\Models\Enterprise;
-use Illuminate\Database\Eloquent\Model;
 
 class EnterpriseRepository
 {
-    public function store(string $name, ?array $settings, ?array $accounts): Enterprise|Model
+    public function store(string $name, ?array $settings, int $accountId): Enterprise
     {
         $enterprise = Enterprise::create([
-            'name'     => $name,
+            'name' => $name,
             'settings' => $settings,
         ]);
 
-        if (isset($accounts) && count($accounts) > 0) {
-            $enterprise->enterpriseAccounts()->createMany($accounts);
-        }
+        $enterprise->enterpriseAccounts()->create([
+            "account_id" => $accountId,
+            "type"       => EnterpriseAccountType::ADMIN,
+            "active"     => true
+        ]);
 
         return $enterprise;
     }

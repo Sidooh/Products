@@ -2,10 +2,8 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\EnterpriseAccountType;
 use App\Rules\SidoohAccountExists;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rules\Enum;
 
 class EnterpriseRequest extends FormRequest
 {
@@ -29,8 +27,7 @@ class EnterpriseRequest extends FormRequest
         return [
             'name'         => 'required|string',
             'settings'     => 'required|array',
-            'account_id'   => ['bail', 'required', 'integer', new SidoohAccountExists],
-            'account_type' => ['required', new Enum(EnterpriseAccountType::class)],
+            'account_id'   => ['bail', 'required', 'integer', new SidoohAccountExists]
         ];
     }
 }

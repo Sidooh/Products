@@ -24,7 +24,6 @@ use Illuminate\Support\Carbon;
  * @property int|null $transaction_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- *
  * @method static AirtimeRequestFactory factory(...$parameters)
  * @method static Builder|ATAirtimeRequest newModelQuery()
  * @method static Builder|ATAirtimeRequest newQuery()
@@ -38,7 +37,6 @@ use Illuminate\Support\Carbon;
  * @method static Builder|ATAirtimeRequest whereNumSent($value)
  * @method static Builder|ATAirtimeRequest whereTransactionId($value)
  * @method static Builder|ATAirtimeRequest whereUpdatedAt($value)
- *
  * @property-read Collection|ATAirtimeResponse[] $airtimeResponses
  * @property-read int|null $airtime_responses_count
  * @property-read Transaction|null $transaction

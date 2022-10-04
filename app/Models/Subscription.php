@@ -23,7 +23,6 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read SubscriptionType           $subscriptionType
- *
  * @method static SubscriptionFactory factory(...$parameters)
  * @method static Builder|Subscription newModelQuery()
  * @method static Builder|Subscription newQuery()
