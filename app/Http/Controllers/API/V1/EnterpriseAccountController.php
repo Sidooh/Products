@@ -23,18 +23,27 @@ class EnterpriseAccountController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\Models\Enterprise  $enterprise
      * @return \Illuminate\Http\JsonResponse
+     *
+     * @throws \Illuminate\Auth\AuthenticationException
      */
-    public function index(Enterprise $enterprise): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $enterprises = $enterprise->enterpriseAccounts()->select([
+        $relations = explode(',', $request->query('with'));
+
+        $accounts = EnterpriseAccount::select([
             'id',
             'type',
             'account_id',
+            'active',
             'enterprise_id',
             'created_at',
-        ])->latest()->get();
+        ])->with('enterprise:id,name,settings')->orderBy('type', 'ASC')->orderBy('id', 'ASC')->get();
 
-        return $this->successResponse($enterprises);
+        if (in_array('account', $relations)) {
+            $accounts = withRelation('account', $accounts, 'account_id', 'id');
+        }
+
+        return $this->successResponse($accounts);
     }
 
     /**

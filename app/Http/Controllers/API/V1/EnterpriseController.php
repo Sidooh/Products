@@ -22,7 +22,8 @@ class EnterpriseController extends Controller
      */
     public function index(): JsonResponse
     {
-        $enterprises = Enterprise::select(['id', 'name', 'settings', 'created_at'])->latest()->get();
+        $enterprises = Enterprise::select(['id', 'name', 'settings', 'created_at'])->withCount('enterpriseAccounts')
+            ->latest()->get();
 
         return $this->successResponse($enterprises);
     }
@@ -50,15 +51,32 @@ class EnterpriseController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\Models\Enterprise  $enterprise
      * @return \Illuminate\Http\JsonResponse
+     *
+     * @throws \Illuminate\Auth\AuthenticationException
      */
     public function show(Request $request, Enterprise $enterprise): JsonResponse
     {
         $relations = explode(',', $request->query('with'));
 
         if (in_array('enterprise_accounts', $relations)) {
-            $enterprise->load('enterpriseAccounts:id,type,account_id,enterprise_id,created_at');
+            $enterprise->load('enterpriseAccounts:id,type,account_id,active,enterprise_id,created_at');
+
+            $enterprise->enterprise_accounts = withRelation('account', $enterprise->enterpriseAccounts, 'account_id', 'id');
         }
 
         return $this->successResponse($enterprise);
+    }
+
+    public function getEnterpriseAccounts(Enterprise $enterprise): JsonResponse
+    {
+        $enterprises = $enterprise->enterpriseAccounts()->select([
+            'id',
+            'type',
+            'account_id',
+            'enterprise_id',
+            'created_at',
+        ])->latest()->get();
+
+        return $this->successResponse($enterprises);
     }
 }

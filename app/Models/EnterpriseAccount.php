@@ -40,7 +40,12 @@ class EnterpriseAccount extends Model
 
     protected $fillable = [
         'account_id',
+        'active',
         'type',
+    ];
+
+    protected $casts = [
+        'active' => 'boolean',
     ];
 
     /**

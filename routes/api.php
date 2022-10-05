@@ -40,8 +40,8 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function() {
 
         Route::get('/earnings/rates', [ProductController::class, 'getEarningRates']);
 
-//        TODO: Should we have a similar endpoint for voucher purchase?
-//          Route::post('/voucher', WithdrawController::class);
+        //        TODO: Should we have a similar endpoint for voucher purchase?
+        //          Route::post('/voucher', WithdrawController::class);
         Route::prefix('/vouchers')->group(function() {
             Route::post('/top-up', [VoucherController::class, 'topUp']);
         });
@@ -61,11 +61,12 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function() {
         Route::post('/', [EnterpriseController::class, 'store']);
         Route::get('/{enterprise}', [EnterpriseController::class, 'show']);
 
-        Route::get('/{enterprise}/accounts', [EnterpriseAccountController::class, 'index']);
+        Route::get('/{enterprise}/accounts', [EnterpriseController::class, 'getEnterpriseAccounts']);
         Route::post('/{enterprise}/accounts', [EnterpriseAccountController::class, 'store']);
     });
 
     Route::prefix('/enterprise-accounts')->group(function() {
+        Route::get('/', [EnterpriseAccountController::class, 'index']);
         Route::get('/{enterpriseAccount}', [EnterpriseAccountController::class, 'show']);
     });
 
