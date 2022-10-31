@@ -33,12 +33,12 @@ class SidoohEventRepository extends EventRepository
         switch ($type->duration) {
             case 1:
                 $message = "Congratulations! You have successfully registered as a $type->title on $date, valid until $end_date. ";
-                $message .= "You will earn commissions on airtime and tokens purchased by your invited friends and sub-agents up to your $limit ripple.\n";
+                $message .= "You will earn commissions on airtime and utilities purchased by your invited friends and sub-agents up to your $limit ripple.\n";
                 break;
             default:
                 $level_duration = $type->duration.' MONTHS';
                 $message = "Congratulations! You have successfully pre-registered as a $type->title on $date, valid until $end_date. ";
-                $message .= 'You will earn commissions on airtime and tokens purchased by your invited friends and sub-agents up to your ';
+                $message .= 'You will earn commissions on airtime and utilities purchased by your invited friends and sub-agents up to your ';
                 $message .= "$limit ripple, for $level_duration WITHOUT PAYING MONTHLY SUBSCRIPTION FEES.\n";
         }
 
@@ -102,7 +102,7 @@ class SidoohEventRepository extends EventRepository
                     $message = "You have received $amount voucher ";
                     $message .= "from Sidooh account {$account['phone']} on $date.\n";
                     $message .= "New voucher balance is $balance.\n\n";
-                    $message .= "Dial *384*99# NOW for FREE on your Safaricom line to BUY AIRTIME or TOKENS & PAY USING the voucher received.\n\n";
+                    $message .= "Dial *384*99# NOW for FREE on your Safaricom line to BUY AIRTIME or PAY BILLS & PAY USING the voucher received.\n\n";
                     $message .= config('services.sidooh.tagline');
 
                     SidoohNotify::notify([$phone], $message, EventType::VOUCHER_PURCHASE);
@@ -157,7 +157,7 @@ class SidoohEventRepository extends EventRepository
             $message = "You have received $amount voucher ";
             $message .= "from Sidooh account {$account['phone']} on $date.\n";
             $message .= "New voucher balance is $balance.\n\n";
-            $message .= "Dial *384*99# NOW for FREE on your Safaricom line to BUY AIRTIME or TOKENS & PAY USING the voucher received.\n\n";
+            $message .= "Dial *384*99# NOW for FREE on your Safaricom line to BUY AIRTIME or PAY BILLS & PAY USING the voucher received.\n\n";
             $message .= config('services.sidooh.tagline');
 
             SidoohNotify::notify([$phone], $message, EventType::VOUCHER_PURCHASE);
