@@ -13,8 +13,8 @@
         "africastalking/africastalking": "^3.0",
         "drh/laravel-tanda": "^1.4",
         "fruitcake/laravel-cors": "^2.2",
-        "guzzlehttp/guzzle": "^7.4",
-        "laravel/framework": "^9.33",
+        "guzzlehttp/guzzle": "^7.5",
+        "laravel/framework": "^9.37",
         "laravel/sanctum": "^2.15",
         "laravel/tinker": "^2.7",
         "nabcellent/laravel-kyanda": "^2.0",
@@ -23,12 +23,12 @@
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.12",
-        "fakerphp/faker": "^1.9.1",
+        "fakerphp/faker": "^1.20",
         "itsgoingd/clockwork": "^5.1",
         "laravel/pint": "^1.2",
         "mockery/mockery": "^1.5",
         "nunomaduro/collision": "^6.3",
-        "phpunit/phpunit": "^9.5.20",
+        "phpunit/phpunit": "^9.5.26",
         "spatie/laravel-ignition": "^1.0"
     },
     "autoload": {
