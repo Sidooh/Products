@@ -5,8 +5,6 @@ use App\Http\Controllers\API\V1\CashbackController;
 use App\Http\Controllers\API\V1\DashboardController;
 use App\Http\Controllers\API\V1\EarningAccountController;
 use App\Http\Controllers\API\V1\EarningController;
-use App\Http\Controllers\API\V1\EnterpriseAccountController;
-use App\Http\Controllers\API\V1\EnterpriseController;
 use App\Http\Controllers\API\V1\MerchantController;
 use App\Http\Controllers\API\V1\PaymentsController;
 use App\Http\Controllers\API\V1\ProductController;
@@ -16,6 +14,9 @@ use App\Http\Controllers\API\V1\TransactionController;
 use App\Http\Controllers\API\V1\UtilityController;
 use App\Http\Controllers\API\V1\VoucherController;
 use App\Http\Controllers\API\V1\WithdrawController;
+use App\Http\Controllers\API\V2\AirtimeController as AirtimeControllerV2;
+use App\Http\Controllers\API\V2\PaymentsController as PaymentsControllerV2;
+use App\Http\Controllers\API\V2\VoucherController as VoucherControllerV2;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -54,19 +55,6 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function() {
         Route::post('/airtime/status/callback', [AirtimeController::class, 'airtimeStatusCallback']);
 
         Route::get('/subscription-types/default', SubscriptionTypeController::class);
-    });
-
-    Route::prefix('/enterprises')->group(function() {
-        Route::get('/', [EnterpriseController::class, 'index']);
-        Route::post('/', [EnterpriseController::class, 'store']);
-        Route::get('/{enterprise}', [EnterpriseController::class, 'show']);
-
-        Route::get('/{enterprise}/accounts', [EnterpriseAccountController::class, 'index']);
-        Route::post('/{enterprise}/accounts', [EnterpriseAccountController::class, 'store']);
-    });
-
-    Route::prefix('/enterprise-accounts')->group(function() {
-        Route::get('/{enterpriseAccount}', [EnterpriseAccountController::class, 'show']);
     });
 
     Route::prefix('/payments')->group(function() {
@@ -132,4 +120,37 @@ Route::prefix('/v1')->name('api.')->group(function() {
             Route::post('/save', [EarningController::class, 'saveEarnings']);
         });
     });
+});
+
+Route::middleware('auth.jwt')->prefix('/v2')->name('api.')->group(function() {
+    Route::prefix('/products')->group(function() {
+        Route::post('/airtime', AirtimeControllerV2::class);
+//        Route::post('/airtime/bulk', [AirtimeController::class, 'bulk']);
+//        Route::post('/utility', UtilityController::class);
+//        Route::post('/subscription', SubscriptionController::class);
+//        Route::post('/withdraw', WithdrawController::class);
+//        Route::post('/merchant', MerchantController::class);
+//
+//        Route::get('/earnings/rates', [ProductController::class, 'getEarningRates']);
+//
+        ////        TODO: Should we have a similar endpoint for voucher purchase?
+        ////          Route::post('/voucher', WithdrawController::class);
+        Route::prefix('/vouchers')->group(function() {
+            Route::post('/top-up', [VoucherControllerV2::class, 'topUp']);
+        });
+//
+//        Route::prefix('/subscriptions')->group(function() {
+//            Route::post('/', SubscriptionController::class);
+//        });
+//
+//        //  AT Callback Route
+//        Route::post('/airtime/status/callback', [AirtimeController::class, 'airtimeStatusCallback']);
+//
+//        Route::get('/subscription-types/default', SubscriptionTypeController::class);
+    });
+});
+
+Route::prefix('/sidooh/payments')->group(function() {
+    // Payments service callback
+    Route::post('/callback', [PaymentsControllerV2::class, 'processCallback']);
 });

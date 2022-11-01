@@ -2,14 +2,9 @@
 
 namespace App\Http\Controllers\API\V1;
 
-use App\Enums\Description;
-use App\Enums\MerchantType;
-use App\Enums\PaymentMethod;
-use App\Enums\ProductType;
 use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MerchantRequest;
-use App\Repositories\TransactionRepository;
 use App\Services\SidoohAccounts;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
@@ -29,7 +24,11 @@ class MerchantController extends Controller
             'initiator'   => $data['initiator'],
             'amount'      => $data['amount'],
             'type'        => TransactionType::PAYMENT,
+<<<<<<< HEAD
+            'description' => Description::MERCHANT_PAYMENT->value.' - '.$data['account_number'],
+=======
             'description' => Description::MERCHANT_PAYMENT->value.(isset($data['account_number']) ? ' - '.$data['account_number'] : ''),
+>>>>>>> f069f2e (#3k58mmp fixes transaction description for till payment)
             'account_id'  => $data['account_id'],
             'product_id'  => ProductType::MERCHANT,
             'account'     => $account,

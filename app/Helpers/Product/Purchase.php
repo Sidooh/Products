@@ -3,6 +3,7 @@
 namespace App\Helpers\Product;
 
 use App\Enums\EventType;
+use App\Enums\PaymentSubtype;
 use App\Enums\Status;
 use App\Events\SubscriptionPurchaseFailedEvent;
 use App\Events\SubscriptionPurchaseSuccessEvent;
@@ -14,12 +15,13 @@ use App\Models\Subscription;
 use App\Models\SubscriptionType;
 use App\Models\Transaction;
 use App\Services\SidoohNotify;
-use function config;
+use App\Services\SidoohPayments;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Propaganistas\LaravelPhone\PhoneNumber;
 use Throwable;
+use function config;
 
 class Purchase
 {
@@ -116,6 +118,33 @@ class Purchase
             $vouchers[] = $paymentsData['debit_voucher'];
         }
         $vouchers[] = $paymentsData['credit_vouchers'][0];
+
+        // TODO: Disparity, what if multiple payments? Only single transaction is passed here...!
+        VoucherPurchaseEvent::dispatch($this->transaction, $vouchers);
+    }
+
+    /**
+     * @param  array  $paymentsData
+     *
+     * @throws \Throwable
+     */
+    public function voucherV2(): void
+    {
+        Log::info('...[INTERNAL - PRODUCT]: Voucher V2...');
+
+        $this->transaction->status = Status::COMPLETED;
+        $this->transaction->save();
+
+        $creditVoucher = SidoohPayments::findVoucher($this->transaction->payment->extra['voucher_id']);
+
+        if (PaymentSubtype::from($this->transaction->payment->subtype) === PaymentSubtype::VOUCHER) {
+            $debitVoucher = SidoohPayments::findVoucher($this->transaction->payment->extra['debit_account']);
+        }
+        //        // TODO: Add V2 function that fetches vouchers used
+        $vouchers = [
+            'debit_voucher'   => $debitVoucher ?? null,
+            'credit_vouchers' => [$creditVoucher],
+        ];
 
         // TODO: Disparity, what if multiple payments? Only single transaction is passed here...!
         VoucherPurchaseEvent::dispatch($this->transaction, $vouchers);
