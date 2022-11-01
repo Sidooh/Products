@@ -2,22 +2,27 @@
 
 namespace App\Repositories;
 
+use App\Enums\ProductType;
 use App\Models\AirtimeAccount;
 use App\Models\UtilityAccount;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 use Nabcellent\Kyanda\Library\Providers;
 
 class ProductRepository
 {
-    public static function syncAccounts(array $account, string $provider, string $number)
+    public static function syncAccounts(array $account, string $provider, string $number): Model|UtilityAccount|AirtimeAccount|null
     {
+        Log::info('...[REP - PRODUCT]: Sync Accounts...');
+
         $product = match ($provider) {
-            Providers::SAFARICOM, Providers::AIRTEL, Providers::FAIBA, Providers::EQUITEL, Providers::TELKOM => 'airtime',
-            default => 'utility'
+            Providers::SAFARICOM, Providers::AIRTEL, Providers::FAIBA, Providers::EQUITEL, Providers::TELKOM => ProductType::AIRTIME,
+            default => ProductType::UTILITY
         };
 
-        $model = $product === 'utility'
-            ? new UtilityAccount()
-            : new AirtimeAccount();
+        $model = $product === ProductType::UTILITY
+            ? new UtilityAccount
+            : new AirtimeAccount;
 
         if ($number === $account['phone']) {
             return null;
@@ -31,9 +36,9 @@ class ProductRepository
         }
 
         return $model->create([
-            'account_id' => $account['id'],
+            'account_id'     => $account['id'],
             'account_number' => $number,
-            'provider' => $provider,
+            'provider'       => $provider,
         ]);
     }
 }

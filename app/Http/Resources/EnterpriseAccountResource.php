@@ -18,7 +18,7 @@ class EnterpriseAccountResource extends JsonResource
     public function toArray($request): array|JsonSerializable|Arrayable
     {
         return [
-            'type' => $this->type,
+            'type'   => $this->type,
             'active' => (bool) $this->active,
         ];
     }

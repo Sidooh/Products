@@ -36,7 +36,7 @@ class KyandaEventRepository extends EventRepository
             try {
                 $message = "KY_ERR:{$kyandaRequest->provider}\n{$kyandaRequest->message}\n{$account['phone']} - $date";
 
-                SidoohNotify::notify(['254110039317'], $message, EventType::ERROR_ALERT);
+                SidoohNotify::notify(admin_contacts(), $message, EventType::ERROR_ALERT);
                 Log::info('Kyanda Failure SMS Sent');
             } catch (Exception $e) {
                 Log::error($e->getMessage());
@@ -69,12 +69,17 @@ class KyandaEventRepository extends EventRepository
 
         $method = $transaction->payment->subtype;
 
-        if ($method == 'VOUCHER') {
-            $bal = Voucher::whereAccountId($transaction->account_id)->firstOrFail()->balance;
-            $vText = " New Voucher balance is KES$bal.";
+        $paymentDetails = SidoohPayments::findPaymentDetails($transaction->id, $transaction->account_id);
+        $payment = $paymentDetails['payment'];
+        $voucher = $paymentDetails['voucher'];
+        $method = $payment['subtype'];
+
+        if ($method === 'VOUCHER') {
+            $bal = 'Ksh'.number_format($voucher['balance'], 2);
+            $vtext = " New Voucher balance is $bal.";
         } else {
             $method = 'MPESA';
-            $vText = '';
+            $vtext = '';
         }
 
         $code = config('services.at.ussd.code');
@@ -103,7 +108,7 @@ class KyandaEventRepository extends EventRepository
                     $totalEarnings = .06 * $transaction->amount;
                 }
 
-                $userEarnings = EarningRepository::getPointsEarned($totalEarnings);
+                $userEarnings = EarningRepository::getPointsEarned($transaction, $totalEarnings);
 
 //                Update Earnings
                 TransactionSuccessEvent::dispatch($transaction, $totalEarnings);
@@ -127,7 +132,7 @@ class KyandaEventRepository extends EventRepository
             case Providers::KPLC_POSTPAID:
                 //                Get Points Earned
                 $totalEarnings = .01 * $transaction->amount;
-                $userEarnings = EarningRepository::getPointsEarned($totalEarnings);
+                $userEarnings = EarningRepository::getPointsEarned($transaction, $totalEarnings);
 
 //                Send SMS
                 $message = "You have made a payment to {$provider} - {$destination} of {$amount} from your Sidooh account on {$date} using $method. You have received {$userEarnings} cashback.$vText";
@@ -138,7 +143,7 @@ class KyandaEventRepository extends EventRepository
             case Providers::KPLC_PREPAID:
 //                Get Points Earned
                 $totalEarnings = .015 * $transaction->amount;
-                $userEarnings = EarningRepository::getPointsEarned($totalEarnings);
+                $userEarnings = EarningRepository::getPointsEarned($transaction, $totalEarnings);
 
 //                Send SMS
                 $details = (object) $kyandaTransaction->details;
@@ -155,7 +160,7 @@ class KyandaEventRepository extends EventRepository
             case Providers::STARTIMES:
 //                Get Points Earned
                 $totalEarnings = .0025 * $transaction->amount;
-                $userEarnings = EarningRepository::getPointsEarned($totalEarnings);
+                $userEarnings = EarningRepository::getPointsEarned($transaction, $totalEarnings);
 
 //                Send SMS
                 $message = "You have made a payment to {$provider} - {$destination} of {$amount} from your Sidooh account on {$date} using $method. You have received {$userEarnings} cashback.$vText";
@@ -167,7 +172,7 @@ class KyandaEventRepository extends EventRepository
             case Providers::NAIROBI_WTR:
                 //                Get Points Earned
                 $totalEarnings = 5;
-                $userEarnings = EarningRepository::getPointsEarned($totalEarnings);
+                $userEarnings = EarningRepository::getPointsEarned($transaction, $totalEarnings);
 
 //                Send SMS
                 $message = "You have made a payment to {$provider} - {$destination} of {$amount} from your Sidooh account on {$date} using $method. You have received {$userEarnings} cashback.$vText";
@@ -178,7 +183,7 @@ class KyandaEventRepository extends EventRepository
             case Providers::FAIBA_B:
 //                Get Points Earned
                 $totalEarnings = .09 * $transaction->amount;
-                $userEarnings = EarningRepository::getPointsEarned($totalEarnings);
+                $userEarnings = EarningRepository::getPointsEarned($transaction, $totalEarnings);
 
 //                Send SMS
                 $message = "You have purchased {$amount} bundles from your Sidooh account on {$date} using $method. You have received {$userEarnings} cashback.$vText";

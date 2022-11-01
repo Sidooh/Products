@@ -5,6 +5,7 @@ namespace App\Events;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Collection;
 
 class TransactionCreated
 {
@@ -15,7 +16,7 @@ class TransactionCreated
      *
      * @return void
      */
-    public function __construct(public array $transaction, public array $data)
+    public function __construct(public Collection $transactions, public array $data)
     {
         //
     }

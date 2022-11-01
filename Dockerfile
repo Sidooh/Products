@@ -2,7 +2,8 @@ FROM composer:2.2 as build
 
 COPY . /app
 
-RUN composer install --prefer-dist --no-dev --optimize-autoloader --no-interaction --ignore-platform-reqs
+# TODO: Return --no-dev for production (removed for us to use clockwork in playdooh)
+RUN composer install --prefer-dist --optimize-autoloader --no-interaction --ignore-platform-reqs
 
 FROM php:8.1-buster as production
 

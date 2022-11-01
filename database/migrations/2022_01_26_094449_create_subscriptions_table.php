@@ -13,12 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('subscriptions', function (Blueprint $table) {
+        Schema::create('subscriptions', function(Blueprint $table) {
             $table->id();
 
-            $table->decimal('amount');
             $table->timestamp('start_date');
-            $table->timestamp('end_date');
+
+            // TODO: Find if laravel fixed issue of consecutive timestamps and remove nullable below
+            $table->timestamp('end_date')->nullable();
+
             $table->string('status')->default('PENDING'); // PENDING / ACTIVE / EXPIRED
 
             $table->foreignId('account_id')->unsigned();

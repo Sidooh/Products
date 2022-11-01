@@ -13,13 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('cashbacks', function (Blueprint $table) {
+        Schema::create('cashbacks', function(Blueprint $table) {
             $table->id();
 
             $table->decimal('amount', 7, 4);
-            $table->string('type'); //SELF / REFERRAL / SYSTEM
+            $table->string('type'); //SELF / INVITE / SYSTEM
+
             $table->foreignId('account_id')->unsigned()->nullable();
-            $table->foreignId('transaction_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('transaction_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
 
             $table->timestamps();
         });

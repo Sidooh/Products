@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('airtime_requests', function (Blueprint $table) {
+        Schema::create('at_airtime_requests', function(Blueprint $table) {
             $table->id();
 
             $table->string('message');
@@ -21,7 +21,7 @@ return new class extends Migration
             $table->decimal('amount');
             $table->string('discount');
 
-            $table->foreignId('transaction_id')->nullable();
+            $table->foreignId('transaction_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
 
             $table->timestamps();
         });
@@ -34,6 +34,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('airtime_requests');
+        Schema::dropIfExists('at_airtime_requests');
     }
 };

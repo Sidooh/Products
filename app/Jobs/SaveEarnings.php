@@ -3,11 +3,12 @@
 namespace App\Jobs;
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class PaymentCreated
+class SaveEarnings implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -16,8 +17,9 @@ class PaymentCreated
      *
      * @return void
      */
-    public function __construct(private array $data)
+    public function __construct()
     {
+        //
     }
 
     /**
@@ -27,6 +29,6 @@ class PaymentCreated
      */
     public function handle()
     {
-        \Log::info("Payment Received: id - {$this->data['id']}");
+        //
     }
 }

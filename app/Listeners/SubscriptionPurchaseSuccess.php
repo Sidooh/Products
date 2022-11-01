@@ -2,7 +2,8 @@
 
 namespace App\Listeners;
 
-use App\Events\SubscriptionPurchaseEvent;
+use App\Events\SubscriptionPurchaseSuccessEvent;
+use App\Repositories\EarningRepository;
 use App\Repositories\EventRepositories\SidoohEventRepository;
 use Exception;
 use Illuminate\Support\Facades\Log;
@@ -23,15 +24,16 @@ class SubscriptionPurchaseSuccess
     /**
      * Handle the event.
      *
-     * @param  SubscriptionPurchaseEvent  $event
+     * @param  SubscriptionPurchaseSuccessEvent  $event
      * @return void
      *
      * @throws Exception
      */
-    public function handle(SubscriptionPurchaseEvent $event)
+    public function handle(SubscriptionPurchaseSuccessEvent $event): void
     {
-        Log::info('--- --- --- --- ---   ...[EVENT]: Subscription Purchase Success...   --- --- --- --- ---');
+        Log::info('...[EVENT]: Subscription Purchase Success...');
 
+        EarningRepository::calculateEarnings($event->transaction, 0);
         SidoohEventRepository::subscriptionPurchaseSuccess($event->subscription, $event->transaction);
     }
 }

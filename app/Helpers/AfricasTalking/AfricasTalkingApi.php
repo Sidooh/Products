@@ -2,13 +2,14 @@
 
 namespace App\Helpers\AfricasTalking;
 
+use App\Enums\Description;
 use App\Enums\EventType;
 use App\Enums\Status;
-use App\Enums\VoucherType;
 use App\Models\Transaction;
-use App\Models\Voucher;
 use App\Services\SidoohAccounts;
 use App\Services\SidoohNotify;
+use App\Services\SidoohPayments;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Throwable;
@@ -54,33 +55,44 @@ class AfricasTalkingApi
         $this->AT = new AfricasTalkingSubClass($this->username, $this->apiKey);
     }
 
+    public static function balance()
+    {
+        Log::info('...[AFRICASTALKING-API]: Balance...');
+
+        try {
+            return (new AfricasTalkingApi)->AT->application()->fetchApplicationData();
+        } catch (Exception $e) {
+            Log::error('ATError: '.$e->getMessage());
+        }
+    }
+
     /**
      * @throws Throwable
      */
-    public static function airtime(Transaction $transaction, $airtimeData)
+    public static function airtime(Transaction $transaction, string $phone): void
     {
         Log::info('--- --- --- --- ---   ...[AFRICASTALKING-API]: Disburse Airtime...   --- --- --- --- ---');
 
-        $response = (new AfricasTalkingApi)->send($airtimeData['phone'], $transaction->amount);
+        $response = (new AfricasTalkingApi)->send($phone, $transaction->amount);
         $response = object_to_array($response);
 
         $req = $transaction->airtimeRequest()->create([
-            'message' => $response['data']['errorMessage'],
+            'message'  => $response['data']['errorMessage'],
             'num_sent' => $response['data']['numSent'],
-            'amount' => str_ireplace('KES ', '', $response['data']['totalAmount']),
+            'amount'   => str_ireplace('KES ', '', $response['data']['totalAmount']),
             'discount' => $response['data']['totalDiscount'],
         ]);
 
-        DB::transaction(function () use ($req, $response) {
+        DB::transaction(function() use ($req, $response) {
             $req->save();
 
-            $responses = collect($response['data']['responses'])->map(fn (array $response) => [
-                'phone' => str_ireplace('+', '', $response['phoneNumber']),
-                'message' => $response['errorMessage'],
-                'amount' => str_ireplace('KES ', '', $response['amount']),
-                'discount' => $response['discount'],
+            $responses = collect($response['data']['responses'])->map(fn(array $response) => [
+                'phone'      => str_ireplace('+', '', $response['phoneNumber']),
+                'message'    => $response['errorMessage'],
+                'amount'     => str_ireplace('KES ', '', $response['amount']),
+                'discount'   => $response['discount'],
                 'request_id' => $response['requestId'],
-                'status' => Status::tryFrom(strtoupper($response['status'])) ?? $response['status'],
+                'status'     => Status::tryFrom(strtoupper($response['status'])) ?? $response['status'],
             ])->toArray();
 
             $req->airtimeResponses()->createMany($responses);
@@ -91,14 +103,16 @@ class AfricasTalkingApi
             $phone = SidoohAccounts::findPhone($transaction->account_id);
             $date = $req->updated_at->timezone('Africa/Nairobi')->format(config('settings.sms_date_time_format'));
 
-            $voucher = Voucher::whereType(VoucherType::SIDOOH)->whereAccountId($transaction->account_id)->firstOrFail();
-            $voucher->balance += (float) $amount;
-            $voucher->save();
+            $response = SidoohPayments::creditVoucher($transaction->account_id, $amount, Description::VOUCHER_REFUND);
+            [$voucher] = $response;
+
+            $amount = 'Ksh'.number_format($amount, 2);
+            $balance = 'Ksh'.number_format($voucher['balance']);
 
             $transaction->status = Status::REFUNDED;
             $transaction->save();
 
-            $message = "Sorry! We could not complete your airtime purchase for {$phone} worth {$amount} on {$date}. We have credited your voucher {$amount} and your balance is now {$voucher->balance}.";
+            $message = "Sorry! We could not complete your airtime purchase for $phone worth $amount on $date. We have credited your voucher $amount and your balance is now $balance.";
 
             SidoohNotify::notify([$phone], $message, EventType::AIRTIME_PURCHASE_FAILURE);
         }
@@ -110,9 +124,9 @@ class AfricasTalkingApi
         return $this->AT->airtime()->send([
             'recipients' => [
                 [
-                    'phoneNumber' => '+254715270660',
+                    'phoneNumber'  => $to,
                     'currencyCode' => 'KES',
-                    'amount' => 20,
+                    'amount'       => 20,
                 ],
             ],
         ]);

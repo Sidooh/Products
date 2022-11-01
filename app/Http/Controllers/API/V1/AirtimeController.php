@@ -4,18 +4,21 @@ namespace App\Http\Controllers\API\V1;
 
 use App\Enums\Description;
 use App\Enums\PaymentMethod;
+use App\Enums\ProductType;
 use App\Enums\Status;
 use App\Enums\TransactionType;
 use App\Events\AirtimePurchaseFailedEvent;
 use App\Events\AirtimePurchaseSuccessEvent;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AirtimeRequest;
-use App\Models\AirtimeResponse;
+use App\Models\ATAirtimeResponse;
 use App\Repositories\TransactionRepository;
 use App\Services\SidoohAccounts;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class AirtimeController extends Controller
 {
@@ -25,65 +28,74 @@ class AirtimeController extends Controller
      * @param  AirtimeRequest  $request
      * @return JsonResponse
      *
-     * @throws Exception
+     * @throws Exception|Throwable
      */
     public function __invoke(AirtimeRequest $request): JsonResponse
     {
+        Log::info('...[CTRL - AIRTIME]: Process Airtime Request...', $request->all());
+
         $data = $request->validated();
 
         $account = SidoohAccounts::find($data['account_id']);
 
-        $transactions = [
+        $transactionsData = [
             [
                 'destination' => $data['target_number'] ?? $account['phone'],
-                'initiator' => $data['initiator'],
-                'amount' => $data['amount'],
-                'type' => TransactionType::PAYMENT,
+                'initiator'   => $data['initiator'],
+                'amount'      => $data['amount'],
+                'type'        => TransactionType::PAYMENT,
                 'description' => Description::AIRTIME_PURCHASE,
-                'account_id' => $data['account_id'],
-                'account' => $account,
+                'account_id'  => $data['account_id'],
+                'product_id'  => ProductType::AIRTIME,
+                'account'     => $account,
             ],
         ];
-        $data += [
+        $data = [
             'payment_account' => $account,
-            'product' => 'airtime',
-            'method' => $data['method'] ?? PaymentMethod::MPESA->value,
+            'method'          => $request->has('method') ? PaymentMethod::from($request->input('method'))
+                : PaymentMethod::MPESA,
         ];
 
-        if ($request->input('initiator') === 'ENTERPRISE') {
-            $data['method'] = 'FLOAT';
+        if ($request->has('debit_account')) {
+            $data['debit_account'] = $request->input('debit_account');
         }
+//        if($request->input("initiator") === 'ENTERPRISE') $data['method'] = 'FLOAT';
 
-        $transactionIds = TransactionRepository::createTransaction($transactions, $data);
+        $transactionIds = TransactionRepository::createTransactions($transactionsData, $data);
 
         return $this->successResponse(['transactions' => $transactionIds], 'Airtime Request Successful!');
     }
 
+    /**
+     * @throws \Illuminate\Auth\AuthenticationException
+     * @throws \Throwable
+     */
     public function bulk(AirtimeRequest $request): JsonResponse
     {
         $data = $request->all();
 
-        $transactions = array_map(function ($recipient) use ($data) {
+        $transactions = array_map(function($recipient) use ($data) {
             $account = SidoohAccounts::find($recipient['account_id']);
 
             return [
                 'destination' => $account['phone'],
-                'initiator' => $data['initiator'],
-                'amount' => $recipient['amount'],
-                'type' => TransactionType::PAYMENT,
+                'initiator'   => $data['initiator'],
+                'amount'      => $recipient['amount'],
+                'type'        => TransactionType::PAYMENT,
                 'description' => Description::AIRTIME_PURCHASE,
-                'account_id' => $data['account_id'],
-                'account' => $account,
+                'account_id'  => $data['account_id'],
+                'product_id'  => ProductType::AIRTIME,
+                'account'     => $account,
             ];
         }, $data['recipients_data']);
 
         $data = [
             'payment_account' => SidoohAccounts::find($data['account_id']),
-            'product' => 'airtime',
-            'method' => $data['method'] ?? PaymentMethod::MPESA->value,
+            'product'         => 'airtime',
+            'method'          => $data['method'] ?? PaymentMethod::MPESA->value,
         ];
 
-        $transactionIds = TransactionRepository::createTransaction($transactions, $data);
+        $transactionIds = TransactionRepository::createTransactions($transactions, $data);
 
         return $this->successResponse(['transactions' => $transactionIds], 'Bulk Airtime Request Successful!');
     }
@@ -98,7 +110,7 @@ class AirtimeController extends Controller
     {
         $callback = $request->all();
 
-        $res = AirtimeResponse::whereRequestId($callback['requestId'])->firstOrFail();
+        $res = ATAirtimeResponse::whereRequestId($callback['requestId'])->firstOrFail();
 
         if ($res->status != 'Success') {
             $res->status = Status::tryFrom($callback['status']) ?? strtoupper($callback['status']);
@@ -108,10 +120,9 @@ class AirtimeController extends Controller
         }
     }
 
-    private function fireAirtimePurchaseEvent(AirtimeResponse $response, array $callback)
+    private function fireAirtimePurchaseEvent(ATAirtimeResponse $response, array $callback)
     {
-        $callback['status'] == 'Success'
-            ? AirtimePurchaseSuccessEvent::dispatch($response)
+        $callback['status'] == 'Success' ? AirtimePurchaseSuccessEvent::dispatch($response)
             : AirtimePurchaseFailedEvent::dispatch($response);
     }
 }

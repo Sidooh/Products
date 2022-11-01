@@ -2,85 +2,115 @@
 
 namespace App\Repositories\EventRepositories;
 
+use App\Enums\Description;
 use App\Enums\EventType;
-use App\Models\AirtimeResponse;
+use App\Enums\Status;
+use App\Events\TransactionSuccessEvent;
+use App\Models\ATAirtimeResponse;
 use App\Repositories\EarningRepository;
+use App\Services\SidoohAccounts;
 use App\Services\SidoohNotify;
-use Exception;
+use App\Services\SidoohPayments;
 use Illuminate\Support\Facades\Log;
 
 class ATEventRepository
 {
-    public static function airtimePurchaseFailed(AirtimeResponse $airtimeResponse)
+    /**
+     * @throws \Illuminate\Auth\AuthenticationException
+     */
+    public static function airtimePurchaseFailed(ATAirtimeResponse $airtimeResponse): void
     {
-        try {
-            SidoohNotify::notify([
-                '254714611696',
-                '254711414987',
-                '254721309253',
-            ], "ERROR:AIRTIME\n{$airtimeResponse->phoneNumber}", EventType::ERROR_ALERT);
-            Log::info('Airtime Failure SMS Sent');
-        } catch (Exception $e) {
-            Log::error($e->getMessage());
-        }
+        SidoohNotify::notify(admin_contacts(), "ERROR:AIRTIME\n$airtimeResponse->phone", EventType::ERROR_ALERT);
+        Log::info('Airtime Failure SMS Sent');
 
-//        TODO: Refund money to voucher
-        $phone = ltrim($airtimeResponse->phoneNumber, '+');
-        $account = $airtimeResponse->request->transaction->account;
+        $phone = ltrim($airtimeResponse->phone, '+');
 
         $amount = explode('.', explode(' ', $airtimeResponse->amount)[1])[0];
-        $date = $airtimeResponse->request->created_at->timezone('Africa/Nairobi')
+        $date = $airtimeResponse->airtimeRequest->created_at->timezone('Africa/Nairobi')
             ->format(config('settings.sms_date_time_format'));
 
-//        TODO: Find a better way to get the transaction cause of gateway error from AT and transaction seems empty
-//        $transaction = new $airtimeResponse->request->transaction;
-//        $transaction->status = Status::REFUNDED;
-//        $transaction->save();
+        $transaction = $airtimeResponse->airtimeRequest->transaction;
+        $transaction->status = Status::REFUNDED;
+        $transaction->save();
 
-        $voucher = $account->voucher;
-        $voucher->balance += (float) $amount;
-        $voucher->save();
+        $voucher = SidoohPayments::creditVoucher($transaction->account_id, $amount, Description::VOUCHER_REFUND);
 
-//        TODO:: Send sms notification
-        $message = "Sorry! We could not complete your KES{$amount} airtime purchase for {$phone} on {$date}. We have added KES{$amount} to your voucher account. New Voucher balance is {$voucher->balance}.";
+        $message = "Sorry! We could not complete your KES{$amount} airtime purchase for {$phone} on {$date}. We have added KES{$amount} to your voucher account. New Voucher balance is {$voucher['balance']}.";
 
         SidoohNotify::notify([$phone], $message, EventType::AIRTIME_PURCHASE_FAILURE);
     }
 
-    public static function airtimePurchaseSuccess(AirtimeResponse $airtimeResponse)
+    /**
+     * @throws \Exception
+     */
+    public static function airtimePurchaseSuccess(ATAirtimeResponse $airtimeResponse): void
     {
-        $phone = ltrim($airtimeResponse->phoneNumber, '+');
-        $sender = $airtimeResponse->request->transaction->account->phone;
-        $method = $airtimeResponse->request->transaction->payment->subtype;
+        $transaction = $airtimeResponse->airtimeRequest->transaction;
 
-        $amount = str_replace(' ', '', explode('.', $airtimeResponse->amount)[0]);
-        $date = $airtimeResponse->updated_at->timezone('Africa/Nairobi')
-            ->format(config('settings.sms_date_time_format'));
+        $phone = ltrim($airtimeResponse->phone, '+');
+        $sender = SidoohAccounts::find($transaction->account_id)['phone'];
+        $method = $transaction->payment->subtype;
+        $provider = getTelcoFromPhone($transaction->destination);
 
-        $points_earned = EarningRepository::getPointsEarned(explode(' ', $airtimeResponse->discount)[1]);
+        $rateConfig = config("services.tanda.discounts.$provider", ['type' => '$', 'value' => 0]);
+        $totalEarnings = match ($rateConfig['type']) {
+            '%' => $rateConfig['value'] * $transaction->amount,
+            '$' => $rateConfig['value']
+        };
+        if ($totalEarnings <= 0) {
+            Log::error('...[REP - AT]: New Calculation... Failed!!!', [$rateConfig, $totalEarnings]);
+
+            return;
+        }
+
+        $pointsEarned = EarningRepository::getPointsEarned($transaction, $totalEarnings);
 
         $code = config('services.at.ussd.code');
 
         if ($method == 'VOUCHER') {
-            $bal = $airtimeResponse->request->transaction->account->voucher->balance;
-            $vtext = " New Voucher balance is KES$bal.";
+            $voucher = $transaction->payment->extra;
+            $bal = 'Ksh'.number_format($voucher['balance'], 2);
+            $vtext = " New Voucher balance is $bal.";
         } else {
             $method = 'MPESA';
             $vtext = '';
         }
 
-        (new TransactionRepository())->statusUpdate($airtimeResponse);
+        self::statusUpdate($airtimeResponse);
+
+        $amount = str_replace(' ', '', explode('.', $airtimeResponse->amount)[0]);
+        $date = $airtimeResponse->updated_at->timezone('Africa/Nairobi')
+            ->format(config('settings.sms_date_time_format'));
 
         if ($phone != $sender) {
-            $message = "You have purchased {$amount} airtime for {$phone} from your Sidooh account on {$date} using $method. You have received {$points_earned} cashback.$vtext";
+            $message = "You have purchased {$amount} airtime for {$phone} from your Sidooh account on {$date} using $method. You have received {$pointsEarned} cashback.$vtext";
 
             SidoohNotify::notify([$sender], $message, EventType::AIRTIME_PURCHASE);
 
             $message = "Congratulations! You have received {$amount} airtime from Sidooh account {$sender} on {$date}. Sidooh Makes You Money with Every Purchase.\n\nDial $code NOW for FREE on your Safaricom line to BUY AIRTIME & START EARNING from your purchases.";
         } else {
-            $message = "You have purchased {$amount} airtime from your Sidooh account on {$date} using $method. You have received {$points_earned} cashback.$vtext";
+            $message = "You have purchased {$amount} airtime from your Sidooh account on {$date} using $method. You have received {$pointsEarned} cashback.$vtext";
         }
 
         SidoohNotify::notify([$phone], $message, EventType::AIRTIME_PURCHASE);
+    }
+
+    public static function statusUpdate(ATAirtimeResponse $airtimeResponse): void
+    {
+        Log::info('...[REP - AT] Status Update...');
+
+        $airtimeRequest = $airtimeResponse->airtimeRequest;
+
+        $responses = $airtimeRequest->airtimeResponses;
+
+//        TODO:: Remove Sent from successful
+//        || $value->status == 'Sent'
+        $successful = $responses->filter(fn($value) => $value->status == 'Success' || $value->status == 'Sent');
+
+        if (count($successful) == count($responses)) {
+            $totalEarned = explode(' ', $airtimeRequest->discount)[1];
+
+            TransactionSuccessEvent::dispatch($airtimeRequest->transaction, $totalEarned);
+        }
     }
 }

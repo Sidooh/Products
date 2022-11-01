@@ -13,13 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('commissions', function (Blueprint $table) {
+        Schema::create('commissions', function(Blueprint $table) {
             $table->id();
 
-            $table->decimal('amount', 6);
-            $table->string('type'); //SELF / REFERRAL / SYSTEM
+            $table->decimal('amount');
+            $table->string('type'); //SELF / INVITE / SYSTEM
+
             $table->foreignId('account_id')->unsigned()->nullable();
-            $table->foreignId('transaction_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('transaction_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
 
             $table->timestamps();
         });

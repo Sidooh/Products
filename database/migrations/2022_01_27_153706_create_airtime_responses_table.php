@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('airtime_responses', function (Blueprint $table) {
+        Schema::create('at_airtime_responses', function(Blueprint $table) {
             $table->id();
 
             $table->string('phone', 12);
@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('description')->nullable();
             $table->string('request_id')->index();
 
-            $table->foreignId('airtime_request_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('at_airtime_request_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
 
             $table->timestamps();
         });

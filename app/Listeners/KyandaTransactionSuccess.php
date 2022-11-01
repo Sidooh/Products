@@ -28,7 +28,7 @@ class KyandaTransactionSuccess
      */
     public function handle(KyandaTransactionSuccessEvent $event)
     {
-        Log::info('--- --- --- --- ---   ...[EVENT]: Kyanda Transaction Success...   --- --- --- --- ---', [
+        Log::info('...[EVENT]: Kyanda Transaction Success...', [
             '' => $event->transaction->request->provider,
         ]);
 

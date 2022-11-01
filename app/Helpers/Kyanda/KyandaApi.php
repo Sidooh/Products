@@ -10,12 +10,12 @@ use Nabcellent\Kyanda\Models\KyandaRequest;
 
 class KyandaApi
 {
-    public static function airtime(Transaction $transaction, array $array): bool|KyandaRequest|array
+    public static function airtime(Transaction $transaction, int $phone): bool|KyandaRequest|array
     {
         Log::info('--- --- --- --- ---   ...[KYANDA-API]: Disburse Airtime...   --- --- --- --- ---');
 
         try {
-            return Utility::airtimePurchase($array['phone'], $transaction->amount, $transaction->id);
+            return Utility::airtimePurchase($phone, $transaction->amount, $transaction->id);
         } catch (KyandaException $e) {
             Log::error('KyandaError: '.$e->getMessage());
         }
@@ -23,12 +23,12 @@ class KyandaApi
         return true;
     }
 
-    public static function bill(Transaction $transaction, array $array, string $provider): bool|KyandaRequest|array
+    public static function bill(Transaction $transaction, string $provider): bool|KyandaRequest|array
     {
         Log::info('--- --- --- --- ---   ...[KYANDA-API]: Disburse Utility...   --- --- --- --- ---');
 
         try {
-            return Utility::billPayment($array['account_number'], $transaction->amount, $provider, 700000000, $transaction->id);
+            return Utility::billPayment($transaction->destination, $transaction->amount, $provider, 700000000, $transaction->id);
         } catch (KyandaException $e) {
             Log::error('KyandaError: '.$e->getMessage());
         }

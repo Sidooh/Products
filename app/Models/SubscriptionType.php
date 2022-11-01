@@ -42,6 +42,11 @@ class SubscriptionType extends Model
 {
     use HasFactory;
 
+    protected $casts = [
+        'price'  => 'int',
+        'active' => 'bool',
+    ];
+
     /**
      * ---------------------------------------- Relationships ----------------------------------------
      */

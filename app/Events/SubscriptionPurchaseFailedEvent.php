@@ -2,7 +2,6 @@
 
 namespace App\Events;
 
-use App\Models\Subscription;
 use App\Models\Transaction;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Foundation\Events\Dispatchable;
@@ -20,7 +19,6 @@ class SubscriptionPurchaseFailedEvent
     /**
      * Create a new event instance.
      *
-     * @param  Subscription  $subscription
      * @param  Transaction  $transaction
      */
     public function __construct(Transaction $transaction)
