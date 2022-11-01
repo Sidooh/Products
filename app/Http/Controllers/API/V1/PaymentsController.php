@@ -22,15 +22,15 @@ class PaymentsController extends Controller
     {
         $request->validate([
             'payable_type' => ['required'],
-            'payable_id'   => ['required'],
-            'status'       => ['required', new Enum(Status::class)]
+            'payable_id' => ['required'],
+            'status' => ['required', new Enum(Status::class)],
         ]);
 
         $payable = match ($request->input('payable_type')) {
-            "TRANSACTION" => Transaction::findOrFail($request->input('payable_id'))
+            'TRANSACTION' => Transaction::findOrFail($request->input('payable_id'))
         };
 
-        $payable->status = Status::tryFrom($request->input("status"));
+        $payable->status = Status::tryFrom($request->input('status'));
         $payable->save();
     }
 
@@ -41,16 +41,17 @@ class PaymentsController extends Controller
     {
         $request->validate([
             'transaction_ids' => ['required'],
-            'data'            => ['required', 'array']
+            'data' => ['required', 'array'],
         ]);
 
-        Transaction::whereIn("id", $request->input('transaction_ids'))->update(['status' => Status::COMPLETED]);
+        Transaction::whereIn('id', $request->input('transaction_ids'))->update(['status' => Status::COMPLETED]);
         $transactions = Transaction::findMany($request->input('transaction_ids'));
 
         try {
-            foreach($transactions as $transaction) {
+            foreach ($transactions as $transaction) {
                 TransactionRepository::requestPurchase($transaction, $request->input('data'));
             }
+
             return $this->successResponse(message: 'Purchase Successful!');
         } catch (Exception $err) {
             Log::error($err);

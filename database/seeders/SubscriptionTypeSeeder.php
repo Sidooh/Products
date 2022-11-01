@@ -16,20 +16,20 @@ class SubscriptionTypeSeeder extends Seeder
     {
         $types = [
             [
-                'title'       => 'Sidooh Aspiring Agent',
-                'price'      => 365,
-                'active'      => 1,
+                'title' => 'Sidooh Aspiring Agent',
+                'price' => 365,
+                'active' => 1,
                 'level_limit' => 3,
-                'created_at'  => now(),
-                'updated_at'  => now()
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
             [
-                'title'       => 'Sidooh Thriving Agent',
-                'price'      => 975,
-                'active'      => 1,
+                'title' => 'Sidooh Thriving Agent',
+                'price' => 975,
+                'active' => 1,
                 'level_limit' => 5,
-                'created_at'  => now(),
-                'updated_at'  => now()
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
         ];
 
@@ -37,22 +37,22 @@ class SubscriptionTypeSeeder extends Seeder
 
         $types = [
             [
-                'title'       => 'Sidooh Aspiring Agent',
-                'price'      => 4275,
-                'active'      => 1,
+                'title' => 'Sidooh Aspiring Agent',
+                'price' => 4275,
+                'active' => 1,
                 'level_limit' => 3,
-                'duration'    => 12,
-                'created_at'  => now(),
-                'updated_at'  => now()
+                'duration' => 12,
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
             [
-                'title'       => 'Sidooh Thriving Agent',
-                'price'      => 8775,
-                'active'      => 1,
+                'title' => 'Sidooh Thriving Agent',
+                'price' => 8775,
+                'active' => 1,
                 'level_limit' => 5,
-                'duration'    => 12,
-                'created_at'  => now(),
-                'updated_at'  => now()
+                'duration' => 12,
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
         ];
 

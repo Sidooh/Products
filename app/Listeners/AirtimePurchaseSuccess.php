@@ -8,18 +8,19 @@ use Illuminate\Support\Facades\Log;
 
 class AirtimePurchaseSuccess
 {
-
     /**
      * Create the event listener.
      *
      * @return void
      */
-    public function __construct() { }
+    public function __construct()
+    {
+    }
 
     /**
      * Handle the event.
      *
-     * @param AirtimePurchaseSuccessEvent $event
+     * @param  AirtimePurchaseSuccessEvent  $event
      * @return void
      */
     public function handle(AirtimePurchaseSuccessEvent $event)

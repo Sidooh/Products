@@ -14,7 +14,9 @@ class AirtimePurchaseSuccessEvent
     /**
      * Create a new event instance.
      *
-     * @param AirtimeResponse $response
+     * @param  AirtimeResponse  $response
      */
-    public function __construct(public AirtimeResponse $airtime_response) { }
+    public function __construct(public AirtimeResponse $airtime_response)
+    {
+    }
 }

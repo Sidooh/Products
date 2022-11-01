@@ -13,14 +13,15 @@ class TransactionSuccessEvent
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-
     /**
      * Create a new event instance.
      *
-     * @param Transaction $transaction
-     * @param float       $totalEarned
+     * @param  Transaction  $transaction
+     * @param  float  $totalEarned
      */
-    public function __construct(public Transaction $transaction, public float $totalEarned) { }
+    public function __construct(public Transaction $transaction, public float $totalEarned)
+    {
+    }
 
     /**
      * Get the channels the event should broadcast on.

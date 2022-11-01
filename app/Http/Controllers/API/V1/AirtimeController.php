@@ -22,8 +22,9 @@ class AirtimeController extends Controller
     /**
      * Handle the incoming request.
      *
-     * @param AirtimeRequest $request
+     * @param  AirtimeRequest  $request
      * @return JsonResponse
+     *
      * @throws Exception
      */
     public function __invoke(AirtimeRequest $request): JsonResponse
@@ -34,22 +35,24 @@ class AirtimeController extends Controller
 
         $transactions = [
             [
-                "destination" => $data['target_number'] ?? $account["phone"],
-                "initiator" => $data["initiator"],
-                "amount" => $data["amount"],
-                "type" => TransactionType::PAYMENT,
-                "description" => Description::AIRTIME_PURCHASE,
-                "account_id" => $data['account_id'],
-                "account" => $account,
-            ]
+                'destination' => $data['target_number'] ?? $account['phone'],
+                'initiator' => $data['initiator'],
+                'amount' => $data['amount'],
+                'type' => TransactionType::PAYMENT,
+                'description' => Description::AIRTIME_PURCHASE,
+                'account_id' => $data['account_id'],
+                'account' => $account,
+            ],
         ];
         $data += [
-            "payment_account" => $account,
-            "product"         => "airtime",
-            "method"          => $data['method'] ?? PaymentMethod::MPESA->value,
+            'payment_account' => $account,
+            'product' => 'airtime',
+            'method' => $data['method'] ?? PaymentMethod::MPESA->value,
         ];
 
-        if($request->input("initiator") === 'ENTERPRISE') $data['method'] = 'FLOAT';
+        if ($request->input('initiator') === 'ENTERPRISE') {
+            $data['method'] = 'FLOAT';
+        }
 
         $transactionIds = TransactionRepository::createTransaction($transactions, $data);
 
@@ -60,24 +63,24 @@ class AirtimeController extends Controller
     {
         $data = $request->all();
 
-        $transactions = array_map(function($recipient) use ($data) {
+        $transactions = array_map(function ($recipient) use ($data) {
             $account = SidoohAccounts::find($recipient['account_id']);
 
             return [
-                "destination" => $account["phone"],
-                "initiator"   => $data["initiator"],
-                "amount"      => $recipient["amount"],
-                "type"        => TransactionType::PAYMENT,
-                "description" => Description::AIRTIME_PURCHASE,
-                "account_id"  => $data['account_id'],
-                "account"     => $account,
+                'destination' => $account['phone'],
+                'initiator' => $data['initiator'],
+                'amount' => $recipient['amount'],
+                'type' => TransactionType::PAYMENT,
+                'description' => Description::AIRTIME_PURCHASE,
+                'account_id' => $data['account_id'],
+                'account' => $account,
             ];
         }, $data['recipients_data']);
 
         $data = [
-            "payment_account" => SidoohAccounts::find($data['account_id']),
-            "product"         => "airtime",
-            "method"          => $data['method'] ?? PaymentMethod::MPESA->value,
+            'payment_account' => SidoohAccounts::find($data['account_id']),
+            'product' => 'airtime',
+            'method' => $data['method'] ?? PaymentMethod::MPESA->value,
         ];
 
         $transactionIds = TransactionRepository::createTransaction($transactions, $data);
@@ -88,7 +91,7 @@ class AirtimeController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param Request $request
+     * @param  Request  $request
      * @return void
      */
     public function airtimeStatusCallback(Request $request): void
@@ -97,7 +100,7 @@ class AirtimeController extends Controller
 
         $res = AirtimeResponse::whereRequestId($callback['requestId'])->firstOrFail();
 
-        if($res->status != 'Success') {
+        if ($res->status != 'Success') {
             $res->status = Status::tryFrom($callback['status']) ?? strtoupper($callback['status']);
             $res->save();
 

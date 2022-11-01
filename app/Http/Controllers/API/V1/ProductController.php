@@ -13,15 +13,17 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param int                      $accountId
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $accountId
      * @return \Illuminate\Http\JsonResponse
      */
     public function airtimeAccounts(Request $request, int $accountId): JsonResponse
     {
-        $accounts = AirtimeAccount::select(["id", "provider", "account_number"])->whereAccountId($accountId);
+        $accounts = AirtimeAccount::select(['id', 'provider', 'account_number'])->whereAccountId($accountId);
 
-        if($request->exists('limit')) $accounts = $accounts->limit($request->input('limit'));
+        if ($request->exists('limit')) {
+            $accounts = $accounts->limit($request->input('limit'));
+        }
 
         $accounts = $accounts->latest()->get();
 
@@ -31,15 +33,17 @@ class ProductController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param Request $request
-     * @param int     $accountId
+     * @param  Request  $request
+     * @param  int  $accountId
      * @return JsonResponse
      */
     public function utilityAccounts(Request $request, int $accountId): JsonResponse
     {
-        $accounts = UtilityAccount::select(["id", "provider", "account_number"])->whereAccountId($accountId);
+        $accounts = UtilityAccount::select(['id', 'provider', 'account_number'])->whereAccountId($accountId);
 
-        if($request->exists('limit')) $accounts = $accounts->limit($request->input('limit'));
+        if ($request->exists('limit')) {
+            $accounts = $accounts->limit($request->input('limit'));
+        }
 
         $accounts = $accounts->latest()->get();
 

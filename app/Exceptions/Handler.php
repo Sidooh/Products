@@ -43,7 +43,8 @@ class Handler extends ExceptionHandler
      */
     public function register()
     {
-        $this->reportable(function(Throwable $e) { });
+        $this->reportable(function (Throwable $e) {
+        });
     }
 
     public function render($request, Throwable $e): Response|JsonResponse|\Symfony\Component\HttpFoundation\Response
@@ -54,7 +55,7 @@ class Handler extends ExceptionHandler
             $e instanceof ValidationException => $this->errorResponse($e->getMessage(), 422),
             $e instanceof ModelNotFoundException => $this->errorResponse('The specified resource cannot be found', 404),
             $e instanceof HttpException => $this->errorResponse($e->getMessage(), $e->getStatusCode()),
-            $e instanceof AuthenticationException => $this->errorResponse("Not Authorized", 401),
+            $e instanceof AuthenticationException => $this->errorResponse('Not Authorized', 401),
             default => $this->errorResponse($e->getMessage())
         };
     }

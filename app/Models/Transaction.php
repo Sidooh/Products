@@ -27,6 +27,7 @@ use Nabcellent\Kyanda\Models\KyandaRequest;
  * @property-read AirtimeRequest|null        $airtime
  * @property-read AirtimeRequest|null        $airtimeRequest
  * @property-read KyandaRequest|null         $kyandaTransaction
+ *
  * @method static TransactionFactory factory(...$parameters)
  * @method static Builder|Transaction newModelQuery()
  * @method static Builder|Transaction newQuery()
@@ -70,7 +71,6 @@ class Transaction extends Model
     {
         return $this->hasOne(AirtimeRequest::class);
     }
-
 
     public static function updateStatus(self $transaction, Status $status = Status::PENDING)
     {

@@ -20,13 +20,13 @@ class EarningRepository
 
         $totalLeftOverEarnings = $groupEarnings;
 
-        if($transaction->amount >= 20 || $transaction->product_id == 4) {
-            if($acc->isRoot()) {
+        if ($transaction->amount >= 20 || $transaction->product_id == 4) {
+            if ($acc->isRoot()) {
                 $e = Earning::create([
-                    'account_id'     => $acc->id,
+                    'account_id' => $acc->id,
                     'transaction_id' => $transaction->id,
-                    'earnings'       => $userEarnings,
-                    'type'           => 'SELF'
+                    'earnings' => $userEarnings,
+                    'type' => 'SELF',
                 ]);
 
                 $sub_acc = $acc->current_account;
@@ -39,35 +39,36 @@ class EarningRepository
                 $sub_acc2->save();
 
                 $totalLeftOverEarnings -= $userEarnings;
-
             } else {
                 $referrals = (new AccountRepository)->subscribed_nth_level_referrers($acc, 5, false);
 
-                if(count($referrals) + 1 > 6) abort(500);
+                if (count($referrals) + 1 > 6) {
+                    abort(500);
+                }
 
                 $now = Carbon::now('utc')->toDateTimeString();
 
                 $userEarning = [
                     [
-                        'account_id'     => $acc->id,
+                        'account_id' => $acc->id,
                         'transaction_id' => $transaction->id,
-                        'earnings'       => $userEarnings,
-                        'type'           => 'SELF',
-                        'created_at'     => $now,
-                        'updated_at'     => $now
-                    ]
+                        'earnings' => $userEarnings,
+                        'type' => 'SELF',
+                        'created_at' => $now,
+                        'updated_at' => $now,
+                    ],
                 ];
 
                 $totalLeftOverEarnings -= $userEarnings;
 
-                foreach($referrals as $referral) {
+                foreach ($referrals as $referral) {
                     $userEarning[] = [
-                        'account_id'     => $referral->id,
+                        'account_id' => $referral->id,
                         'transaction_id' => $transaction->id,
-                        'earnings'       => $userEarnings,
-                        'type'           => 'REFERRAL',
-                        'created_at'     => $now,
-                        'updated_at'     => $now
+                        'earnings' => $userEarnings,
+                        'type' => 'REFERRAL',
+                        'created_at' => $now,
+                        'updated_at' => $now,
                     ];
 
                     $totalLeftOverEarnings -= $userEarnings;
@@ -75,7 +76,7 @@ class EarningRepository
 
                 Earning::insert($userEarning);
 
-                foreach($userEarning as $ue) {
+                foreach ($userEarning as $ue) {
 //                    TODO: Get all accounts at once then filter programmatically
                     $acc = SubAccount::type('CURRENT')->whereAccountId($ue['account_id'])->first();
                     $acc2 = SubAccount::type('SAVINGS')->whereAccountId($ue['account_id'])->first();
@@ -94,21 +95,21 @@ class EarningRepository
                 [
                     //  'account_id' => $acc->id,
                     'transaction_id' => $transaction->id,
-                    'earnings'       => $earnings - $groupEarnings,
-                    'type'           => 'SYSTEM',
-                    'created_at'     => $now,
-                    'updated_at'     => $now
-                ]
+                    'earnings' => $earnings - $groupEarnings,
+                    'type' => 'SYSTEM',
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ],
             ];
 
-            if($totalLeftOverEarnings > 0) {
+            if ($totalLeftOverEarnings > 0) {
                 $systemEarnings[] = [
                     //  'account_id' => $referral->id,
                     'transaction_id' => $transaction->id,
-                    'earnings'       => $totalLeftOverEarnings,
-                    'type'           => 'SYSTEM',
-                    'created_at'     => $now,
-                    'updated_at'     => $now
+                    'earnings' => $totalLeftOverEarnings,
+                    'type' => 'SYSTEM',
+                    'created_at' => $now,
+                    'updated_at' => $now,
                 ];
             }
 
@@ -123,6 +124,6 @@ class EarningRepository
     {
         $e = $discount * config('services.sidooh.earnings.users_percentage');
 
-        return 'KES' . $e / 6;
+        return 'KES'.$e / 6;
     }
 }

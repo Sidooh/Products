@@ -13,7 +13,7 @@ class SidoohService
 {
     public static function http(): PendingRequest
     {
-        $token = Cache::remember("auth_token", now()->addMinutes(10), fn() => self::authenticate());
+        $token = Cache::remember('auth_token', now()->addMinutes(10), fn () => self::authenticate());
 
         return Http::withToken($token)->/*retry(1)->*/ acceptJson();
     }
@@ -21,18 +21,20 @@ class SidoohService
     /**
      * @throws \Illuminate\Http\Client\RequestException
      */
-    static function authenticate()
+    public static function authenticate()
     {
         Log::info('--- --- --- --- ---   ...[SRV - SIDOOH]: Authenticate...   --- --- --- --- ---');
 
         $url = config('services.sidooh.services.accounts.url');
 
         $response = Http::post("$url/users/signin", [
-            'email'    => 'aa@a.a',
-            'password' => "12345678"
+            'email' => 'aa@a.a',
+            'password' => '12345678',
         ]);
 
-        if($response->successful()) return $response->json()["token"];
+        if ($response->successful()) {
+            return $response->json()['token'];
+        }
 
         return $response->throw()->json();
     }
@@ -40,15 +42,15 @@ class SidoohService
     /**
      * @throws \Illuminate\Auth\AuthenticationException
      */
-    static function fetch(string $url, string $method = "GET", array $data = [])
+    public static function fetch(string $url, string $method = 'GET', array $data = [])
     {
         Log::info('--- --- --- --- ---   ...[SRV - SIDOOH]: Fetch...   --- --- --- --- ---', [
-            "method" => $method,
-            "data"   => $data
+            'method' => $method,
+            'data' => $data,
         ]);
 
-        $options = strtoupper($method) === "POST"
-            ? ["json" => $data]
+        $options = strtoupper($method) === 'POST'
+            ? ['json' => $data]
             : [];
 
         try {
@@ -56,7 +58,9 @@ class SidoohService
         } catch (Exception $err) {
             Log::error($err);
 
-            if($err->getCode() === 401) throw new AuthenticationException();
+            if ($err->getCode() === 401) {
+                throw new AuthenticationException();
+            }
         }
     }
 }

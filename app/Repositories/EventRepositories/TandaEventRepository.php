@@ -24,10 +24,10 @@ class TandaEventRepository extends EventRepository
     {
         $provider = $tandaRequest->provider;
 
-        if(empty($provider)) {
-            $productString = explode(" ", $transaction->description);
+        if (empty($provider)) {
+            $productString = explode(' ', $transaction->description);
 
-            $provider = $productString[0] == "Airtime"
+            $provider = $productString[0] == 'Airtime'
                 ? getTelcoFromPhone($transaction->destination)
                 : $productString[0];
 
@@ -41,11 +41,11 @@ class TandaEventRepository extends EventRepository
     public static function requestSuccess(TandaRequest $tandaRequest)
     {
         // Update Transaction
-        if($tandaRequest->relation_id) {
+        if ($tandaRequest->relation_id) {
             $transaction = Transaction::find($tandaRequest->relation_id);
         } else {
             $transaction = Transaction::whereStatus('pending')->whereType('PAYMENT')->whereAmount($tandaRequest->amount)
-                ->whereLike('description', 'LIKE', "%" . $tandaRequest->destination)
+                ->whereLike('description', 'LIKE', '%'.$tandaRequest->destination)
                 ->whereDate('createdAt', '<', $tandaRequest->created_at);
             $tandaRequest->relation_id = $transaction->id;
             $tandaRequest->save();
@@ -56,12 +56,12 @@ class TandaEventRepository extends EventRepository
         $account = SidoohAccounts::find($transaction->account_id);
 
         $paymentDetails = SidoohPayments::findPaymentDetails($transaction->id, $transaction->account_id);
-        $payment = $paymentDetails["payment"];
-        $voucher = $paymentDetails["voucher"];
-        $method = $payment["subtype"];
+        $payment = $paymentDetails['payment'];
+        $voucher = $paymentDetails['voucher'];
+        $method = $payment['subtype'];
 
-        if($method === 'VOUCHER') {
-            $bal = $voucher["balance"];
+        if ($method === 'VOUCHER') {
+            $bal = $voucher['balance'];
             $vtext = " New Voucher balance is KES$bal.";
         } else {
             $method = 'MPESA';
@@ -71,10 +71,10 @@ class TandaEventRepository extends EventRepository
         $code = config('services.at.ussd.code');
 
         $destination = $tandaRequest->destination;
-        $sender = $account["phone"];
+        $sender = $account['phone'];
 
         $amount = $transaction->amount;
-        $date = $tandaRequest->updated_at->timezone('Africa/Nairobi')->format(config("settings.sms_date_time_format"));
+        $date = $tandaRequest->updated_at->timezone('Africa/Nairobi')->format(config('settings.sms_date_time_format'));
         $eventType = EventType::UTILITY_PAYMENT;
 
         switch($provider) {
@@ -92,7 +92,7 @@ class TandaEventRepository extends EventRepository
                 $eventType = EventType::AIRTIME_PURCHASE;
 
                 //  Send SMS
-                if($phone != $sender) {
+                if ($phone != $sender) {
                     $message = "You have purchased {$amount} airtime for {$phone} from your Sidooh account on {$date} using $method. You have received {$userEarnings} cashback.$vtext";
 
                     SidoohNotify::notify([$sender], $message, $eventType);
@@ -167,7 +167,7 @@ class TandaEventRepository extends EventRepository
         $sender = SidoohAccounts::find($transaction->account_id)['phone'];
 
         $amount = $transaction->amount;
-        $date = $tandaRequest->updated_at->timezone('Africa/Nairobi')->format(config("settings.sms_date_time_format"));
+        $date = $tandaRequest->updated_at->timezone('Africa/Nairobi')->format(config('settings.sms_date_time_format'));
 
         $provider = self::getProvider($tandaRequest, $transaction);
 
@@ -178,7 +178,7 @@ class TandaEventRepository extends EventRepository
 
         $message = match ($provider) {
             Providers::FAIBA, Providers::SAFARICOM, Providers::AIRTEL, Providers::TELKOM => "Sorry! We could not complete your KES{$amount} airtime purchase for {$destination} on {$date}. We have added KES{$amount} to your voucher account. New Voucher balance is {$voucher['balance']}.",
-            Providers::KPLC_POSTPAID, Providers::NAIROBI_WTR, Providers::KPLC_PREPAID, Providers::DSTV, Providers::GOTV, Providers::ZUKU, Providers::STARTIMES => "Sorry! We could not complete your payment to {$provider} of KES{$amount} for {$destination} on {$date}. We have added KES{$amount} to your voucher account. New Voucher balance is {$voucher["balance"]}."
+            Providers::KPLC_POSTPAID, Providers::NAIROBI_WTR, Providers::KPLC_PREPAID, Providers::DSTV, Providers::GOTV, Providers::ZUKU, Providers::STARTIMES => "Sorry! We could not complete your payment to {$provider} of KES{$amount} for {$destination} on {$date}. We have added KES{$amount} to your voucher account. New Voucher balance is {$voucher['balance']}."
         };
 
         SidoohNotify::notify([$sender], $message, EventType::AIRTIME_PURCHASE_FAILURE);

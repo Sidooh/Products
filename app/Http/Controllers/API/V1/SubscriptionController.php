@@ -25,19 +25,19 @@ class SubscriptionController extends Controller
 
         $transactions = [
             [
-                "initiator"   => $data["initiator"],
-                "amount"      => $data["amount"],
-                "type"        => TransactionType::PAYMENT,
-                "description" => Description::SUBSCRIPTION_PURCHASE,
-                "account_id"  => $data['account_id'],
-                "account"     => SidoohAccounts::find($data['account_id']),
-            ]
+                'initiator' => $data['initiator'],
+                'amount' => $data['amount'],
+                'type' => TransactionType::PAYMENT,
+                'description' => Description::SUBSCRIPTION_PURCHASE,
+                'account_id' => $data['account_id'],
+                'account' => SidoohAccounts::find($data['account_id']),
+            ],
         ];
 
         $data = [
-            "payment_account" => $account,
-            "product"         => "subscription",
-            "method"          => $data['method'] ?? PaymentMethod::MPESA->value,
+            'payment_account' => $account,
+            'product' => 'subscription',
+            'method' => $data['method'] ?? PaymentMethod::MPESA->value,
         ];
 
         $transactionIds = TransactionRepository::createTransaction($transactions, $data);

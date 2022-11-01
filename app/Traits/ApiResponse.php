@@ -8,10 +8,14 @@ trait ApiResponse
 {
     protected function successResponse($data = [], $message = null, $code = 200): JsonResponse
     {
-        $res["status"] = "success";
+        $res['status'] = 'success';
 
-        if($data) $res["data"] = $data;
-        if($message) $res["message"] = $message;
+        if ($data) {
+            $res['data'] = $data;
+        }
+        if ($message) {
+            $res['message'] = $message;
+        }
 
         return response()->json($res, $code);
     }
@@ -19,11 +23,11 @@ trait ApiResponse
     protected function errorResponse($message = null, $code = 500): JsonResponse
     {
         return response()->json([
-            'errors'  => [
+            'errors' => [
                 [
-                    'message' => $message
-                ]
-            ]
+                    'message' => $message,
+                ],
+            ],
         ], $code);
     }
 }

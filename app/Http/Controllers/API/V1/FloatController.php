@@ -15,22 +15,23 @@ class FloatController extends Controller
     /**
      * Handle the incoming request.
      *
-     * @param FloatRequest $request
+     * @param  FloatRequest  $request
      * @return JsonResponse
+     *
      * @throws Exception
      */
     public function topUp(FloatRequest $request): JsonResponse
     {
         $data = $request->all();
 
-        if($data['initiator'] === 'AGENT') {
+        if ($data['initiator'] === 'AGENT') {
             $data['account'] = SidoohAccounts::find($data['account_id']);
         }
 
         $data['product'] = 'float';
         $data['method'] = 'MPESA';
         $data['type'] = TransactionType::PAYMENT;
-        $data['description'] = "Float Purchase";
+        $data['description'] = 'Float Purchase';
 
         $transaction = TransactionRepository::createTransaction($data);
 

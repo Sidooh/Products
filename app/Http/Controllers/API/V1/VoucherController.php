@@ -23,34 +23,35 @@ class VoucherController extends Controller
     /**
      * Handle the incoming request.
      *
-     * @param Request $request
-     * @throws Exception
+     * @param  Request  $request
      * @return Response
+     *
+     * @throws Exception
      */
     public function topUp(VoucherRequest $request): JsonResponse
     {
         $data = $request->validated();
 
-        $account = isset($data["debit_account"])
+        $account = isset($data['debit_account'])
             ? SidoohAccounts::findByPhone(PhoneNumber::make($data['debit_account']))
             : SidoohAccounts::find($data['account_id']);
 
         $transactions = [
             [
-                "destination" => $data['target_number'] ?? $account["phone"],
-                "initiator"   => $data["initiator"],
-                "amount"      => $data["amount"],
-                "type"        => TransactionType::PAYMENT,
-                "description" => Description::VOUCHER_PURCHASE,
-                "account_id"  => $data['account_id'],
-                "account"     => $account,
-            ]
+                'destination' => $data['target_number'] ?? $account['phone'],
+                'initiator' => $data['initiator'],
+                'amount' => $data['amount'],
+                'type' => TransactionType::PAYMENT,
+                'description' => Description::VOUCHER_PURCHASE,
+                'account_id' => $data['account_id'],
+                'account' => $account,
+            ],
         ];
 
         $data = [
-            "payment_account" => $account,
-            "product"         => "voucher",
-            "method"          => $data["method"] ?? PaymentMethod::MPESA->value,
+            'payment_account' => $account,
+            'product' => 'voucher',
+            'method' => $data['method'] ?? PaymentMethod::MPESA->value,
         ];
 
         $transactionIds = TransactionRepository::createTransaction($transactions, $data);
@@ -66,24 +67,25 @@ class VoucherController extends Controller
         $data = $request->all();
         $enterprise = Enterprise::find($data['enterprise_id']);
 
-        if(!isset($data['amount'])) {
+        if (! isset($data['amount'])) {
             $data['amount'] = match ($data['disburse_type']) {
-                "LUNCH" => $enterprise->max_lunch,
-                "GENERAL" => $enterprise->max_general
+                'LUNCH' => $enterprise->max_lunch,
+                'GENERAL' => $enterprise->max_general
             };
 
-            if(!isset($data['amount'])) {
+            if (! isset($data['amount'])) {
                 return $this->errorResponse("Amount is required! default amount for {$data['disburse_type']} voucher not set");
             }
         }
 
-        if(!isset($data['accounts'])) {
+        if (! isset($data['accounts'])) {
             $data['accounts'] = $enterprise->enterpriseAccounts->pluck('account_id')->toArray();
         }
 
         SidoohPayments::voucherDisbursement($enterprise->id, $data);
 
         $message = "{$data['disburse_type']} Voucher Disburse Request Successful";
+
         return $this->successResponse($data['accounts'], $message);
     }
 }

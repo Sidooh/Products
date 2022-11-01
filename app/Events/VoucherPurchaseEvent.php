@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Events;
-
 
 use App\Models\Transaction;
 use App\Models\Voucher;
@@ -27,8 +25,8 @@ class VoucherPurchaseEvent
     /**
      * Create a new event instance.
      *
-     * @param Voucher     $voucher
-     * @param Transaction $transaction
+     * @param  Voucher  $voucher
+     * @param  Transaction  $transaction
      */
     public function __construct(Voucher $voucher, Transaction $transaction)
     {

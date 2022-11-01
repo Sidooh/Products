@@ -42,7 +42,7 @@ return [
          * Note: This package has already routes for handling this callback.
          * You should leave this values as they are unless you know what you are doing.
          */
-        'callback' => config('app.url') . '/tanda/callbacks/notification',
+        'callback' => config('app.url').'/tanda/callbacks/notification',
     ],
 
     /*
@@ -55,7 +55,6 @@ return [
    */
     'organization_id' => env('TANDA_ORGANIZATION_ID'),
 
-
     /*
    |--------------------------------------------------------------------------
    | Client Identification
@@ -66,7 +65,6 @@ return [
    */
     'client_id' => env('TANDA_CLIENT_ID'),
 
-
     /*
    |--------------------------------------------------------------------------
    | Client Secret
@@ -76,7 +74,6 @@ return [
    |
    */
     'client_secret' => env('TANDA_CLIENT_SECRET'),
-
 
     /*
    |--------------------------------------------------------------------------
@@ -96,6 +93,6 @@ return [
 
             'KPLC_PREPAID.min' => 100,
             'KPLC_PREPAID.max' => 35000,
-        ]
+        ],
     ],
 ];

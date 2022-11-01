@@ -26,17 +26,17 @@ class EventRepository
         $phone = ltrim($account['phone'], '+');
         $mPhone = ltrim($merchant->contact_phone, '+');
 
-        $date = $transaction->updated_at->timezone('Africa/Nairobi')->format(config("settings.sms_date_time_format"));
+        $date = $transaction->updated_at->timezone('Africa/Nairobi')->format(config('settings.sms_date_time_format'));
 
         $message = "SIDOOH transaction confirmed. Ksh{$amount} paid to {$merchant->name}";
         $message .= " on {$date}. New VOUCHER balance is {$voucher->balance}.\n\n";
-        $message .= "Sidooh, Earns you money on every purchase.";
+        $message .= 'Sidooh, Earns you money on every purchase.';
 
         SidoohNotify::notify([$phone], $message, EventType::MERCHANT_PAYMENT);
 
         $message = "SIDOOH transaction confirmed. You have received Ksh{$amount} from \$account->user->name' {$phone}";
         $message .= " on {$date}. New Account balance is {$merchant->balance}.\n\n";
-        $message .= "Sidooh, Earns you money on every purchase.";
+        $message .= 'Sidooh, Earns you money on every purchase.';
 
         SidoohNotify::notify([$mPhone], $message, EventType::MERCHANT_PAYMENT);
 
@@ -52,9 +52,9 @@ class EventRepository
 
         $phone = ltrim($account['phone'], '+');
 
-        $date = $voucher->updated_at->timezone('Africa/Nairobi')->format(config("settings.sms_date_time_format"));
+        $date = $voucher->updated_at->timezone('Africa/Nairobi')->format(config('settings.sms_date_time_format'));
 
-        $message = "Congratulations! You have successfully purchased a voucher ";
+        $message = 'Congratulations! You have successfully purchased a voucher ';
         $message .= "worth Ksh{$amount} on {$date}.\n\n";
         $message .= config('services.sidooh.tagline');
 

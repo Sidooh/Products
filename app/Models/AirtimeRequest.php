@@ -22,6 +22,7 @@ use Illuminate\Support\Carbon;
  * @property int|null                        $transaction_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ *
  * @method static AirtimeRequestFactory factory(...$parameters)
  * @method static Builder|AirtimeRequest newModelQuery()
  * @method static Builder|AirtimeRequest newQuery()
@@ -35,6 +36,7 @@ use Illuminate\Support\Carbon;
  * @method static Builder|AirtimeRequest whereNumSent($value)
  * @method static Builder|AirtimeRequest whereTransactionId($value)
  * @method static Builder|AirtimeRequest whereUpdatedAt($value)
+ *
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\AirtimeResponse[] $airtimeResponses
  * @property-read int|null $airtime_responses_count
  * @property-read \App\Models\Transaction|null $transaction

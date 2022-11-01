@@ -20,9 +20,9 @@ class TransactionRepository
 
     public static function createTransaction(array $transactions, $data): array
     {
-        $transactions = array_map(fn($transaction) => [
+        $transactions = array_map(fn ($transaction) => [
             ...Transaction::create($transaction)->toArray(),
-            "account" => $transaction['account']
+            'account' => $transaction['account'],
         ], $transactions);
 
         TransactionCreated::dispatch($transactions, $data);
@@ -35,7 +35,7 @@ class TransactionRepository
      */
     public static function initiatePayment(array $transactions, array $data): void
     {
-        $totalAmount = collect($transactions)->sum("amount");
+        $totalAmount = collect($transactions)->sum('amount');
 
         SidoohPayments::pay($transactions, $data['method'], $totalAmount, $data);
     }
@@ -51,7 +51,7 @@ class TransactionRepository
             'airtime' => $purchase->airtime($purchaseData),
             'utility' => $purchase->utility($purchaseData, $purchaseData['provider']),
             'subscription' => $purchase->subscription(),
-            default => throw new Exception("Invalid product purchase!"),
+            default => throw new Exception('Invalid product purchase!'),
         };
     }
 }

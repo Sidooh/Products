@@ -2,17 +2,20 @@
 
 namespace App\Helpers\Product;
 
+use App\Enums\EventType;
+use App\Enums\PaymentSubtype;
 use App\Enums\Status;
-use App\Events\MerchantPurchaseEvent;
-use App\Events\SubscriptionPurchaseEvent;
 use App\Events\SubscriptionPurchaseFailedEvent;
+use App\Events\SubscriptionPurchaseSuccessEvent;
+use App\Events\VoucherPurchaseEvent;
 use App\Helpers\AfricasTalking\AfricasTalkingApi;
 use App\Helpers\Kyanda\KyandaApi;
 use App\Helpers\Tanda\TandaApi;
 use App\Models\Subscription;
 use App\Models\SubscriptionType;
 use App\Models\Transaction;
-use App\Models\Voucher;
+use App\Services\SidoohNotify;
+use App\Services\SidoohPayments;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -22,37 +25,42 @@ use function config;
 
 class Purchase
 {
-    public function __construct(public Transaction $transaction) { }
-
+    public function __construct(public Transaction $transaction)
+    {
+    }
 
     /**
      * @throws Exception
      */
-    public function utility(array $billDetails, string $provider): void
+    public function utility(): void
     {
-        $billDetails['account_number'] = $this->transaction->destination;
+        $provider = explode(' - ', $this->transaction->description)[1];
 
         match (config('services.sidooh.utilities_provider')) {
-            'KYANDA' => KyandaApi::bill($this->transaction, $billDetails, $provider),
-            'TANDA' => TandaApi::bill($this->transaction, $billDetails, $provider),
+            'KYANDA' => KyandaApi::bill($this->transaction, $provider),
+            'TANDA' => TandaApi::bill($this->transaction, $provider),
             default => throw new Exception('No provider provided for utility purchase')
         };
     }
 
     /**
-     * @param array $airtimeData
-     * @throws Throwable
+     * @throws \Throwable
      */
-    public function airtime(array $airtimeData): void
+    public function airtime(): void
     {
-        if($this->transaction->airtime) exit;
+//        TODO: Notify admins of possible duplicate
+        if ($this->transaction->atAirtimeRequest || $this->transaction->kyandaTransaction || $this->transaction->tandaRequest) {
+            SidoohNotify::notify(admin_contacts(), "ERROR:AIRTIME\n{$this->transaction->id}\nPossible duplicate airtime request... Confirm!!!", EventType::ERROR_ALERT);
+            Log::error('Possible duplicate airtime request... Confirm!!!');
+            exit;
+        }
 
-        $airtimeData['phone'] = PhoneNumber::make($this->transaction->destination, 'KE')->formatE164();
+        $phone = PhoneNumber::make($this->transaction->destination, 'KE')->formatE164();
 
         match (config('services.sidooh.utilities_provider')) {
-            'AT' => AfricasTalkingApi::airtime($this->transaction, $airtimeData),
-            'KYANDA' => KyandaApi::airtime($this->transaction, $airtimeData),
-            'TANDA' => TandaApi::airtime($this->transaction, $airtimeData),
+            'AT' => AfricasTalkingApi::airtime($this->transaction, $phone),
+            'KYANDA' => KyandaApi::airtime($this->transaction, $phone),
+            'TANDA' => TandaApi::airtime($this->transaction, $phone),
             default => throw new Exception('No provider provided for airtime purchase')
         };
     }
@@ -62,9 +70,11 @@ class Purchase
      */
     public function subscription(): ?Subscription
     {
-        Log::info('--- --- --- --- ---   ...[SIDOOH-API]: Subscribe...   --- --- --- --- ---');
+        Log::info('...[INTERNAL - PRODUCT]: Subscribe...');
 
-        if(Subscription::active($this->transaction->account_id)) {
+        if (Subscription::active($this->transaction->account_id)) {
+            // TODO: Handle for subscription failure.
+            //       Also, should we not check this during the initial API call and reject it?
             SubscriptionPurchaseFailedEvent::dispatch($this->transaction);
 
             return null;
@@ -73,22 +83,70 @@ class Purchase
         $type = SubscriptionType::wherePrice($this->transaction->amount)->firstOrFail();
 
         $subscription = [
-            'amount'     => $this->transaction->amount,
-            'status'     => Status::ACTIVE,
+            'status' => Status::ACTIVE,
             'account_id' => $this->transaction->account_id,
             'start_date' => now(),
-            'end_date'   => now()->addMonths($type->duration),
+            'end_date' => now()->addMonths($type->duration),
         ];
 
-        return DB::transaction(function() use ($type, $subscription) {
+        return DB::transaction(function () use ($type, $subscription) {
             $sub = $type->subscription()->create($subscription);
 
             $this->transaction->status = Status::COMPLETED;
             $this->transaction->save();
 
-            SubscriptionPurchaseEvent::dispatch($sub, $this->transaction);
+            SubscriptionPurchaseSuccessEvent::dispatch($sub, $this->transaction);
 
             return $sub;
         });
+    }
+
+    /**
+     * @param  array  $paymentsData
+     *
+     * @throws \Throwable
+     */
+    public function voucher(array $paymentsData): void
+    {
+        Log::info('...[INTERNAL - PRODUCT]: Voucher...');
+
+        $this->transaction->status = Status::COMPLETED;
+        $this->transaction->save();
+
+        $vouchers = [];
+        if (isset($paymentsData['debit_voucher'])) {
+            $vouchers[] = $paymentsData['debit_voucher'];
+        }
+        $vouchers[] = $paymentsData['credit_vouchers'][0];
+
+        // TODO: Disparity, what if multiple payments? Only single transaction is passed here...!
+        VoucherPurchaseEvent::dispatch($this->transaction, $vouchers);
+    }
+
+    /**
+     * @param  array  $paymentsData
+     *
+     * @throws \Throwable
+     */
+    public function voucherV2(): void
+    {
+        Log::info('...[INTERNAL - PRODUCT]: Voucher V2...');
+
+        $this->transaction->status = Status::COMPLETED;
+        $this->transaction->save();
+
+        $creditVoucher = SidoohPayments::findVoucher($this->transaction->payment->extra['voucher_id']);
+
+        if (PaymentSubtype::from($this->transaction->payment->subtype) === PaymentSubtype::VOUCHER) {
+            $debitVoucher = SidoohPayments::findVoucher($this->transaction->payment->extra['debit_account']);
+        }
+        //        // TODO: Add V2 function that fetches vouchers used
+        $vouchers = [
+            'debit_voucher' => $debitVoucher ?? null,
+            'credit_vouchers' => [$creditVoucher],
+        ];
+
+        // TODO: Disparity, what if multiple payments? Only single transaction is passed here...!
+        VoucherPurchaseEvent::dispatch($this->transaction, $vouchers);
     }
 }

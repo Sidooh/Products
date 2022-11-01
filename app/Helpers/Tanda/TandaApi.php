@@ -21,7 +21,7 @@ class TandaApi
             $request = Utility::airtimePurchase($array['phone'], $transaction->amount, $transaction->id);
             self::handleRequestResponse($request);
         } catch (TandaException $e) {
-            Log::error("TandaError: " . $e->getMessage(), [$transaction]);
+            Log::error('TandaError: '.$e->getMessage(), [$transaction]);
         }
     }
 
@@ -32,18 +32,18 @@ class TandaApi
         try {
             Utility::billPayment($array['account_number'], $transaction->amount, $provider, $transaction->id);
         } catch (TandaException $e) {
-            Log::error("TandaError: " . $e->getMessage(), [$transaction]);
+            Log::error('TandaError: '.$e->getMessage(), [$transaction]);
         }
     }
 
     private static function handleRequestResponse(TandaRequest $request)
     {
-        if($request->status == 2) {
+        if ($request->status == 2) {
             try {
                 $message = "TN_ERROR-{$request->relation->id}\n";
                 $message .= "{$request->provider} - {$request->destination}\n";
                 $message .= "{$request->message}\n";
-                $message .= "{$request->created_at->timezone('Africa/Nairobi')->format(config("settings.sms_date_time_format"))}";
+                $message .= "{$request->created_at->timezone('Africa/Nairobi')->format(config('settings.sms_date_time_format'))}";
 
                 SidoohNotify::notify(
                     ['254714611696', '254711414987', '254721309253'], $message, EventType::ERROR_ALERT

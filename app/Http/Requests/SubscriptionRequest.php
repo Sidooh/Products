@@ -29,28 +29,28 @@ class SubscriptionRequest extends FormRequest
     public function rules()
     {
         return [
-            'initiator'        => ['required', new Enum(Initiator::class)],
-            'account_id'       => 'integer',
-            'amount'           => [
+            'initiator' => ['required', new Enum(Initiator::class)],
+            'account_id' => 'integer',
+            'amount' => [
                 'required',
                 'numeric',
-                function($attribute, $value, $fail) {
+                function ($attribute, $value, $fail) {
                     $subPrices = SubscriptionType::pluck('price')->toArray();
-                    $subPricesStr = implode(', ',$subPrices);
+                    $subPricesStr = implode(', ', $subPrices);
 
-                    if(!in_array($value, $subPrices)) {
+                    if (! in_array($value, $subPrices)) {
                         $fail("The $attribute must be either of: {$subPricesStr}.");
                     }
                 },
             ],
-            'method'           => [
-                "required_if:initiator,CONSUMER",
+            'method' => [
+                'required_if:initiator,CONSUMER',
                 new Enum(PaymentMethod::class),
             ],
-            'account_number'   => [Rule::requiredIf($this->is('*/products/utility')), 'integer'],
-            'utility_provider' => ["required_if:product,utility"],
-            'target_number'    => 'phone:KE',
-            'debit_account'     => 'phone:KE',
+            'account_number' => [Rule::requiredIf($this->is('*/products/utility')), 'integer'],
+            'utility_provider' => ['required_if:product,utility'],
+            'target_number' => 'phone:KE',
+            'debit_account' => 'phone:KE',
         ];
     }
 }

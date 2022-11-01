@@ -26,10 +26,10 @@ class FloatRequest extends FormRequest
     public function rules()
     {
         return [
-            'initiator'     => ['required', Rule::in([Initiator::ENTERPRISE->value, Initiator::AGENT->value])],
-            'account_id'    => ['required_if:initiator,AGENT', 'integer', 'exists:enterprises,id'],
+            'initiator' => ['required', Rule::in([Initiator::ENTERPRISE->value, Initiator::AGENT->value])],
+            'account_id' => ['required_if:initiator,AGENT', 'integer', 'exists:enterprises,id'],
             'enterprise_id' => ['required_if:initiator,ENTERPRISE', 'integer'],
-            'amount'        => ['required_unless:initiator,null', 'numeric'],
+            'amount' => ['required_unless:initiator,null', 'numeric'],
         ];
     }
 }

@@ -23,14 +23,14 @@ class EnterpriseRequest extends FormRequest
      *
      * @return array
      */
-    #[ArrayShape(['name' => "array", 'settings' => "string", 'accounts' => "string", 'enterprise_id' => "string[]"])]
+    #[ArrayShape(['name' => 'array', 'settings' => 'string', 'accounts' => 'string', 'enterprise_id' => 'string[]'])]
     public function rules(): array
     {
         return [
-            'name'          => [Rule::requiredIf($this->is('*/enterprises'))],
-            'settings'      => 'array',
-            'accounts'      => 'array',
-            'enterprise_id' => ['exists:enterprises,id']
+            'name' => [Rule::requiredIf($this->is('*/enterprises'))],
+            'settings' => 'array',
+            'accounts' => 'array',
+            'enterprise_id' => ['exists:enterprises,id'],
         ];
     }
 }

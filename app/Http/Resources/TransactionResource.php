@@ -13,30 +13,30 @@ class TransactionResource extends JsonResource
     /**
      * Transform the resource into an array.
      *
-     * @param Request $request
+     * @param  Request  $request
      * @return array|Arrayable|JsonSerializable
      */
     #[ArrayShape([
-        'id'          => "mixed",
-        'initiator'   => "mixed",
-        'type'        => "mixed",
-        'amount'      => "mixed",
-        'status'      => "mixed",
-        'destination' => "mixed",
-        'description' => "mixed",
-        'account_id'  => "mixed"
+        'id' => 'mixed',
+        'initiator' => 'mixed',
+        'type' => 'mixed',
+        'amount' => 'mixed',
+        'status' => 'mixed',
+        'destination' => 'mixed',
+        'description' => 'mixed',
+        'account_id' => 'mixed',
     ])]
     public function toArray($request): array|JsonSerializable|Arrayable
     {
         return [
-            'id'          => $this->id,
-            'initiator'   => $this->initiator,
-            'type'        => $this->type,
-            'amount'      => $this->amount,
-            'status'      => $this->status,
+            'id' => $this->id,
+            'initiator' => $this->initiator,
+            'type' => $this->type,
+            'amount' => $this->amount,
+            'status' => $this->status,
             'destination' => $this->destination,
             'description' => $this->description,
-            'account_id'  => $this->account_id,
+            'account_id' => $this->account_id,
         ];
     }
 }

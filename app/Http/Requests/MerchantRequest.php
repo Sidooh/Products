@@ -26,10 +26,10 @@ class MerchantRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'initiator'     => ['required', new Enum(Initiator::class)],
-            'account_id'    => ['required'],
-            'amount'        => ['required'],
-            'merchant_code' => ['required', 'exists:merchants,code']
+            'initiator' => ['required', new Enum(Initiator::class)],
+            'account_id' => ['required'],
+            'amount' => ['required'],
+            'merchant_code' => ['required', 'exists:merchants,code'],
         ];
     }
 }

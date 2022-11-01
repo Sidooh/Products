@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Log;
 
 class SubscriptionPurchaseSuccess
 {
-
     public bool $afterCommit = true;
 
     /**
@@ -17,13 +16,16 @@ class SubscriptionPurchaseSuccess
      *
      * @return void
      */
-    public function __construct() { }
+    public function __construct()
+    {
+    }
 
     /**
      * Handle the event.
      *
-     * @param SubscriptionPurchaseEvent $event
+     * @param  SubscriptionPurchaseEvent  $event
      * @return void
+     *
      * @throws Exception
      */
     public function handle(SubscriptionPurchaseEvent $event)

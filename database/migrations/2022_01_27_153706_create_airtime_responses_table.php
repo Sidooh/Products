@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('airtime_responses', function(Blueprint $table) {
+        Schema::create('airtime_responses', function (Blueprint $table) {
             $table->id();
 
             $table->string('phone', 12);

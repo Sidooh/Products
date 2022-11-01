@@ -22,6 +22,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read SubscriptionType           $subscriptionType
+ *
  * @method static SubscriptionFactory factory(...$parameters)
  * @method static Builder|Subscription newModelQuery()
  * @method static Builder|Subscription newQuery()
@@ -46,7 +47,7 @@ class Subscription extends Model
         'status',
         'start_date',
         'end_date',
-        'account_id'
+        'account_id',
     ];
 
     /**
@@ -57,12 +58,10 @@ class Subscription extends Model
         return $this->belongsTo(SubscriptionType::class);
     }
 
-
-
     /**
      * Scope a query to only include active subscriptions.
      *
-     * @param Builder $query
+     * @param  Builder  $query
      * @return bool
      */
     public static function active(int $accountId): bool

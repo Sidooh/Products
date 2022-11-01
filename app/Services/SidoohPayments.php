@@ -2,79 +2,99 @@
 
 namespace App\Services;
 
+use App\DTOs\PaymentDTO;
 use App\Enums\Description;
-use Illuminate\Auth\AuthenticationException;
-use Illuminate\Http\Client\RequestException;
+use App\Enums\PaymentMethod;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 class SidoohPayments extends SidoohService
 {
-    /**
-     * @throws AuthenticationException
-     */
-    public static function pay(array $transactions, string $method, $totalAmount, array $data = []): ?array
+    public static function getAll(): array
     {
-        Log::info('--- --- --- --- ---   ...[SRV - PAYMENTS]: Make Payment...   --- --- --- --- ---');
+        Log::info('...[SRV - PAYMENTS]: Get All...');
 
-        $url = config('services.sidooh.services.payments.url') . "/payments";
+        $url = self::baseUrl().'/payments';
 
-        return parent::fetch($url, "POST", [
-            "transactions" => $transactions,
-            "method"       => $method,
-            "total_amount" => $totalAmount,
-            "data"         => $data,
+        return Cache::remember('all_payments', (60 * 60 * 24), fn () => parent::fetch($url));
+    }
+
+    public static function baseUrl()
+    {
+        return config('services.sidooh.services.payments.url');
+    }
+
+    public static function requestPayment(PaymentDTO $paymentData): ?array
+    {
+        Log::info('...[SRV - PAYMENTS]: Request Payment...');
+
+        $endpoint = self::baseUrl().$paymentData->endpoint;
+
+        return parent::fetch($endpoint, 'POST', (array) $paymentData);
+    }
+
+    public static function requestB2bPayment(array $transaction, PaymentMethod $method, string $debit_account, array $merchantDetails): ?array
+    {
+        Log::info('...[SRV - PAYMENTS]: Request B2B Payment...');
+
+        return parent::fetch(self::baseUrl().'/payments/b2b', 'POST', [
+            'transactions' => [$transaction],
+            'payment_mode' => $method->name,
+            'debit_account' => $debit_account,
+            ...$merchantDetails,
         ]);
     }
 
-    /**
-     * @throws RequestException
-     */
     public static function creditVoucher(int $accountId, $amount, Description $description, $notify = false): ?array
     {
-        Log::info('--- --- --- --- ---   ...[SRV - PAYMENTS]: Credit Voucher...   --- --- --- --- ---');
+        Log::info('...[SRV - PAYMENTS]: Credit Voucher...');
 
-        $url = config('services.sidooh.services.payments.url') . '/payments/voucher/credit';
-
-        return parent::fetch($url, "POST", [
-            "account_id"  => $accountId,
-            "amount"      => $amount,
-            "description" => $description->value,
-            "notify"      => $notify
+        return parent::fetch(self::baseUrl().'/payments/voucher/credit', 'POST', [
+            'account_id' => $accountId,
+            'amount' => $amount,
+            'description' => $description->value,
+            'notify' => $notify,
         ]);
     }
 
-    /**
-     * @throws RequestException
-     */
-    public static function voucherDisbursement(int $enterpriseId, $data): ?array
+    public static function find(int $paymentId): ?array
     {
-        Log::info('--- --- --- --- ---   ...[SRV - PAYMENTS]: Voucher Disbursement...   --- --- --- --- ---');
+        Log::info('...[SRV - PAYMENTS]: Find Payment...');
 
-        $url = config('services.sidooh.services.payments.url') . '/payments/voucher/disburse';
-
-        return parent::fetch($url, "POST", [
-            "enterprise_id" => $enterpriseId,
-            "data"          => $data
-        ]);
+        return parent::fetch(self::baseUrl()."/payments/$paymentId");
     }
 
-    /**
-     * @throws \Illuminate\Auth\AuthenticationException
-     */
-    public static function findPaymentDetails(int $transactionId, int $accountId): ?array
+    public static function findVoucher(int $voucherId, bool $bypassCache = false): ?array
     {
-        $url = config('services.sidooh.services.payments.url') . "/payments/details/$transactionId/$accountId";
+        $cacheKey = 'vouchers.'.$voucherId;
+        $ttl = (60 * 60 * 24);
 
-        return parent::fetch($url);
+        if ($bypassCache) {
+            $voucher = parent::fetch(self::baseUrl()."/vouchers/$voucherId");
+            Cache::put($cacheKey, $voucher, $ttl);
+
+            return $voucher;
+        }
+
+        return Cache::remember($cacheKey, $ttl, function () use ($voucherId) {
+            return parent::fetch(self::baseUrl()."/vouchers/$voucherId");
+        });
     }
 
-    /**
-     * @throws \Illuminate\Auth\AuthenticationException
-     */
-    public static function findVoucher(int $voucherId): ?array
+    // TODO: Add by voucher type filter
+    public static function findVoucherByAccount(int $accountId): ?array
     {
-        $url = config('services.sidooh.services.payments.url') . "/payments/vouchers/$voucherId";
+        return parent::fetch(self::baseUrl()."/accounts/$accountId/vouchers");
+    }
 
-        return parent::fetch($url);
+    // TODO: Add by voucher type filter
+    public static function findSidoohVoucherIdForAccount(int $accountId): ?int
+    {
+        Log::info('...[SRV - PAYMENTS]: Find Sidooh Voucher...', [$accountId]);
+
+        return Cache::remember($accountId.'_voucher', (60 * 60 * 24), function () use ($accountId) {
+            return collect(parent::fetch(self::baseUrl()."/accounts/$accountId/vouchers"))
+                ->first(fn ($v) => $v['type'] === 'SIDOOH');
+        })['id'];
     }
 }

@@ -22,6 +22,7 @@ use Illuminate\Support\Carbon;
  * @property int         $airtime_request_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ *
  * @method static AirtimeResponseFactory factory(...$parameters)
  * @method static Builder|AirtimeResponse newModelQuery()
  * @method static Builder|AirtimeResponse newQuery()
@@ -36,8 +37,10 @@ use Illuminate\Support\Carbon;
  * @method static Builder|AirtimeResponse whereRequestId($value)
  * @method static Builder|AirtimeResponse whereStatus($value)
  * @method static Builder|AirtimeResponse whereUpdatedAt($value)
+ *
  * @property string|null $description
  * @property-read \App\Models\AirtimeRequest $airtimeRequest
+ *
  * @method static Builder|AirtimeResponse whereDescription($value)
  * @mixin IdeHelperAirtimeResponse
  */
@@ -50,7 +53,7 @@ class AirtimeResponse extends Model
         'message',
         'amount',
         'discount',
-        'request_id'
+        'request_id',
     ];
 
     public function airtimeRequest(): BelongsTo

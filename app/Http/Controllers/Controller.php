@@ -13,5 +13,7 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests, ApiResponse;
 
-    public function __construct(public TransactionRepository $repo) { }
+    public function __construct(public TransactionRepository $repo)
+    {
+    }
 }
