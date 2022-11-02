@@ -1,17 +1,13 @@
 {
     "preset": "laravel",
     "rules": {
-<<<<<<< HEAD
-        "binary_operator_spaces": {
-            "operators": {
-                "=>": "align_single_space_minimal"
-=======
-        "single_quote": false,
         "binary_operator_spaces": {
             "operators": {
                 "=>": "align"
->>>>>>> a150e4a (Applies pint format)
             }
+        },
+        "function_declaration": {
+            "closure_function_spacing": "none"
         }
     }
 }

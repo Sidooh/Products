@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Enums\EarningCategory;
+use App\Models\Transaction;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class CashbackFactory extends Factory
@@ -14,14 +15,10 @@ class CashbackFactory extends Factory
      */
     public function definition(): array
     {
-        $types = array_map(fn (EarningCategory $type) => $type->name, EarningCategory::cases());
+        $types = array_map(fn(EarningCategory $type) => $type->name, EarningCategory::cases());
 
         return [
-<<<<<<< HEAD
             'account_id' => fn(array $attributes) => match ($attributes['type']) {
-=======
-            'account_id' => fn (array $attributes) => match ($attributes['type']) {
->>>>>>> a150e4a (Applies pint format)
                 EarningCategory::SYSTEM => null,
                 default                 => $this->faker->randomElement([45, 46, 12, 47, 44]),
             },
