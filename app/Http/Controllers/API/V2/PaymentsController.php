@@ -31,7 +31,7 @@ class PaymentsController extends Controller
         }
 
         if ($request->status === Status::COMPLETED->value) {
-            TransactionRepository::handleCompletedPayment($transaction, $request);
+            TransactionRepository::handleCompletedPayment($transaction);
         }
 
         return response()->json(['status' => true]);

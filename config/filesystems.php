@@ -38,11 +38,7 @@ return [
         'public' => [
             'driver'     => 'local',
             'root'       => storage_path('app/public'),
-<<<<<<< HEAD
             'url'        => env('APP_URL') . '/storage',
-=======
-            'url'        => env('APP_URL').'/storage',
->>>>>>> a150e4a (Applies pint format)
             'visibility' => 'public',
         ],
 

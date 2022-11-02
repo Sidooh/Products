@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API\V1;
+namespace App\Http\Controllers\API\V2;
 
 use App\Enums\Description;
 use App\Enums\MerchantType;
@@ -9,7 +9,7 @@ use App\Enums\ProductType;
 use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MerchantRequest;
-use App\Repositories\TransactionRepository;
+use App\Repositories\V2\TransactionRepository;
 use App\Services\SidoohAccounts;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
@@ -35,15 +35,14 @@ class MerchantController extends Controller
             'account'     => $account,
         ];
         $data = [
-            'payment_account' => $account,
             'method'          => $request->has('method') ? PaymentMethod::from($request->input('method')) : PaymentMethod::MPESA,
             'merchant_type'   => MerchantType::from($request->merchant_type),
             'business_number' => $request->business_number,
             'account_number'  => $request->account_number,
         ];
 
-        $transactionId = TransactionRepository::createB2bTransaction($transactionData, $data);
+        $transaction = TransactionRepository::createTransaction($transactionData, $data);
 
-        return $this->successResponse(['transactions' => [$transactionId]], 'Merchant Request Successful!');
+        return $this->successResponse($transaction, 'Merchant Request Successful!');
     }
 }

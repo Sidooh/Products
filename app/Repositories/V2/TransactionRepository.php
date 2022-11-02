@@ -3,31 +3,22 @@
 namespace App\Repositories\V2;
 
 use App\DTOs\PaymentDTO;
-use App\Enums\Description;
-use App\Enums\EarningAccountType;
 use App\Enums\EventType;
 use App\Enums\MerchantType;
 use App\Enums\PaymentMethod;
 use App\Enums\PaymentSubtype;
 use App\Enums\ProductType;
 use App\Enums\Status;
-use App\Enums\TransactionType;
 use App\Helpers\Product\Purchase;
-use App\Helpers\Tanda\TandaApi;
-use App\Models\EarningAccount;
 use App\Models\Payment;
-use App\Models\SavingsTransaction;
 use App\Models\Transaction;
 use App\Services\SidoohAccounts;
 use App\Services\SidoohNotify;
 use App\Services\SidoohPayments;
-use App\Services\SidoohSavings;
 use App\Traits\ApiResponse;
 use Exception;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
@@ -75,7 +66,7 @@ class TransactionRepository
         match ($t->product_id) {
             ProductType::VOUCHER => $paymentData->setVoucher(SidoohPayments::findSidoohVoucherIdForAccount(SidoohAccounts::findByPhone($t->destination)['id'])),
 //            ProductType::WITHDRAWAL => $paymentData->setWithdrawal(),
-//            ProductType::MERCHANT => $paymentData->setWithdrawal(),
+            ProductType::MERCHANT => $paymentData->setMerchant($data['merchant_type'], $data['business_number'], $data['account_number'] ?? ''),
 //            ProductType::FLOAT => $paymentData->setWithdrawal(),
             default => null
         };
@@ -97,7 +88,7 @@ class TransactionRepository
 
         Payment::create($paymentData);
 
-        if ($p && $data['method'] === PaymentMethod::VOUCHER) {
+        if ($p && $data['method'] === PaymentMethod::VOUCHER && $t->product_id !== ProductType::MERCHANT) {
             self::requestPurchase($t);
         }
     }
@@ -119,74 +110,12 @@ class TransactionRepository
                 ProductType::UTILITY      => $purchase->utility(),
                 ProductType::SUBSCRIPTION => $purchase->subscription(),
                 ProductType::VOUCHER      => $purchase->voucherV2(),
+                ProductType::MERCHANT      => $purchase->merchant(),
                 default                   => throw new Exception('Invalid product purchase!'),
             };
         } catch (Exception $err) {
             Log::error($err);
         }
-    }
-
-    /**
-     * @throws AuthenticationException
-     * @throws Throwable
-     */
-    public static function createWithdrawalTransactions(array $transactionsData, $data): array
-    {
-        $transactions = collect();
-        foreach ($transactionsData as $transactionData) {
-            $transactions->add(Transaction::create($transactionData));
-        }
-
-        self::initiateSavingsWithdrawal($transactions, $data);
-
-        return Arr::pluck($transactions, 'id');
-    }
-
-    /**
-     * @throws Throwable
-     */
-    public static function initiateSavingsWithdrawal(Collection $transactions, array $data): Collection
-    {
-        $responses = SidoohSavings::withdrawEarnings($transactions, $data['method']);
-
-        $transactions->each(function($tx) use ($responses) {
-            if (array_key_exists($tx->id, $responses['failed'])) {
-                $response = $responses['failed'][$tx->id];
-
-                SavingsTransaction::create([
-                    'transaction_id' => $tx->id,
-                    'description'    => $response,
-                    'type'           => TransactionType::DEBIT,
-                    'amount'         => $tx->amount,
-                    'status'         => Status::FAILED,
-                ]);
-
-                $tx->status = Status::FAILED;
-                $tx->save();
-            }
-
-            if (array_key_exists($tx->id, $responses['completed'])) {
-                $response = $responses['completed'][$tx->id];
-
-                SavingsTransaction::create([
-                    ...$response,
-                    'reference'      => $response['id'],
-                    'transaction_id' => $tx->id,
-                    'id'             => null,
-                ]);
-
-                //TODO: Fix for new users.
-                $acc = EarningAccount::firstOrCreate([
-                    'type'       => EarningAccountType::WITHDRAWALS->name,
-                    'account_id' => $tx->account_id,
-                ]);
-                $acc->update(['self_amount' => $acc->self_amount + $tx->amount]);
-
-                $tx->refresh();
-            }
-        });
-
-        return $transactions;
     }
 
     public static function handleFailedPayment(Transaction $transaction, Request $payment): void
@@ -220,48 +149,6 @@ class TransactionRepository
         $transaction->payment->update(['status' => Status::COMPLETED]);
 
         TransactionRepository::requestPurchase($transaction);
-    }
-
-    public static function checkRequestStatus(Transaction $transaction, string $requestId): void
-    {
-        match (config('services.sidooh.utilities_provider')) {
-//            'AT' => AfricasTalkingApi::airtime($transaction),
-//            'KYANDA' => KyandaApi::airtime($transaction),
-            'TANDA' => TandaApi::queryStatus($transaction, $requestId)
-        };
-    }
-
-    /**
-     * @throws \Illuminate\Auth\AuthenticationException|Exception
-     */
-    public static function refundTransaction(Transaction $transaction): void
-    {
-        $phone = SidoohAccounts::find($transaction->account_id)['phone'];
-
-        $amount = $transaction->amount;
-        $date = $transaction->updated_at
-            ->timezone('Africa/Nairobi')
-            ->format(config('settings.sms_date_time_format'));
-
-        $provider = getProviderFromTransaction($transaction);
-
-        $response = SidoohPayments::creditVoucher($transaction->account_id, $amount, Description::VOUCHER_REFUND);
-        [$voucher] = $response['data'];
-
-        $transaction->status = Status::REFUNDED;
-        $transaction->save();
-
-        $amount = 'Ksh'.number_format($amount, 2);
-        $balance = 'Ksh'.number_format($voucher['balance']);
-
-        $destination = $transaction->destination;
-
-        $message = match ($transaction->product_id) {
-            ProductType::AIRTIME->value => "Hi, we have added $amount to your voucher account because we could not complete your $amount airtime purchase for $destination on $date. New voucher balance is $balance.",
-            ProductType::UTILITY->value => "Hi, we have added $amount to your voucher account because we could not complete your payment to $provider of $amount for $destination on $date. New voucher balance is $balance."
-        };
-
-        SidoohNotify::notify([$phone], $message, EventType::VOUCHER_REFUND);
     }
 
     /**

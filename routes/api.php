@@ -15,7 +15,10 @@ use App\Http\Controllers\API\V1\UtilityController;
 use App\Http\Controllers\API\V1\VoucherController;
 use App\Http\Controllers\API\V1\WithdrawController;
 use App\Http\Controllers\API\V2\AirtimeController as AirtimeControllerV2;
+use App\Http\Controllers\API\V2\MerchantController as MerchantControllerV2;
 use App\Http\Controllers\API\V2\PaymentsController as PaymentsControllerV2;
+use App\Http\Controllers\API\V2\SubscriptionController as SubscriptionControllerV2;
+use App\Http\Controllers\API\V2\UtilityController as UtilityControllerV2;
 use App\Http\Controllers\API\V2\VoucherController as VoucherControllerV2;
 use Illuminate\Support\Facades\Route;
 
@@ -122,31 +125,51 @@ Route::prefix('/v1')->name('api.')->group(function() {
     });
 });
 
+
+#=========================================================================================================
+# V2 API
+#=========================================================================================================
+
 Route::middleware('auth.jwt')->prefix('/v2')->name('api.')->group(function() {
     Route::prefix('/products')->group(function() {
         Route::post('/airtime', AirtimeControllerV2::class);
-//        Route::post('/airtime/bulk', [AirtimeController::class, 'bulk']);
-//        Route::post('/utility', UtilityController::class);
-//        Route::post('/subscription', SubscriptionController::class);
-//        Route::post('/withdraw', WithdrawController::class);
-//        Route::post('/merchant', MerchantController::class);
-//
-//        Route::get('/earnings/rates', [ProductController::class, 'getEarningRates']);
-//
-        ////        TODO: Should we have a similar endpoint for voucher purchase?
-        ////          Route::post('/voucher', WithdrawController::class);
+        Route::post('/utility', UtilityControllerV2::class);
+        Route::post('/withdraw', WithdrawController::class);
+        Route::post('/merchant', MerchantControllerV2::class);
+
+        Route::get('/earnings/rates', [ProductController::class, 'getEarningRates']);
+
         Route::prefix('/vouchers')->group(function() {
             Route::post('/top-up', [VoucherControllerV2::class, 'topUp']);
         });
-//
-//        Route::prefix('/subscriptions')->group(function() {
-//            Route::post('/', SubscriptionController::class);
-//        });
-//
-//        //  AT Callback Route
-//        Route::post('/airtime/status/callback', [AirtimeController::class, 'airtimeStatusCallback']);
-//
-//        Route::get('/subscription-types/default', SubscriptionTypeController::class);
+
+        Route::prefix('/subscriptions')->group(function() {
+            Route::post('/', SubscriptionControllerV2::class);
+        });
+
+        Route::get('/subscription-types/default', SubscriptionTypeController::class);
+    });
+
+    Route::get('/subscription-types', [SubscriptionController::class, 'getSubTypes']);
+
+    Route::prefix('/subscriptions')->group(function() {
+        Route::get('/{subscription}', [SubscriptionController::class, 'show']);
+    });
+
+    Route::prefix('/accounts')->group(function() {
+        Route::get('/airtime-accounts', [ProductController::class, 'getAllAirtimeAccounts']);
+        Route::get('/utility-accounts', [ProductController::class, 'getAllUtilityAccounts']);
+
+        Route::prefix('/{accountId}')->group(function() {
+            Route::get('/details', [ProductController::class, 'getAccountDetails']);
+
+            Route::get('/airtime-accounts', [ProductController::class, 'airtimeAccounts']);
+            Route::get('/utility-accounts', [ProductController::class, 'utilityAccounts']);
+
+            Route::get('/current-subscription', [ProductController::class, 'currentSubscription']);
+
+            Route::get('/earnings', [ProductController::class, 'earnings']);
+        });
     });
 });
 

@@ -11,7 +11,7 @@ class PaymentDTO
     public function __construct(
         public readonly int $account_id,
         public readonly int $amount,
-        public readonly Description $description,
+        public readonly Description|string $description,
         public readonly string $reference,
         public readonly PaymentMethod $source,
         public readonly int $source_account
@@ -22,6 +22,8 @@ class PaymentDTO
 
     public function setMerchant(MerchantType $merchantType, int $businessNumber, string $account): void
     {
+        $this->endpoint = '/payments/merchant';
+
         $this->merchant_type = $merchantType;
 
         if ($this->merchant_type === MerchantType::MPESA_PAY_BILL) {

@@ -84,21 +84,6 @@ return [
 
     'tanda' => [
         'discounts' => [
-<<<<<<< HEAD
-            'SAFARICOM'    => [
-                'type'  => '%',
-                'value' => .06,
-            ],
-            'FAIBA'        => [
-                'type'  => '%',
-                'value' => .07,
-            ],
-            'AIRTEL'       => [
-                'type'  => '%',
-                'value' => .06,
-            ],
-            'TELKOM'       => [
-=======
             'SAFARICOM' => [
                 'type'  => '%',
                 'value' => .06,
@@ -112,7 +97,6 @@ return [
                 'value' => .06,
             ],
             'TELKOM' => [
->>>>>>> a150e4a (Applies pint format)
                 'type'  => '%',
                 'value' => .06,
             ],
@@ -124,25 +108,6 @@ return [
                 'type'  => '%',
                 'value' => .02,
             ],
-<<<<<<< HEAD
-            'DSTV'         => [
-                'type'  => '%',
-                'value' => .003,
-            ],
-            'GOTV'         => [
-                'type'  => '%',
-                'value' => .003,
-            ],
-            'ZUKU'         => [
-                'type'  => '%',
-                'value' => .003,
-            ],
-            'STARTIMES'    => [
-                'type'  => '%',
-                'value' => .003,
-            ],
-            'NAIROBI_WTR'  => [
-=======
             'DSTV' => [
                 'type'  => '%',
                 'value' => .003,
@@ -160,7 +125,6 @@ return [
                 'value' => .003,
             ],
             'NAIROBI_WTR' => [
->>>>>>> a150e4a (Applies pint format)
                 'type'  => '$',
                 'value' => 5,
             ],
@@ -169,29 +133,6 @@ return [
 
     'kyanda' => [
         'discounts' => [
-<<<<<<< HEAD
-            'SAFARICOM'    => [
-                'type'  => '%',
-                'value' => .06,
-            ],
-            'FAIBA'        => [
-                'type'  => '%',
-                'value' => .09,
-            ],
-            'FAIBA_B'      => [
-                'type'  => '%',
-                'value' => .09,
-            ],
-            'AIRTEL'       => [
-                'type'  => '%',
-                'value' => .06,
-            ],
-            'TELKOM'       => [
-                'type'  => '%',
-                'value' => .06,
-            ],
-            'EQUITEL'      => [
-=======
             'SAFARICOM' => [
                 'type'  => '%',
                 'value' => .06,
@@ -213,7 +154,6 @@ return [
                 'value' => .06,
             ],
             'EQUITEL' => [
->>>>>>> a150e4a (Applies pint format)
                 'type'  => '%',
                 'value' => .05,
             ],
@@ -225,25 +165,6 @@ return [
                 'type'  => '%',
                 'value' => .015,
             ],
-<<<<<<< HEAD
-            'DSTV'         => [
-                'type'  => '%',
-                'value' => .0025,
-            ],
-            'GOTV'         => [
-                'type'  => '%',
-                'value' => .0025,
-            ],
-            'ZUKU'         => [
-                'type'  => '%',
-                'value' => .0025,
-            ],
-            'STARTIMES'    => [
-                'type'  => '%',
-                'value' => .0025,
-            ],
-            'NAIROBI_WTR'  => [
-=======
             'DSTV' => [
                 'type'  => '%',
                 'value' => .0025,
@@ -261,7 +182,6 @@ return [
                 'value' => .0025,
             ],
             'NAIROBI_WTR' => [
->>>>>>> a150e4a (Applies pint format)
                 'type'  => '$',
                 'value' => 5,
             ],
