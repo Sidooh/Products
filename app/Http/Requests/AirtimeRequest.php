@@ -4,7 +4,6 @@ namespace App\Http\Requests;
 
 use App\Enums\Initiator;
 use App\Enums\PaymentMethod;
-use App\Rules\SidoohAccountExists;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
@@ -52,7 +51,7 @@ class AirtimeRequest extends FormRequest
             'debit_account' => [Rule::when(
                 $this->input('method') === PaymentMethod::MPESA->value,
                 "phone:$countryCode",
-                [new SidoohAccountExists]
+                'int' // TODO: check for voucher or float existence [new SidoohAccountExists] //
             )],
         ];
     }

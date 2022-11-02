@@ -45,12 +45,12 @@ return [
     ],
 
     'sidooh' => [
-        'jwt_key'            => env('JWT_KEY'),
-        'earnings'           => [
+        'jwt_key'  => env('JWT_KEY'),
+        'earnings' => [
             'users_percentage' => 0.6,
         ],
-        'tagline'            => 'Sidooh, Makes You Money with Every Purchase.',
-        'mpesa'              => [
+        'tagline' => 'Sidooh, Makes You Money with Every Purchase.',
+        'mpesa'   => [
             'env' => 'local',
             'b2c' => [
                 'phone'      => '254708374149',
@@ -65,7 +65,7 @@ return [
                 'enabled' => true,
                 'url'     => env('SIDOOH_ACCOUNTS_API_URL'),
             ],
-            'notify'   => [
+            'notify' => [
                 'enabled' => true,
                 'url'     => env('SIDOOH_NOTIFY_API_URL'),
             ],
@@ -73,30 +73,30 @@ return [
                 'enabled' => true,
                 'url'     => env('SIDOOH_PAYMENTS_API_URL'),
             ],
-            'savings'  => [
+            'savings' => [
                 'enabled' => true,
                 'url'     => env('SIDOOH_SAVINGS_API_URL'),
             ],
         ],
-        'admin_contacts'     => env('ADMIN_CONTACTS', '254110039317,254714611696,254711414987'),
-        'country_code'       => env('COUNTRY_CODE', 'KE'),
+        'admin_contacts' => env('ADMIN_CONTACTS', '254110039317,254714611696,254711414987,254721309253'),
+        'country_code'   => env('COUNTRY_CODE', 'KE'),
     ],
 
     'tanda' => [
         'discounts' => [
-            'SAFARICOM'   => [
+            'SAFARICOM' => [
                 'type'  => '%',
                 'value' => .06,
             ],
-            'FAIBA'       => [
+            'FAIBA' => [
                 'type'  => '%',
                 'value' => .07,
             ],
-            'AIRTEL'      => [
+            'AIRTEL' => [
                 'type'  => '%',
                 'value' => .06,
             ],
-            'TELKOM'      => [
+            'TELKOM' => [
                 'type'  => '%',
                 'value' => .06,
             ],
@@ -108,19 +108,19 @@ return [
                 'type'  => '%',
                 'value' => .02,
             ],
-            'DSTV'        => [
+            'DSTV' => [
                 'type'  => '%',
                 'value' => .003,
             ],
-            'GOTV'        => [
+            'GOTV' => [
                 'type'  => '%',
                 'value' => .003,
             ],
-            'ZUKU'        => [
+            'ZUKU' => [
                 'type'  => '%',
                 'value' => .003,
             ],
-            'STARTIMES'   => [
+            'STARTIMES' => [
                 'type'  => '%',
                 'value' => .003,
             ],
@@ -133,27 +133,27 @@ return [
 
     'kyanda' => [
         'discounts' => [
-            'SAFARICOM'   => [
+            'SAFARICOM' => [
                 'type'  => '%',
                 'value' => .06,
             ],
-            'FAIBA'       => [
+            'FAIBA' => [
                 'type'  => '%',
                 'value' => .09,
             ],
-            'FAIBA_B'     => [
+            'FAIBA_B' => [
                 'type'  => '%',
                 'value' => .09,
             ],
-            'AIRTEL'      => [
+            'AIRTEL' => [
                 'type'  => '%',
                 'value' => .06,
             ],
-            'TELKOM'      => [
+            'TELKOM' => [
                 'type'  => '%',
                 'value' => .06,
             ],
-            'EQUITEL'     => [
+            'EQUITEL' => [
                 'type'  => '%',
                 'value' => .05,
             ],
@@ -165,19 +165,19 @@ return [
                 'type'  => '%',
                 'value' => .015,
             ],
-            'DSTV'        => [
+            'DSTV' => [
                 'type'  => '%',
                 'value' => .0025,
             ],
-            'GOTV'        => [
+            'GOTV' => [
                 'type'  => '%',
                 'value' => .0025,
             ],
-            'ZUKU'        => [
+            'ZUKU' => [
                 'type'  => '%',
                 'value' => .0025,
             ],
-            'STARTIMES'   => [
+            'STARTIMES' => [
                 'type'  => '%',
                 'value' => .0025,
             ],

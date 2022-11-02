@@ -3,6 +3,8 @@
 namespace App\Helpers\Product;
 
 use App\Enums\EventType;
+use App\Enums\PaymentMethod;
+use App\Enums\PaymentSubtype;
 use App\Enums\Status;
 use App\Events\SubscriptionPurchaseFailedEvent;
 use App\Events\SubscriptionPurchaseSuccessEvent;
@@ -13,13 +15,15 @@ use App\Helpers\Tanda\TandaApi;
 use App\Models\Subscription;
 use App\Models\SubscriptionType;
 use App\Models\Transaction;
+use App\Services\SidoohAccounts;
 use App\Services\SidoohNotify;
-use function config;
+use App\Services\SidoohPayments;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Propaganistas\LaravelPhone\PhoneNumber;
 use Throwable;
+use function config;
 
 class Purchase
 {
@@ -101,7 +105,7 @@ class Purchase
 
     /**
      * @param  array  $paymentsData
-     *
+     * @deprecated
      * @throws \Throwable
      */
     public function voucher(array $paymentsData): void
@@ -119,5 +123,70 @@ class Purchase
 
         // TODO: Disparity, what if multiple payments? Only single transaction is passed here...!
         VoucherPurchaseEvent::dispatch($this->transaction, $vouchers);
+    }
+
+    public function voucherV2(): void
+    {
+        Log::info('...[INTERNAL - PRODUCT]: Voucher V2...');
+
+        $this->transaction->status = Status::COMPLETED;
+        $this->transaction->save();
+
+        $creditVoucher = SidoohPayments::findVoucher($this->transaction->payment->extra['voucher_id'], true);
+
+        if (PaymentSubtype::from($this->transaction->payment->subtype) === PaymentSubtype::VOUCHER) {
+            $debitVoucher = SidoohPayments::findVoucher($this->transaction->payment->extra['debit_account'], true);
+        }
+        //        // TODO: Add V2 function that fetches vouchers used
+        $vouchers = [
+            'debit_voucher'   => $debitVoucher ?? null,
+            'credit_voucher' => $creditVoucher,
+        ];
+
+        Log::info('...[INTERNAL - PRODUCT]: Voucher V2...', $vouchers);
+
+        // TODO: Disparity, what if multiple payments? Only single transaction is passed here...!
+        VoucherPurchaseEvent::dispatch($this->transaction, $vouchers);
+    }
+
+    /**
+     * @throws Throwable
+     */
+    public function merchant(): void
+    {
+        Log::info('...[INTERNAL - PRODUCT]: Merchant...');
+
+        $this->transaction->update(['status'   => Status::COMPLETED]);
+
+        $account = SidoohAccounts::find($this->transaction->account_id);
+
+        $destination = $this->transaction->destination;
+        $sender = $account['phone'];
+
+        $amount = 'Ksh'.number_format($this->transaction->amount, 2);
+        $date = $this->transaction->created_at->timezone('Africa/Nairobi')->format(config('settings.sms_date_time_format'));
+        $eventType = EventType::UTILITY_PAYMENT;
+
+        if ($this->transaction->payment->subtype === PaymentMethod::VOUCHER->name) {
+            $method = PaymentMethod::VOUCHER->name;
+
+            $voucher = SidoohPayments::findVoucher($this->transaction->payment->extra['debit_account'], true);
+            $bal = 'Ksh'.number_format($voucher['balance'], 2);
+            $vtext = " New Voucher balance is $bal.";
+        } else {
+            $method = $this->transaction->payment->type;
+            $vtext = '';
+
+            $extra = $this->transaction->payment->extra;
+            if (isset($extra['debit_account']) && $account['phone'] !== $extra['debit_account']) {
+                $method = 'OTHER '.$method;
+            }
+        }
+
+//        $message = "You have made a payment to Merchant $destination of $amount from your Sidooh account on $date using $method. You have received $userEarnings cashback.$vtext";
+        $message = "You have made a payment to Merchant $destination of $amount from your Sidooh account on $date using $method.$vtext";
+
+        SidoohNotify::notify([$sender], $message, $eventType);
+
     }
 }
