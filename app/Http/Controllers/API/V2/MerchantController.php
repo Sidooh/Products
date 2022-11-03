@@ -25,7 +25,7 @@ class MerchantController extends Controller
         $account = SidoohAccounts::find($data['account_id']);
 
         $transactionData = [
-            'destination' => $data['business_number'],
+            'destination' => $data['business_number'].(isset($data['account_number']) ? ' - '.$data['account_number'] : ''),
             'initiator'   => $data['initiator'],
             'amount'      => $data['amount'],
             'type'        => TransactionType::PAYMENT,
