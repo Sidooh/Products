@@ -54,7 +54,10 @@ class TransactionRepository
         } else {
 //            $account = SidoohAccounts::find($t->account_id);
             // TODO: Find sidooh voucher for account
-            $debit_account = $paymentMethod === PaymentMethod::MPESA ? $account['phone'] : $account['id'];
+            $debit_account = match ($paymentMethod) {
+                PaymentMethod::MPESA => $account['phone'],
+                PaymentMethod::VOUCHER => SidoohPayments::findSidoohVoucherIdForAccount($account['id'])
+            };
         }
 
         $paymentData = new PaymentDTO($t->account_id, $t->amount, $t->description, $t->destination, $paymentMethod, $debit_account);
