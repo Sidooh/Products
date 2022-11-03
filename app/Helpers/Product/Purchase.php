@@ -40,8 +40,8 @@ class Purchase
 
         match (config('services.sidooh.utilities_provider')) {
             'KYANDA' => KyandaApi::bill($this->transaction, $provider),
-            'TANDA'  => TandaApi::bill($this->transaction, $provider),
-            default  => throw new Exception('No provider provided for utility purchase')
+            'TANDA' => TandaApi::bill($this->transaction, $provider),
+            default => throw new Exception('No provider provided for utility purchase')
         };
     }
 
@@ -60,10 +60,10 @@ class Purchase
         $phone = PhoneNumber::make($this->transaction->destination, 'KE')->formatE164();
 
         match (config('services.sidooh.utilities_provider')) {
-            'AT'     => AfricasTalkingApi::airtime($this->transaction, $phone),
+            'AT' => AfricasTalkingApi::airtime($this->transaction, $phone),
             'KYANDA' => KyandaApi::airtime($this->transaction, $phone),
-            'TANDA'  => TandaApi::airtime($this->transaction, $phone),
-            default  => throw new Exception('No provider provided for airtime purchase')
+            'TANDA' => TandaApi::airtime($this->transaction, $phone),
+            default => throw new Exception('No provider provided for airtime purchase')
         };
     }
 
@@ -91,7 +91,7 @@ class Purchase
             'end_date'   => now()->addMonths($type->duration),
         ];
 
-        return DB::transaction(function() use ($type, $subscription) {
+        return DB::transaction(function () use ($type, $subscription) {
             $sub = $type->subscription()->create($subscription);
 
             $this->transaction->status = Status::COMPLETED;
@@ -104,9 +104,9 @@ class Purchase
     }
 
     /**
-     * @param  array  $paymentsData
-     * @deprecated
+     * @param array $paymentsData
      * @throws \Throwable
+     * @deprecated
      */
     public function voucher(array $paymentsData): void
     {
@@ -139,7 +139,7 @@ class Purchase
         }
         //        // TODO: Add V2 function that fetches vouchers used
         $vouchers = [
-            'debit_voucher'   => $debitVoucher ?? null,
+            'debit_voucher'  => $debitVoucher ?? null,
             'credit_voucher' => $creditVoucher,
         ];
 
@@ -156,22 +156,23 @@ class Purchase
     {
         Log::info('...[INTERNAL - PRODUCT]: Merchant...');
 
-        $this->transaction->update(['status'   => Status::COMPLETED]);
+//        $this->transaction->update(['status' => Status::COMPLETED]);
+        Transaction::updateStatus($this->transaction, Status::COMPLETED);
 
         $account = SidoohAccounts::find($this->transaction->account_id);
 
         $destination = $this->transaction->destination;
         $sender = $account['phone'];
 
-        $amount = 'Ksh'.number_format($this->transaction->amount, 2);
+        $amount = 'Ksh' . number_format($this->transaction->amount, 2);
         $date = $this->transaction->created_at->timezone('Africa/Nairobi')->format(config('settings.sms_date_time_format'));
-        $eventType = EventType::UTILITY_PAYMENT;
+        $eventType = EventType::MERCHANT_PAYMENT;
 
         if ($this->transaction->payment->subtype === PaymentMethod::VOUCHER->name) {
             $method = PaymentMethod::VOUCHER->name;
 
             $voucher = SidoohPayments::findVoucher($this->transaction->payment->extra['debit_account'], true);
-            $bal = 'Ksh'.number_format($voucher['balance'], 2);
+            $bal = 'Ksh' . number_format($voucher['balance'], 2);
             $vtext = " New Voucher balance is $bal.";
         } else {
             $method = $this->transaction->payment->type;
@@ -179,7 +180,7 @@ class Purchase
 
             $extra = $this->transaction->payment->extra;
             if (isset($extra['debit_account']) && $account['phone'] !== $extra['debit_account']) {
-                $method = 'OTHER '.$method;
+                $method = 'OTHER ' . $method;
             }
         }
 
