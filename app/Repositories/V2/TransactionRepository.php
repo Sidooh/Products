@@ -3,19 +3,23 @@
 namespace App\Repositories\V2;
 
 use App\DTOs\PaymentDTO;
+use App\Enums\EarningAccountType;
 use App\Enums\EventType;
-use App\Enums\MerchantType;
 use App\Enums\PaymentMethod;
 use App\Enums\PaymentSubtype;
 use App\Enums\ProductType;
 use App\Enums\Status;
 use App\Helpers\Product\Purchase;
+use App\Models\EarningAccount;
 use App\Models\Payment;
+use App\Models\SavingsTransaction;
 use App\Models\Transaction;
 use App\Services\SidoohAccounts;
 use App\Services\SidoohNotify;
 use App\Services\SidoohPayments;
+use App\Services\SidoohSavings;
 use App\Traits\ApiResponse;
+use Error;
 use Exception;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
@@ -68,7 +72,6 @@ class TransactionRepository
 
         match ($t->product_id) {
             ProductType::VOUCHER => $paymentData->setVoucher(SidoohPayments::findSidoohVoucherIdForAccount(SidoohAccounts::findByPhone($t->destination)['id'])),
-//            ProductType::WITHDRAWAL => $paymentData->setWithdrawal(),
             ProductType::MERCHANT => $paymentData->setMerchant($data['merchant_type'], $data['business_number'], $data['account_number'] ?? ''),
 //            ProductType::FLOAT => $paymentData->setWithdrawal(),
             default => null
@@ -109,12 +112,12 @@ class TransactionRepository
             }
 
             match ($transaction->product_id) {
-                ProductType::AIRTIME      => $purchase->airtime(),
-                ProductType::UTILITY      => $purchase->utility(),
+                ProductType::AIRTIME => $purchase->airtime(),
+                ProductType::UTILITY => $purchase->utility(),
                 ProductType::SUBSCRIPTION => $purchase->subscription(),
-                ProductType::VOUCHER      => $purchase->voucherV2(),
-                ProductType::MERCHANT      => $purchase->merchant(),
-                default                   => throw new Exception('Invalid product purchase!'),
+                ProductType::VOUCHER => $purchase->voucherV2(),
+                ProductType::MERCHANT => $purchase->merchant(),
+                default => throw new Exception('Invalid product purchase!'),
             };
         } catch (Exception $err) {
             Log::error($err);
@@ -129,7 +132,7 @@ class TransactionRepository
 
         if ($payment->subtype === PaymentSubtype::STK->name && isset($payment->code)) {
             $message = match ($payment->code) {
-                1       => 'You have insufficient Mpesa Balance for this transaction. Kindly top up your Mpesa and try again.',
+                1 => 'You have insufficient Mpesa Balance for this transaction. Kindly top up your Mpesa and try again.',
                 default => 'Sorry! We failed to complete your transaction. No amount was deducted from your account. We apologize for the inconvenience. Please try again.',
             };
         } elseif (ProductType::tryFrom($transaction->product_id) === ProductType::MERCHANT) {
@@ -154,73 +157,58 @@ class TransactionRepository
         TransactionRepository::requestPurchase($transaction);
     }
 
+
     /**
      * @throws AuthenticationException
      * @throws Throwable
      */
-    public static function createB2bTransaction(array $transactionData, array $data): int
+    public static function createWithdrawalTransaction(array $transactionData, $data): Transaction
     {
         $transaction = Transaction::create($transactionData);
 
-        self::initiateB2bPayment($transaction, $data);
+        self::initiateSavingsWithdrawal($transaction, $data);
 
-        return $transaction->id;
+        return $transaction;
     }
 
     /**
-     * @throws AuthenticationException
-     * @throws Throwable
+     * @throws \Throwable
      */
-    public static function initiateB2bPayment(Transaction $transaction, array $data): void
+    public static function initiateSavingsWithdrawal(Transaction $transaction, array $data): void
     {
-        if (isset($data['debit_account'])) {
-            $debit_account = $data['debit_account'];
-        } else {
-            $account = $data['payment_account'];
-            $debit_account = $data['method'] === PaymentMethod::MPESA ? $account['phone'] : $account['id'];
+        try {
+            $response = SidoohSavings::withdrawEarnings($transaction, $data['method']);
+        } catch (Exception $e) {
+            $transaction->status = Status::FAILED;
+            $transaction->save();
+
+            throw new Error('Something went wrong, please try again later.');
         }
 
-        $transactionData = [
-            'reference'   => $transaction->id,
-            'product_id'  => $transaction->product_id,
-            'amount'      => $transaction->amount,
-            'destination' => $transaction->destination,
-            'description' => $transaction->description,
-        ];
-
-        $merchantDetails = [
-            'merchant_type' => $data['merchant_type'],
-        ];
-
-        if ($data['merchant_type'] === MerchantType::MPESA_PAY_BILL) {
-            $merchantDetails += [
-                'paybill_number' => $data['business_number'],
-                'account_number' => $data['account_number'],
-            ];
-        } else {
-            $merchantDetails += [
-                'till_number'    => $data['business_number'],
-                'account_number' => '',
-            ];
-        }
-
-        $responseData = SidoohPayments::requestB2bPayment($transactionData, $data['method'], $debit_account, $merchantDetails);
-
-        if (! isset($responseData['payments']) && ! isset($responseData['b2b_payment'])) {
-            throw new Exception('Purchase Failed!');
-        }
-
-        $p = $responseData['b2b_payment'];
-        Payment::insert([
-            'transaction_id' => $p['reference'],
-            'payment_id'     => $p['id'],
-            'amount'         => $p['amount'],
-            'type'           => $p['type'],
-            'subtype'        => $p['subtype'],
-            'status'         => $p['status'],
-            'extra'          => json_encode($responseData['debit_voucher'] ?? ['debit_account' => $debit_account]),
-            'created_at'     => now(),
-            'updated_at'     => now(),
+        SavingsTransaction::create([
+            'transaction_id' => $transaction->id,
+            'description'    => $response['description'],
+            'type'           => $response['type'],
+            'amount'         => $response['amount'],
+            'status'         => $response['status'],
         ]);
+
+        //TODO: Fix for new users.
+        $acc = EarningAccount::firstOrCreate([
+            'type'       => EarningAccountType::WITHDRAWALS->name,
+            'account_id' => $transaction->account_id,
+        ]);
+        $acc->update(['self_amount' => (int)$acc->self_amount + (int)$transaction->amount]);
+
+
+        $tagline = config('services.sidooh.tagline');
+        $message = "Your withdrawal request has been received. Please be patient as we review it.\n\n$tagline";
+
+        $account = SidoohAccounts::find($transaction->account_id);
+
+        SidoohNotify::notify([$account['phone']], $message, EventType::PAYMENT_FAILURE);
+
+
     }
+
 }
