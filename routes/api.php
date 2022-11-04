@@ -20,6 +20,7 @@ use App\Http\Controllers\API\V2\PaymentsController as PaymentsControllerV2;
 use App\Http\Controllers\API\V2\SubscriptionController as SubscriptionControllerV2;
 use App\Http\Controllers\API\V2\UtilityController as UtilityControllerV2;
 use App\Http\Controllers\API\V2\VoucherController as VoucherControllerV2;
+use App\Http\Controllers\API\V2\WithdrawController as WithdrawControllerV2;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -134,7 +135,7 @@ Route::middleware('auth.jwt')->prefix('/v2')->name('api.')->group(function() {
     Route::prefix('/products')->group(function() {
         Route::post('/airtime', AirtimeControllerV2::class);
         Route::post('/utility', UtilityControllerV2::class);
-        Route::post('/withdraw', WithdrawController::class);
+        Route::post('/withdraw', WithdrawControllerV2::class);
         Route::post('/merchant', MerchantControllerV2::class);
 
         Route::get('/earnings/rates', [ProductController::class, 'getEarningRates']);
