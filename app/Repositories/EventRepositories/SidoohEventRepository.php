@@ -11,7 +11,7 @@ use App\Services\SidoohNotify;
 use Exception;
 use NumberFormatter;
 
-class SidoohEventRepository extends EventRepository
+class SidoohEventRepository
 {
     /**
      * @throws Exception
@@ -32,8 +32,8 @@ class SidoohEventRepository extends EventRepository
 
         switch ($type->duration) {
             case 1:
-                $message = "Congratulations! You have successfully registered as a $type->title on $date, valid until $end_date. ";
-                $message .= "You will earn commissions on airtime and tokens purchased by your invited friends and sub-agents up to your $limit ripple.\n";
+                $message = "Congrats! You have successfully subscribed to Earn More on $date, valid until $end_date. ";
+                $message .= "You will get (1) HIGHER POINTS on ALL your purchases and payments and (2) EXTRA POINTS on ALL purchases, payments and subscriptions done by your invited friends, up to your $limit ripple.\n";
                 break;
             default:
                 $level_duration = $type->duration.' MONTHS';

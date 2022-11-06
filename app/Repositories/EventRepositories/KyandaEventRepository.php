@@ -19,7 +19,7 @@ use Nabcellent\Kyanda\Models\KyandaRequest;
 use Nabcellent\Kyanda\Models\KyandaTransaction;
 use Propaganistas\LaravelPhone\PhoneNumber;
 
-class KyandaEventRepository extends EventRepository
+class KyandaEventRepository
 {
     /**
      * @throws \Illuminate\Http\Client\RequestException
@@ -117,13 +117,13 @@ class KyandaEventRepository extends EventRepository
 
 //                Send SMS
                 if ($phone != $sender) {
-                    $message = "You have purchased {$amount} airtime for {$phone} from your Sidooh account on {$date} using $method. You have received {$userEarnings} cashback.$vText";
+                    $message = "You have purchased {$amount} airtime for {$phone} from your Sidooh account on {$date} using $method. You have received {$userEarnings} points.$vText";
 
                     SidoohNotify::notify([$sender], $message, EventType::AIRTIME_PURCHASE);
 
                     $message = "Congratulations! You have received {$amount} airtime from Sidooh account {$sender} on {$date}. Sidooh Makes You Money with Every Purchase.\n\nDial $code NOW for FREE on your Safaricom line to BUY AIRTIME & START EARNING from your purchases.";
                 } else {
-                    $message = "You have purchased {$amount} airtime from your Sidooh account on {$date} using $method. You have received {$userEarnings} cashback.$vText";
+                    $message = "You have purchased {$amount} airtime from your Sidooh account on {$date} using $method. You have received {$userEarnings} points.$vText";
                 }
 
                 SidoohNotify::notify([$phone], $message, EventType::AIRTIME_PURCHASE);
@@ -135,7 +135,7 @@ class KyandaEventRepository extends EventRepository
                 $userEarnings = EarningRepository::getPointsEarned($transaction, $totalEarnings);
 
 //                Send SMS
-                $message = "You have made a payment to {$provider} - {$destination} of {$amount} from your Sidooh account on {$date} using $method. You have received {$userEarnings} cashback.$vText";
+                $message = "You have made a payment to {$provider} - {$destination} of {$amount} from your Sidooh account on {$date} using $method. You have received {$userEarnings} points.$vText";
 
                 SidoohNotify::notify([$sender], $message, EventType::UTILITY_PAYMENT);
                 break;
@@ -147,7 +147,7 @@ class KyandaEventRepository extends EventRepository
 
 //                Send SMS
                 $details = (object) $kyandaTransaction->details;
-                $message = "You have made a payment to {$provider} - {$destination} of {$amount} from your Sidooh account on {$date} using $method. You have received {$userEarnings} cashback.$vText";
+                $message = "You have made a payment to {$provider} - {$destination} of {$amount} from your Sidooh account on {$date} using $method. You have received {$userEarnings} points.$vText";
                 $message .= "\nTokens: {$details->tokens}\nUnits: {$details->units}";
 
                 SidoohNotify::notify([$sender], $message, EventType::UTILITY_PAYMENT);
@@ -163,7 +163,7 @@ class KyandaEventRepository extends EventRepository
                 $userEarnings = EarningRepository::getPointsEarned($transaction, $totalEarnings);
 
 //                Send SMS
-                $message = "You have made a payment to {$provider} - {$destination} of {$amount} from your Sidooh account on {$date} using $method. You have received {$userEarnings} cashback.$vText";
+                $message = "You have made a payment to {$provider} - {$destination} of {$amount} from your Sidooh account on {$date} using $method. You have received {$userEarnings} points.$vText";
 
                 SidoohNotify::notify([$sender], $message, EventType::UTILITY_PAYMENT);
 
@@ -175,7 +175,7 @@ class KyandaEventRepository extends EventRepository
                 $userEarnings = EarningRepository::getPointsEarned($transaction, $totalEarnings);
 
 //                Send SMS
-                $message = "You have made a payment to {$provider} - {$destination} of {$amount} from your Sidooh account on {$date} using $method. You have received {$userEarnings} cashback.$vText";
+                $message = "You have made a payment to {$provider} - {$destination} of {$amount} from your Sidooh account on {$date} using $method. You have received {$userEarnings} points.$vText";
 
                 SidoohNotify::notify([$sender], $message, EventType::UTILITY_PAYMENT);
                 break;
@@ -186,7 +186,7 @@ class KyandaEventRepository extends EventRepository
                 $userEarnings = EarningRepository::getPointsEarned($transaction, $totalEarnings);
 
 //                Send SMS
-                $message = "You have purchased {$amount} bundles from your Sidooh account on {$date} using $method. You have received {$userEarnings} cashback.$vText";
+                $message = "You have purchased {$amount} bundles from your Sidooh account on {$date} using $method. You have received {$userEarnings} points.$vText";
 
                 SidoohNotify::notify([$sender], $message, EventType::AIRTIME_PURCHASE);
                 break;
