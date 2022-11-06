@@ -22,7 +22,7 @@ use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Log;
 use Propaganistas\LaravelPhone\PhoneNumber;
 
-class TandaEventRepository extends EventRepository
+class TandaEventRepository
 {
     public static function getProvider(TandaRequest $tandaRequest, Transaction $transaction)
     {
@@ -119,13 +119,13 @@ class TandaEventRepository extends EventRepository
 
                 //  Send SMS
                 if ($phone != $sender) {
-                    $message = "You have purchased $amount airtime for $phone from your Sidooh account on $date using $method. You have received $userEarnings cashback.$vtext";
+                    $message = "You have purchased $amount airtime for $phone from your Sidooh account on $date using $method. You have received $userEarnings points.$vtext";
 
                     SidoohNotify::notify([$sender], $message, $eventType);
 
                     $message = "Congratulations! You have received $amount airtime from Sidooh account $sender on $date. Sidooh Makes You Money with Every Purchase.\n\nDial $code NOW for FREE on your Safaricom line to BUY AIRTIME & START EARNING from your purchases.";
                 } else {
-                    $message = "You have purchased $amount airtime from your Sidooh account on $date using $method. You have received $userEarnings cashback.$vtext";
+                    $message = "You have purchased $amount airtime from your Sidooh account on $date using $method. You have received $userEarnings points.$vtext";
                 }
 
                 $sender = $phone;
@@ -135,7 +135,7 @@ class TandaEventRepository extends EventRepository
 //                $userEarnings = EarningRepository::getPointsEarned($transaction, $totalEarnings);
 //
 //                //  Send SMS
-//                $message = "You have made a payment to $provider - $destination of $amount from your Sidooh account on $date using $method. You have received $userEarnings cashback.$vtext";
+//                $message = "You have made a payment to $provider - $destination of $amount from your Sidooh account on $date using $method. You have received $userEarnings points.$vtext";
 //                break;
             case Providers::KPLC_PREPAID:
                 //  Get Points Earned
@@ -144,7 +144,7 @@ class TandaEventRepository extends EventRepository
                 ['Token' => $tokens, 'Units' => $units] = array_column($tandaRequest->result, 'value', 'label');
 
                 //  Send SMS
-                $message = "You have made a payment to $provider - $destination of $amount from your Sidooh account on $date using $method. You have received $userEarnings cashback.$vtext";
+                $message = "You have made a payment to $provider - $destination of $amount from your Sidooh account on $date using $method. You have received $userEarnings points.$vtext";
                 $message .= "\nTokens: $tokens\nUnits: $units";
                 break;
             case Providers::DSTV:
@@ -157,14 +157,14 @@ class TandaEventRepository extends EventRepository
                 $userEarnings = EarningRepository::getPointsEarned($transaction, $totalEarnings);
 
                 //  Send SMS
-                $message = "You have made a payment to $provider - $destination of $amount from your Sidooh account on $date using $method. You have received $userEarnings cashback.$vtext";
+                $message = "You have made a payment to $provider - $destination of $amount from your Sidooh account on $date using $method. You have received $userEarnings points.$vtext";
                 break;
 //            case Providers::NAIROBI_WTR:
 //                //  Get Points Earned
 //                $userEarnings = EarningRepository::getPointsEarned($transaction, $totalEarnings);
 //
 //                //  Send SMS
-//                $message = "You have made a payment to $provider - $destination of $amount from your Sidooh account on $date using $method. You have received $userEarnings cashback.$vtext";
+//                $message = "You have made a payment to $provider - $destination of $amount from your Sidooh account on $date using $method. You have received $userEarnings points.$vtext";
 //                break;
         }
 
