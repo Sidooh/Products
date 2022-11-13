@@ -17,6 +17,7 @@ use App\Http\Controllers\API\V1\WithdrawController;
 use App\Http\Controllers\API\V2\AirtimeController as AirtimeControllerV2;
 use App\Http\Controllers\API\V2\MerchantController as MerchantControllerV2;
 use App\Http\Controllers\API\V2\PaymentsController as PaymentsControllerV2;
+use App\Http\Controllers\API\V2\SavingsController;
 use App\Http\Controllers\API\V2\SubscriptionController as SubscriptionControllerV2;
 use App\Http\Controllers\API\V2\UtilityController as UtilityControllerV2;
 use App\Http\Controllers\API\V2\VoucherController as VoucherControllerV2;
@@ -177,4 +178,9 @@ Route::middleware('auth.jwt')->prefix('/v2')->name('api.')->group(function() {
 Route::prefix('/sidooh/payments')->group(function() {
     // Payments service callback
     Route::post('/callback', [PaymentsControllerV2::class, 'processCallback']);
+});
+
+Route::prefix('/sidooh/savings')->group(function() {
+    // Savings service callback
+    Route::post('/callback', [SavingsController::class, 'processCallback']);
 });

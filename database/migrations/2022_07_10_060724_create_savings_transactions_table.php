@@ -17,11 +17,12 @@ return new class extends Migration
         Schema::create('savings_transactions', function(Blueprint $table) {
             $table->id();
 
-            $table->string('reference')->nullable();
-            $table->string('type', 20); // CREDIT or DEBIT
+            $table->unsignedBigInteger('savings_id')->unique();
             $table->decimal('amount');
-            $table->string('status', 20)->default(Status::PENDING->name); //    Use enums
             $table->string('description');
+            $table->string('type', 32); // CREDIT or DEBIT
+            $table->string('status', 32)->default(Status::PENDING->name); //    Use enums
+            $table->json('extra')->nullable(); //e.g. destination
 
             $table->foreignId('transaction_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
 

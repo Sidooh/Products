@@ -178,7 +178,7 @@ class TransactionRepository
     {
         try {
             $response = SidoohSavings::withdrawEarnings($transaction, $data['method']);
-        } catch (Exception $e) {
+        } catch (Exception) {
             $transaction->status = Status::FAILED;
             $transaction->save();
 
@@ -187,10 +187,12 @@ class TransactionRepository
 
         SavingsTransaction::create([
             'transaction_id' => $transaction->id,
+            'savings_id'     => $response['id'],
+            'amount'         => $response['amount'],
             'description'    => $response['description'],
             'type'           => $response['type'],
-            'amount'         => $response['amount'],
             'status'         => $response['status'],
+            'extra'          => $response['extra'],
         ]);
 
         //TODO: Fix for new users.
@@ -198,7 +200,7 @@ class TransactionRepository
             'type'       => EarningAccountType::WITHDRAWALS->name,
             'account_id' => $transaction->account_id,
         ]);
-        $acc->update(['self_amount' => (int)$acc->self_amount + (int)$transaction->amount]);
+        $acc->increment('self_amount', $transaction->amount);
 
 
         $tagline = config('services.sidooh.tagline');
@@ -206,9 +208,46 @@ class TransactionRepository
 
         $account = SidoohAccounts::find($transaction->account_id);
 
-        SidoohNotify::notify([$account['phone']], $message, EventType::PAYMENT_FAILURE);
+        SidoohNotify::notify([$account['phone']], $message, EventType::WITHDRAWAL_PAYMENT);
+    }
 
+    public static function handleFailedWithdrawal(Transaction $transaction, Request $savings): void
+    {
+        $transaction->savingsTransaction->update(['status' => Status::FAILED]);
 
+        EarningAccount::accountId($transaction->account_id)
+            ->withdrawal()
+            ->first()
+            ->decrement('self_amount', $transaction->amount);
+
+        $transaction->status = Status::FAILED;
+        $transaction->save();
+
+        $message = 'Sorry! We failed to complete your withdrawal request. No amount was deducted from your account. We apologize for the inconvenience. Please try again.';
+
+        $account = SidoohAccounts::find($transaction->account_id);
+
+        SidoohNotify::notify([$account['phone']], $message, EventType::WITHDRAWAL_FAILURE);
+    }
+
+    /**
+     * @throws Throwable
+     */
+    public static function handleCompletedWithdrawal(Transaction $transaction): void
+    {
+        $transaction->savingsTransaction->update(['status' => Status::COMPLETED]);
+
+        $transaction->status = Status::COMPLETED;
+        $transaction->save();
+
+        $destination = $transaction->savingsTransaction->extra['destination'];
+        $account = $transaction->savingsTransaction->extra['destination_account'];
+        $message = "Congrats! Your have withdrawn $transaction->amount points from your earnings account to $destination - $account successfully.\n";
+        $message .= config('services.sidooh.tagline');
+
+        $account = SidoohAccounts::find($transaction->account_id);
+
+        SidoohNotify::notify([$account['phone']], $message, EventType::WITHDRAWAL_PAYMENT);
     }
 
 }
