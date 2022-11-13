@@ -5,8 +5,6 @@ use App\Http\Controllers\API\V1\CashbackController;
 use App\Http\Controllers\API\V1\DashboardController;
 use App\Http\Controllers\API\V1\EarningAccountController;
 use App\Http\Controllers\API\V1\EarningController;
-use App\Http\Controllers\API\V1\EnterpriseAccountController;
-use App\Http\Controllers\API\V1\EnterpriseController;
 use App\Http\Controllers\API\V1\MerchantController;
 use App\Http\Controllers\API\V1\PaymentsController;
 use App\Http\Controllers\API\V1\ProductController;
@@ -16,6 +14,14 @@ use App\Http\Controllers\API\V1\TransactionController;
 use App\Http\Controllers\API\V1\UtilityController;
 use App\Http\Controllers\API\V1\VoucherController;
 use App\Http\Controllers\API\V1\WithdrawController;
+use App\Http\Controllers\API\V2\AirtimeController as AirtimeControllerV2;
+use App\Http\Controllers\API\V2\MerchantController as MerchantControllerV2;
+use App\Http\Controllers\API\V2\PaymentsController as PaymentsControllerV2;
+use App\Http\Controllers\API\V2\SavingsController;
+use App\Http\Controllers\API\V2\SubscriptionController as SubscriptionControllerV2;
+use App\Http\Controllers\API\V2\UtilityController as UtilityControllerV2;
+use App\Http\Controllers\API\V2\VoucherController as VoucherControllerV2;
+use App\Http\Controllers\API\V2\WithdrawController as WithdrawControllerV2;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -40,8 +46,8 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function() {
 
         Route::get('/earnings/rates', [ProductController::class, 'getEarningRates']);
 
-        //        TODO: Should we have a similar endpoint for voucher purchase?
-        //          Route::post('/voucher', WithdrawController::class);
+//        TODO: Should we have a similar endpoint for voucher purchase?
+//          Route::post('/voucher', WithdrawController::class);
         Route::prefix('/vouchers')->group(function() {
             Route::post('/top-up', [VoucherController::class, 'topUp']);
         });
@@ -54,20 +60,6 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function() {
         Route::post('/airtime/status/callback', [AirtimeController::class, 'airtimeStatusCallback']);
 
         Route::get('/subscription-types/default', SubscriptionTypeController::class);
-    });
-
-    Route::prefix('/enterprises')->group(function() {
-        Route::get('/', [EnterpriseController::class, 'index']);
-        Route::post('/', [EnterpriseController::class, 'store']);
-        Route::get('/{enterprise}', [EnterpriseController::class, 'show']);
-
-        Route::get('/{enterprise}/accounts', [EnterpriseController::class, 'getEnterpriseAccounts']);
-        Route::post('/{enterprise}/accounts', [EnterpriseAccountController::class, 'store']);
-    });
-
-    Route::prefix('/enterprise-accounts')->group(function() {
-        Route::get('/', [EnterpriseAccountController::class, 'index']);
-        Route::get('/{enterpriseAccount}', [EnterpriseAccountController::class, 'show']);
     });
 
     Route::prefix('/payments')->group(function() {
@@ -133,4 +125,62 @@ Route::prefix('/v1')->name('api.')->group(function() {
             Route::post('/save', [EarningController::class, 'saveEarnings']);
         });
     });
+});
+
+
+#=========================================================================================================
+# V2 API
+#=========================================================================================================
+
+Route::middleware('auth.jwt')->prefix('/v2')->name('api.')->group(function() {
+    Route::prefix('/products')->group(function() {
+        Route::post('/airtime', AirtimeControllerV2::class);
+        Route::post('/utility', UtilityControllerV2::class);
+        Route::post('/withdraw', WithdrawControllerV2::class);
+        Route::post('/merchant', MerchantControllerV2::class);
+
+        Route::get('/earnings/rates', [ProductController::class, 'getEarningRates']);
+
+        Route::prefix('/vouchers')->group(function() {
+            Route::post('/top-up', [VoucherControllerV2::class, 'topUp']);
+        });
+
+        Route::prefix('/subscriptions')->group(function() {
+            Route::post('/', SubscriptionControllerV2::class);
+        });
+
+        Route::get('/subscription-types/default', SubscriptionTypeController::class);
+    });
+
+    Route::get('/subscription-types', [SubscriptionController::class, 'getSubTypes']);
+
+    Route::prefix('/subscriptions')->group(function() {
+        Route::get('/{subscription}', [SubscriptionController::class, 'show']);
+    });
+
+    Route::prefix('/accounts')->group(function() {
+        Route::get('/airtime-accounts', [ProductController::class, 'getAllAirtimeAccounts']);
+        Route::get('/utility-accounts', [ProductController::class, 'getAllUtilityAccounts']);
+
+        Route::prefix('/{accountId}')->group(function() {
+            Route::get('/details', [ProductController::class, 'getAccountDetails']);
+
+            Route::get('/airtime-accounts', [ProductController::class, 'airtimeAccounts']);
+            Route::get('/utility-accounts', [ProductController::class, 'utilityAccounts']);
+
+            Route::get('/current-subscription', [ProductController::class, 'currentSubscription']);
+
+            Route::get('/earnings', [ProductController::class, 'earnings']);
+        });
+    });
+});
+
+Route::prefix('/sidooh/payments')->group(function() {
+    // Payments service callback
+    Route::post('/callback', [PaymentsControllerV2::class, 'processCallback']);
+});
+
+Route::prefix('/sidooh/savings')->group(function() {
+    // Savings service callback
+    Route::post('/callback', [SavingsController::class, 'processCallback']);
 });
