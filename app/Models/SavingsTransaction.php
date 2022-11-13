@@ -15,11 +15,17 @@ class SavingsTransaction extends Model
 
     protected $fillable = [
         'transaction_id',
+        'savings_id',
         'reference',
         'type',
         'amount',
         'status',
         'description',
+        'extra',
+    ];
+
+    protected $casts = [
+        'extra' => 'array'
     ];
 
     public function transaction(): BelongsTo
