@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\V1;
 
 use App\Enums\Status;
+use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
 use App\Models\Transaction;
 use App\Repositories\TransactionRepository;
@@ -60,6 +61,10 @@ class TransactionController extends Controller
     public function show(Request $request, Transaction $transaction): JsonResponse
     {
         $relations = explode(',', $request->query('with'));
+
+        if($transaction->type === TransactionType::WITHDRAWAL) {
+            $transaction->load("savingsTransaction:id,transaction_id,savings_id,amount,description,type,status");
+        }
 
         if (in_array('account', $relations)) {
             $transaction->account = SidoohAccounts::find($transaction->account_id);
