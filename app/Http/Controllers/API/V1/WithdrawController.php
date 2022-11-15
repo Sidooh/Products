@@ -63,7 +63,7 @@ class WithdrawController extends Controller
         ];
 
         $data = [
-            'method' => $request->has('method') ? PaymentMethod::from($request->input('method')) : PaymentMethod::MPESA,
+            'method' => $request->has('method') ? $request->enum('method', PaymentMethod::class) : PaymentMethod::MPESA,
         ];
 
         $transactions = TransactionRepository::createWithdrawalTransactions($transactions, $data);
