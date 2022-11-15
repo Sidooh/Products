@@ -12,7 +12,7 @@ class SidoohSavings extends SidoohService
     {
         Log::info('...[SRV - SAVINGS]: Withdraw Earnings...');
 
-        $url = config('services.sidooh.services.savings.url') . '/accounts/' . $transaction->account_id . '/earnings/withdraw';
+        $url = config('services.sidooh.services.savings.url') . "/accounts/$transaction->account_id/earnings/withdraw";
 
         $data = [
             'amount'              => $transaction->amount,

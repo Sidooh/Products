@@ -74,7 +74,7 @@ class TandaEventRepository
         if ($transaction->payment->subtype === PaymentMethod::VOUCHER->name) {
             $method = PaymentMethod::VOUCHER->name;
 
-            $voucher = $transaction->payment->extra;
+            $voucher = SidoohPayments::findVoucher($transaction->payment->extra['debit_account']);
             $bal = 'Ksh'.number_format($voucher['balance'], 2);
             $vtext = " New Voucher balance is $bal.";
         } else {
