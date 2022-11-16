@@ -10,7 +10,7 @@ use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EarningRequest;
 use App\Models\EarningAccount;
-use App\Repositories\TransactionRepository;
+use App\Repositories\V2\TransactionRepository;
 use App\Services\SidoohAccounts;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -66,7 +66,7 @@ class WithdrawController extends Controller
             'method' => $request->has('method') ? $request->enum('method', PaymentMethod::class) : PaymentMethod::MPESA,
         ];
 
-        $transactions = TransactionRepository::createWithdrawalTransactions($transactions, $data);
+        $transactions = TransactionRepository::createWithdrawalTransaction($transactions, $data);
 
         return $this->successResponse(['transactions' => $transactions], 'Withdrawal Request Successful!');
     }
