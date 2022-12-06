@@ -62,6 +62,10 @@ class Transaction extends Model
         'description',
     ];
 
+//    protected $casts = [
+//        'amount' => 'int'
+//    ];
+
     // Internal relations
     public function product(): BelongsTo
     {

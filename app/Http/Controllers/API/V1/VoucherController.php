@@ -8,7 +8,7 @@ use App\Enums\ProductType;
 use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\VoucherRequest;
-use App\Repositories\TransactionRepository;
+use App\Repositories\V2\TransactionRepository;
 use App\Services\SidoohAccounts;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -25,7 +25,7 @@ class VoucherController extends Controller
      *
      * @throws Exception|Throwable
      */
-    public function topUp(VoucherRequest $request): JsonResponse
+    public function __invoke(VoucherRequest $request): JsonResponse
     {
         Log::info('...[CTRL - VOUCHER]: Process Voucher Request...', $request->all());
 
@@ -40,22 +40,19 @@ class VoucherController extends Controller
             }
         }
 
-        $transactionsData = [
-            [
-                'destination' => $data['target_number'] ?? $account['phone'],
-                'initiator'   => $data['initiator'],
-                'amount'      => $data['amount'],
-                'type'        => TransactionType::PAYMENT,
-                'description' => Description::VOUCHER_PURCHASE,
-                'account_id'  => $data['account_id'],
-                'product_id'  => ProductType::VOUCHER,
-                'account'     => $account,
-            ],
+        $transactionData = [
+            'destination' => $data['target_number'] ?? $account['phone'],
+            'initiator'   => $data['initiator'],
+            'amount'      => $data['amount'],
+            'type'        => TransactionType::PAYMENT,
+            'description' => Description::VOUCHER_PURCHASE,
+            'account_id'  => $data['account_id'],
+            'product_id'  => ProductType::VOUCHER,
+            'account'     => $account,
         ];
 
         $data = [
-            'payment_account' => $account,
-            'method'          => $request->has('method') ? PaymentMethod::from($request->input('method'))
+            'method' => $request->has('method') ? PaymentMethod::from($request->input('method'))
                 : PaymentMethod::MPESA,
         ];
 
@@ -63,8 +60,8 @@ class VoucherController extends Controller
             $data['debit_account'] = $request->input('debit_account');
         }
 
-        $transactionIds = TransactionRepository::createTransactions($transactionsData, $data);
+        $transaction = TransactionRepository::createTransaction($transactionData, $data);
 
-        return $this->successResponse(['transactions' => $transactionIds], 'Voucher Request Successful!');
+        return $this->successResponse($transaction, 'Voucher Request Successful!');
     }
 }

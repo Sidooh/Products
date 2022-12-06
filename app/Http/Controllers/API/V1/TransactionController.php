@@ -16,9 +16,6 @@ use Throwable;
 
 class TransactionController extends Controller
 {
-    /**
-     * @throws \Illuminate\Auth\AuthenticationException
-     */
     public function index(Request $request): JsonResponse
     {
         // TODO: Review using laravel query builder // or build our own params
@@ -37,14 +34,9 @@ class TransactionController extends Controller
 
         if ($request->has('status') && $status = Status::tryFrom($request->status)) {
             $transactions->whereStatus($status);
-            if ($status !== Status::PENDING) {
-                $transactions->limit(100); // Other statuses will have too many records
-            }
-        } else {
-            $transactions->limit(100);
         }
 
-        $transactions = $transactions->latest()->get();
+        $transactions = $transactions->latest()->limit(100)->get();
 
         // TODO: pagination will not work with the process below - review fix for it
         if (in_array('account', $relations)) {
@@ -54,9 +46,6 @@ class TransactionController extends Controller
         return $this->successResponse($transactions);
     }
 
-    /**
-     * @throws \Exception
-     */
     public function show(Request $request, Transaction $transaction): JsonResponse
     {
         $relations = explode(',', $request->query('with'));

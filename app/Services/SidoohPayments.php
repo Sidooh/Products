@@ -5,6 +5,8 @@ namespace App\Services;
 use App\DTOs\PaymentDTO;
 use App\Enums\Description;
 use App\Enums\PaymentMethod;
+use Exception;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
@@ -45,7 +47,7 @@ class SidoohPayments extends SidoohService
         ]);
     }
 
-    public static function creditVoucher(int $accountId, $amount, Description $description, $notify = false): ?array
+    public static function creditVoucher(int $accountId, $amount, Description $description): ?array
     {
         Log::info('...[SRV - PAYMENTS]: Credit Voucher...');
 
@@ -53,7 +55,6 @@ class SidoohPayments extends SidoohService
             'account_id'  => $accountId,
             'amount'      => $amount,
             'description' => $description->value,
-            'notify'      => $notify,
         ]);
     }
 
@@ -82,9 +83,11 @@ class SidoohPayments extends SidoohService
     }
 
     // TODO: Add by voucher type filter
-    public static function findVoucherByAccount(int $accountId): ?array
+    public static function findVouchersByAccount(int $accountId): Collection
     {
-        return parent::fetch(self::baseUrl()."/accounts/$accountId/vouchers");
+        return Cache::remember($accountId.'_vouchers', (60 * 60 * 24), function() use ($accountId) {
+            return collect(parent::fetch(self::baseUrl()."/vouchers?account_id=$accountId"));
+        });
     }
 
     // TODO: Add by voucher type filter
@@ -92,9 +95,19 @@ class SidoohPayments extends SidoohService
     {
         Log::info('...[SRV - PAYMENTS]: Find Sidooh Voucher...', [$accountId]);
 
-        return Cache::remember($accountId.'_voucher', (60 * 60 * 24), function() use ($accountId) {
-            return collect(parent::fetch(self::baseUrl()."/accounts/$accountId/vouchers"))
-                ->first(fn($v) => $v['type'] === 'SIDOOH');
-        })['id'];
+        $sidoohVoucher = self::findVouchersByAccount($accountId)
+            ->first(fn($v) => $v['voucher_type_id'] === self::getSidoohVoucherTyoe());
+
+        if (!$sidoohVoucher) {
+            // TODO: Create sidooh voucher account
+            throw new Exception("No Sidooh Voucher found for account $accountId");
+        }
+
+        return $sidoohVoucher['id']; // TODO: don't use magic numbers
+    }
+
+    private static function getSidoohVoucherTyoe(): int
+    {
+        return 1;
     }
 }

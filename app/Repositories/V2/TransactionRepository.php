@@ -73,8 +73,7 @@ class TransactionRepository
         match ($t->product_id) {
             ProductType::VOUCHER => $paymentData->setVoucher(SidoohPayments::findSidoohVoucherIdForAccount(SidoohAccounts::findByPhone($t->destination)['id'])),
             ProductType::MERCHANT => $paymentData->setMerchant($data['merchant_type'], $data['business_number'], $data['account_number'] ?? ''),
-//            ProductType::FLOAT => $paymentData->setWithdrawal(),
-            default => null
+            default => $paymentData->setDestination(PaymentMethod::FLOAT, 1)
         };
 
         $p = SidoohPayments::requestPayment($paymentData);
@@ -115,7 +114,7 @@ class TransactionRepository
                 ProductType::AIRTIME => $purchase->airtime(),
                 ProductType::UTILITY => $purchase->utility(),
                 ProductType::SUBSCRIPTION => $purchase->subscription(),
-                ProductType::VOUCHER => $purchase->voucherV2(),
+                ProductType::VOUCHER => $purchase->voucher(),
                 ProductType::MERCHANT => $purchase->merchant(),
                 default => throw new Exception('Invalid product purchase!'),
             };

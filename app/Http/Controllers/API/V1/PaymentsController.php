@@ -5,8 +5,9 @@ namespace App\Http\Controllers\API\V1;
 use App\Enums\Status;
 use App\Http\Controllers\Controller;
 use App\Models\Transaction;
-use App\Repositories\TransactionRepository;
+use App\Repositories\V2\TransactionRepository;
 use App\Traits\ApiResponse;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Throwable;
@@ -18,36 +19,29 @@ class PaymentsController extends Controller
     /**
      * @throws Throwable
      */
-    public function processCallback(Request $request)
+    public function processCallback(Request $request): JsonResponse
     {
         Log::info('...[CTRL - PAYMENT]: Process Payment Callback...', $request->all());
 
-        $request->validate([
-            'payments' => 'required|array',
-            'vouchers' => 'array',
-        ]);
+        $transaction = Transaction::withWhereHas('payment', function($query) use ($request) {
+            $query->wherePaymentId($request->id);
+        })->whereStatus(Status::PENDING)->first();
 
-        $payments = $request->collect('payments');
-
-        [
-            $completedPayments,
-            $failedPayments
-        ] = $payments->partition(fn($p) => $p['status'] === Status::COMPLETED->value);
-
-        if (count($failedPayments)) {
-            $transactions = Transaction::withWhereHas('payment', function($query) use ($failedPayments) {
-                $query->whereIn('payment_id', $failedPayments->pluck('id'));
-            })->get();
-
-            TransactionRepository::handleFailedPayments($transactions, $failedPayments);
+        if (!$transaction) {
+            Log::critical("Error processing payment callback - no transaction");
+            return response()->json(['status' => true]);
         }
 
-        if (count($completedPayments)) {
-            $transactions = Transaction::withWhereHas('payment', function($query) use ($completedPayments) {
-                $query->whereIn('payment_id', $completedPayments->pluck('id'));
-            })->get();
+        dispatch(function () use ($transaction, $request) {
+            if ($request->status === Status::FAILED->value) {
+                TransactionRepository::handleFailedPayment($transaction, $request);
+            }
 
-            TransactionRepository::handleCompletedPayments($transactions, $completedPayments, $request->all());
-        }
+            if ($request->status === Status::COMPLETED->value) {
+                TransactionRepository::handleCompletedPayment($transaction);
+            }
+        })->afterResponse();
+
+        return response()->json(['status' => true]);
     }
 }

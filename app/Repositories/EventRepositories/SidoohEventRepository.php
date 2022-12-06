@@ -76,7 +76,7 @@ class SidoohEventRepository
 
         // 2. Vouchers (if many) match accounts in question
         $voucherLen = count($vouchers);
-        if ($voucherLen === 1) {
+        if (!$vouchers['debit_voucher']) {
             // Purchase was for self most probably.
             // Can confirm this using transaction account and destination
 
@@ -114,7 +114,7 @@ class SidoohEventRepository
             }
 
             // select voucher
-            $debitVoucher = $vouchers['debit_voucher'];
+            $debitVoucher = $vouchers['credit_voucher'];
 
             // send notification
             $phone = $account['phone'];
