@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Transaction;
 use App\Repositories\TransactionRepository;
 use App\Traits\ApiResponse;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Throwable;
@@ -18,7 +19,7 @@ class SavingsController extends Controller
     /**
      * @throws Throwable
      */
-    public function processCallback(Request $request): \Illuminate\Http\JsonResponse
+    public function processCallback(Request $request): JsonResponse
     {
         Log::info('...[CTRL - SAVINGS]: Process Savings Callback...', $request->all());
 
