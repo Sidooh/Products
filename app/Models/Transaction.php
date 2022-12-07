@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\Status;
+use App\Enums\TransactionType;
 use Database\Factories\TransactionFactory;
 use DrH\Tanda\Models\TandaRequest;
 use Illuminate\Database\Eloquent\Builder;
@@ -18,19 +19,19 @@ use Nabcellent\Kyanda\Models\KyandaRequest;
 /**
  * App\Models\Transaction
  *
- * @property int $id
- * @property string $initiator
- * @property string $type
- * @property string $amount
- * @property string $status
- * @property string|null $destination
- * @property string $description
- * @property int $account_id
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
+ * @property int                        $id
+ * @property string                     $initiator
+ * @property string                     $type
+ * @property string                     $amount
+ * @property string                     $status
+ * @property string|null                $destination
+ * @property string                     $description
+ * @property int                        $account_id
+ * @property Carbon|null                $created_at
+ * @property Carbon|null                $updated_at
  * @property-read ATAirtimeRequest|null $atAirtimeRequest
- * @property-read KyandaRequest|null $kyandaTransaction
- * @property-read TandaRequest|null $tandaRequest
+ * @property-read KyandaRequest|null    $kyandaTransaction
+ * @property-read TandaRequest|null     $tandaRequest
  *
  * @method static TransactionFactory factory(...$parameters)
  * @method static Builder|Transaction newModelQuery()
@@ -62,9 +63,9 @@ class Transaction extends Model
         'description',
     ];
 
-//    protected $casts = [
-//        'amount' => 'int'
-//    ];
+    protected $casts = [
+        "type" => TransactionType::class
+    ];
 
     // Internal relations
     public function product(): BelongsTo

@@ -83,7 +83,7 @@ class SubscriptionRepository
 
             $message = "Your subscription to Sidooh has expired.\n\n";
             $message .= 'Dial *384*99# NOW for FREE on your Safaricom line to renew your subscription and continue to ';
-            $message .= 'earn commissions on airtime and tokens purchased by your invited friends and sub-agents';
+            $message .= 'earn commissions on airtime and utilities purchased by your invited friends and sub-agents';
             $message .= config('services.sidooh.tagline');
 
             SidoohNotify::notify($expiredSubsAccs->pluck('phone')->toArray(), $message, EventType::SUBSCRIPTION_EXPIRY);
