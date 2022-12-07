@@ -104,7 +104,7 @@ class TransactionController extends Controller
     /**
      * @throws \Illuminate\Auth\AuthenticationException|Throwable
      */
-    public function checkPayment(Request $request, Transaction $transaction): JsonResponse
+    public function checkPayment(Transaction $transaction): JsonResponse
     {
         // Check transaction is PENDING ...
         if ($transaction->status !== Status::PENDING->name) {
@@ -123,18 +123,15 @@ class TransactionController extends Controller
         }
 
         if ($payment['status'] === Status::COMPLETED->name) {
-            TransactionRepository::handleCompletedPayments(collect([$transaction]), collect([$payment]));
+            TransactionRepository::handleCompletedPayment($transaction);
         } elseif ($payment['status'] === Status::FAILED->name) {
-            TransactionRepository::handleFailedPayments(collect([$transaction]), collect([$payment]));
+            TransactionRepository::handleFailedPayment($transaction, (object) $payment);
         }
 
         return $this->successResponse($transaction->refresh());
     }
 
-    /**
-     * @throws \Illuminate\Auth\AuthenticationException
-     */
-    public function refund(Request $request, Transaction $transaction): JsonResponse
+    public function refund(Transaction $transaction): JsonResponse
     {
         // Check transaction
         if ($transaction->status !== Status::PENDING->name) {
@@ -157,7 +154,7 @@ class TransactionController extends Controller
         return $this->successResponse($transaction->refresh());
     }
 
-    public function retry(Request $request, Transaction $transaction): JsonResponse
+    public function retry(Transaction $transaction): JsonResponse
     {
         // Check transaction
         if ($transaction->status !== Status::PENDING->name) {
@@ -175,12 +172,12 @@ class TransactionController extends Controller
         }
 
         // Perform Refund
-        TransactionRepository::requestPurchase(collect([$transaction]), [$transaction->payment]);
+        TransactionRepository::requestPurchase($transaction);
 
         return $this->successResponse($transaction->refresh());
     }
 
-    public function complete(Request $request, Transaction $transaction): JsonResponse
+    public function complete(Transaction $transaction): JsonResponse
     {
         // Check transaction
         if ($transaction->status !== Status::PENDING->name) {
@@ -207,7 +204,7 @@ class TransactionController extends Controller
         return $this->successResponse($transaction->refresh());
     }
 
-    public function fail(Request $request, Transaction $transaction): JsonResponse
+    public function fail(Transaction $transaction): JsonResponse
     {
         // Check transaction
         if ($transaction->status !== Status::PENDING->name) {

@@ -12,7 +12,7 @@ use App\Http\Requests\SubscriptionRequest;
 use App\Models\Subscription;
 use App\Models\SubscriptionType;
 use App\Repositories\SubscriptionRepository;
-use App\Repositories\V2\TransactionRepository;
+use App\Repositories\TransactionRepository;
 use App\Services\SidoohAccounts;
 use Exception;
 use Illuminate\Http\JsonResponse;

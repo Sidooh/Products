@@ -5,7 +5,7 @@ namespace App\Http\Controllers\API\V1;
 use App\Enums\Status;
 use App\Http\Controllers\Controller;
 use App\Models\Transaction;
-use App\Repositories\V2\TransactionRepository;
+use App\Repositories\TransactionRepository;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

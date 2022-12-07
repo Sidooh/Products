@@ -8,7 +8,7 @@ use App\Enums\ProductType;
 use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\VoucherRequest;
-use App\Repositories\V2\TransactionRepository;
+use App\Repositories\TransactionRepository;
 use App\Services\SidoohAccounts;
 use Exception;
 use Illuminate\Http\JsonResponse;
