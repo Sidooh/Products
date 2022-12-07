@@ -23,7 +23,7 @@ class WithdrawController extends Controller
      */
     public function __invoke(EarningRequest $request): JsonResponse
     {
-        Log::info('...[CTRL - WITHDRAWv2]: Process Withdraw Request...', $request->all());
+        Log::info('...[CTRL - WITHDRAW]: Process Withdraw Request...', $request->all());
 
         $data = $request->validated();
 
