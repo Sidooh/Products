@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use Error;
 use Exception;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\RequestException;
@@ -18,7 +17,7 @@ class SidoohService
     {
         $token = Cache::remember('auth_token', (60 * 14), fn() => self::authenticate());
 
-        return Http::withToken($token)->/*retry(1)->*/ acceptJson();
+        return Http::timeout(10)->withToken($token)->/*retry(1)->*/ acceptJson();
     }
 
     /**
@@ -42,6 +41,9 @@ class SidoohService
         return $response->throw()->json();
     }
 
+    /**
+     * @throws Exception
+     */
     public static function fetch(string $url, string $method = 'GET', array $data = [])
     {
         Log::info('...[SRV - SIDOOH]: REQ...', [
@@ -65,7 +67,7 @@ class SidoohService
 
             if ($err->getCode() === 401) {
                 Log::error('...[SRV - SIDOOH]: ERR... '.$latency.'ms', $err->response->json());
-                throw new Error('Something went wrong, please try again later.');
+                throw new Exception('Something went wrong, please try again later.');
             }
 
             if (str_starts_with($err->getCode(), 4)) {
@@ -73,7 +75,7 @@ class SidoohService
             }
 
             Log::critical('...[SRV - SIDOOH]: ERR... '.$latency.'ms', [$err]);
-            throw new Error('Something went wrong, please try again later.');
+            throw new Exception('Something went wrong, please try again later.');
         }
     }
 }

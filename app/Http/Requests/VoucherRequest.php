@@ -48,7 +48,7 @@ class VoucherRequest extends FormRequest
 //                Rule::excludeIf($this->input('method') === PaymentMethod::VOUCHER->value),
 //                "phone:$countryCode",
 //            ],
-            'debit_account' => ['required', 'integer', $this->sourceAccountRule()],
+            'debit_account' => [$this->sourceAccountRule()],
         ];
     }
 

@@ -103,31 +103,9 @@ class Purchase
         });
     }
 
-    /**
-     * @param array $paymentsData
-     * @throws \Throwable
-     * @deprecated
-     */
-    public function voucher(array $paymentsData): void
+    public function voucher(): void
     {
         Log::info('...[INTERNAL - PRODUCT]: Voucher...');
-
-        $this->transaction->status = Status::COMPLETED;
-        $this->transaction->save();
-
-        $vouchers = [];
-        if (isset($paymentsData['debit_voucher'])) {
-            $vouchers[] = $paymentsData['debit_voucher'];
-        }
-        $vouchers[] = $paymentsData['credit_vouchers'][0];
-
-        // TODO: Disparity, what if multiple payments? Only single transaction is passed here...!
-        VoucherPurchaseEvent::dispatch($this->transaction, $vouchers);
-    }
-
-    public function voucherV2(): void
-    {
-        Log::info('...[INTERNAL - PRODUCT]: Voucher V2...');
 
         $this->transaction->status = Status::COMPLETED;
         $this->transaction->save();
@@ -143,7 +121,7 @@ class Purchase
             'credit_voucher' => $creditVoucher,
         ];
 
-        Log::info('...[INTERNAL - PRODUCT]: Voucher V2...', $vouchers);
+        Log::info('...[INTERNAL - PRODUCT]: Voucher...', $vouchers);
 
         // TODO: Disparity, what if multiple payments? Only single transaction is passed here...!
         VoucherPurchaseEvent::dispatch($this->transaction, $vouchers);
@@ -156,7 +134,6 @@ class Purchase
     {
         Log::info('...[INTERNAL - PRODUCT]: Merchant...');
 
-//        $this->transaction->update(['status' => Status::COMPLETED]);
         Transaction::updateStatus($this->transaction, Status::COMPLETED);
 
         $account = SidoohAccounts::find($this->transaction->account_id);
@@ -184,7 +161,6 @@ class Purchase
             }
         }
 
-//        $message = "You have made a payment to Merchant $destination of $amount from your Sidooh account on $date using $method. You have received $userEarnings cashback.$vtext";
         $message = "You have made a payment to Merchant $destination of $amount from your Sidooh account on $date using $method.$vtext";
 
         SidoohNotify::notify([$sender], $message, $eventType);

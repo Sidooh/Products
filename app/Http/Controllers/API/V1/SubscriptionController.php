@@ -28,7 +28,7 @@ class SubscriptionController extends Controller
     {
         Log::info('...[CTRL - SUBSCRIPTION]: Process Subscription Request...', $request->all());
 
-        $data = $request->all();
+        $data = $request->validated();
 
         $account = SidoohAccounts::find($data['account_id']);
 
@@ -40,8 +40,7 @@ class SubscriptionController extends Controller
             return $this->errorResponse('Account has an existing active subscription', 400);
         }
 
-        $transactions = [
-            [
+        $transaction = [
                 'initiator'   => $data['initiator'],
                 'amount'      => $subscriptionType->price,
                 'destination' => $data['target_number'] ?? $account['phone'],
@@ -50,11 +49,9 @@ class SubscriptionController extends Controller
                 'account_id'  => $data['account_id'],
                 'product_id'  => ProductType::SUBSCRIPTION,
                 'account'     => $account,
-            ],
         ];
 
         $data = [
-            'payment_account' => $account,
             'method'          => $request->has('method') ? PaymentMethod::from($request->input('method'))
                 : PaymentMethod::MPESA,
         ];
@@ -64,9 +61,9 @@ class SubscriptionController extends Controller
             $data['debit_account'] = $request->input('debit_account');
         }
 
-        $transactionIds = TransactionRepository::createTransactions($transactions, $data);
+        $transaction = TransactionRepository::createTransaction($transaction, $data);
 
-        return $this->successResponse(['transactions' => $transactionIds], 'Subscription Request Successful!');
+        return $this->successResponse($transaction, 'Subscription Request Successful!');
     }
 
     /**
@@ -84,7 +81,7 @@ class SubscriptionController extends Controller
             'account_id',
             'subscription_type_id',
             'created_at',
-        ])->latest()->with('subscriptionType:id,title,price,duration,active,period')->get();
+        ])->latest()->with('subscriptionType:id,title,price,duration,active,period')->limit(1000)->get();
 
         if (in_array('account', $relations)) {
             $subscriptions = withRelation('account', $subscriptions, 'account_id', 'id');
@@ -101,22 +98,11 @@ class SubscriptionController extends Controller
             $subscription->load('subscriptionType');
         }
 
+        if (in_array('account', $relations)) {
+            $subscription->account = SidoohAccounts::find($subscription->account_id);
+        }
+
         return $this->successResponse($subscription);
-    }
-
-    public function getSubTypes(): JsonResponse
-    {
-        $subTypes = SubscriptionType::select([
-            'id',
-            'title',
-            'price',
-            'level_limit',
-            'duration',
-            'active',
-            'period',
-        ])->latest()->get();
-
-        return $this->successResponse($subTypes);
     }
 
     public function checkExpiry(): JsonResponse

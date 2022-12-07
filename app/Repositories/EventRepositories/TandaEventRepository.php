@@ -2,6 +2,7 @@
 
 namespace App\Repositories\EventRepositories;
 
+use App\DTOs\PaymentDTO;
 use App\Enums\Description;
 use App\Enums\EventType;
 use App\Enums\PaymentMethod;
@@ -177,9 +178,9 @@ class TandaEventRepository
     }
 
     /**
-     * @throws RequestException|AuthenticationException
+     * @throws RequestException|AuthenticationException|\Exception
      */
-    public static function requestFailed(TandaRequest $tandaRequest)
+    public static function requestFailed(TandaRequest $tandaRequest): void
     {
         // Update Transaction
         $transaction = Transaction::find($tandaRequest->relation_id);
@@ -192,8 +193,13 @@ class TandaEventRepository
 
         $provider = self::getProvider($tandaRequest, $transaction);
 
-        $response = SidoohPayments::creditVoucher($transaction->account_id, $amount, Description::VOUCHER_REFUND);
-        [$voucher] = $response;
+        // Request voucher credit
+        $voucherId = SidoohPayments::findSidoohVoucherIdForAccount($transaction->account_id);
+        $paymentData = new PaymentDTO($transaction->account_id, $amount, Description::VOUCHER_REFUND, $destination, PaymentMethod::FLOAT, 1);
+        $paymentData->setVoucher($voucherId);
+
+        SidoohPayments::requestPayment($paymentData);
+        $voucher = SidoohPayments::findVoucher($voucherId, true);
 
         $transaction->status = Status::REFUNDED;
         $transaction->save();
