@@ -106,6 +106,9 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function() {
         Route::prefix('/{accountId}')->group(function() {
             Route::get('/details', [AccountController::class, 'show']);
 
+            Route::get('/airtime-accounts', [AccountController::class, 'airtimeAccounts']);
+            Route::get('/utility-accounts', [AccountController::class, 'utilityAccounts']);
+
             Route::get('/current-subscription', [AccountController::class, 'currentSubscription']);
 
             Route::get('/earnings', [AccountController::class, 'earnings']);

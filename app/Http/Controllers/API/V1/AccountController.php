@@ -88,6 +88,35 @@ class AccountController extends Controller
         return $this->successResponse($data);
     }
 
+    // TODO: Use repo pattern for this and utilities?
+    public function airtimeAccounts(Request $request, int $accountId): JsonResponse
+    {
+        // TODO: Add caching for this and remember to unset when sync is performed after purchase
+        $accounts = AirtimeAccount::select(['id', 'provider', 'account_number'])->whereAccountId($accountId);
+
+        if ($request->exists('limit')) {
+            $accounts = $accounts->limit($request->input('limit'));
+        }
+
+        $accounts = $accounts->latest()->get();
+
+        return $this->successResponse($accounts);
+    }
+
+    public function utilityAccounts(Request $request, int $accountId): JsonResponse
+    {
+        // TODO: Add caching for this and remember to unset when sync is performed after purchase
+        $accounts = UtilityAccount::select(['id', 'provider', 'account_number'])->whereAccountId($accountId);
+
+        if ($request->exists('limit')) {
+            $accounts = $accounts->limit($request->input('limit'));
+        }
+
+        $accounts = $accounts->latest()->get();
+
+        return $this->successResponse($accounts);
+    }
+
     public function currentSubscription(Request $request, int $accountId): JsonResponse
     {
         // TODO: Handle for subscription not found first or fail?
