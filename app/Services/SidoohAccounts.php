@@ -74,7 +74,7 @@ class SidoohAccounts extends SidoohService
 
         $url = config('services.sidooh.services.accounts.url')."/accounts/$id/ancestors";
 
-        $ancestors = Cache::remember("${id}_ancestors", (60 * 60 * 24 * 28), fn() => parent::fetch($url));
+        $ancestors = Cache::remember("{$id}_ancestors", (60 * 60 * 24 * 28), fn() => parent::fetch($url));
 
         if (! $ancestors) {
             throw new Exception("Account Ancestors don't exist!");

@@ -47,6 +47,9 @@ class TransactionController extends Controller
         return $this->successResponse($transactions);
     }
 
+    /**
+     * @throws \Exception
+     */
     public function show(Request $request, Transaction $transaction): JsonResponse
     {
         $relations = explode(',', $request->query('with'));
