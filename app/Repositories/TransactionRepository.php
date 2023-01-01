@@ -257,7 +257,7 @@ class TransactionRepository
         $provider = getProviderFromTransaction($transaction);
 
         $response = SidoohPayments::creditVoucher($transaction->account_id, $amount, Description::VOUCHER_REFUND);
-        [$voucher] = $response['data'];
+        [$voucher] = $response;
 
         $transaction->status = Status::REFUNDED;
         $transaction->save();
