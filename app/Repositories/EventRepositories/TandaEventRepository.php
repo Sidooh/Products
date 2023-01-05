@@ -108,7 +108,7 @@ class TandaEventRepository
             return;
         }
 
-        switch ($provider) {
+        switch($provider) {
             case Providers::FAIBA:
             case Providers::SAFARICOM:
             case Providers::AIRTEL:

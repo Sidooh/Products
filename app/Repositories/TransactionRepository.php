@@ -55,21 +55,21 @@ class TransactionRepository
     {
         $paymentMethod = $data['method'];
 
-        $debit_account = $data['debit_account'] ?? match ($paymentMethod) {
-            PaymentMethod::MPESA => $account['phone'],
+        $debitAccount = $data['debit_account'] ?? match ($paymentMethod) {
+            PaymentMethod::MPESA   => $account['phone'],
             PaymentMethod::VOUCHER => SidoohPayments::findSidoohVoucherIdForAccount($account['id'])
         };
 
-        $paymentData = new PaymentDTO($t->account_id, $t->amount, $t->description, $t->destination, $paymentMethod, $debit_account);
+        $paymentData = new PaymentDTO($t->account_id, $t->amount, $t->description, $t->destination, $paymentMethod, $debitAccount);
 
         if (is_int($t->product_id)) {
             $t->product_id = ProductType::tryFrom($t->product_id);
         }
 
         match ($t->product_id) {
-            ProductType::VOUCHER => $paymentData->setVoucher(SidoohPayments::findSidoohVoucherIdForAccount(SidoohAccounts::findByPhone($t->destination)['id'])),
+            ProductType::VOUCHER  => $paymentData->setVoucher(SidoohPayments::findSidoohVoucherIdForAccount(SidoohAccounts::findByPhone($t->destination)['id'])),
             ProductType::MERCHANT => $paymentData->setMerchant($data['merchant_type'], $data['business_number'], $data['account_number'] ?? ''),
-            default => $paymentData->setDestination(PaymentMethod::FLOAT, 1)
+            default               => $paymentData->setDestination(PaymentMethod::FLOAT, 1)
         };
 
         $p = SidoohPayments::requestPayment($paymentData);
@@ -82,7 +82,7 @@ class TransactionRepository
             'subtype'        => $p['subtype'],
             'status'         => $p['status'],
             'extra'          => [
-                'debit_account' => $debit_account,
+                'debit_account' => $debitAccount,
                 ...($p['destination'] ?? []),
             ],
         ];
@@ -107,12 +107,12 @@ class TransactionRepository
             }
 
             match ($transaction->product_id) {
-                ProductType::AIRTIME => $purchase->airtime(),
-                ProductType::UTILITY => $purchase->utility(),
+                ProductType::AIRTIME      => $purchase->airtime(),
+                ProductType::UTILITY      => $purchase->utility(),
                 ProductType::SUBSCRIPTION => $purchase->subscription(),
-                ProductType::VOUCHER => $purchase->voucher(),
-                ProductType::MERCHANT => $purchase->merchant(),
-                default => throw new Exception('Invalid product purchase!'),
+                ProductType::VOUCHER      => $purchase->voucher(),
+                ProductType::MERCHANT     => $purchase->merchant(),
+                default                   => throw new Exception('Invalid product purchase!'),
             };
         } catch (Exception $err) {
             Log::error($err);
@@ -127,7 +127,7 @@ class TransactionRepository
 
         if ($payment->subtype === PaymentSubtype::STK->name && isset($payment->code)) {
             $message = match ($payment->code) {
-                1 => 'You have insufficient Mpesa Balance for this transaction. Kindly top up your Mpesa and try again.',
+                1       => 'You have insufficient Mpesa Balance for this transaction. Kindly top up your Mpesa and try again.',
                 default => 'Sorry! We failed to complete your transaction. No amount was deducted from your account. We apologize for the inconvenience. Please try again.',
             };
         } elseif (ProductType::tryFrom($transaction->product_id) === ProductType::MERCHANT) {
@@ -151,7 +151,6 @@ class TransactionRepository
 
         TransactionRepository::requestPurchase($transaction);
     }
-
 
     /**
      * @throws AuthenticationException
@@ -197,7 +196,6 @@ class TransactionRepository
         ]);
         $acc->increment('self_amount', $transaction->amount);
 
-
         $tagline = config('services.sidooh.tagline');
         $message = "Your withdrawal request has been received. Please be patient as we review it.\n\n$tagline";
 
@@ -210,9 +208,7 @@ class TransactionRepository
     {
         $transaction->savingsTransaction->update(['status' => Status::FAILED]);
 
-        EarningAccount::accountId($transaction->account_id)
-            ->withdrawal()
-            ->first()
+        EarningAccount::accountId($transaction->account_id)->withdrawal()->first()
             ->decrement('self_amount', $transaction->amount);
 
         $transaction->status = Status::FAILED;
@@ -254,27 +250,32 @@ class TransactionRepository
         };
     }
 
+    /**
+     * @throws \Exception
+     */
     public static function refundTransaction(Transaction $transaction): void
     {
         $phone = SidoohAccounts::find($transaction->account_id)['phone'];
 
         $amount = $transaction->amount;
-        $date = $transaction->updated_at
-            ->timezone('Africa/Nairobi')
-            ->format(config('settings.sms_date_time_format'));
+        $destination = $transaction->destination;
+        $date = $transaction->updated_at->timezone('Africa/Nairobi')->format(config('settings.sms_date_time_format'));
 
         $provider = getProviderFromTransaction($transaction);
 
-        $response = SidoohPayments::creditVoucher($transaction->account_id, $amount, Description::VOUCHER_REFUND);
-        [$voucher] = $response['data'];
+        //  Refund Voucher
+        $voucherId = SidoohPayments::findSidoohVoucherIdForAccount($transaction->account_id);
+        $paymentData = new PaymentDTO($transaction->account_id, $amount, Description::VOUCHER_REFUND, $destination, PaymentMethod::FLOAT, 1);
+        $paymentData->setVoucher($voucherId);
+
+        SidoohPayments::requestPayment($paymentData);
+        $voucher = SidoohPayments::findVoucher($voucherId, true);
 
         $transaction->status = Status::REFUNDED;
         $transaction->save();
 
         $amount = 'Ksh'.number_format($amount, 2);
         $balance = 'Ksh'.number_format($voucher['balance']);
-
-        $destination = $transaction->destination;
 
         $message = match ($transaction->product_id) {
             ProductType::AIRTIME->value => "Hi, we have added $amount to your voucher account because we could not complete your $amount airtime purchase for $destination on $date. New voucher balance is $balance.",
