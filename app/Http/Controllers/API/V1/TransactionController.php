@@ -17,6 +17,9 @@ use Throwable;
 
 class TransactionController extends Controller
 {
+    /**
+     * @throws \Illuminate\Auth\AuthenticationException
+     */
     public function index(Request $request): JsonResponse
     {
         // TODO: Review using laravel query builder // or build our own params
@@ -54,8 +57,8 @@ class TransactionController extends Controller
     {
         $relations = explode(',', $request->query('with'));
 
-        if($transaction->type === TransactionType::WITHDRAWAL) {
-            $transaction->load("savingsTransaction:id,transaction_id,savings_id,amount,description,type,status");
+        if ($transaction->type === TransactionType::WITHDRAWAL) {
+            $transaction->load('savingsTransaction:id,transaction_id,savings_id,amount,description,type,status');
         }
 
         if (in_array('account', $relations)) {
@@ -134,6 +137,9 @@ class TransactionController extends Controller
         return $this->successResponse($transaction->refresh());
     }
 
+    /**
+     * @throws \Exception
+     */
     public function refund(Transaction $transaction): JsonResponse
     {
         // Check transaction
@@ -157,6 +163,9 @@ class TransactionController extends Controller
         return $this->successResponse($transaction->refresh());
     }
 
+    /**
+     * @throws \Throwable
+     */
     public function retry(Transaction $transaction): JsonResponse
     {
         // Check transaction
