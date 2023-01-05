@@ -17,7 +17,7 @@ class SidoohPayments extends SidoohService
 
         $url = self::baseUrl().'/payments';
 
-        return Cache::remember('all_payments', (60 * 60 * 24), fn() => parent::fetch($url));
+        return Cache::remember('all_payments', (60 * 60 * 24), fn () => parent::fetch($url));
     }
 
     public static function baseUrl()
@@ -113,12 +113,12 @@ class SidoohPayments extends SidoohService
         Log::info('...[SRV - PAYMENTS]: Find Sidooh Voucher...', [$accountId]);
 
         $sidoohVoucher = self::findVouchersByAccount($accountId)
-            ->first(fn($v) => $v['voucher_type_id'] === self::getSidoohVoucherType());
+            ->first(fn ($v) => $v['voucher_type_id'] === self::getSidoohVoucherType());
 
-        if (!$sidoohVoucher) {
+        if (! $sidoohVoucher) {
             $sidoohVoucher = parent::fetch(self::baseUrl().'/vouchers', 'POST', [
                 'voucher_type_id'  => self::getSidoohVoucherType(),
-                'account_id' => $accountId
+                'account_id'       => $accountId,
             ]);
         }
 

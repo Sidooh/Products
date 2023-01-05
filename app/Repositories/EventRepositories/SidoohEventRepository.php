@@ -61,7 +61,7 @@ class SidoohEventRepository
         if ($transaction->payment->subtype === PaymentMethod::VOUCHER->name) {
             $method = PaymentMethod::VOUCHER->name;
 
-            $voucher = $transaction->payment->extra;
+            $voucher = $vouchers['debit_voucher'];
             $bal = 'Ksh'.number_format($voucher['balance'], 2);
             $vtext = "\nNew voucher balance is $bal.";
         } else {
@@ -76,11 +76,11 @@ class SidoohEventRepository
 
         // 2. Vouchers (if many) match accounts in question
         $voucherLen = count($vouchers);
-        if ($voucherLen === 1) {
+        if (! $vouchers['debit_voucher']) {
             // Purchase was for self most probably.
             // Can confirm this using transaction account and destination
 
-            $creditVoucher = $vouchers[0];
+            $creditVoucher = $vouchers['credit_voucher'];
             if ($creditVoucher['account_id'] !== $transaction->account_id) {
                 // Check Purchasing for other using MPESA
                 $accountFor = SidoohAccounts::findByPhone($transaction->destination);
@@ -95,7 +95,7 @@ class SidoohEventRepository
 
                     SidoohNotify::notify([$phone], $message, EventType::VOUCHER_PURCHASE);
 
-                    // Send to purchasee
+                    // Send to purchase
                     $phone = $accountFor['phone'];
                     $balance = 'Ksh'.number_format($creditVoucher['balance'], 2);
 
@@ -114,7 +114,7 @@ class SidoohEventRepository
             }
 
             // select voucher
-            $debitVoucher = $vouchers[0];
+            $debitVoucher = $vouchers['credit_voucher'];
 
             // send notification
             $phone = $account['phone'];
@@ -133,13 +133,7 @@ class SidoohEventRepository
             // select vouchers
             $accountFor = SidoohAccounts::findByPhone($transaction->destination);
 
-            if ($vouchers[0]['account_id'] == $account['id'] && $vouchers[1]['account_id'] == $accountFor['id']) {
-                $creditVoucher = $vouchers[1];
-            } elseif ($vouchers[1]['account_id'] == $account['id'] && $vouchers[0]['account_id'] == $accountFor['id']) {
-                $creditVoucher = $vouchers[0];
-            } else {
-                throw new Exception('Voucher mismatch with accounts');
-            }
+            $creditVoucher = $vouchers['credit_voucher'];
 
             // send notification self
             $phone = $account['phone'];
