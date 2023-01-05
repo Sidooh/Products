@@ -61,7 +61,7 @@ class SidoohEventRepository
         if ($transaction->payment->subtype === PaymentMethod::VOUCHER->name) {
             $method = PaymentMethod::VOUCHER->name;
 
-            $voucher = $vouchers['debit_voucher'];
+            $voucher = $transaction->payment->extra;
             $bal = 'Ksh'.number_format($voucher['balance'], 2);
             $vtext = "\nNew voucher balance is $bal.";
         } else {
@@ -76,11 +76,11 @@ class SidoohEventRepository
 
         // 2. Vouchers (if many) match accounts in question
         $voucherLen = count($vouchers);
-        if (!$vouchers['debit_voucher']) {
+        if ($voucherLen === 1) {
             // Purchase was for self most probably.
             // Can confirm this using transaction account and destination
 
-            $creditVoucher = $vouchers['credit_voucher'];
+            $creditVoucher = $vouchers[0];
             if ($creditVoucher['account_id'] !== $transaction->account_id) {
                 // Check Purchasing for other using MPESA
                 $accountFor = SidoohAccounts::findByPhone($transaction->destination);
@@ -102,7 +102,7 @@ class SidoohEventRepository
                     $message = "You have received $amount voucher ";
                     $message .= "from Sidooh account {$account['phone']} on $date.\n";
                     $message .= "New voucher balance is $balance.\n\n";
-                    $message .= "Dial *384*99# NOW for FREE on your Safaricom line to BUY AIRTIME or TOKENS & PAY USING the voucher received.\n\n";
+                    $message .= "Dial *384*99# NOW for FREE on your Safaricom line to BUY AIRTIME or PAY BILLS & PAY USING the voucher received.\n\n";
                     $message .= config('services.sidooh.tagline');
 
                     SidoohNotify::notify([$phone], $message, EventType::VOUCHER_PURCHASE);
@@ -114,7 +114,7 @@ class SidoohEventRepository
             }
 
             // select voucher
-            $debitVoucher = $vouchers['credit_voucher'];
+            $debitVoucher = $vouchers[0];
 
             // send notification
             $phone = $account['phone'];
@@ -133,15 +133,13 @@ class SidoohEventRepository
             // select vouchers
             $accountFor = SidoohAccounts::findByPhone($transaction->destination);
 
-            $creditVoucher = $vouchers['credit_voucher'];
-
-//            if ($vouchers[0]['account_id'] == $account['id'] && $vouchers[1]['account_id'] == $accountFor['id']) {
-//                $creditVoucher = $vouchers[1];
-//            } elseif ($vouchers[1]['account_id'] == $account['id'] && $vouchers[0]['account_id'] == $accountFor['id']) {
-//                $creditVoucher = $vouchers[0];
-//            } else {
-//                throw new Exception('Voucher mismatch with accounts');
-//            }
+            if ($vouchers[0]['account_id'] == $account['id'] && $vouchers[1]['account_id'] == $accountFor['id']) {
+                $creditVoucher = $vouchers[1];
+            } elseif ($vouchers[1]['account_id'] == $account['id'] && $vouchers[0]['account_id'] == $accountFor['id']) {
+                $creditVoucher = $vouchers[0];
+            } else {
+                throw new Exception('Voucher mismatch with accounts');
+            }
 
             // send notification self
             $phone = $account['phone'];
@@ -159,7 +157,7 @@ class SidoohEventRepository
             $message = "You have received $amount voucher ";
             $message .= "from Sidooh account {$account['phone']} on $date.\n";
             $message .= "New voucher balance is $balance.\n\n";
-            $message .= "Dial *384*99# NOW for FREE on your Safaricom line to BUY AIRTIME or TOKENS & PAY USING the voucher received.\n\n";
+            $message .= "Dial *384*99# NOW for FREE on your Safaricom line to BUY AIRTIME or PAY BILLS & PAY USING the voucher received.\n\n";
             $message .= config('services.sidooh.tagline');
 
             SidoohNotify::notify([$phone], $message, EventType::VOUCHER_PURCHASE);
