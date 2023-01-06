@@ -25,25 +25,24 @@ class MerchantController extends Controller
         $account = SidoohAccounts::find($data['account_id']);
 
         $transactionData = [
-            'destination' => $data['business_number'],
+            'destination' => $data['business_number'].(isset($data['account_number']) ? ' - '.$data['account_number'] : ''),
             'initiator'   => $data['initiator'],
             'amount'      => $data['amount'],
             'type'        => TransactionType::PAYMENT,
-            'description' => Description::MERCHANT_PAYMENT->value.' - '.$data['account_number'],
+            'description' => Description::MERCHANT_PAYMENT,
             'account_id'  => $data['account_id'],
             'product_id'  => ProductType::MERCHANT,
             'account'     => $account,
         ];
         $data = [
-            'payment_account' => $account,
             'method'          => $request->has('method') ? PaymentMethod::from($request->input('method')) : PaymentMethod::MPESA,
             'merchant_type'   => MerchantType::from($request->merchant_type),
             'business_number' => $request->business_number,
             'account_number'  => $request->account_number,
         ];
 
-        $transactionId = TransactionRepository::createB2bTransaction($transactionData, $data);
+        $transaction = TransactionRepository::createTransaction($transactionData, $data);
 
-        return $this->successResponse(['transactions' => [$transactionId]], 'Merchant Request Successful!');
+        return $this->successResponse($transaction, 'Merchant Request Successful!');
     }
 }

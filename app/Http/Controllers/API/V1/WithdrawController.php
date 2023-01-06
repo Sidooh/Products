@@ -49,25 +49,23 @@ class WithdrawController extends Controller
             return $this->errorResponse('Earning balance is insufficient');
         }
 
-        $transactions = [
-            [
-                'initiator'   => $data['initiator'],
-                'amount'      => $data['amount'],
-                'destination' => $data['target_number'] ?? $account['phone'],
-                'type'        => TransactionType::WITHDRAWAL,
-                'description' => Description::EARNINGS_WITHDRAWAL,
-                'account_id'  => $data['account_id'],
-                'product_id'  => ProductType::WITHDRAWAL,
-                'account'     => $account,
-            ],
+        $transaction = [
+            'initiator'   => $data['initiator'],
+            'amount'      => $data['amount'],
+            'destination' => $data['target_number'] ?? $account['phone'],
+            'type'        => TransactionType::WITHDRAWAL,
+            'description' => Description::EARNINGS_WITHDRAWAL,
+            'account_id'  => $data['account_id'],
+            'product_id'  => ProductType::WITHDRAWAL,
+            'account'     => $account,
         ];
 
         $data = [
             'method' => $request->has('method') ? PaymentMethod::from($request->input('method')) : PaymentMethod::MPESA,
         ];
 
-        $transactions = TransactionRepository::createWithdrawalTransactions($transactions, $data);
+        $transaction = TransactionRepository::createWithdrawalTransaction($transaction, $data);
 
-        return $this->successResponse(['transactions' => $transactions], 'Withdrawal Request Successful!');
+        return $this->successResponse($transaction->refresh(), 'Withdrawal Request Received');
     }
 }

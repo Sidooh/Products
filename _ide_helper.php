@@ -4,7 +4,7 @@
 
 /**
  * A helper file for Laravel, to provide autocomplete information to your IDE
- * Generated for Laravel 9.29.0.
+ * Generated for Laravel 9.33.0.
  *
  * This file should not be included in your code, only analyzed by your IDE!
  *
@@ -1577,6 +1577,30 @@
                         $instance->terminate($input, $status);
         }
                     /**
+         * Register a callback to be invoked when the command lifecyle duration exceeds a given amount of time.
+         *
+         * @param \DateTimeInterface|\Carbon\CarbonInterval|float|int $threshold
+         * @param callable $handler
+         * @return void
+         * @static
+         */
+        public static function whenCommandLifecycleIsLongerThan($threshold, $handler)
+        {            //Method inherited from \Illuminate\Foundation\Console\Kernel
+                        /** @var \App\Console\Kernel $instance */
+                        $instance->whenCommandLifecycleIsLongerThan($threshold, $handler);
+        }
+                    /**
+         * When the command being handled started.
+         *
+         * @return \Illuminate\Support\Carbon|null
+         * @static
+         */
+        public static function commandStartedAt()
+        {            //Method inherited from \Illuminate\Foundation\Console\Kernel
+                        /** @var \App\Console\Kernel $instance */
+                        return $instance->commandStartedAt();
+        }
+                    /**
          * Register a Closure based command with the application.
          *
          * @param string $signature
@@ -2230,6 +2254,17 @@
                         return $instance->setRequest($request);
         }
                     /**
+         * Get the timebox instance used by the guard.
+         *
+         * @return \Illuminate\Support\Timebox
+         * @static
+         */
+        public static function getTimebox()
+        {
+                        /** @var \Illuminate\Auth\SessionGuard $instance */
+                        return $instance->getTimebox();
+        }
+                    /**
          * Determine if the current user is authenticated. If not, throw an exception.
          *
          * @return \App\Models\User
@@ -2814,9 +2849,9 @@
             /**
      *
      *
-     * @method static \Illuminate\Broadcasting\Broadcasters\Broadcaster channel(string $channel, callable|string  $callback, array $options = [])
+     * @method static \Illuminate\Broadcasting\Broadcasters\Broadcaster channel(string $channel, callable|string $callback, array $options = [])
      * @method static mixed auth(\Illuminate\Http\Request $request)
-     * @method static void resolveAuthenticatedUserUsing(Closure $callback)
+     * @method static void resolveAuthenticatedUserUsing(\Closure $callback)
      * @see \Illuminate\Contracts\Broadcasting\Factory
      */
         class Broadcast {
@@ -3183,6 +3218,18 @@
                         return $instance->map($map);
         }
                     /**
+         * Specify the jobs that should be dispatched instead of faked.
+         *
+         * @param array|string $jobsToDispatch
+         * @return void
+         * @static
+         */
+        public static function except($jobsToDispatch)
+        {
+                        /** @var \Illuminate\Support\Testing\Fakes\BusFake $instance */
+                        $instance->except($jobsToDispatch);
+        }
+                    /**
          * Assert if a job was dispatched based on a truth-test callback.
          *
          * @param string|\Closure $command
@@ -3456,6 +3503,18 @@
         {
                         /** @var \Illuminate\Support\Testing\Fakes\BusFake $instance */
                         return $instance->hasDispatchedAfterResponse($command);
+        }
+                    /**
+         * Dispatch an empty job batch for testing.
+         *
+         * @param string $name
+         * @return \Illuminate\Bus\Batch
+         * @static
+         */
+        public static function dispatchFakeBatch($name = '')
+        {
+                        /** @var \Illuminate\Support\Testing\Fakes\BusFake $instance */
+                        return $instance->dispatchFakeBatch($name);
         }
                     /**
          * Record the fake pending batch dispatch.
@@ -6212,6 +6271,18 @@
                         \Illuminate\Events\Dispatcher::flushMacros();
         }
                     /**
+         * Specify the events that should be dispatched instead of faked.
+         *
+         * @param array|string $eventsToDispatch
+         * @return \Illuminate\Support\Testing\Fakes\EventFake
+         * @static
+         */
+        public static function except($eventsToDispatch)
+        {
+                        /** @var \Illuminate\Support\Testing\Fakes\EventFake $instance */
+                        return $instance->except($eventsToDispatch);
+        }
+                    /**
          * Assert if an event has a listener attached to it.
          *
          * @param string $expectedEvent
@@ -8378,7 +8449,6 @@
      * @method static void alwaysReplyTo(string $address, string|null $name = null)
      * @method static void alwaysReturnPath(string $address)
      * @method static void alwaysTo(string $address, string|null $name = null)
-     * @method static \Illuminate\Mail\PendingMail cc($users)
      * @method static \Illuminate\Mail\SentMessage|null plain(string $view, array $data, $callback)
      * @method static \Illuminate\Mail\SentMessage|null html(string $html, $callback)
      * @method static mixed laterOn(string $queue, \DateTimeInterface|\DateInterval|int $delay, \Illuminate\Contracts\Mail\Mailable|string|array $view)
@@ -8665,6 +8735,18 @@
         {
                         /** @var \Illuminate\Support\Testing\Fakes\MailFake $instance */
                         return $instance->to($users);
+        }
+                    /**
+         * Begin the process of mailing a mailable class instance.
+         *
+         * @param mixed $users
+         * @return \Illuminate\Mail\PendingMail
+         * @static
+         */
+        public static function cc($users)
+        {
+                        /** @var \Illuminate\Support\Testing\Fakes\MailFake $instance */
+                        return $instance->cc($users);
         }
                     /**
          * Begin the process of mailing a mailable class instance.
@@ -9363,6 +9445,18 @@
         {
                         /** @var \Illuminate\Queue\QueueManager $instance */
                         return $instance->setApplication($app);
+        }
+                    /**
+         * Specify the jobs that should be queued instead of faked.
+         *
+         * @param array|string $jobsToBeQueued
+         * @return \Illuminate\Support\Testing\Fakes\QueueFake
+         * @static
+         */
+        public static function except($jobsToBeQueued)
+        {
+                        /** @var \Illuminate\Support\Testing\Fakes\QueueFake $instance */
+                        return $instance->except($jobsToBeQueued);
         }
                     /**
          * Assert if a job was pushed based on a truth-test callback.
@@ -11650,6 +11744,40 @@
                         return $instance->isFromTrustedProxy();
         }
                     /**
+         * Filter the given array of rules into an array of rules that are included in precognitive headers.
+         *
+         * @param array $rules
+         * @return array
+         * @static
+         */
+        public static function filterPrecognitiveRules($rules)
+        {
+                        /** @var \Illuminate\Http\Request $instance */
+                        return $instance->filterPrecognitiveRules($rules);
+        }
+                    /**
+         * Determine if the request is attempting to be precognitive.
+         *
+         * @return bool
+         * @static
+         */
+        public static function isAttemptingPrecognition()
+        {
+                        /** @var \Illuminate\Http\Request $instance */
+                        return $instance->isAttemptingPrecognition();
+        }
+                    /**
+         * Determine if the request is precognitive.
+         *
+         * @return bool
+         * @static
+         */
+        public static function isPrecognitive()
+        {
+                        /** @var \Illuminate\Http\Request $instance */
+                        return $instance->isPrecognitive();
+        }
+                    /**
          * Determine if the request is sending JSON.
          *
          * @return bool
@@ -12061,12 +12189,39 @@
                         return $instance->boolean($key, $default);
         }
                     /**
+         * Retrieve input as an integer value.
+         *
+         * @param string $key
+         * @param int $default
+         * @return int
+         * @static
+         */
+        public static function integer($key, $default = 0)
+        {
+                        /** @var \Illuminate\Http\Request $instance */
+                        return $instance->integer($key, $default);
+        }
+                    /**
+         * Retrieve input as a float value.
+         *
+         * @param string $key
+         * @param float $default
+         * @return float
+         * @static
+         */
+        public static function float($key, $default = 0.0)
+        {
+                        /** @var \Illuminate\Http\Request $instance */
+                        return $instance->float($key, $default);
+        }
+                    /**
          * Retrieve input from the request as a Carbon instance.
          *
          * @param string $key
          * @param string|null $format
          * @param string|null $tz
          * @return \Illuminate\Support\Carbon|null
+         * @throws \Carbon\Exceptions\InvalidFormatException
          * @static
          */
         public static function date($key, $format = null, $tz = null)
@@ -12077,9 +12232,10 @@
                     /**
          * Retrieve input from the request as an enum.
          *
+         * @template TEnum
          * @param string $key
-         * @param string $enumClass
-         * @return mixed|null
+         * @param \Illuminate\Http\class-string<TEnum> $enumClass
+         * @return \Illuminate\Http\TEnum|null
          * @static
          */
         public static function enum($key, $enumClass)
@@ -13634,6 +13790,16 @@
                         \Illuminate\Database\Schema\MySqlBuilder::morphUsingUuids();
         }
                     /**
+         * Set the default morph key type for migrations to ULIDs.
+         *
+         * @return void
+         * @static
+         */
+        public static function morphUsingUlids()
+        {            //Method inherited from \Illuminate\Database\Schema\Builder
+                        \Illuminate\Database\Schema\MySqlBuilder::morphUsingUlids();
+        }
+                    /**
          * Determine if the given table has a given column.
          *
          * @param string $table
@@ -14605,6 +14771,18 @@
         {
                         /** @var \Illuminate\Filesystem\FilesystemManager $instance */
                         return $instance->createS3Driver($config);
+        }
+                    /**
+         * Create a scoped driver.
+         *
+         * @param array $config
+         * @return \Illuminate\Filesystem\FilesystemAdapter
+         * @static
+         */
+        public static function createScopedDriver($config)
+        {
+                        /** @var \Illuminate\Filesystem\FilesystemManager $instance */
+                        return $instance->createScopedDriver($config);
         }
                     /**
          * Set the given disk instance.
@@ -15751,6 +15929,18 @@
         {
                         /** @var \Illuminate\Routing\UrlGenerator $instance */
                         return $instance->setKeyResolver($keyResolver);
+        }
+                    /**
+         * Clone a new instance of the URL generator with a different encryption key resolver.
+         *
+         * @param callable $keyResolver
+         * @return \Illuminate\Routing\UrlGenerator
+         * @static
+         */
+        public static function withKeyResolver($keyResolver)
+        {
+                        /** @var \Illuminate\Routing\UrlGenerator $instance */
+                        return $instance->withKeyResolver($keyResolver);
         }
                     /**
          * Get the root controller namespace.
@@ -17223,484 +17413,6 @@
 
 }
 
-    namespace Livewire {
-            /**
-     *
-     *
-     * @see \Livewire\LivewireManager
-     */
-        class Livewire {
-                    /**
-         *
-         *
-         * @static
-         */
-        public static function component($alias, $viewClass = null)
-        {
-                        /** @var \Livewire\LivewireManager $instance */
-                        return $instance->component($alias, $viewClass);
-        }
-                    /**
-         *
-         *
-         * @static
-         */
-        public static function getAlias($class, $default = null)
-        {
-                        /** @var \Livewire\LivewireManager $instance */
-                        return $instance->getAlias($class, $default);
-        }
-                    /**
-         *
-         *
-         * @static
-         */
-        public static function getComponentAliases()
-        {
-                        /** @var \Livewire\LivewireManager $instance */
-                        return $instance->getComponentAliases();
-        }
-                    /**
-         *
-         *
-         * @static
-         */
-        public static function getClass($alias)
-        {
-                        /** @var \Livewire\LivewireManager $instance */
-                        return $instance->getClass($alias);
-        }
-                    /**
-         *
-         *
-         * @static
-         */
-        public static function getInstance($component, $id)
-        {
-                        /** @var \Livewire\LivewireManager $instance */
-                        return $instance->getInstance($component, $id);
-        }
-                    /**
-         *
-         *
-         * @static
-         */
-        public static function mount($name, $params = [])
-        {
-                        /** @var \Livewire\LivewireManager $instance */
-                        return $instance->mount($name, $params);
-        }
-                    /**
-         *
-         *
-         * @static
-         */
-        public static function dummyMount($id, $tagName)
-        {
-                        /** @var \Livewire\LivewireManager $instance */
-                        return $instance->dummyMount($id, $tagName);
-        }
-                    /**
-         *
-         *
-         * @static
-         */
-        public static function test($name, $params = [])
-        {
-                        /** @var \Livewire\LivewireManager $instance */
-                        return $instance->test($name, $params);
-        }
-                    /**
-         *
-         *
-         * @static
-         */
-        public static function visit($browser, $class, $queryString = '')
-        {
-                        /** @var \Livewire\LivewireManager $instance */
-                        return $instance->visit($browser, $class, $queryString);
-        }
-                    /**
-         *
-         *
-         * @static
-         */
-        public static function actingAs($user, $driver = null)
-        {
-                        /** @var \Livewire\LivewireManager $instance */
-                        return $instance->actingAs($user, $driver);
-        }
-                    /**
-         *
-         *
-         * @static
-         */
-        public static function addPersistentMiddleware($middleware)
-        {
-                        /** @var \Livewire\LivewireManager $instance */
-                        return $instance->addPersistentMiddleware($middleware);
-        }
-                    /**
-         *
-         *
-         * @static
-         */
-        public static function setPersistentMiddleware($middleware)
-        {
-                        /** @var \Livewire\LivewireManager $instance */
-                        return $instance->setPersistentMiddleware($middleware);
-        }
-                    /**
-         *
-         *
-         * @static
-         */
-        public static function getPersistentMiddleware()
-        {
-                        /** @var \Livewire\LivewireManager $instance */
-                        return $instance->getPersistentMiddleware();
-        }
-                    /**
-         *
-         *
-         * @static
-         */
-        public static function styles($options = [])
-        {
-                        /** @var \Livewire\LivewireManager $instance */
-                        return $instance->styles($options);
-        }
-                    /**
-         *
-         *
-         * @static
-         */
-        public static function scripts($options = [])
-        {
-                        /** @var \Livewire\LivewireManager $instance */
-                        return $instance->scripts($options);
-        }
-                    /**
-         *
-         *
-         * @static
-         */
-        public static function isLivewireRequest()
-        {
-                        /** @var \Livewire\LivewireManager $instance */
-                        return $instance->isLivewireRequest();
-        }
-                    /**
-         *
-         *
-         * @static
-         */
-        public static function isDefinitelyLivewireRequest()
-        {
-                        /** @var \Livewire\LivewireManager $instance */
-                        return $instance->isDefinitelyLivewireRequest();
-        }
-                    /**
-         *
-         *
-         * @static
-         */
-        public static function isProbablyLivewireRequest()
-        {
-                        /** @var \Livewire\LivewireManager $instance */
-                        return $instance->isProbablyLivewireRequest();
-        }
-                    /**
-         *
-         *
-         * @static
-         */
-        public static function originalUrl()
-        {
-                        /** @var \Livewire\LivewireManager $instance */
-                        return $instance->originalUrl();
-        }
-                    /**
-         *
-         *
-         * @static
-         */
-        public static function originalPath()
-        {
-                        /** @var \Livewire\LivewireManager $instance */
-                        return $instance->originalPath();
-        }
-                    /**
-         *
-         *
-         * @static
-         */
-        public static function originalMethod()
-        {
-                        /** @var \Livewire\LivewireManager $instance */
-                        return $instance->originalMethod();
-        }
-                    /**
-         *
-         *
-         * @static
-         */
-        public static function getRootElementTagName($dom)
-        {
-                        /** @var \Livewire\LivewireManager $instance */
-                        return $instance->getRootElementTagName($dom);
-        }
-                    /**
-         *
-         *
-         * @static
-         */
-        public static function dispatch($event, ...$params)
-        {
-                        /** @var \Livewire\LivewireManager $instance */
-                        return $instance->dispatch($event, ...$params);
-        }
-                    /**
-         *
-         *
-         * @static
-         */
-        public static function listen($event, $callback)
-        {
-                        /** @var \Livewire\LivewireManager $instance */
-                        return $instance->listen($event, $callback);
-        }
-                    /**
-         *
-         *
-         * @static
-         */
-        public static function isOnVapor()
-        {
-                        /** @var \Livewire\LivewireManager $instance */
-                        return $instance->isOnVapor();
-        }
-                    /**
-         *
-         *
-         * @static
-         */
-        public static function isRunningServerless()
-        {
-                        /** @var \Livewire\LivewireManager $instance */
-                        return $instance->isRunningServerless();
-        }
-                    /**
-         *
-         *
-         * @static
-         */
-        public static function withQueryParams($queryParams)
-        {
-                        /** @var \Livewire\LivewireManager $instance */
-                        return $instance->withQueryParams($queryParams);
-        }
-                    /**
-         *
-         *
-         * @static
-         */
-        public static function setBackButtonCache()
-        {
-                        /** @var \Livewire\LivewireManager $instance */
-                        return $instance->setBackButtonCache();
-        }
-                    /**
-         *
-         *
-         * @static
-         */
-        public static function disableBackButtonCache()
-        {
-                        /** @var \Livewire\LivewireManager $instance */
-                        return $instance->disableBackButtonCache();
-        }
-                    /**
-         *
-         *
-         * @static
-         */
-        public static function enableBackButtonCache()
-        {
-                        /** @var \Livewire\LivewireManager $instance */
-                        return $instance->enableBackButtonCache();
-        }
-                    /**
-         *
-         *
-         * @static
-         */
-        public static function shouldDisableBackButtonCache()
-        {
-                        /** @var \Livewire\LivewireManager $instance */
-                        return $instance->shouldDisableBackButtonCache();
-        }
-                    /**
-         *
-         *
-         * @static
-         */
-        public static function flushState()
-        {
-                        /** @var \Livewire\LivewireManager $instance */
-                        return $instance->flushState();
-        }
-
-    }
-
-}
-
-    namespace Opcodes\LogViewer\Facades {
-            /**
-     *
-     *
-     * @see \Opcodes\LogViewer\LogViewerService
-     */
-        class LogViewer {
-                    /**
-         *
-         *
-         * @static
-         */
-        public static function basePathForLogs()
-        {
-                        /** @var \Opcodes\LogViewer\LogViewerService $instance */
-                        return $instance->basePathForLogs();
-        }
-                    /**
-         *
-         *
-         * @return \Illuminate\Support\Collection|\Opcodes\LogViewer\LogFile[]
-         * @static
-         */
-        public static function getFiles()
-        {
-                        /** @var \Opcodes\LogViewer\LogViewerService $instance */
-                        return $instance->getFiles();
-        }
-                    /**
-         * Find the file with the given identifier or file name.
-         *
-         * @param string|null $fileIdentifier
-         * @return \Opcodes\LogViewer\LogFile|null
-         * @static
-         */
-        public static function getFile($fileIdentifier)
-        {
-                        /** @var \Opcodes\LogViewer\LogViewerService $instance */
-                        return $instance->getFile($fileIdentifier);
-        }
-                    /**
-         *
-         *
-         * @static
-         */
-        public static function clearFileCache()
-        {
-                        /** @var \Opcodes\LogViewer\LogViewerService $instance */
-                        return $instance->clearFileCache();
-        }
-                    /**
-         *
-         *
-         * @static
-         */
-        public static function getRouteDomain()
-        {
-                        /** @var \Opcodes\LogViewer\LogViewerService $instance */
-                        return $instance->getRouteDomain();
-        }
-                    /**
-         *
-         *
-         * @static
-         */
-        public static function getRoutePrefix()
-        {
-                        /** @var \Opcodes\LogViewer\LogViewerService $instance */
-                        return $instance->getRoutePrefix();
-        }
-                    /**
-         *
-         *
-         * @static
-         */
-        public static function getRouteMiddleware()
-        {
-                        /** @var \Opcodes\LogViewer\LogViewerService $instance */
-                        return $instance->getRouteMiddleware();
-        }
-                    /**
-         *
-         *
-         * @static
-         */
-        public static function auth($callback = null)
-        {
-                        /** @var \Opcodes\LogViewer\LogViewerService $instance */
-                        return $instance->auth($callback);
-        }
-                    /**
-         * Get the maximum number of bytes of the log that we should display.
-         *
-         * @return int
-         * @static
-         */
-        public static function maxLogSize()
-        {
-                        /** @var \Opcodes\LogViewer\LogViewerService $instance */
-                        return $instance->maxLogSize();
-        }
-                    /**
-         *
-         *
-         * @static
-         */
-        public static function setMaxLogSize($bytes)
-        {
-                        /** @var \Opcodes\LogViewer\LogViewerService $instance */
-                        return $instance->setMaxLogSize($bytes);
-        }
-                    /**
-         *
-         *
-         * @static
-         */
-        public static function laravelRegexPattern()
-        {
-                        /** @var \Opcodes\LogViewer\LogViewerService $instance */
-                        return $instance->laravelRegexPattern();
-        }
-                    /**
-         *
-         *
-         * @static
-         */
-        public static function logMatchPattern()
-        {
-                        /** @var \Opcodes\LogViewer\LogViewerService $instance */
-                        return $instance->logMatchPattern();
-        }
-                    /**
-         * Get the current version of the Log Viewer
-         *
-         * @static
-         */
-        public static function version()
-        {
-                        /** @var \Opcodes\LogViewer\LogViewerService $instance */
-                        return $instance->version();
-        }
-
-    }
-
-}
-
     namespace Sentry\Laravel {
             /**
      *
@@ -18387,69 +18099,6 @@
 
 }
 
-    namespace Illuminate\Testing {
-            /**
-     *
-     *
-     * @mixin \Illuminate\Http\Response
-     */
-        class TestResponse {
-                    /**
-         *
-         *
-         * @see \Livewire\LivewireServiceProvider::registerTestMacros()
-         * @param mixed $component
-         * @static
-         */
-        public static function assertSeeLivewire($component)
-        {
-                        return \Illuminate\Testing\TestResponse::assertSeeLivewire($component);
-        }
-                    /**
-         *
-         *
-         * @see \Livewire\LivewireServiceProvider::registerTestMacros()
-         * @param mixed $component
-         * @static
-         */
-        public static function assertDontSeeLivewire($component)
-        {
-                        return \Illuminate\Testing\TestResponse::assertDontSeeLivewire($component);
-        }
-
-    }
-            /**
-     *
-     *
-     */
-        class TestView {
-                    /**
-         *
-         *
-         * @see \Livewire\LivewireServiceProvider::registerTestMacros()
-         * @param mixed $component
-         * @static
-         */
-        public static function assertSeeLivewire($component)
-        {
-                        return \Illuminate\Testing\TestView::assertSeeLivewire($component);
-        }
-                    /**
-         *
-         *
-         * @see \Livewire\LivewireServiceProvider::registerTestMacros()
-         * @param mixed $component
-         * @static
-         */
-        public static function assertDontSeeLivewire($component)
-        {
-                        return \Illuminate\Testing\TestView::assertDontSeeLivewire($component);
-        }
-
-    }
-
-}
-
     namespace Illuminate\Validation {
             /**
      *
@@ -18465,92 +18114,6 @@
         public static function phone()
         {
                         return \Illuminate\Validation\Rule::phone();
-        }
-
-    }
-
-}
-
-    namespace Illuminate\View {
-            /**
-     *
-     *
-     */
-        class ComponentAttributeBag {
-                    /**
-         *
-         *
-         * @see \Livewire\LivewireServiceProvider::registerViewMacros()
-         * @param mixed $name
-         * @static
-         */
-        public static function wire($name)
-        {
-                        return \Illuminate\View\ComponentAttributeBag::wire($name);
-        }
-
-    }
-            /**
-     *
-     *
-     */
-        class View {
-                    /**
-         *
-         *
-         * @see \Livewire\Macros\ViewMacros::extends()
-         * @param mixed $view
-         * @param mixed $params
-         * @static
-         */
-        public static function extends($view, $params = [])
-        {
-                        return \Illuminate\View\View::extends($view, $params);
-        }
-                    /**
-         *
-         *
-         * @see \Livewire\Macros\ViewMacros::layout()
-         * @param mixed $view
-         * @param mixed $params
-         * @static
-         */
-        public static function layout($view, $params = [])
-        {
-                        return \Illuminate\View\View::layout($view, $params);
-        }
-                    /**
-         *
-         *
-         * @see \Livewire\Macros\ViewMacros::layoutData()
-         * @param mixed $data
-         * @static
-         */
-        public static function layoutData($data = [])
-        {
-                        return \Illuminate\View\View::layoutData($data);
-        }
-                    /**
-         *
-         *
-         * @see \Livewire\Macros\ViewMacros::section()
-         * @param mixed $section
-         * @static
-         */
-        public static function section($section)
-        {
-                        return \Illuminate\View\View::section($section);
-        }
-                    /**
-         *
-         *
-         * @see \Livewire\Macros\ViewMacros::slot()
-         * @param mixed $slot
-         * @static
-         */
-        public static function slot($slot)
-        {
-                        return \Illuminate\View\View::slot($slot);
         }
 
     }
@@ -22310,8 +21873,6 @@ namespace  {
             class View extends \Illuminate\Support\Facades\View {}
             class LocalCarbon extends \App\Facades\LocalCarbon {}
             class Clockwork extends \Clockwork\Support\Laravel\Facade {}
-            class Livewire extends \Livewire\Livewire {}
-            class LogViewer extends \Opcodes\LogViewer\Facades\LogViewer {}
             class Sentry extends \Sentry\Laravel\Facade {}
             class Flare extends \Spatie\LaravelIgnition\Facades\Flare {}
 

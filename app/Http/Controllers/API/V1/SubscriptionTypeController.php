@@ -4,16 +4,27 @@ namespace App\Http\Controllers\API\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\SubscriptionType;
-use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class SubscriptionTypeController extends Controller
 {
-    /**
-     * @throws Exception|\Throwable
-     */
-    public function __invoke(Request $request): JsonResponse
+    public function index(): JsonResponse
+    {
+        $subTypes = SubscriptionType::select([
+            'id',
+            'title',
+            'price',
+            'level_limit',
+            'duration',
+            'active',
+            'period',
+        ])->latest()->get();
+
+        return $this->successResponse($subTypes);
+    }
+
+    public function defaultSubscriptionType(Request $request): JsonResponse
     {
         $subscriptionType = SubscriptionType::first();
 
