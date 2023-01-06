@@ -29,16 +29,18 @@ class SidoohEventRepository
 
         $nf = new NumberFormatter('en', NumberFormatter::ORDINAL);
         $limit = $nf->format($type->level_limit);
+        $title = $type->title;
+        //$title = 'Earn More'; // TODO: Remove
 
         switch ($type->duration) {
             case 1:
-                $message = "Congrats! You have successfully subscribed to Earn More on $date, valid until $end_date. ";
-                $message .= "You will get (1) HIGHER POINTS on ALL your purchases and payments and (2) EXTRA POINTS on ALL purchases, payments and subscriptions done by your invited friends, up to your $limit ripple.\n";
+                $message = "Congrats! You have successfully subscribed to $title on $date, valid until $end_date. ";
+                $message .= "You will get (1) HIGHER POINTS on ALL your purchases and payments, and (2) EXTRA POINTS on ALL purchases, payments and subscriptions done by your invited friends up to your $limit ripple.\n";
                 break;
             default:
                 $level_duration = $type->duration.' MONTHS';
-                $message = "Congratulations! You have successfully pre-registered as a $type->title on $date, valid until $end_date. ";
-                $message .= 'You will earn commissions on airtime and tokens purchased by your invited friends and sub-agents up to your ';
+                $message = "Congratulations! You have successfully pre-registered as a $title on $date, valid until $end_date. ";
+                $message .= 'You will earn commissions on airtime and utilities purchased by your invited friends and sub-agents up to your ';
                 $message .= "$limit ripple, for $level_duration WITHOUT PAYING MONTHLY SUBSCRIPTION FEES.\n";
         }
 
