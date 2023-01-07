@@ -21,6 +21,9 @@ use Illuminate\Support\Facades\DB;
 
 class AccountController extends Controller
 {
+    /**
+     * @throws \Exception
+     */
     public function show(int $accountId): JsonResponse
     {
         $account = SidoohAccounts::find($accountId);
@@ -127,7 +130,7 @@ class AccountController extends Controller
         return $this->successResponse($subscription);
     }
 
-    public function earnings(Request $request, int $accountId): JsonResponse
+    public function earnings(int $accountId): JsonResponse
     {
         $earnings = EarningAccount::select(['type', 'self_amount', 'invite_amount'])->whereAccountId($accountId)->get();
 

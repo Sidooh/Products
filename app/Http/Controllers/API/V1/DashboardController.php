@@ -23,25 +23,24 @@ class DashboardController extends Controller
      */
     public function index(): JsonResponse
     {
-        $totalTransactions = Cache::remember('total_transactions', 60 * 60 * 24, function() {
-            return Transaction::count();
-        });
-        $totalTransactionsToday = Cache::remember('total_transactions_today', 60 * 60, function() {
-            return Transaction::whereDate('created_at', Carbon::today())->count();
-        });
+        $totalTransactions = Cache::remember('total_transactions', 60 * 60 * 24, fn () => Transaction::count());
+        $totalTransactionsToday = Cache::remember(
+            'total_transactions_today',
+            60 * 60,
+            fn () => Transaction::whereDate('created_at', Carbon::today())->count()
+        );
 
         $totalRevenue = Cache::remember('total_revenue', 60 * 60 * 24, function() {
-            return Transaction::whereStatus(Status::COMPLETED)
-                ->whereType(TransactionType::PAYMENT)
-                ->whereNot('product_id', ProductType::VOUCHER)
-                ->sum('amount');
+            return Transaction::whereStatus(Status::COMPLETED)->whereType(TransactionType::PAYMENT)->whereNot(
+                'product_id',
+                ProductType::VOUCHER
+            )->sum('amount');
         });
         $totalRevenueToday = Cache::remember('total_revenue_today', 60 * 60, function() {
-            return Transaction::whereStatus(Status::COMPLETED)
-                ->whereType(TransactionType::PAYMENT)
-                ->whereNot('product_id', ProductType::VOUCHER)
-                ->whereDate('created_at', Carbon::today())
-                ->sum('amount');
+            return Transaction::whereStatus(Status::COMPLETED)->whereType(TransactionType::PAYMENT)->whereNot(
+                'product_id',
+                ProductType::VOUCHER
+            )->whereDate('created_at', Carbon::today())->sum('amount');
         });
 
         return $this->successResponse([
@@ -63,8 +62,10 @@ class DashboardController extends Controller
         $fetch = function(array $whereBetween, int $freqCount = null) use ($chartAid) {
             $cacheKey = 'transactions_'.implode('_', $whereBetween);
             $transactions = Cache::remember($cacheKey, 60 * 60, function() use ($whereBetween) {
-                return Transaction::select(['status', 'created_at', 'amount'])
-                    ->whereBetween('created_at', $whereBetween)->get();
+                return Transaction::select(['status', 'created_at', 'amount'])->whereBetween(
+                    'created_at',
+                    $whereBetween
+                )->get();
             });
 
             $transform = function($transactions, $key) use ($freqCount, $chartAid) {
@@ -73,8 +74,9 @@ class DashboardController extends Controller
                 return [$key => $chartAid->chartDataSet($models, $freqCount)];
             };
 
-            return $transactions->groupBy('status')->toBase()->mapWithKeys($transform)
-                ->merge($transform($transactions, 'ALL'));
+            return $transactions->groupBy('status')->toBase()->mapWithKeys($transform)->merge(
+                $transform($transactions, 'ALL')
+            );
         };
 
         $todayHrs = LocalCarbon::now()->diffInHours(LocalCarbon::now()->startOfDay());
