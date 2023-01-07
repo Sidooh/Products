@@ -252,27 +252,33 @@ class TransactionRepository
         };
     }
 
+    /**
+     * @throws \Exception
+     */
     public static function refundTransaction(Transaction $transaction): void
     {
         $phone = SidoohAccounts::find($transaction->account_id)['phone'];
 
         $amount = $transaction->amount;
+        $destination = $transaction->destination;
         $date = $transaction->updated_at
             ->timezone('Africa/Nairobi')
             ->format(config('settings.sms_date_time_format'));
 
         $provider = getProviderFromTransaction($transaction);
 
-        $response = SidoohPayments::creditVoucher($transaction->account_id, $amount, Description::VOUCHER_REFUND);
-        [$voucher] = $response;
+        $voucherId = SidoohPayments::findSidoohVoucherIdForAccount($transaction->account_id);
+        $paymentData = new PaymentDTO($transaction->account_id, $amount, Description::VOUCHER_REFUND, $destination, PaymentMethod::FLOAT, 1);
+        $paymentData->setVoucher($voucherId);
+
+        SidoohPayments::requestPayment($paymentData);
+        $voucher = SidoohPayments::findVoucher($voucherId, true);
 
         $transaction->status = Status::REFUNDED;
         $transaction->save();
 
         $amount = 'Ksh'.number_format($amount, 2);
         $balance = 'Ksh'.number_format($voucher['balance']);
-
-        $destination = $transaction->destination;
 
         $message = match ($transaction->product_id) {
             ProductType::AIRTIME->value => "Hi, we have added $amount to your voucher account because we could not complete your $amount airtime purchase for $destination on $date. New voucher balance is $balance.",
