@@ -6,9 +6,11 @@ use App\Enums\ProductType;
 use App\Enums\Status;
 use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
+use App\Models\AirtimeAccount;
 use App\Models\EarningAccount;
 use App\Models\Subscription;
 use App\Models\Transaction;
+use App\Models\UtilityAccount;
 use App\Services\SidoohAccounts;
 use App\Services\SidoohPayments;
 use Exception;
@@ -31,15 +33,25 @@ class AccountController extends Controller
         $last30d = Carbon::now()->subMonth();
 
         $totalTransactions = Transaction::whereAccountId($accountId)->select([
-            DB::raw("COUNT(id) as ctotal"),
-            DB::raw("SUM(DATE(created_at) = '{$date->toDateString()}') as ctoday"),
-            DB::raw("SUM(created_at between '$sW' and '$eW') as cweek"),
-            DB::raw("SUM(created_at between '$sM' and '$eM') as cmonth"),
-            DB::raw("SUM(created_at > '$last30d') as c30"),
+            DB::raw('COUNT(id) as ctotal'),
+            DB::raw(
+                "SUM(DATE(created_at) = '{$date->toDateString()}') as ctoday"
+            ),
+            DB::raw(
+                "SUM(created_at between '$sW' and '$eW') as cweek"
+            ),
+            DB::raw(
+                "SUM(created_at between '$sM' and '$eM') as cmonth"
+            ),
+            DB::raw(
+                "SUM(created_at > '$last30d') as c30"
+            ),
         ])->first();
 
-        $transactions = Transaction::whereAccountId($accountId)->whereType(TransactionType::PAYMENT)
-            ->whereNot('product_id', ProductType::VOUCHER)->latest()->get();
+        $transactions = Transaction::whereAccountId($accountId)->whereType(TransactionType::PAYMENT)->whereNot(
+            'product_id',
+            ProductType::VOUCHER
+        )->latest()->get();
 
         $completedTransactions = $transactions->where('status', Status::COMPLETED->value);
 
@@ -64,25 +76,25 @@ class AccountController extends Controller
         $subscriptions = Subscription::whereAccountId($accountId)->with('subscriptionType:id,title')->latest()->get();
 
         $data = [
-            'account' => $account,
+            'account'                => $account,
 
             'totalTransactionsToday' => $totalTransactions->ctoday,
             'totalTransactionsWeek'  => $totalTransactions->cweek,
             'totalTransactionsMonth' => $totalTransactions->cmonth,
-            'totalTransactions30d' => $totalTransactions->c30,
+            'totalTransactions30d'   => $totalTransactions->c30,
             'totalTransactions'      => $totalTransactions->ctotal,
 
-            'totalRevenueToday' => $totalRevenueToday,
-            'totalRevenueWeek'  => $totalRevenueWeek,
-            'totalRevenueMonth' => $totalRevenueMonth,
-            'totalRevenue30d' => $totalRevenue30d,
-            'totalRevenue'      => $totalRevenue,
+            'totalRevenueToday'      => $totalRevenueToday,
+            'totalRevenueWeek'       => $totalRevenueWeek,
+            'totalRevenueMonth'      => $totalRevenueMonth,
+            'totalRevenue30d'        => $totalRevenue30d,
+            'totalRevenue'           => $totalRevenue,
 
-            'recentTransactions' => $transactions,
+            'recentTransactions'     => $transactions,
 
-            'vouchers'        => $vouchers,
-            'earningAccounts' => $earningAccounts,
-            'subscriptions'   => $subscriptions,
+            'vouchers'               => $vouchers,
+            'earningAccounts'        => $earningAccounts,
+            'subscriptions'          => $subscriptions,
         ];
 
         return $this->successResponse($data);
@@ -131,5 +143,4 @@ class AccountController extends Controller
 
         return $this->successResponse($earnings);
     }
-
 }
