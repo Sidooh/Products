@@ -2,13 +2,11 @@
 
 namespace App\Helpers\AfricasTalking;
 
-use App\Enums\Description;
 use App\Enums\EventType;
 use App\Enums\Status;
 use App\Models\Transaction;
 use App\Services\SidoohAccounts;
 use App\Services\SidoohNotify;
-use App\Services\SidoohPayments;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -79,14 +77,18 @@ class AfricasTalkingApi
         $req = $transaction->airtimeRequest()->create([
             'message'  => $response['data']['errorMessage'],
             'num_sent' => $response['data']['numSent'],
-            'amount'   => str_ireplace('KES ', '', $response['data']['totalAmount']),
+            'amount'   => str_ireplace(
+                'KES ',
+                '',
+                $response['data']['totalAmount']
+            ),
             'discount' => $response['data']['totalDiscount'],
         ]);
 
         DB::transaction(function() use ($req, $response) {
             $req->save();
 
-            $responses = collect($response['data']['responses'])->map(fn(array $response) => [
+            $responses = collect($response['data']['responses'])->map(fn (array $response) => [
                 'phone'      => str_ireplace('+', '', $response['phoneNumber']),
                 'message'    => $response['errorMessage'],
                 'amount'     => str_ireplace('KES ', '', $response['amount']),
@@ -103,8 +105,7 @@ class AfricasTalkingApi
             $phone = SidoohAccounts::findPhone($transaction->account_id);
             $date = $req->updated_at->timezone('Africa/Nairobi')->format(config('settings.sms_date_time_format'));
 
-            $response = SidoohPayments::creditVoucher($transaction->account_id, $amount, Description::VOUCHER_REFUND);
-            [$voucher] = $response;
+            $voucher = credit_voucher($transaction);
 
             $amount = 'Ksh'.number_format($amount, 2);
             $balance = 'Ksh'.number_format($voucher['balance']);

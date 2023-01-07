@@ -48,8 +48,8 @@ class DashboardController extends Controller
             'total_transactions'       => $totalTransactions,
             'total_transactions_today' => $totalTransactionsToday,
 
-            'total_revenue'       => $totalRevenue,
-            'total_revenue_today' => $totalRevenueToday,
+            'total_revenue'            => $totalRevenue,
+            'total_revenue_today'      => $totalRevenueToday,
         ]);
     }
 
@@ -68,7 +68,7 @@ class DashboardController extends Controller
             });
 
             $transform = function($transactions, $key) use ($freqCount, $chartAid) {
-                $models = $transactions->groupBy(fn($item) => $chartAid->chartDateFormat($item->created_at));
+                $models = $transactions->groupBy(fn ($item) => $chartAid->chartDateFormat($item->created_at));
 
                 return [$key => $chartAid->chartDataSet($models, $freqCount)];
             };
@@ -80,7 +80,7 @@ class DashboardController extends Controller
         $todayHrs = LocalCarbon::now()->diffInHours(LocalCarbon::now()->startOfDay());
 
         return response()->json([
-            'today' => $fetch([
+            'today'     => $fetch([
                 LocalCarbon::today()->startOfDay()->utc(),
                 LocalCarbon::today()->endOfDay()->utc(),
             ], $todayHrs + 1),

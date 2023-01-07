@@ -54,16 +54,6 @@ class SidoohPayments extends SidoohService
     /**
      * @throws \Exception
      */
-    public static function creditVoucher(int $accountId, $amount, Description $description): ?array
-    {
-        Log::info('...[SRV - PAYMENTS]: Credit Voucher...');
-
-        return parent::fetch(self::baseUrl().'/vouchers/credit', 'POST', (array) $paymentData);
-    }
-
-    /**
-     * @throws \Exception
-     */
     public static function find(int $paymentId): ?array
     {
         Log::info('...[SRV - PAYMENTS]: Find Payment...');
