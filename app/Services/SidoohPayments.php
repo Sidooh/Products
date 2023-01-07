@@ -26,6 +26,9 @@ class SidoohPayments extends SidoohService
         return config('services.sidooh.services.payments.url');
     }
 
+    /**
+     * @throws \Exception
+     */
     public static function requestPayment(PaymentDTO $paymentData): ?array
     {
         Log::info('...[SRV - PAYMENTS]: Request Payment...');
@@ -35,6 +38,9 @@ class SidoohPayments extends SidoohService
         return parent::fetch($endpoint, 'POST', (array) $paymentData);
     }
 
+    /**
+     * @throws \Exception
+     */
     public static function requestB2bPayment(array $transaction, PaymentMethod $method, string $debit_account, array $merchantDetails): ?array
     {
         Log::info('...[SRV - PAYMENTS]: Request B2B Payment...');
@@ -47,17 +53,23 @@ class SidoohPayments extends SidoohService
         ]);
     }
 
+    /**
+     * @throws \Exception
+     */
     public static function creditVoucher(int $accountId, $amount, Description $description): ?array
     {
         Log::info('...[SRV - PAYMENTS]: Credit Voucher...');
 
-        return parent::fetch(self::baseUrl().'/payments/voucher/credit', 'POST', [
+        return parent::fetch(self::baseUrl().'/vouchers/credit', 'POST', [
             'account_id'  => $accountId,
             'amount'      => $amount,
             'description' => $description->value,
         ]);
     }
 
+    /**
+     * @throws \Exception
+     */
     public static function find(int $paymentId): ?array
     {
         Log::info('...[SRV - PAYMENTS]: Find Payment...');
@@ -65,6 +77,9 @@ class SidoohPayments extends SidoohService
         return parent::fetch(self::baseUrl()."/payments/$paymentId");
     }
 
+    /**
+     * @throws \Exception
+     */
     public static function findVoucher(int $voucherId, bool $bypassCache = false): ?array
     {
         $cacheKey = 'vouchers.'.$voucherId;
