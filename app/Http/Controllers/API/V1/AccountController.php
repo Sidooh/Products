@@ -34,24 +34,14 @@ class AccountController extends Controller
 
         $totalTransactions = Transaction::whereAccountId($accountId)->select([
             DB::raw('COUNT(id) as ctotal'),
-            DB::raw(
-                "SUM(DATE(created_at) = '{$date->toDateString()}') as ctoday"
-            ),
-            DB::raw(
-                "SUM(created_at between '$sW' and '$eW') as cweek"
-            ),
-            DB::raw(
-                "SUM(created_at between '$sM' and '$eM') as cmonth"
-            ),
-            DB::raw(
-                "SUM(created_at > '$last30d') as c30"
-            ),
+            DB::raw("SUM(DATE(created_at) = '{$date->toDateString()}') as ctoday"),
+            DB::raw("SUM(created_at between '$sW' and '$eW') as cweek"),
+            DB::raw("SUM(created_at between '$sM' and '$eM') as cmonth"),
+            DB::raw("SUM(created_at > '$last30d') as c30"),
         ])->first();
 
-        $transactions = Transaction::whereAccountId($accountId)->whereType(TransactionType::PAYMENT)->whereNot(
-            'product_id',
-            ProductType::VOUCHER
-        )->latest()->get();
+        $transactions = Transaction::whereAccountId($accountId)->whereType(TransactionType::PAYMENT)
+            ->whereNot('product_id', ProductType::VOUCHER)->latest()->get();
 
         $completedTransactions = $transactions->where('status', Status::COMPLETED->value);
 

@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\DTOs\PaymentDTO;
-use App\Enums\Description;
 use App\Enums\PaymentMethod;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
@@ -59,11 +58,7 @@ class SidoohPayments extends SidoohService
     {
         Log::info('...[SRV - PAYMENTS]: Credit Voucher...');
 
-        return parent::fetch(self::baseUrl().'/payments/voucher/credit', 'POST', [
-            'account_id'  => $accountId,
-            'amount'      => $amount,
-            'description' => $description->value,
-        ]);
+        return parent::fetch(self::baseUrl().'/vouchers/credit', 'POST', (array) $paymentData);
     }
 
     /**
@@ -99,12 +94,13 @@ class SidoohPayments extends SidoohService
     // TODO: Add by voucher type filter
     public static function findVouchersByAccount(int $accountId): Collection
     {
-        return Cache::remember($accountId.'_vouchers', (60 * 60 * 24), function() use ($accountId) {
+        return Cache::remember($accountId.'_vouchers', (60 * 60 * 3), function() use ($accountId) {
             return collect(parent::fetch(self::baseUrl()."/vouchers?account_id=$accountId"));
         });
     }
 
     // TODO: Add by voucher type filter
+
     /**
      * @throws \Exception
      */

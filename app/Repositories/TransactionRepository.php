@@ -259,7 +259,9 @@ class TransactionRepository
 
         $amount = $transaction->amount;
         $destination = $transaction->destination;
-        $date = $transaction->updated_at->timezone('Africa/Nairobi')->format(config('settings.sms_date_time_format'));
+        $date = $transaction->updated_at
+            ->timezone('Africa/Nairobi')
+            ->format(config('settings.sms_date_time_format'));
 
         $provider = getProviderFromTransaction($transaction);
 
