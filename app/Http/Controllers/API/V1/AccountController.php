@@ -6,9 +6,11 @@ use App\Enums\ProductType;
 use App\Enums\Status;
 use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
+use App\Models\AirtimeAccount;
 use App\Models\EarningAccount;
 use App\Models\Subscription;
 use App\Models\Transaction;
+use App\Models\UtilityAccount;
 use App\Services\SidoohAccounts;
 use App\Services\SidoohPayments;
 use Exception;
@@ -19,6 +21,9 @@ use Illuminate\Support\Facades\DB;
 
 class AccountController extends Controller
 {
+    /**
+     * @throws \Exception
+     */
     public function show(int $accountId): JsonResponse
     {
         $account = SidoohAccounts::find($accountId);
@@ -125,7 +130,7 @@ class AccountController extends Controller
         return $this->successResponse($subscription);
     }
 
-    public function earnings(Request $request, int $accountId): JsonResponse
+    public function earnings(int $accountId): JsonResponse
     {
         $earnings = EarningAccount::select(['type', 'self_amount', 'invite_amount'])->whereAccountId($accountId)->get();
 
