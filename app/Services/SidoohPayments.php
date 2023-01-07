@@ -3,9 +3,7 @@
 namespace App\Services;
 
 use App\DTOs\PaymentDTO;
-use App\Enums\Description;
 use App\Enums\PaymentMethod;
-use Exception;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -41,8 +39,9 @@ class SidoohPayments extends SidoohService
     /**
      * @throws \Exception
      */
-    public static function requestB2bPayment(array $transaction, PaymentMethod $method, string $debit_account, array $merchantDetails): ?array
-    {
+    public static function requestB2bPayment(
+        array $transaction, PaymentMethod $method, string $debit_account, array $merchantDetails
+    ): ?array {
         Log::info('...[SRV - PAYMENTS]: Request B2B Payment...');
 
         return parent::fetch(self::baseUrl().'/payments/b2b', 'POST', [
@@ -56,15 +55,11 @@ class SidoohPayments extends SidoohService
     /**
      * @throws \Exception
      */
-    public static function creditVoucher(int $accountId, $amount, Description $description): ?array
+    public static function creditVoucher(PaymentDTO $paymentData): ?array
     {
         Log::info('...[SRV - PAYMENTS]: Credit Voucher...');
 
-        return parent::fetch(self::baseUrl().'/vouchers/credit', 'POST', [
-            'account_id'  => $accountId,
-            'amount'      => $amount,
-            'description' => $description->value,
-        ]);
+        return parent::fetch(self::baseUrl().'/vouchers/credit', 'POST', (array) $paymentData);
     }
 
     /**
@@ -100,28 +95,35 @@ class SidoohPayments extends SidoohService
     // TODO: Add by voucher type filter
     public static function findVouchersByAccount(int $accountId): Collection
     {
-        return Cache::remember($accountId.'_vouchers', (60 * 60 * 24), function() use ($accountId) {
+        return Cache::remember($accountId.'_vouchers', (60 * 60 * 3), function() use ($accountId) {
             return collect(parent::fetch(self::baseUrl()."/vouchers?account_id=$accountId"));
         });
     }
 
     // TODO: Add by voucher type filter
+
+    /**
+     * @throws \Exception
+     */
     public static function findSidoohVoucherIdForAccount(int $accountId): ?int
     {
         Log::info('...[SRV - PAYMENTS]: Find Sidooh Voucher...', [$accountId]);
 
-        $sidoohVoucher = self::findVouchersByAccount($accountId)
-            ->first(fn ($v) => $v['voucher_type_id'] === self::getSidoohVoucherTyoe());
+        $sidoohVoucher = self::findVouchersByAccount($accountId)->first(
+            fn ($v) => $v['voucher_type_id'] === self::getSidoohVoucherType()
+        );
 
         if (! $sidoohVoucher) {
-            // TODO: Create sidooh voucher account
-            throw new Exception("No Sidooh Voucher found for account $accountId");
+            $sidoohVoucher = parent::fetch(self::baseUrl().'/vouchers', 'POST', [
+                'voucher_type_id'  => self::getSidoohVoucherType(),
+                'account_id'       => $accountId,
+            ]);
         }
 
         return $sidoohVoucher['id']; // TODO: don't use magic numbers
     }
 
-    private static function getSidoohVoucherTyoe(): int
+    private static function getSidoohVoucherType(): int
     {
         return 1;
     }
