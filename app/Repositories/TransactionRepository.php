@@ -56,7 +56,7 @@ class TransactionRepository
         $paymentMethod = $data['method'];
 
         $debit_account = $data['debit_account'] ?? match ($paymentMethod) {
-            PaymentMethod::MPESA => $account['phone'],
+            PaymentMethod::MPESA   => $account['phone'],
             PaymentMethod::VOUCHER => SidoohPayments::findSidoohVoucherIdForAccount($account['id'])
         };
 
@@ -67,9 +67,9 @@ class TransactionRepository
         }
 
         match ($t->product_id) {
-            ProductType::VOUCHER => $paymentData->setVoucher(SidoohPayments::findSidoohVoucherIdForAccount(SidoohAccounts::findByPhone($t->destination)['id'])),
+            ProductType::VOUCHER  => $paymentData->setVoucher(SidoohPayments::findSidoohVoucherIdForAccount(SidoohAccounts::findByPhone($t->destination)['id'])),
             ProductType::MERCHANT => $paymentData->setMerchant($data['merchant_type'], $data['business_number'], $data['account_number'] ?? ''),
-            default => $paymentData->setDestination(PaymentMethod::FLOAT, 1)
+            default               => $paymentData->setDestination(PaymentMethod::FLOAT, 1)
         };
 
         $p = SidoohPayments::requestPayment($paymentData);
@@ -107,12 +107,12 @@ class TransactionRepository
             }
 
             match ($transaction->product_id) {
-                ProductType::AIRTIME => $purchase->airtime(),
-                ProductType::UTILITY => $purchase->utility(),
+                ProductType::AIRTIME      => $purchase->airtime(),
+                ProductType::UTILITY      => $purchase->utility(),
                 ProductType::SUBSCRIPTION => $purchase->subscription(),
-                ProductType::VOUCHER => $purchase->voucher(),
-                ProductType::MERCHANT => $purchase->merchant(),
-                default => throw new Exception('Invalid product purchase!'),
+                ProductType::VOUCHER      => $purchase->voucher(),
+                ProductType::MERCHANT     => $purchase->merchant(),
+                default                   => throw new Exception('Invalid product purchase!'),
             };
         } catch (Exception $err) {
             Log::error($err);
@@ -127,7 +127,7 @@ class TransactionRepository
 
         if ($payment->subtype === PaymentSubtype::STK->name && isset($payment->code)) {
             $message = match ($payment->code) {
-                1 => 'You have insufficient Mpesa Balance for this transaction. Kindly top up your Mpesa and try again.',
+                1       => 'You have insufficient Mpesa Balance for this transaction. Kindly top up your Mpesa and try again.',
                 default => 'Sorry! We failed to complete your transaction. No amount was deducted from your account. We apologize for the inconvenience. Please try again.',
             };
         } elseif (ProductType::tryFrom($transaction->product_id) === ProductType::MERCHANT) {
@@ -151,7 +151,6 @@ class TransactionRepository
 
         TransactionRepository::requestPurchase($transaction);
     }
-
 
     /**
      * @throws AuthenticationException
@@ -196,7 +195,6 @@ class TransactionRepository
             'account_id' => $transaction->account_id,
         ]);
         $acc->increment('self_amount', $transaction->amount);
-
 
         $tagline = config('services.sidooh.tagline');
         $message = "Your withdrawal request has been received. Please be patient as we review it.\n\n$tagline";

@@ -54,8 +54,8 @@ class TransactionController extends Controller
     {
         $relations = explode(',', $request->query('with'));
 
-        if($transaction->type === TransactionType::WITHDRAWAL) {
-            $transaction->load("savingsTransaction:id,transaction_id,savings_id,amount,description,type,status");
+        if ($transaction->type === TransactionType::WITHDRAWAL) {
+            $transaction->load('savingsTransaction:id,transaction_id,savings_id,amount,description,type,status');
         }
 
         if (in_array('account', $relations)) {
@@ -147,7 +147,7 @@ class TransactionController extends Controller
         }
 
         // Check request
-        if ($transaction->tandaRequest) {
+        if ($transaction->tandaRequest && $transaction->tandaRequest?->status != 500000) {
             return $this->errorResponse('There is a problem with this transaction - Request. Contact Support.');
         }
 
