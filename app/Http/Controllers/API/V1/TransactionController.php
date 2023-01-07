@@ -153,7 +153,7 @@ class TransactionController extends Controller
         }
 
         // Check request
-        if ($transaction->tandaRequest && $transaction->tandaRequest?->status != 000001) {
+        if ($transaction->tandaRequest && $transaction->tandaRequest?->status != 500000) {
             return $this->errorResponse('There is a problem with this transaction - Request. Contact Support.');
         }
 
