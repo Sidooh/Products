@@ -18,6 +18,7 @@ use App\Services\SidoohNotify;
 use App\Services\SidoohPayments;
 use DrH\Tanda\Library\Providers;
 use DrH\Tanda\Models\TandaRequest;
+use Exception;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Log;
@@ -178,7 +179,7 @@ class TandaEventRepository
     }
 
     /**
-     * @throws RequestException|AuthenticationException|\Exception
+     * @throws RequestException|AuthenticationException|Exception
      */
     public static function requestFailed(TandaRequest $tandaRequest): void
     {
@@ -218,5 +219,7 @@ class TandaEventRepository
         };
 
         SidoohNotify::notify([$sender], $message, $event);
+
+        SidoohNotify::notify(admin_contacts(), "ERR:TANDA\n$transaction->id\n$sender\n$tandaRequest->message", $event);
     }
 }

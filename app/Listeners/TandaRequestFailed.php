@@ -4,29 +4,17 @@ namespace App\Listeners;
 
 use App\Repositories\EventRepositories\TandaEventRepository;
 use DrH\Tanda\Events\TandaRequestFailedEvent;
-use Exception;
+use Illuminate\Auth\AuthenticationException;
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Log;
 
 class TandaRequestFailed
 {
     /**
-     * Create the event listener.
-     *
-     * @return void
+     * @throws RequestException
+     * @throws AuthenticationException
      */
-    public function __construct()
-    {
-    }
-
-    /**
-     * Handle the event.
-     *
-     * @param  TandaRequestFailedEvent  $event
-     * @return void
-     *
-     * @throws Exception
-     */
-    public function handle(TandaRequestFailedEvent $event)
+    public function handle(TandaRequestFailedEvent $event): void
     {
         Log::info('...[EVENT]: Tanda Request Failed...', [
             'id'      => $event->request->id,
