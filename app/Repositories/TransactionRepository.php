@@ -131,7 +131,10 @@ class TransactionRepository
         }
     }
 
-    public static function handleFailedPayment(Transaction $transaction, Request $payment): void
+    /**
+     * @throws \Exception
+     */
+    public static function handleFailedPayment(Transaction $transaction, $payment): void
     {
         $transaction->payment->update(['status' => Status::FAILED]);
         $transaction->status = Status::FAILED;

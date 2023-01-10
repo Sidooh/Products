@@ -31,6 +31,7 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Cashback whereTransactionId($value)
  * @method static Builder|Cashback whereType($value)
  * @method static Builder|Cashback whereUpdatedAt($value)
+ *
  * @mixin IdeHelperCashback
  */
 class Cashback extends Model
