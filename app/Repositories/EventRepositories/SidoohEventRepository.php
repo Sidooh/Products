@@ -32,7 +32,7 @@ class SidoohEventRepository
 
         switch ($type->duration) {
             case 1:
-                $message = "Congrats! You have successfully subscribed to Earn More on $date, valid until $end_date. ";
+                $message = "Congrats! You have successfully subscribed to $type->title on $date, valid until $end_date. ";
                 $message .= "You will get (1) HIGHER POINTS on ALL your purchases and payments and (2) EXTRA POINTS on ALL purchases, payments and subscriptions done by your invited friends, up to your $limit ripple.\n";
                 break;
             default:
@@ -95,7 +95,7 @@ class SidoohEventRepository
 
                     SidoohNotify::notify([$phone], $message, EventType::VOUCHER_PURCHASE);
 
-                    // Send to purchase
+                    // Send to destination
                     $phone = $accountFor['phone'];
                     $balance = 'Ksh'.number_format($creditVoucher['balance'], 2);
 
