@@ -12,11 +12,13 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 
 class CashbackController extends Controller
 {
+    /**
+     * @throws \Illuminate\Auth\AuthenticationException
+     */
     public function index(Request $request): JsonResponse
     {
         $relations = explode(',', $request->query('with'));
@@ -36,6 +38,9 @@ class CashbackController extends Controller
         return $this->successResponse($cashbacks);
     }
 
+    /**
+     * @throws \Exception
+     */
     public function show(Request $request, Cashback $cashback): JsonResponse
     {
         $relations = explode(',', $request->query('with'));
@@ -54,16 +59,22 @@ class CashbackController extends Controller
     {
         $request->validate(['date' => 'date|date_format:d-m-Y']);
 
-        $date = null;
-        if ($request->has('date')) {
-            $date = Carbon::createFromFormat('d-m-Y', $request->input('date'));
-        }
+        $date = $request->filled('date')
+            ? Carbon::createFromFormat('d-m-Y', $request->input('date'))
+            : new Carbon;
 
-        $savings = $this->collectCashback($date);
+        $savings = Cashback::selectRaw('SUM(amount) as amount, account_id')->whereNotNull('account_id')->whereDate(
+            'created_at',
+            $date->format('Y-m-d')
+        )->groupBy('account_id')->get()->map(fn (Cashback $cashback) => [
+            'account_id'     => $cashback->account_id,
+            'current_amount' => round($cashback->amount * .2, 4),
+            'locked_amount'  => round($cashback->amount * .8, 4),
+        ]);
 
         $message = "STATUS:SAVINGS\n\n";
 
-        if ($savings->count() > 0) {
+        if ($savings->count()) {
             try {
                 $responses = SidoohSavings::save($savings->toArray());
 
@@ -82,7 +93,11 @@ class CashbackController extends Controller
                 // Notify failure
                 Log::error($e);
 
-                SidoohNotify::notify(admin_contacts(), "ERROR:SAVINGS\nError Saving Cashback!!!", EventType::ERROR_ALERT);
+                SidoohNotify::notify(
+                    admin_contacts(),
+                    "ERROR:SAVINGS\nError Saving Cashback!!!",
+                    EventType::ERROR_ALERT
+                );
 
                 $this->successResponse($savings);
             }
@@ -92,22 +107,6 @@ class CashbackController extends Controller
 
         SidoohNotify::notify(admin_contacts(), $message, EventType::STATUS_UPDATE);
 
-        return  $this->successResponse($savings);
-    }
-
-    public function collectCashback($date = null): Collection
-    {
-        if (! $date) {
-            $date = new Carbon;
-        }
-
-        $cashbacks = Cashback::selectRaw('SUM(amount) as amount, account_id')->whereNotNull('account_id')
-            ->whereDate('created_at', $date->format('Y-m-d'))->groupBy('account_id')->get();
-
-        return $cashbacks->map(fn(Cashback $cashback) => [
-            'account_id'     => $cashback->account_id,
-            'current_amount' => round($cashback->amount * .2, 4),
-            'locked_amount'  => round($cashback->amount * .8, 4),
-        ]);
+        return $this->successResponse($savings);
     }
 }
