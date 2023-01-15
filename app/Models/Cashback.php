@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\Status;
 use Database\Factories\CashbackFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -43,6 +44,10 @@ class Cashback extends Model
         'amount',
         'type',
         'transaction_id',
+    ];
+
+    protected $casts = [
+        'status' => Status::class,
     ];
 
     public function transaction(): BelongsTo

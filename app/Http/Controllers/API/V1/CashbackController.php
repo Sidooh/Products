@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\V1;
 
 use App\Enums\EventType;
+use App\Enums\Status;
 use App\Http\Controllers\Controller;
 use App\Models\Cashback;
 use App\Services\SidoohAccounts;
@@ -63,14 +64,14 @@ class CashbackController extends Controller
             ? Carbon::createFromFormat('d-m-Y', $request->input('date'))
             : new Carbon;
 
-        $savings = Cashback::selectRaw('SUM(amount) as amount, account_id')->whereNotNull('account_id')->whereDate(
-            'created_at',
-            $date->format('Y-m-d')
-        )->groupBy('account_id')->get()->map(fn (Cashback $cashback) => [
-            'account_id'     => $cashback->account_id,
-            'current_amount' => round($cashback->amount * .2, 4),
-            'locked_amount'  => round($cashback->amount * .8, 4),
-        ]);
+        $savings = Cashback::selectRaw('SUM(amount) as amount, account_id')->whereNotNull('account_id')
+            ->whereNot('status', Status::COMPLETED)
+            ->whereDate('created_at', $date->format('Y-m-d'))
+            ->groupBy('account_id')->get()->map(fn (Cashback $cashback) => [
+                'account_id'     => $cashback->account_id,
+                'current_amount' => round($cashback->amount * .2, 4),
+                'locked_amount'  => round($cashback->amount * .8, 4),
+            ]);
 
         $message = "STATUS:SAVINGS\n\n";
 
@@ -78,16 +79,25 @@ class CashbackController extends Controller
             try {
                 $responses = SidoohSavings::save($savings->toArray());
 
-                $totalCompleted = count($responses['completed']);
-                $totalFailed = count($responses['failed']);
+                $completed = $responses['completed'];
+                $failed = $responses['failed'];
 
                 //TODO: Store in DB so that we don't repeat saving
+                if (count($completed) > 0) {
+                    $message .= 'Processed earnings for '.count($completed)."  accounts\n";
 
-                if ($totalCompleted > 0) {
-                    $message .= "Processed earnings for $totalCompleted accounts\n";
+                    Cashback::selectRaw('SUM(amount) as amount, account_id')
+                        ->whereIn('account_id', array_keys($completed))
+                        ->whereDate('created_at', $date->format('Y-m-d'))
+                        ->update(['status' => Status::COMPLETED]);
                 }
-                if ($totalFailed > 0) {
-                    $message .= "Failed for $totalFailed accounts";
+                if (count($failed) > 0) {
+                    $message .= 'Failed for '.count($failed).' accounts';
+
+                    Cashback::selectRaw('SUM(amount) as amount, account_id')
+                        ->whereIn('account_id', array_keys($failed))
+                        ->whereDate('created_at', $date->format('Y-m-d'))
+                        ->update(['status' => Status::FAILED]);
                 }
             } catch (Exception $e) {
                 // Notify failure
@@ -99,7 +109,7 @@ class CashbackController extends Controller
                     EventType::ERROR_ALERT
                 );
 
-                $this->successResponse($savings);
+                return $this->errorResponse($savings);
             }
         } else {
             $message .= 'No earnings to allocate.';

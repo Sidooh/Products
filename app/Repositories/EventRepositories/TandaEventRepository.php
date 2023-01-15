@@ -21,6 +21,7 @@ use DrH\Tanda\Models\TandaRequest;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Log;
+use PHPUnit\Util\Exception;
 use Propaganistas\LaravelPhone\PhoneNumber;
 
 class TandaEventRepository
@@ -160,13 +161,8 @@ class TandaEventRepository
                 //  Send SMS
                 $message = "You have made a payment to $provider - $destination of $amount from your Sidooh account on $date using $method. You have received $userEarnings points.$vtext";
                 break;
-//            case Providers::NAIROBI_WTR:
-//                //  Get Points Earned
-//                $userEarnings = EarningRepository::getPointsEarned($transaction, $totalEarnings);
-//
-//                //  Send SMS
-//                $message = "You have made a payment to $provider - $destination of $amount from your Sidooh account on $date using $method. You have received $userEarnings points.$vtext";
-//                break;
+            default:
+                throw new Exception('Tanda Request Success: Provider is Non-existent.');
         }
 
         //  Update Transaction & Earnings
