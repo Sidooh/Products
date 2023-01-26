@@ -209,8 +209,8 @@ class TandaEventRepository
         $balance = 'Ksh'.number_format($voucher['balance']);
 
         $message = match ($transaction->product_id) {
-            ProductType::AIRTIME->value => "Hi, we have added $amount to your voucher account because we could not complete your $amount airtime purchase for $destination on $date. New voucher balance is $balance.",
-            ProductType::UTILITY->value => "Hi, we have added $amount to your voucher account because we could not complete your payment to $provider of $amount for $destination on $date. New voucher balance is $balance."
+            ProductType::AIRTIME->value => "Hi, we have added $amount to your voucher account because we could not complete your $amount airtime purchase for $destination on $date. New voucher balance is $balance. Use it in your next purchase.",
+            ProductType::UTILITY->value => "Hi, we have added $amount to your voucher account because we could not complete your payment to $provider of $amount for $destination on $date. New voucher balance is $balance. Use it in your next purchase."
         };
 
         $event = match ($transaction->product_id) {
