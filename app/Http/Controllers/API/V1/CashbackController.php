@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\V1;
 
 use App\Enums\EventType;
+use App\Enums\Status;
 use App\Http\Controllers\Controller;
 use App\Models\Cashback;
 use App\Services\SidoohAccounts;
@@ -12,11 +13,13 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 
 class CashbackController extends Controller
 {
+    /**
+     * @throws \Illuminate\Auth\AuthenticationException
+     */
     public function index(Request $request): JsonResponse
     {
         $relations = explode(',', $request->query('with'));
@@ -36,6 +39,9 @@ class CashbackController extends Controller
         return $this->successResponse($cashbacks);
     }
 
+    /**
+     * @throws \Exception
+     */
     public function show(Request $request, Cashback $cashback): JsonResponse
     {
         $relations = explode(',', $request->query('with'));
@@ -54,37 +60,49 @@ class CashbackController extends Controller
     {
         $request->validate(['date' => 'date|date_format:d-m-Y']);
 
-        $date = null;
-        if ($request->has('date')) {
-            $date = Carbon::createFromFormat('d-m-Y', $request->input('date'));
-        }
+        $date = $request->filled('date') ? Carbon::createFromFormat('d-m-Y', $request->input('date')) : new Carbon;
 
-        $savings = $this->collectCashback($date);
+        $builder = Cashback::selectRaw('SUM(amount) as amount, account_id')->whereNotNull('account_id')->whereNot(
+            'status',
+            Status::COMPLETED
+        )->whereDate('created_at', $date->format('Y-m-d'))->groupBy('account_id');
+
+        $savings = $builder->get()->map(fn (Cashback $cashback) => [
+            'account_id'     => $cashback->account_id,
+            'current_amount' => round($cashback->amount * .2, 4),
+            'locked_amount'  => round($cashback->amount * .8, 4),
+        ]);
 
         $message = "STATUS:SAVINGS\n\n";
 
-        if ($savings->count() > 0) {
+        if ($savings->count()) {
             try {
                 $responses = SidoohSavings::save($savings->toArray());
 
-                $totalCompleted = count($responses['completed']);
-                $totalFailed = count($responses['failed']);
+                $completed = $responses['completed'];
+                $failed = $responses['failed'];
 
-                //TODO: Store in DB so that we don't repeat saving
+                if (count($completed) > 0) {
+                    $message .= 'Processed earnings for '.count($completed)."  accounts\n";
 
-                if ($totalCompleted > 0) {
-                    $message .= "Processed earnings for $totalCompleted accounts\n";
+                    $builder->whereIn('account_id', array_keys($completed))->update(['status' => Status::COMPLETED]);
                 }
-                if ($totalFailed > 0) {
-                    $message .= "Failed for $totalFailed accounts";
+                if (count($failed) > 0) {
+                    $message .= 'Failed for '.count($failed).' accounts';
+
+                    $builder->whereIn('account_id', array_keys($failed))->update(['status' => Status::FAILED]);
                 }
             } catch (Exception $e) {
                 // Notify failure
                 Log::error($e);
 
-                SidoohNotify::notify(admin_contacts(), "ERROR:SAVINGS\nError Saving Cashback!!!", EventType::ERROR_ALERT);
+                SidoohNotify::notify(
+                    admin_contacts(),
+                    "ERROR:SAVINGS\nError Saving Cashback!!!",
+                    EventType::ERROR_ALERT
+                );
 
-                $this->successResponse($savings);
+                return $this->errorResponse($savings);
             }
         } else {
             $message .= 'No earnings to allocate.';
@@ -92,22 +110,6 @@ class CashbackController extends Controller
 
         SidoohNotify::notify(admin_contacts(), $message, EventType::STATUS_UPDATE);
 
-        return  $this->successResponse($savings);
-    }
-
-    public function collectCashback($date = null): Collection
-    {
-        if (! $date) {
-            $date = new Carbon;
-        }
-
-        $cashbacks = Cashback::selectRaw('SUM(amount) as amount, account_id')->whereNotNull('account_id')
-            ->whereDate('created_at', $date->format('Y-m-d'))->groupBy('account_id')->get();
-
-        return $cashbacks->map(fn(Cashback $cashback) => [
-            'account_id'     => $cashback->account_id,
-            'current_amount' => round($cashback->amount * .2, 4),
-            'locked_amount'  => round($cashback->amount * .8, 4),
-        ]);
+        return $this->successResponse($savings);
     }
 }

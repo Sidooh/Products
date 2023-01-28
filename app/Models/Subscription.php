@@ -37,6 +37,7 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Subscription whereStatus($value)
  * @method static Builder|Subscription whereSubscriptionTypeId($value)
  * @method static Builder|Subscription whereUpdatedAt($value)
+ *
  * @mixin IdeHelperSubscription
  */
 class Subscription extends Model

@@ -39,9 +39,8 @@ class SidoohPayments extends SidoohService
     /**
      * @throws \Exception
      */
-    public static function requestB2bPayment(
-        array $transaction, PaymentMethod $method, string $debit_account, array $merchantDetails
-    ): ?array {
+    public static function requestB2bPayment(array $transaction, PaymentMethod $method, string $debit_account, array $merchantDetails): ?array
+    {
         Log::info('...[SRV - PAYMENTS]: Request B2B Payment...');
 
         return parent::fetch(self::baseUrl().'/payments/b2b', 'POST', [
@@ -50,16 +49,6 @@ class SidoohPayments extends SidoohService
             'debit_account' => $debit_account,
             ...$merchantDetails,
         ]);
-    }
-
-    /**
-     * @throws \Exception
-     */
-    public static function creditVoucher(PaymentDTO $paymentData): ?array
-    {
-        Log::info('...[SRV - PAYMENTS]: Credit Voucher...');
-
-        return parent::fetch(self::baseUrl().'/vouchers/credit', 'POST', (array) $paymentData);
     }
 
     /**
@@ -101,7 +90,6 @@ class SidoohPayments extends SidoohService
     }
 
     // TODO: Add by voucher type filter
-
     /**
      * @throws \Exception
      */
@@ -109,9 +97,8 @@ class SidoohPayments extends SidoohService
     {
         Log::info('...[SRV - PAYMENTS]: Find Sidooh Voucher...', [$accountId]);
 
-        $sidoohVoucher = self::findVouchersByAccount($accountId)->first(
-            fn ($v) => $v['voucher_type_id'] === self::getSidoohVoucherType()
-        );
+        $sidoohVoucher = self::findVouchersByAccount($accountId)
+            ->first(fn ($v) => $v['voucher_type_id'] === self::getSidoohVoucherType());
 
         if (! $sidoohVoucher) {
             $sidoohVoucher = parent::fetch(self::baseUrl().'/vouchers', 'POST', [

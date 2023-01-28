@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers\API\V1;
 
+use App\Enums\PaymentSubtype;
 use App\Enums\Status;
 use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
+use App\Models\Payment;
 use App\Models\Transaction;
 use App\Repositories\TransactionRepository;
 use App\Services\SidoohAccounts;
 use App\Services\SidoohPayments;
+use Doctrine\DBAL\Driver\PDO\Exception;
 use DrH\Tanda\Library\EventHelper as TandaEventHelper;
 use DrH\Tanda\Models\TandaRequest;
 use Illuminate\Http\JsonResponse;
@@ -17,6 +20,9 @@ use Throwable;
 
 class TransactionController extends Controller
 {
+    /**
+     * @throws \Illuminate\Auth\AuthenticationException
+     */
     public function index(Request $request): JsonResponse
     {
         // TODO: Review using laravel query builder // or build our own params
@@ -67,7 +73,9 @@ class TransactionController extends Controller
         }
 
         if (in_array('tanda_request', $relations)) {
-            $transaction->load('tandaRequest:request_id,relation_id,receipt_number,amount,provider,destination,message,status,last_modified,created_at,updated_at');
+            $transaction->load(
+                'tandaRequest:request_id,relation_id,receipt_number,amount,provider,destination,message,status,last_modified,created_at,updated_at'
+            );
         }
 
         if (in_array('product', $relations)) {
@@ -85,9 +93,9 @@ class TransactionController extends Controller
 
         // Check transaction is PENDING ...
         if ($transaction->status !== Status::PENDING->name) {
-            return ! $transaction->tandaRequest
-                ? $this->errorResponse('There is a problem with this transaction. Contact Support.')
-                : $this->successResponse($transaction);
+            return ! $transaction->tandaRequest ? $this->errorResponse(
+                'There is a problem with this transaction. Contact Support.'
+            ) : $this->successResponse($transaction);
         }
 
         // Check request id is not in tanda request
@@ -107,7 +115,7 @@ class TransactionController extends Controller
     /**
      * @throws \Illuminate\Auth\AuthenticationException|Throwable
      */
-    public function checkPayment(Transaction $transaction): JsonResponse
+    public function checkPayment(Request $request, Transaction $transaction): JsonResponse
     {
         // Check transaction is PENDING ...
         if ($transaction->status !== Status::PENDING->name) {
@@ -119,10 +127,52 @@ class TransactionController extends Controller
         }
 
         // Check payment
-        $response = SidoohPayments::find($transaction->payment->payment_id);
+        if (! $transaction->payment) {
+            if (! $request->filled('payment_id')) {
+                return $this->errorResponse('payment_id is required', 422);
+            }
 
-        if (! $payment = $response) {
-            return $this->errorResponse('There was a problem with your request. Kindly contact Support.');
+            // Check payment id is not in payments request
+            if (Payment::wherePaymentId($request->payment_id)->exists()) {
+                $this->errorResponse('This payment id already exists. Contact Support.');
+            }
+
+            $payment = SidoohPayments::find($request->payment_id);
+        } else {
+            $payment = SidoohPayments::find($transaction->payment->payment_id);
+        }
+
+        if (! $payment) {
+            return $this->errorResponse('There was a problem with your request. Payment not found. Kindly contact Support.');
+        }
+
+        if (! $transaction->payment) {
+            if ($transaction->amount != $payment['amount'] || $transaction->description != $payment['description']) {
+                return $this->errorResponse('Transaction does not match payment.');
+            }
+
+            $debitAccount = match (PaymentSubtype::from($payment['subtype'])) {
+                PaymentSubtype::STK     => $payment['provider']['phone'],
+                PaymentSubtype::VOUCHER => $payment['provider']['id'],
+                default                 => throw new Exception('Unable to trace debit account.')
+            };
+
+            $paymentData = [
+                'transaction_id' => $transaction->id,
+                'payment_id'     => $payment['id'],
+                'amount'         => $payment['amount'],
+                'type'           => $payment['type'],
+                'subtype'        => $payment['subtype'],
+                'status'         => $payment['status'],
+                'extra'          => [
+                    'debit_account' => $debitAccount,
+                    ...($payment['destination_data'] ?? []),
+                ],
+            ];
+
+            Payment::create($paymentData);
+
+            $transaction = $transaction->refresh();
         }
 
         if ($payment['status'] === Status::COMPLETED->name) {
@@ -134,6 +184,9 @@ class TransactionController extends Controller
         return $this->successResponse($transaction->refresh());
     }
 
+    /**
+     * @throws \Exception
+     */
     public function refund(Transaction $transaction): JsonResponse
     {
         // Check transaction
@@ -157,6 +210,9 @@ class TransactionController extends Controller
         return $this->successResponse($transaction->refresh());
     }
 
+    /**
+     * @throws \Throwable
+     */
     public function retry(Transaction $transaction): JsonResponse
     {
         // Check transaction

@@ -29,6 +29,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|Merchant whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Merchant whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Merchant whereUpdatedAt($value)
+ *
  * @mixin IdeHelperMerchant
  */
 class Merchant extends Model

@@ -1,10 +1,14 @@
 <?php
 
+use App\DTOs\PaymentDTO;
+use App\Enums\Description;
+use App\Enums\PaymentMethod;
 use App\Enums\ProductType;
 use App\Models\Transaction;
 use App\Services\SidoohAccounts;
 use App\Services\SidoohPayments;
 use DrH\Tanda\Library\Providers;
+use Illuminate\Support\Facades\Log;
 use JetBrains\PhpStorm\NoReturn;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
@@ -98,5 +102,31 @@ if (! function_exists('admin_contacts')) {
     function admin_contacts(): array
     {
         return explode(',', config('services.sidooh.admin_contacts'));
+    }
+}
+
+if (! function_exists('credit_voucher')) {
+    /**
+     * @throws \Exception
+     */
+    function credit_voucher(Transaction $transaction): ?array
+    {
+        Log::info('...[SRV - PAYMENTS]: Credit Voucher...');
+
+        //  Credit Voucher
+        $voucherId = SidoohPayments::findSidoohVoucherIdForAccount($transaction->account_id);
+        $paymentData = new PaymentDTO(
+            $transaction->account_id,
+            $transaction->amount,
+            Description::VOUCHER_REFUND,
+            $transaction->destination,
+            PaymentMethod::FLOAT,
+            1
+        );
+        $paymentData->setDestination(PaymentMethod::VOUCHER, $voucherId);
+
+        SidoohPayments::requestPayment($paymentData);
+
+        return SidoohPayments::findVoucher($voucherId, true);
     }
 }

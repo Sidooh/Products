@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\Status;
 use Database\Factories\CashbackFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -31,6 +32,7 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Cashback whereTransactionId($value)
  * @method static Builder|Cashback whereType($value)
  * @method static Builder|Cashback whereUpdatedAt($value)
+ *
  * @mixin IdeHelperCashback
  */
 class Cashback extends Model
@@ -42,6 +44,10 @@ class Cashback extends Model
         'amount',
         'type',
         'transaction_id',
+    ];
+
+    protected $casts = [
+        'status' => Status::class,
     ];
 
     public function transaction(): BelongsTo

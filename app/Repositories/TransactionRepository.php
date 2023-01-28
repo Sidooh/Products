@@ -3,7 +3,6 @@
 namespace App\Repositories;
 
 use App\DTOs\PaymentDTO;
-use App\Enums\Description;
 use App\Enums\EarningAccountType;
 use App\Enums\EventType;
 use App\Enums\PaymentMethod;
@@ -55,20 +54,33 @@ class TransactionRepository
     {
         $paymentMethod = $data['method'];
 
-        $debit_account = $data['debit_account'] ?? match ($paymentMethod) {
+        $debitAccount = $data['debit_account'] ?? match ($paymentMethod) {
             PaymentMethod::MPESA   => $account['phone'],
             PaymentMethod::VOUCHER => SidoohPayments::findSidoohVoucherIdForAccount($account['id'])
         };
 
-        $paymentData = new PaymentDTO($t->account_id, $t->amount, $t->description, $t->destination, $paymentMethod, $debit_account);
+        $paymentData = new PaymentDTO(
+            $t->account_id,
+            $t->amount,
+            $t->description,
+            $t->destination,
+            $paymentMethod,
+            $debitAccount
+        );
 
         if (is_int($t->product_id)) {
             $t->product_id = ProductType::tryFrom($t->product_id);
         }
 
         match ($t->product_id) {
-            ProductType::VOUCHER  => $paymentData->setVoucher(SidoohPayments::findSidoohVoucherIdForAccount(SidoohAccounts::findByPhone($t->destination)['id'])),
-            ProductType::MERCHANT => $paymentData->setMerchant($data['merchant_type'], $data['business_number'], $data['account_number'] ?? ''),
+            ProductType::VOUCHER  => $paymentData->setVoucher(
+                SidoohPayments::findSidoohVoucherIdForAccount(SidoohAccounts::findByPhone($t->destination)['id'])
+            ),
+            ProductType::MERCHANT => $paymentData->setMerchant(
+                $data['merchant_type'],
+                $data['business_number'],
+                $data['account_number'] ?? ''
+            ),
             default               => $paymentData->setDestination(PaymentMethod::FLOAT, 1)
         };
 
@@ -82,7 +94,7 @@ class TransactionRepository
             'subtype'        => $p['subtype'],
             'status'         => $p['status'],
             'extra'          => [
-                'debit_account' => $debit_account,
+                'debit_account' => $debitAccount,
                 ...($p['destination'] ?? []),
             ],
         ];
@@ -119,7 +131,10 @@ class TransactionRepository
         }
     }
 
-    public static function handleFailedPayment(Transaction $transaction, Request $payment): void
+    /**
+     * @throws \Exception
+     */
+    public static function handleFailedPayment(Transaction $transaction, $payment): void
     {
         $transaction->payment->update(['status' => Status::FAILED]);
         $transaction->status = Status::FAILED;
@@ -208,10 +223,10 @@ class TransactionRepository
     {
         $transaction->savingsTransaction->update(['status' => Status::FAILED]);
 
-        EarningAccount::accountId($transaction->account_id)
-            ->withdrawal()
-            ->first()
-            ->decrement('self_amount', $transaction->amount);
+        EarningAccount::accountId($transaction->account_id)->withdrawal()->first()->decrement(
+            'self_amount',
+            $transaction->amount
+        );
 
         $transaction->status = Status::FAILED;
         $transaction->save();
@@ -261,18 +276,11 @@ class TransactionRepository
 
         $amount = $transaction->amount;
         $destination = $transaction->destination;
-        $date = $transaction->updated_at
-            ->timezone('Africa/Nairobi')
-            ->format(config('settings.sms_date_time_format'));
+        $date = $transaction->updated_at->timezone('Africa/Nairobi')->format(config('settings.sms_date_time_format'));
 
         $provider = getProviderFromTransaction($transaction);
 
-        $voucherId = SidoohPayments::findSidoohVoucherIdForAccount($transaction->account_id);
-        $paymentData = new PaymentDTO($transaction->account_id, $amount, Description::VOUCHER_REFUND, $destination, PaymentMethod::FLOAT, 1);
-        $paymentData->setVoucher($voucherId);
-
-        SidoohPayments::requestPayment($paymentData);
-        $voucher = SidoohPayments::findVoucher($voucherId, true);
+        $voucher = credit_voucher($transaction);
 
         $transaction->status = Status::REFUNDED;
         $transaction->save();
