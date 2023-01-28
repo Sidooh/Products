@@ -4,7 +4,6 @@ namespace App\Http\Controllers\API\V1;
 
 use App\Enums\ProductType;
 use App\Enums\Status;
-use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
 use App\Models\AirtimeAccount;
 use App\Models\EarningAccount;
@@ -43,7 +42,7 @@ class AccountController extends Controller
             DB::raw("SUM(created_at > '$last30d') as c30"),
         ])->first();
 
-        $transactions = Transaction::whereAccountId($accountId)->whereType(TransactionType::PAYMENT)
+        $transactions = Transaction::whereAccountId($accountId)
             ->whereNot('product_id', ProductType::VOUCHER)->latest()->get();
 
         $completedTransactions = $transactions->where('status', Status::COMPLETED->value);
