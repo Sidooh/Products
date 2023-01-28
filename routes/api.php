@@ -50,9 +50,9 @@ Route::prefix('/sidooh')->group(function() {
 //  AT Callback Route
 Route::post('/airtime/status/callback', [AirtimeController::class, 'airtimeStatusCallback']);
 
-#=========================================================================================================
-# V1 API
-#=========================================================================================================
+//=========================================================================================================
+// V1 API
+//=========================================================================================================
 
 Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function() {
     Route::prefix('/products')->group(function() {
@@ -125,6 +125,4 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function() {
     Route::get('/earnings/rates', [ProductController::class, 'getEarningRates']);
 
     Route::get('/service-providers/balance', [ProductController::class, 'getServiceProviderBalance']);
-
 });
-

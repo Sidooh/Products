@@ -35,7 +35,7 @@ class ATEventRepository
 
         $voucher = SidoohPayments::creditVoucher($transaction->account_id, $amount, Description::VOUCHER_REFUND);
 
-        $message = "Sorry! We could not complete your KES{$amount} airtime purchase for {$phone} on {$date}. We have added KES{$amount} to your voucher account. New Voucher balance is {$voucher['balance']}.";
+        $message = "Sorry! We could not complete your KES{$amount} airtime purchase for {$phone} on {$date}. We have added KES{$amount} to your voucher account. New Voucher balance is {$voucher['balance']}. Use it in your next purchase.";
 
         SidoohNotify::notify([$phone], $message, EventType::AIRTIME_PURCHASE_FAILURE);
     }
@@ -105,7 +105,7 @@ class ATEventRepository
 
 //        TODO:: Remove Sent from successful
 //        || $value->status == 'Sent'
-        $successful = $responses->filter(fn($value) => $value->status == 'Success' || $value->status == 'Sent');
+        $successful = $responses->filter(fn ($value) => $value->status == 'Success' || $value->status == 'Sent');
 
         if (count($successful) == count($responses)) {
             $totalEarned = explode(' ', $airtimeRequest->discount)[1];

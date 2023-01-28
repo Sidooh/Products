@@ -86,7 +86,7 @@ class AfricasTalkingApi
         DB::transaction(function() use ($req, $response) {
             $req->save();
 
-            $responses = collect($response['data']['responses'])->map(fn(array $response) => [
+            $responses = collect($response['data']['responses'])->map(fn (array $response) => [
                 'phone'      => str_ireplace('+', '', $response['phoneNumber']),
                 'message'    => $response['errorMessage'],
                 'amount'     => str_ireplace('KES ', '', $response['amount']),

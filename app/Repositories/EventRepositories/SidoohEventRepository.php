@@ -78,7 +78,7 @@ class SidoohEventRepository
 
         // 2. Vouchers (if many) match accounts in question
         $voucherLen = count($vouchers);
-        if (!$vouchers['debit_voucher']) {
+        if (! $vouchers['debit_voucher']) {
             // Purchase was for self most probably.
             // Can confirm this using transaction account and destination
 

@@ -17,6 +17,10 @@ use Illuminate\Support\Facades\Log;
 
 class AirtimeController extends Controller
 {
+    /**
+     * @throws \Throwable
+     * @throws \Illuminate\Auth\AuthenticationException
+     */
     public function __invoke(AirtimeRequest $request): JsonResponse
     {
         Log::info('...[CTRL - AIRTIME]: Process Airtime Request...', $request->all());
@@ -50,6 +54,9 @@ class AirtimeController extends Controller
         return $this->successResponse($transaction, 'Airtime Request Successful!');
     }
 
+    /**
+     * @throws \Illuminate\Auth\AuthenticationException
+     */
     public function accounts(Request $request): JsonResponse
     {
         $relations = explode(',', $request->query('with'));
@@ -62,5 +69,4 @@ class AirtimeController extends Controller
 
         return $this->successResponse($accounts);
     }
-
 }

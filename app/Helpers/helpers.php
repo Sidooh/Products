@@ -59,7 +59,7 @@ function getTelcoFromPhone(int $phone): string
         preg_match($telReg, $phone)   => Providers::TELKOM,
         preg_match($faibaReg, $phone) => Providers::FAIBA,
 //            preg_match($equReg, $phone) => Providers::EQUITEL,
-        default => null,
+        default                       => null,
     };
 }
 

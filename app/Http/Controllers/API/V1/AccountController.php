@@ -6,9 +6,11 @@ use App\Enums\ProductType;
 use App\Enums\Status;
 use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
+use App\Models\AirtimeAccount;
 use App\Models\EarningAccount;
 use App\Models\Subscription;
 use App\Models\Transaction;
+use App\Models\UtilityAccount;
 use App\Services\SidoohAccounts;
 use App\Services\SidoohPayments;
 use Exception;
@@ -19,6 +21,9 @@ use Illuminate\Support\Facades\DB;
 
 class AccountController extends Controller
 {
+    /**
+     * @throws \Exception
+     */
     public function show(int $accountId): JsonResponse
     {
         $account = SidoohAccounts::find($accountId);
@@ -31,7 +36,7 @@ class AccountController extends Controller
         $last30d = Carbon::now()->subMonth();
 
         $totalTransactions = Transaction::whereAccountId($accountId)->select([
-            DB::raw("COUNT(id) as ctotal"),
+            DB::raw('COUNT(id) as ctotal'),
             DB::raw("SUM(DATE(created_at) = '{$date->toDateString()}') as ctoday"),
             DB::raw("SUM(created_at between '$sW' and '$eW') as cweek"),
             DB::raw("SUM(created_at between '$sM' and '$eM') as cmonth"),
@@ -64,25 +69,25 @@ class AccountController extends Controller
         $subscriptions = Subscription::whereAccountId($accountId)->with('subscriptionType:id,title')->latest()->get();
 
         $data = [
-            'account' => $account,
+            'account'                => $account,
 
             'totalTransactionsToday' => $totalTransactions->ctoday,
             'totalTransactionsWeek'  => $totalTransactions->cweek,
             'totalTransactionsMonth' => $totalTransactions->cmonth,
-            'totalTransactions30d' => $totalTransactions->c30,
+            'totalTransactions30d'   => $totalTransactions->c30,
             'totalTransactions'      => $totalTransactions->ctotal,
 
-            'totalRevenueToday' => $totalRevenueToday,
-            'totalRevenueWeek'  => $totalRevenueWeek,
-            'totalRevenueMonth' => $totalRevenueMonth,
-            'totalRevenue30d' => $totalRevenue30d,
-            'totalRevenue'      => $totalRevenue,
+            'totalRevenueToday'      => $totalRevenueToday,
+            'totalRevenueWeek'       => $totalRevenueWeek,
+            'totalRevenueMonth'      => $totalRevenueMonth,
+            'totalRevenue30d'        => $totalRevenue30d,
+            'totalRevenue'           => $totalRevenue,
 
-            'recentTransactions' => $transactions,
+            'recentTransactions'     => $transactions,
 
-            'vouchers'        => $vouchers,
-            'earningAccounts' => $earningAccounts,
-            'subscriptions'   => $subscriptions,
+            'vouchers'               => $vouchers,
+            'earningAccounts'        => $earningAccounts,
+            'subscriptions'          => $subscriptions,
         ];
 
         return $this->successResponse($data);
@@ -125,11 +130,10 @@ class AccountController extends Controller
         return $this->successResponse($subscription);
     }
 
-    public function earnings(Request $request, int $accountId): JsonResponse
+    public function earnings(int $accountId): JsonResponse
     {
         $earnings = EarningAccount::select(['type', 'self_amount', 'invite_amount'])->whereAccountId($accountId)->get();
 
         return $this->successResponse($earnings);
     }
-
 }
