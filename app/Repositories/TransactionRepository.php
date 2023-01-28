@@ -206,11 +206,12 @@ class TransactionRepository
 
     public static function handleFailedWithdrawal(Transaction $transaction, Request $savings): void
     {
+        // TODO: wrap in transaction
         $transaction->savingsTransaction->update(['status' => Status::FAILED]);
 
         EarningAccount::accountId($transaction->account_id)
             ->withdrawal()
-            ->firstOrCreate()
+            ->first()
             ->decrement('self_amount', $transaction->amount);
 
         $transaction->status = Status::FAILED;
