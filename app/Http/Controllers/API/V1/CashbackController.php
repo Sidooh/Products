@@ -60,20 +60,18 @@ class CashbackController extends Controller
     {
         $request->validate(['date' => 'date|date_format:d-m-Y']);
 
-        $date = $request->filled('date')
-            ? Carbon::createFromFormat('d-m-Y', $request->input('date'))
-            : new Carbon;
+        $date = $request->filled('date') ? Carbon::createFromFormat('d-m-Y', $request->input('date')) : new Carbon;
 
-        $savings = Cashback::selectRaw('SUM(amount) as amount, account_id')->whereNotNull('account_id')
-            ->whereNot('status', Status::COMPLETED)
-            ->whereDate('created_at', $date->format('Y-m-d'))
-            ->groupBy('account_id')->get()->map(fn (Cashback $cashback) => [
-                'account_id'     => $cashback->account_id,
-                'current_amount' => round($cashback->amount * .2, 4),
-                'locked_amount'  => round($cashback->amount * .8, 4),
-            ]);
+        $builder = Cashback::selectRaw('SUM(amount) as amount, account_id')->whereNotNull('account_id')->whereNot(
+            'status',
+            Status::COMPLETED
+        )->whereDate('created_at', $date->format('Y-m-d'))->groupBy('account_id');
 
-        dd($savings);
+        $savings = $builder->get()->map(fn (Cashback $cashback) => [
+            'account_id'     => $cashback->account_id,
+            'current_amount' => round($cashback->amount * .2, 4),
+            'locked_amount'  => round($cashback->amount * .8, 4),
+        ]);
 
         $message = "STATUS:SAVINGS\n\n";
 
@@ -84,20 +82,15 @@ class CashbackController extends Controller
                 $completed = $responses['completed'];
                 $failed = $responses['failed'];
 
-                //TODO: Store in DB so that we don't repeat saving
                 if (count($completed) > 0) {
                     $message .= 'Processed earnings for '.count($completed)."  accounts\n";
 
-                    Cashback::whereIn('account_id', array_keys($completed))
-                        ->whereDate('created_at', $date->format('Y-m-d'))
-                        ->update(['status' => Status::COMPLETED]);
+                    $builder->whereIn('account_id', array_keys($completed))->update(['status' => Status::COMPLETED]);
                 }
                 if (count($failed) > 0) {
                     $message .= 'Failed for '.count($failed).' accounts';
 
-                    Cashback::whereIn('account_id', array_keys($failed))
-                        ->whereDate('created_at', $date->format('Y-m-d'))
-                        ->update(['status' => Status::FAILED]);
+                    $builder->whereIn('account_id', array_keys($failed))->update(['status' => Status::FAILED]);
                 }
             } catch (Exception $e) {
                 // Notify failure

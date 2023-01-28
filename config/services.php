@@ -79,7 +79,7 @@ return [
                 'url'     => env('SIDOOH_SAVINGS_API_URL'),
             ],
         ],
-        'admin_contacts'     => env('ADMIN_CONTACTS', '254110039317,254714611696,254711414987,254721309253'),
+        'admin_contacts'     => env('ADMIN_CONTACTS', '254110039317,254714611696,254711414987'),
         'country_code'       => env('COUNTRY_CODE', 'KE'),
     ],
 
