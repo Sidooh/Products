@@ -73,6 +73,8 @@ class CashbackController extends Controller
                 'locked_amount'  => round($cashback->amount * .8, 4),
             ]);
 
+        dd($savings);
+
         $message = "STATUS:SAVINGS\n\n";
 
         if ($savings->count()) {
@@ -86,16 +88,14 @@ class CashbackController extends Controller
                 if (count($completed) > 0) {
                     $message .= 'Processed earnings for '.count($completed)."  accounts\n";
 
-                    Cashback::selectRaw('SUM(amount) as amount, account_id')
-                        ->whereIn('account_id', array_keys($completed))
+                    Cashback::whereIn('account_id', array_keys($completed))
                         ->whereDate('created_at', $date->format('Y-m-d'))
                         ->update(['status' => Status::COMPLETED]);
                 }
                 if (count($failed) > 0) {
                     $message .= 'Failed for '.count($failed).' accounts';
 
-                    Cashback::selectRaw('SUM(amount) as amount, account_id')
-                        ->whereIn('account_id', array_keys($failed))
+                    Cashback::whereIn('account_id', array_keys($failed))
                         ->whereDate('created_at', $date->format('Y-m-d'))
                         ->update(['status' => Status::FAILED]);
                 }

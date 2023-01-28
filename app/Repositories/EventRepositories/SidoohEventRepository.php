@@ -16,28 +16,30 @@ class SidoohEventRepository
     /**
      * @throws Exception
      */
-    public static function subscriptionPurchaseSuccess(Subscription $subscription, Transaction $transaction)
+    public static function subscriptionPurchaseSuccess(Subscription $subscription, Transaction $transaction): void
     {
         $type = $subscription->subscriptionType;
         $account = SidoohAccounts::find($transaction->account_id);
         $phone = ltrim($account['phone'], '+');
 
         $date = $subscription->created_at->timezone('Africa/Nairobi')->format(config('settings.sms_date_time_format'));
-        $end_date = $subscription->created_at->addMonths($subscription->subscriptionType->duration)
-            ->timezone('Africa/Nairobi')
-            ->format(config('settings.sms_date_time_format'));
+        $end_date = $subscription->created_at->addMonths($subscription->subscriptionType->duration)->timezone(
+            'Africa/Nairobi'
+        )->format(config('settings.sms_date_time_format'));
+
+        $title = $type->title;
 
         $nf = new NumberFormatter('en', NumberFormatter::ORDINAL);
         $limit = $nf->format($type->level_limit);
 
-        switch ($type->duration) {
+        switch($type->duration) {
             case 1:
-                $message = "Congrats! You have successfully subscribed to $type->title on $date, valid until $end_date. ";
+                $message = "Congrats! You have successfully subscribed to $title on $date, valid until $end_date. ";
                 $message .= "You will get (1) HIGHER POINTS on ALL your purchases and payments and (2) EXTRA POINTS on ALL purchases, payments and subscriptions done by your invited friends, up to your $limit ripple.\n";
                 break;
             default:
                 $level_duration = $type->duration.' MONTHS';
-                $message = "Congratulations! You have successfully pre-registered as a $type->title on $date, valid until $end_date. ";
+                $message = "Congratulations! You have successfully pre-registered as a $title on $date, valid until $end_date. ";
                 $message .= 'You will earn commissions on airtime and tokens purchased by your invited friends and sub-agents up to your ';
                 $message .= "$limit ripple, for $level_duration WITHOUT PAYING MONTHLY SUBSCRIPTION FEES.\n";
         }
@@ -54,9 +56,7 @@ class SidoohEventRepository
     {
         $amount = 'Ksh'.number_format($transaction->amount, 2);
         $account = SidoohAccounts::find($transaction->account_id);
-        $date = $transaction->updated_at
-            ->timezone('Africa/Nairobi')
-            ->format(config('settings.sms_date_time_format'));
+        $date = $transaction->updated_at->timezone('Africa/Nairobi')->format(config('settings.sms_date_time_format'));
 
         if ($transaction->payment->subtype === PaymentMethod::VOUCHER->name) {
             $method = PaymentMethod::VOUCHER->name;

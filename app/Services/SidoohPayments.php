@@ -90,7 +90,6 @@ class SidoohPayments extends SidoohService
     }
 
     // TODO: Add by voucher type filter
-
     /**
      * @throws \Exception
      */
