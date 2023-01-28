@@ -210,7 +210,7 @@ class TransactionRepository
 
         EarningAccount::accountId($transaction->account_id)
             ->withdrawal()
-            ->first()
+            ->firstOrCreate()
             ->decrement('self_amount', $transaction->amount);
 
         $transaction->status = Status::FAILED;
