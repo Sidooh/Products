@@ -231,7 +231,7 @@ class KyandaEventRepository
             case Providers::AIRTEL:
             case Providers::TELKOM:
             case Providers::EQUITEL:
-                $message = "Sorry! We could not complete your KES{$amount} airtime purchase for {$destination} on {$date}. We have added KES{$amount} to your voucher account. New Voucher balance is {$voucher->balance}.";
+                $message = "Sorry! We could not complete your KES{$amount} airtime purchase for {$destination} on {$date}. We have added KES{$amount} to your voucher account. New Voucher balance is {$voucher->balance}. Use it in your next purchase.";
                 $eventType = EventType::AIRTIME_PURCHASE_FAILURE;
                 break;
 
@@ -243,12 +243,12 @@ class KyandaEventRepository
             case Providers::STARTIMES:
             case Providers::NAIROBI_WTR:
             case Providers::FAIBA_B:
-                $message = "Sorry! We could not complete your payment to {$provider} of KES{$amount} for {$destination} on {$date}. We have added KES{$amount} to your voucher account. New Voucher balance is {$voucher->balance}.";
+                $message = "Sorry! We could not complete your payment to {$provider} of KES{$amount} for {$destination} on {$date}. We have added KES{$amount} to your voucher account. New Voucher balance is {$voucher->balance}. Use it in your next purchase.";
                 $eventType = EventType::UTILITY_PAYMENT_FAILURE;
                 break;
 
             default:
-                $message = "Sorry! We could not complete your KES{$amount} {$kyandaTransaction->request->provider} payment for {$transaction->destination} on {$date}. We have added KES{$amount} to your voucher. New Voucher balance is {$voucher->balance}.";
+                $message = "Sorry! We could not complete your KES{$amount} {$kyandaTransaction->request->provider} payment for {$transaction->destination} on {$date}. We have added KES{$amount} to your voucher. New Voucher balance is {$voucher->balance}. Use it in your next purchase.";
         }
 
         SidoohNotify::notify([$sender], $message, $eventType);

@@ -48,6 +48,7 @@ return [
         'jwt_key'  => env('JWT_KEY'),
         'earnings' => [
             'users_percentage' => 0.6,
+            'subscribed_inviters_percentage' => .03
         ],
         'tagline' => 'Sidooh, Makes You Money with Every Purchase.',
         'mpesa'   => [
@@ -86,19 +87,19 @@ return [
         'discounts' => [
             'SAFARICOM' => [
                 'type'  => '%',
-                'value' => .06,
+                'value' => .05,
             ],
             'FAIBA' => [
                 'type'  => '%',
-                'value' => .07,
+                'value' => .05,
             ],
             'AIRTEL' => [
                 'type'  => '%',
-                'value' => .06,
+                'value' => .05,
             ],
             'TELKOM' => [
                 'type'  => '%',
-                'value' => .06,
+                'value' => .05,
             ],
             'KPLC_POSTPAID' => [
                 'type'  => '%',

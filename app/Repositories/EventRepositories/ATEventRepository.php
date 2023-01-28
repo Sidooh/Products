@@ -35,7 +35,7 @@ class ATEventRepository
         $transaction->status = Status::REFUNDED;
         $transaction->save();
 
-        $message = "Sorry! We could not complete your KES{$amount} airtime purchase for {$phone} on {$date}. We have added KES{$amount} to your voucher account. New Voucher balance is {$voucher['balance']}.";
+        $message = "Sorry! We could not complete your KES{$amount} airtime purchase for {$phone} on {$date}. We have added KES{$amount} to your voucher account. New Voucher balance is {$voucher['balance']}. Use it in your next purchase.";
 
         SidoohNotify::notify([$phone], $message, EventType::AIRTIME_PURCHASE_FAILURE);
     }
