@@ -37,7 +37,6 @@ class PaymentDTO
     public function setVoucher(int $voucher): void
     {
         $this->voucher = $voucher;
-        $this->endpoint = '/vouchers/credit';
     }
 
     public function setDestination(PaymentMethod $destination, string $account): void

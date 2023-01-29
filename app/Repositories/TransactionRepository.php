@@ -73,7 +73,8 @@ class TransactionRepository
         }
 
         match ($t->product_id) {
-            ProductType::VOUCHER  => $paymentData->setVoucher(
+            ProductType::VOUCHER  => $paymentData->setDestination(
+                PaymentMethod::VOUCHER,
                 SidoohPayments::findSidoohVoucherIdForAccount(SidoohAccounts::findByPhone($t->destination)['id'])
             ),
             ProductType::MERCHANT => $paymentData->setMerchant(

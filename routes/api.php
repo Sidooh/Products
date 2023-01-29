@@ -30,34 +30,6 @@ use Illuminate\Support\Facades\Route;
 
 // TODO: Research on how to secure or throttle unsecured callback endpoints
 Route::prefix('/v1')->group(function() {
-    /*Route::post('/fix/savings', function() {
-        $pAIdsYesterday = DB::table('personal_account_transactions')->select(['account_id', 'amount', 'personal_account_id'])
-            ->whereBetween('personal_account_transactions.id', [13692, 13743])
-            ->join('personal_accounts', 'personal_account_transactions.personal_account_id', '=', 'personal_accounts.id')
-            ->where('personal_accounts.type', 'LOCKED')->latest('personal_account_transactions.id')
-            ->get()->pluck('personal_account_id');
-
-        $pAIds = DB::table('personal_account_transactions')->select(['account_id', 'amount', 'personal_account_id'])
-            ->whereNotIn('personal_account_id', $pAIdsYesterday)
-            ->whereBetween('personal_account_transactions.id', [13664, 13691])
-            ->join('personal_accounts', 'personal_account_transactions.personal_account_id', '=', 'personal_accounts.id')
-            ->where('personal_accounts.type', 'LOCKED')->latest('personal_account_transactions.id')
-            ->get()->pluck('personal_account_id');
-
-        $investments = DB::table('personal_sub_investments')->select(['amount', 'personal_account_id'])->whereIn(
-            'personal_account_id', $pAIds
-        )->whereBetween('created_at', [now()->subDays(3), now()->subDay()])
-            ->get()->groupBy('personal_account_id')->map(fn ($pa) => $pa->max('amount'));
-
-        foreach ($investments as $id => $amount) {
-            if ($id !== 545) {
-                DB::table('personal_accounts')->where('id', $id)->increment('balance', $amount);
-            }
-        }
-
-        return response()->json([$pAIds, $investments]);
-    });*/
-
     Route::prefix('/subscriptions')->group(function() {
         Route::post('/check-expiry', [SubscriptionController::class, 'checkExpiry']);
     });
