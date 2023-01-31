@@ -52,7 +52,7 @@ class SidoohEventRepository
     /**
      * @throws Exception
      */
-    public static function voucherPurchaseSuccess(Transaction $transaction, array $vouchers)
+    public static function voucherPurchaseSuccess(Transaction $transaction, array $vouchers): void
     {
         $amount = 'Ksh'.number_format($transaction->amount, 2);
         $account = SidoohAccounts::find($transaction->account_id);

@@ -33,7 +33,7 @@ class VoucherRequest extends FormRequest
         $countryCode = config('services.sidooh.country_code');
 
         return [
-            'initiator' => [
+            'initiator'     => [
                 Rule::requiredIf(! $this->is('*/products/voucher/disburse')),
                 new Enum(Initiator::class),
             ],
@@ -44,22 +44,18 @@ class VoucherRequest extends FormRequest
                 Rule::requiredIf($this->input('method') === PaymentMethod::VOUCHER->value),
                 "phone:$countryCode",
             ],
-//            'debit_account' => [
-//                Rule::excludeIf($this->input('method') === PaymentMethod::VOUCHER->value),
-//                "phone:$countryCode",
-//            ],
             'debit_account' => [$this->sourceAccountRule()],
         ];
     }
 
-    function sourceAccountRule(): InvokableRule|string
+    public function sourceAccountRule(): InvokableRule|string
     {
         $countryCode = config('services.sidooh.country_code');
 
         return match (PaymentMethod::tryFrom($this->input('method'))) {
-            PaymentMethod::MPESA => "phone:$countryCode",
+            PaymentMethod::MPESA   => "phone:$countryCode",
             PaymentMethod::VOUCHER => new SidoohVoucherExists,
-            default => abort(422, 'Unsupported source')
+            default                => abort(422, 'Unsupported source')
         };
     }
 }
