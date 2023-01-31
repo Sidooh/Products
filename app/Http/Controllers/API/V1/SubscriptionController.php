@@ -41,14 +41,14 @@ class SubscriptionController extends Controller
         }
 
         $transaction = [
-                'initiator'   => $data['initiator'],
-                'amount'      => $subscriptionType->price,
-                'destination' => $data['target_number'] ?? $account['phone'],
-                'type'        => TransactionType::PAYMENT,
-                'description' => Description::SUBSCRIPTION_PURCHASE,
-                'account_id'  => $data['account_id'],
-                'product_id'  => ProductType::SUBSCRIPTION,
-                'account'     => $account,
+            'initiator'   => $data['initiator'],
+            'amount'      => $subscriptionType->price,
+            'destination' => $data['target_number'] ?? $account['phone'],
+            'type'        => TransactionType::PAYMENT,
+            'description' => Description::SUBSCRIPTION_PURCHASE,
+            'account_id'  => $data['account_id'],
+            'product_id'  => ProductType::SUBSCRIPTION,
+            'account'     => $account,
         ];
 
         $data = [

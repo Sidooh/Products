@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'defaults' => [
+    'defaults'         => [
         'guard'     => 'web',
         'passwords' => 'users',
     ],
@@ -35,7 +35,7 @@ return [
     |
     */
 
-    'guards' => [
+    'guards'           => [
         'api' => [
             'driver' => 'jwt',
         ],
@@ -62,7 +62,7 @@ return [
     |
     */
 
-    'providers' => [
+    'providers'        => [
         'users' => [
             'driver' => 'eloquent',
             'model'  => App\Models\User::class,
@@ -89,7 +89,7 @@ return [
     |
     */
 
-    'passwords' => [
+    'passwords'        => [
         'users' => [
             'provider' => 'users',
             'table'    => 'password_resets',

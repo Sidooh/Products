@@ -10,7 +10,7 @@ return [
      | Sandbox base url: https://io-proxy-443.tanda.co.ke/sandbox
      | Production base url: https://io-proxy-443.tanda.co.ke
      */
-    'sandbox' => env('TANDA_SANDBOX', false),
+    'sandbox'           => env('TANDA_SANDBOX', false),
 
     /*
    |--------------------------------------------------------------------------
@@ -32,8 +32,8 @@ return [
    | Callback - Will be used to send you payment notifications.
    |
    */
-    'urls' => [
-        'base' => env('TANDA_BASE_URL', 'https://io-proxy-443.tanda.co.ke'),
+    'urls'              => [
+        'base'     => env('TANDA_BASE_URL', 'https://io-proxy-443.tanda.co.ke'),
         /*
          * --------------------------------------------------------------------------------------
          * Callbacks:
@@ -53,7 +53,7 @@ return [
    | Provided by Tanda after account creation.
    |
    */
-    'organization_id' => env('TANDA_ORGANIZATION_ID'),
+    'organization_id'   => env('TANDA_ORGANIZATION_ID'),
 
     /*
    |--------------------------------------------------------------------------
@@ -63,7 +63,7 @@ return [
    | Provided by Tanda after account creation.
    |
    */
-    'client_id' => env('TANDA_CLIENT_ID'),
+    'client_id'         => env('TANDA_CLIENT_ID'),
 
     /*
    |--------------------------------------------------------------------------
@@ -73,7 +73,7 @@ return [
    | Provided by Tanda after account creation.
    |
    */
-    'client_secret' => env('TANDA_CLIENT_SECRET'),
+    'client_secret'     => env('TANDA_CLIENT_SECRET'),
 
     /*
    |--------------------------------------------------------------------------
@@ -83,20 +83,20 @@ return [
    | Limits - Will be given by Kyanda and used to validate
    |
    */
-    'limits' => [
+    'limits'            => [
         'AIRTIME.min' => 10,
         'AIRTIME.max' => 10000,
 
-        'bills' => [
+        'bills'       => [
             'KPLC_POSTPAID.min' => 100,
             'KPLC_POSTPAID.max' => 35000,
 
-            'KPLC_PREPAID.min' => 100,
-            'KPLC_PREPAID.max' => 35000,
+            'KPLC_PREPAID.min'  => 100,
+            'KPLC_PREPAID.max'  => 35000,
         ],
     ],
 
-    'logging' => [
+    'logging'           => [
         'enabled'  => env('TANDA_ENABLE_LOGGING', false),
         'channels' => [
             'syslog',
