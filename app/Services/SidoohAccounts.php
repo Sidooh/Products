@@ -20,7 +20,7 @@ class SidoohAccounts extends SidoohService
         return Cache::remember('all_accounts', (60 * 60 * 24), function() use ($url) {
             $accounts = parent::fetch($url) ?? [];
 
-            Cache::putMany(array_map(fn ($acc) => [$acc['id'] => $acc], $accounts), (60 * 60 * 24));
+            foreach ($accounts as $acc) Cache::put($acc['id'], $acc, (60 * 60 * 24))
 
             return $accounts;
         });
@@ -31,7 +31,7 @@ class SidoohAccounts extends SidoohService
      */
     public static function find(int|string $id): array
     {
-        Log::info('...[SRV - ACCOUNTS]: Find...', ['id' => $id]);
+        Log::info('...[SRV - ACCOUNTS]: Find...', [$id]);
 
         $url = config('services.sidooh.services.accounts.url')."/accounts/$id?with_user=true";
 
@@ -49,7 +49,7 @@ class SidoohAccounts extends SidoohService
      */
     public static function findByPhone(int|string $phone)
     {
-        Log::info('...[SRV - ACCOUNTS]: Find By Phone...', ['phone' => $phone]);
+        Log::info('...[SRV - ACCOUNTS]: Find By Phone...', [$phone]);
 
         $url = config('services.sidooh.services.accounts.url')."/accounts/phone/$phone";
 
@@ -75,7 +75,7 @@ class SidoohAccounts extends SidoohService
      */
     public static function getInviters(int|string $id): array
     {
-        Log::info('...[SRV - ACCOUNTS]: Find Ancestors...', ['id' => $id]);
+        Log::info('...[SRV - ACCOUNTS]: Find Ancestors...', [$id]);
 
         $url = config('services.sidooh.services.accounts.url')."/accounts/$id/ancestors";
 
