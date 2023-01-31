@@ -2,8 +2,6 @@
 
 namespace App\Repositories\EventRepositories;
 
-use App\DTOs\PaymentDTO;
-use App\Enums\Description;
 use App\Enums\EventType;
 use App\Enums\PaymentMethod;
 use App\Enums\ProductType;
@@ -196,20 +194,8 @@ class TandaEventRepository
 
         $provider = self::getProvider($tandaRequest, $transaction);
 
-        // Request voucher credit
-        $voucherId = SidoohPayments::findSidoohVoucherIdForAccount($transaction->account_id);
-        $paymentData = new PaymentDTO(
-            $transaction->account_id,
-            $amount,
-            Description::VOUCHER_REFUND,
-            $destination,
-            PaymentMethod::FLOAT,
-            1
-        );
-        $paymentData->setVoucher($voucherId);
-
-        SidoohPayments::requestPayment($paymentData);
-        $voucher = SidoohPayments::findVoucher($voucherId, true);
+        // Perform Refund
+        $voucher = credit_voucher($transaction);
 
         $transaction->status = Status::REFUNDED;
         $transaction->save();

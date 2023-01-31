@@ -34,18 +34,7 @@ class PaymentDTO
         }
     }
 
-    public function setVoucher(int $voucher): void
-    {
-        $this->voucher = $voucher;
-    }
-
     public function setDestination(PaymentMethod $destination, string $account): void
-    {
-        $this->destination = $destination;
-        $this->destination_account = $account;
-    }
-
-    public function setSource(PaymentMethod $destination, string $account): void
     {
         $this->destination = $destination;
         $this->destination_account = $account;
