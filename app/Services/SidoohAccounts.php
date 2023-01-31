@@ -20,7 +20,9 @@ class SidoohAccounts extends SidoohService
         return Cache::remember('all_accounts', (60 * 60 * 24), function() use ($url) {
             $accounts = parent::fetch($url) ?? [];
 
-            foreach ($accounts as $acc) Cache::put($acc['id'], $acc, (60 * 60 * 24))
+            foreach ($accounts as $acc) {
+                Cache::put($acc['id'], $acc, (60 * 60 * 24));
+            }
 
             return $accounts;
         });
