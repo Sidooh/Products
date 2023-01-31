@@ -27,12 +27,13 @@ class PaymentsController extends Controller
             $query->wherePaymentId($request->id);
         })->whereStatus(Status::PENDING)->first();
 
-        if (!$transaction) {
-            Log::critical("Error processing payment callback - no transaction");
+        if (! $transaction) {
+            Log::critical('Error processing payment callback - no transaction');
+
             return response()->json(['status' => true]);
         }
 
-        dispatch(function () use ($transaction, $request) {
+        dispatch(function() use ($transaction, $request) {
             if ($request->status === Status::FAILED->value) {
                 TransactionRepository::handleFailedPayment($transaction, $request);
             }

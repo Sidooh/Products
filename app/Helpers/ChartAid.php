@@ -46,9 +46,9 @@ class ChartAid
 
         if (is_null($frequencyCount)) {
             $frequencyCount = match ($this->period) {
-                Period::TODAY            => 24,
-                Period::LAST_SEVEN_DAYS  => 7,
-                Period::LAST_THIRTY_DAYS => match ($this->frequency) {
+                Period::TODAY             => 24,
+                Period::LAST_SEVEN_DAYS   => 7,
+                Period::LAST_THIRTY_DAYS  => match ($this->frequency) {
                     Frequency::WEEKLY => now()->subDays(30)->diffInWeeks(),
                     default           => 30,
                 },
@@ -56,8 +56,8 @@ class ChartAid
                     Frequency::MONTHLY => 3,
                     default            => now()->subMonths(3)->diffInWeeks(),
                 },
-                Period::LAST_SIX_MONTHS => 6,
-                Period::YTD             => match ($this->frequency) {
+                Period::LAST_SIX_MONTHS   => 6,
+                Period::YTD               => match ($this->frequency) {
                     Frequency::QUARTERLY => 4,
                     default              => 13,
                 },

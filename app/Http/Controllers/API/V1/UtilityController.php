@@ -30,7 +30,7 @@ class UtilityController extends Controller
             'initiator'   => $data['initiator'],
             'amount'      => $data['amount'],
             'type'        => TransactionType::PAYMENT,
-            'description' => Description::UTILITY_PURCHASE->value . ' - ' . $data['provider'],
+            'description' => Description::UTILITY_PURCHASE->value.' - '.$data['provider'],
             'account_id'  => $data['account_id'],
             'product_id'  => ProductType::UTILITY,
             'account'     => $account,
