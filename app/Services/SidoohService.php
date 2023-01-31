@@ -15,9 +15,9 @@ class SidoohService
     // TODO: implement Sidooh Services LIB for php, to be used in Prod/Pay
     public static function http(): PendingRequest
     {
-        $token = Cache::remember('auth_token', (60 * 14), fn() => self::authenticate());
+        $token = Cache::remember('auth_token', (60 * 14), fn () => self::authenticate());
 
-        return Http::timeout(10)->withToken($token)->/*retry(1)->*/ acceptJson();
+        return Http::timeout(10)->withToken($token)->acceptJson();
     }
 
     /**
