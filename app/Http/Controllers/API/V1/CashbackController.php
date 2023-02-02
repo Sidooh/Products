@@ -27,6 +27,7 @@ class CashbackController extends Controller
             'id',
             'amount',
             'type',
+            'status',
             'account_id',
             'transaction_id',
             'updated_at',
