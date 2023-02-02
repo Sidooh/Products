@@ -1,5 +1,0 @@
-<component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="RabbitMQ - Consume" type="PhpLocalRunConfigurationType" factoryName="PHP Console" path="$PROJECT_DIR$/artisan" scriptParameters="rabbitmq:consume">
-    <method v="2" />
-  </configuration>
-</component>

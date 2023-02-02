@@ -12,7 +12,7 @@ return [
      | Sandbox base url:
      | Production base url: https://api.kyanda.app
      */
-    'sandbox' => env('KYANDA_SANDBOX', false),
+    'sandbox'           => env('KYANDA_SANDBOX', false),
 
     /*
    |--------------------------------------------------------------------------
@@ -34,8 +34,8 @@ return [
    | Callback - Will be registered with Kyanda and used to send you payment notifications.
    |
    */
-    'urls' => [
-        'base' => 'https://api.kyanda.app',
+    'urls'              => [
+        'base'     => 'https://api.kyanda.app',
         /*
          * --------------------------------------------------------------------------------------
          * Callbacks:
@@ -55,7 +55,7 @@ return [
    | Provided by Kyanda after account creation.
    |
    */
-    'merchant_id' => env('KYANDA_MERCHANT_ID'),
+    'merchant_id'       => env('KYANDA_MERCHANT_ID'),
 
     /*
    |--------------------------------------------------------------------------
@@ -65,7 +65,7 @@ return [
    | Provided by Kyanda after account creation.
    |
    */
-    'api_key' => env('KYANDA_API_KEY'),
+    'api_key'           => env('KYANDA_API_KEY'),
 
     /*
    |--------------------------------------------------------------------------
@@ -75,16 +75,16 @@ return [
    | Limits - Will be given by Kyanda and used to validate
    |
    */
-    'limits' => [
+    'limits'            => [
         'AIRTIME.min' => 10,
         'AIRTIME.max' => 10000,
 
-        'bills' => [
+        'bills'       => [
             'KPLC_POSTPAID.min' => 100,
             'KPLC_POSTPAID.max' => 35000,
 
-            'KPLC_PREPAID.min' => 100,
-            'KPLC_PREPAID.max' => 35000,
+            'KPLC_PREPAID.min'  => 100,
+            'KPLC_PREPAID.max'  => 35000,
         ],
     ],
 ];

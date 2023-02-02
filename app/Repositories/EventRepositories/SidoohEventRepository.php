@@ -16,31 +16,31 @@ class SidoohEventRepository
     /**
      * @throws Exception
      */
-    public static function subscriptionPurchaseSuccess(Subscription $subscription, Transaction $transaction)
+    public static function subscriptionPurchaseSuccess(Subscription $subscription, Transaction $transaction): void
     {
         $type = $subscription->subscriptionType;
         $account = SidoohAccounts::find($transaction->account_id);
         $phone = ltrim($account['phone'], '+');
 
         $date = $subscription->created_at->timezone('Africa/Nairobi')->format(config('settings.sms_date_time_format'));
-        $end_date = $subscription->created_at->addMonths($subscription->subscriptionType->duration)
-            ->timezone('Africa/Nairobi')
-            ->format(config('settings.sms_date_time_format'));
+        $end_date = $subscription->created_at->addMonths($subscription->subscriptionType->duration)->timezone(
+            'Africa/Nairobi'
+        )->format(config('settings.sms_date_time_format'));
+
+        $title = $type->title;
 
         $nf = new NumberFormatter('en', NumberFormatter::ORDINAL);
         $limit = $nf->format($type->level_limit);
-        $title = $type->title;
-        //$title = 'Earn More'; // TODO: Remove
 
-        switch ($type->duration) {
+        switch($type->duration) {
             case 1:
                 $message = "Congrats! You have successfully subscribed to $title on $date, valid until $end_date. ";
-                $message .= "You will get (1) HIGHER POINTS on ALL your purchases and payments, and (2) EXTRA POINTS on ALL purchases, payments and subscriptions done by your invited friends up to your $limit ripple.\n";
+                $message .= "You will get (1) HIGHER POINTS on ALL your purchases and payments and (2) EXTRA POINTS on ALL purchases, payments and subscriptions done by your invited friends, up to your $limit ripple.\n";
                 break;
             default:
                 $level_duration = $type->duration.' MONTHS';
                 $message = "Congratulations! You have successfully pre-registered as a $title on $date, valid until $end_date. ";
-                $message .= 'You will earn commissions on airtime and utilities purchased by your invited friends and sub-agents up to your ';
+                $message .= 'You will earn commissions on airtime and tokens purchased by your invited friends and sub-agents up to your ';
                 $message .= "$limit ripple, for $level_duration WITHOUT PAYING MONTHLY SUBSCRIPTION FEES.\n";
         }
 
@@ -52,13 +52,11 @@ class SidoohEventRepository
     /**
      * @throws Exception
      */
-    public static function voucherPurchaseSuccess(Transaction $transaction, array $vouchers)
+    public static function voucherPurchaseSuccess(Transaction $transaction, array $vouchers): void
     {
         $amount = 'Ksh'.number_format($transaction->amount, 2);
         $account = SidoohAccounts::find($transaction->account_id);
-        $date = $transaction->updated_at
-            ->timezone('Africa/Nairobi')
-            ->format(config('settings.sms_date_time_format'));
+        $date = $transaction->updated_at->timezone('Africa/Nairobi')->format(config('settings.sms_date_time_format'));
 
         if ($transaction->payment->subtype === PaymentMethod::VOUCHER->name) {
             $method = PaymentMethod::VOUCHER->name;
@@ -97,14 +95,14 @@ class SidoohEventRepository
 
                     SidoohNotify::notify([$phone], $message, EventType::VOUCHER_PURCHASE);
 
-                    // Send to purchasee
+                    // Send to destination
                     $phone = $accountFor['phone'];
                     $balance = 'Ksh'.number_format($creditVoucher['balance'], 2);
 
                     $message = "You have received $amount voucher ";
                     $message .= "from Sidooh account {$account['phone']} on $date.\n";
                     $message .= "New voucher balance is $balance.\n\n";
-                    $message .= "Dial *384*99# NOW for FREE on your Safaricom line to BUY AIRTIME or TOKENS & PAY USING the voucher received.\n\n";
+                    $message .= "Dial *384*99# NOW for FREE on your Safaricom line to BUY AIRTIME or PAY BILLS & PAY USING the voucher received.\n\n";
                     $message .= config('services.sidooh.tagline');
 
                     SidoohNotify::notify([$phone], $message, EventType::VOUCHER_PURCHASE);
@@ -137,14 +135,6 @@ class SidoohEventRepository
 
             $creditVoucher = $vouchers['credit_voucher'];
 
-//            if ($vouchers[0]['account_id'] == $account['id'] && $vouchers[1]['account_id'] == $accountFor['id']) {
-//                $creditVoucher = $vouchers[1];
-//            } elseif ($vouchers[1]['account_id'] == $account['id'] && $vouchers[0]['account_id'] == $accountFor['id']) {
-//                $creditVoucher = $vouchers[0];
-//            } else {
-//                throw new Exception('Voucher mismatch with accounts');
-//            }
-
             // send notification self
             $phone = $account['phone'];
 
@@ -161,7 +151,7 @@ class SidoohEventRepository
             $message = "You have received $amount voucher ";
             $message .= "from Sidooh account {$account['phone']} on $date.\n";
             $message .= "New voucher balance is $balance.\n\n";
-            $message .= "Dial *384*99# NOW for FREE on your Safaricom line to BUY AIRTIME or TOKENS & PAY USING the voucher received.\n\n";
+            $message .= "Dial *384*99# NOW for FREE on your Safaricom line to BUY AIRTIME or PAY BILLS & PAY USING the voucher received.\n\n";
             $message .= config('services.sidooh.tagline');
 
             SidoohNotify::notify([$phone], $message, EventType::VOUCHER_PURCHASE);

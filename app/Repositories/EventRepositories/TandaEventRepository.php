@@ -2,8 +2,6 @@
 
 namespace App\Repositories\EventRepositories;
 
-use App\DTOs\PaymentDTO;
-use App\Enums\Description;
 use App\Enums\EventType;
 use App\Enums\PaymentMethod;
 use App\Enums\ProductType;
@@ -56,14 +54,21 @@ class TandaEventRepository
             $transaction = Transaction::find($tandaRequest->relation_id);
         } else {
             $transaction = Transaction::whereStatus(Status::PENDING->name)->whereType(TransactionType::PAYMENT->name)
-                ->whereAmount($tandaRequest->amount)->where('destination', 'LIKE', '%'.$tandaRequest->destination)
-                ->whereDate('createdAt', '<', $tandaRequest->created_at);
+                                      ->whereAmount($tandaRequest->amount)->where(
+                                          'destination',
+                                          'LIKE',
+                                          '%'.$tandaRequest->destination
+                                      )->whereDate('createdAt', '<', $tandaRequest->created_at);
             $tandaRequest->relation_id = $transaction->id;
             $tandaRequest->save();
         }
 
         if ($transaction->status == Status::COMPLETED) {
-            SidoohNotify::notify(admin_contacts(), "ERROR:TANDA REQUEST\nTransaction $transaction seems to have been completed already. Confirm!!!", EventType::ERROR_ALERT);
+            SidoohNotify::notify(
+                admin_contacts(),
+                "ERROR:TANDA REQUEST\nTransaction $transaction seems to have been completed already. Confirm!!!",
+                EventType::ERROR_ALERT
+            );
 
             return;
         }
@@ -109,7 +114,7 @@ class TandaEventRepository
             return;
         }
 
-        switch ($provider) {
+        switch($provider) {
             case Providers::FAIBA:
             case Providers::SAFARICOM:
             case Providers::AIRTEL:
@@ -161,13 +166,8 @@ class TandaEventRepository
                 //  Send SMS
                 $message = "You have made a payment to $provider - $destination of $amount from your Sidooh account on $date using $method. You have received $userEarnings points.$vtext";
                 break;
-//            case Providers::NAIROBI_WTR:
-//                //  Get Points Earned
-//                $userEarnings = EarningRepository::getPointsEarned($transaction, $totalEarnings);
-//
-//                //  Send SMS
-//                $message = "You have made a payment to $provider - $destination of $amount from your Sidooh account on $date using $method. You have received $userEarnings points.$vtext";
-//                break;
+            default:
+                throw new Exception('Tanda Request Failure: Provider is Non-existent.');
         }
 
         //  Update Transaction & Earnings
@@ -194,13 +194,8 @@ class TandaEventRepository
 
         $provider = self::getProvider($tandaRequest, $transaction);
 
-        // Request voucher credit
-        $voucherId = SidoohPayments::findSidoohVoucherIdForAccount($transaction->account_id);
-        $paymentData = new PaymentDTO($transaction->account_id, $amount, Description::VOUCHER_REFUND, $destination, PaymentMethod::FLOAT, 1);
-        $paymentData->setVoucher($voucherId);
-
-        SidoohPayments::requestPayment($paymentData);
-        $voucher = SidoohPayments::findVoucher($voucherId, true);
+        // Perform Refund
+        $voucher = credit_voucher($transaction);
 
         $transaction->status = Status::REFUNDED;
         $transaction->save();

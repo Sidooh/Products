@@ -2,7 +2,6 @@
 
 namespace App\Repositories\EventRepositories;
 
-use App\Enums\Description;
 use App\Enums\EventType;
 use App\Enums\Status;
 use App\Events\TransactionSuccessEvent;
@@ -23,6 +22,7 @@ class KyandaEventRepository
 {
     /**
      * @throws \Illuminate\Http\Client\RequestException
+     * @throws \Exception
      */
     public static function request(KyandaRequest $kyandaRequest)
     {
@@ -42,10 +42,10 @@ class KyandaEventRepository
                 Log::error($e->getMessage());
             }
 
+            $voucher = credit_voucher($transaction);
+
             $transaction->status = Status::REFUNDED;
             $transaction->save();
-
-            $voucher = SidoohPayments::creditVoucher($transaction->account_id, $amount, Description::VOUCHER_REFUND);
 
             $message = match ($kyandaRequest->provider) {
                 Providers::SAFARICOM, Providers::AIRTEL, Providers::FAIBA, Providers::EQUITEL, Providers::TELKOM => "Sorry! We could not complete your KES{$amount} airtime purchase on {$date}. We have added KES{$amount} to your voucher. New Voucher balance is {$voucher['balance']}.",

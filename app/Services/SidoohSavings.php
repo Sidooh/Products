@@ -8,11 +8,14 @@ use Illuminate\Support\Facades\Log;
 
 class SidoohSavings extends SidoohService
 {
+    /**
+     * @throws \Exception
+     */
     public static function withdrawEarnings(Transaction $transaction, PaymentMethod $method): array
     {
         Log::info('...[SRV - SAVINGS]: Withdraw Earnings...');
 
-        $url = config('services.sidooh.services.savings.url') . "/accounts/$transaction->account_id/earnings/withdraw";
+        $url = config('services.sidooh.services.savings.url')."/accounts/$transaction->account_id/earnings/withdraw";
 
         $data = [
             'amount'              => $transaction->amount,
@@ -25,11 +28,14 @@ class SidoohSavings extends SidoohService
         return parent::fetch($url, 'POST', $data);
     }
 
+    /**
+     * @throws \Exception
+     */
     public static function save(array $savings)
     {
         Log::info('...[SRV - SAVINGS]: Save...');
 
-        $url = config('services.sidooh.services.savings.url') . '/accounts/earnings';
+        $url = config('services.sidooh.services.savings.url').'/accounts/earnings';
 
         return parent::fetch($url, 'POST', $savings);
     }

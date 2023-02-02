@@ -42,6 +42,7 @@ use Illuminate\Support\Carbon;
  * @property-read Collection|ATAirtimeResponse[] $airtimeResponses
  * @property-read int|null $airtime_responses_count
  * @property-read Transaction|null $transaction
+ *
  * @mixin IdeHelperATAirtimeRequest
  */
 class ATAirtimeRequest extends Model

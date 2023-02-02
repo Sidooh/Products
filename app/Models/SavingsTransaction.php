@@ -25,7 +25,7 @@ class SavingsTransaction extends Model
     ];
 
     protected $casts = [
-        'extra' => 'array'
+        'extra' => 'array',
     ];
 
     public function transaction(): BelongsTo

@@ -27,8 +27,9 @@ class SavingsController extends Controller
             $query->whereSavingsId($request->id);
         })->whereStatus(Status::PENDING)->first();
 
-        if (!$transaction) {
-            Log::critical("Error processing savings callback - no transaction");
+        if (! $transaction) {
+            Log::critical('Error processing savings callback - no transaction');
+
             return response()->json(['status' => true]);
         }
 

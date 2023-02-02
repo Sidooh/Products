@@ -65,7 +65,7 @@ class SidoohServiceTest extends TestCase
         $this->assertEquals($response, 'test-token');
 
         // Test 401
-        $this->assertThrows(fn() => SidoohService::authenticate(), RequestException::class);
+        $this->assertThrows(fn () => SidoohService::authenticate(), RequestException::class);
 
 //        $response = SidoohService::authenticate();
 
@@ -77,6 +77,6 @@ class SidoohServiceTest extends TestCase
 //        });
 
         // Test 400
-        $this->assertThrows(fn() => SidoohService::authenticate(), RequestException::class);
+        $this->assertThrows(fn () => SidoohService::authenticate(), RequestException::class);
     }
 }

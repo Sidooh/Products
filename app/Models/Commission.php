@@ -30,6 +30,7 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Commission whereTransactionId($value)
  * @method static Builder|Commission whereType($value)
  * @method static Builder|Commission whereUpdatedAt($value)
+ *
  * @mixin IdeHelperCommission
  */
 class Commission extends Model

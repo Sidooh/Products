@@ -21,10 +21,10 @@ class SubscriptionRepository
             ->includePreExpiry()->orWhere->includePostExpiry()->groupBy('account_id');
 
         // Get subscription data based on latest IDs sub query
-        $requiredSubcriptions = Subscription::joinSub($latestSubscriptions, 'latest_subs', fn($join) => $join->on('id', '=', 'latest_subs.latest_subscription_id'))
+        $requiredSubcriptions = Subscription::joinSub($latestSubscriptions, 'latest_subs', fn ($join) => $join->on('id', '=', 'latest_subs.latest_subscription_id'))
             ->get();
 
-        [$pastSubs, $futureSubs] = $requiredSubcriptions->partition(fn($s) => $s->end_date < now());
+        [$pastSubs, $futureSubs] = $requiredSubcriptions->partition(fn ($s) => $s->end_date < now());
 
         $expiredSubs = collect();
 

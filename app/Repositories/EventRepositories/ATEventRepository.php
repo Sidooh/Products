@@ -2,7 +2,6 @@
 
 namespace App\Repositories\EventRepositories;
 
-use App\Enums\Description;
 use App\Enums\EventType;
 use App\Enums\Status;
 use App\Events\TransactionSuccessEvent;
@@ -10,13 +9,13 @@ use App\Models\ATAirtimeResponse;
 use App\Repositories\EarningRepository;
 use App\Services\SidoohAccounts;
 use App\Services\SidoohNotify;
-use App\Services\SidoohPayments;
 use Illuminate\Support\Facades\Log;
 
 class ATEventRepository
 {
     /**
      * @throws \Illuminate\Auth\AuthenticationException
+     * @throws \Exception
      */
     public static function airtimePurchaseFailed(ATAirtimeResponse $airtimeResponse): void
     {
@@ -30,10 +29,11 @@ class ATEventRepository
             ->format(config('settings.sms_date_time_format'));
 
         $transaction = $airtimeResponse->airtimeRequest->transaction;
+
+        $voucher = credit_voucher($transaction);
+
         $transaction->status = Status::REFUNDED;
         $transaction->save();
-
-        $voucher = SidoohPayments::creditVoucher($transaction->account_id, $amount, Description::VOUCHER_REFUND);
 
         $message = "Sorry! We could not complete your KES{$amount} airtime purchase for {$phone} on {$date}. We have added KES{$amount} to your voucher account. New Voucher balance is {$voucher['balance']}. Use it in your next purchase.";
 
