@@ -25,10 +25,13 @@ class EarningRequest extends FormRequest
      */
     public function rules(): array
     {
+        $countryCode = config('services.sidooh.country_code');
+
         return [
-            'initiator'  => ['required', new Enum(Initiator::class)],
-            'account_id' => 'required|integer',
-            'amount'     => ['required', 'numeric', 'min:20', 'max:10000'],
+            'initiator'     => ['required', new Enum(Initiator::class)],
+            'account_id'    => 'required|integer',
+            'amount'        => ['required', 'numeric', 'min:20', 'max:10000'],
+            'target_number' => "phone:$countryCode",
         ];
     }
 }
