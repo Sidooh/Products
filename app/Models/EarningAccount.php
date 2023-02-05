@@ -22,6 +22,10 @@ class EarningAccount extends Model
         'type',
     ];
 
+    protected $casts = [
+        'type' => EarningAccountType::class,
+    ];
+
     protected function balance(): Attribute
     {
         return Attribute::make(

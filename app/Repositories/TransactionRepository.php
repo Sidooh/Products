@@ -20,6 +20,7 @@ use App\Services\SidoohNotify;
 use App\Services\SidoohPayments;
 use App\Services\SidoohSavings;
 use App\Traits\ApiResponse;
+use DB;
 use Error;
 use Exception;
 use Illuminate\Auth\AuthenticationException;
@@ -204,12 +205,13 @@ class TransactionRepository
             'extra'          => $response['extra'],
         ]);
 
-        //TODO: Fix for new users.
+        $charge = SidoohPayments::getWithdrawalCharge($transaction->amount);
+
         $acc = EarningAccount::firstOrCreate([
-            'type'       => EarningAccountType::WITHDRAWALS->name,
+            'type'       => EarningAccountType::WITHDRAWALS,
             'account_id' => $transaction->account_id,
         ]);
-        $acc->increment('self_amount', $transaction->amount);
+        $acc->increment('self_amount', (int) $transaction->amount + $charge);
 
         $tagline = config('services.sidooh.tagline');
         $message = "Your withdrawal request has been received. Please be patient as we review it.\n\n$tagline";
@@ -221,19 +223,21 @@ class TransactionRepository
 
     /**
      * @throws \Exception
+     * @throws \Throwable
      */
     public static function handleFailedWithdrawal(Transaction $transaction): void
     {
-        // TODO: wrap in transaction
-        $transaction->savingsTransaction->update(['status' => Status::FAILED]);
+        DB::transaction(function() use ($transaction) {
+            $transaction->savingsTransaction->update(['status' => Status::FAILED]);
 
-        EarningAccount::accountId($transaction->account_id)->withdrawal()->first()->decrement(
-            'self_amount',
-            $transaction->amount
-        );
+            EarningAccount::accountId($transaction->account_id)->withdrawal()->first()->decrement(
+                'self_amount',
+                $transaction->amount
+            );
 
-        $transaction->status = Status::FAILED;
-        $transaction->save();
+            $transaction->status = Status::FAILED;
+            $transaction->save();
+        });
 
         $message = "Hi, we have refunded Ksh$transaction->amount to your earnings because we could not complete your withdrawal request. We apologize for the inconvenience. Please try again.";
 
