@@ -23,7 +23,6 @@ use App\Traits\ApiResponse;
 use Error;
 use Exception;
 use Illuminate\Auth\AuthenticationException;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
@@ -220,6 +219,9 @@ class TransactionRepository
         SidoohNotify::notify([$account['phone']], $message, EventType::WITHDRAWAL_PAYMENT);
     }
 
+    /**
+     * @throws \Exception
+     */
     public static function handleFailedWithdrawal(Transaction $transaction): void
     {
         // TODO: wrap in transaction
@@ -233,7 +235,6 @@ class TransactionRepository
         $transaction->status = Status::FAILED;
         $transaction->save();
 
-//        $message = 'Hi, we failed to complete your withdrawal request. No amount was deducted from your account. We apologize for the inconvenience. Please try again.';
         $message = "Hi, we have refunded Ksh$transaction->amount to your earnings because we could not complete your withdrawal request. We apologize for the inconvenience. Please try again.";
 
         $account = SidoohAccounts::find($transaction->account_id);
