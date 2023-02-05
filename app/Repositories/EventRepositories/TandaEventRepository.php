@@ -47,7 +47,7 @@ class TandaEventRepository
         return $provider;
     }
 
-    public static function requestSuccess(TandaRequest $tandaRequest)
+    public static function requestSuccess(TandaRequest $tandaRequest): void
     {
         // Update Transaction
         if ($tandaRequest->relation_id) {
@@ -63,10 +63,20 @@ class TandaEventRepository
             $tandaRequest->save();
         }
 
-        if ($transaction->status == Status::COMPLETED) {
+        if ($transaction->status == Status::COMPLETED->value) {
             SidoohNotify::notify(
                 admin_contacts(),
-                "ERROR:TANDA REQUEST\nTransaction $transaction seems to have been completed already. Confirm!!!",
+                "ERROR:TANDA REQUEST\nTransaction $transaction->id seems to have been completed already. Confirm!!!",
+                EventType::ERROR_ALERT
+            );
+
+            return;
+        }
+
+        if ($transaction->status != Status::PENDING->value) {
+            SidoohNotify::notify(
+                admin_contacts(),
+                "ERROR:TANDA REQUEST\nTransaction $transaction->id is not pending. Confirm!!!",
                 EventType::ERROR_ALERT
             );
 
@@ -186,8 +196,14 @@ class TandaEventRepository
         // Update Transaction
         $transaction = Transaction::find($tandaRequest->relation_id);
 
-        if ($transaction->status !== Status::PENDING) {
-            throw new Exception('Transaction not pending.');
+        if ($transaction->status != Status::PENDING->value) {
+            SidoohNotify::notify(
+                admin_contacts(),
+                "ERROR:TANDA REQUEST\nTransaction $transaction->id is not pending. Confirm!!!",
+                EventType::ERROR_ALERT
+            );
+
+            return;
         }
 
         $destination = $transaction->destination;
