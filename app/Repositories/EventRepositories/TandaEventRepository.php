@@ -186,6 +186,10 @@ class TandaEventRepository
         // Update Transaction
         $transaction = Transaction::find($tandaRequest->relation_id);
 
+        if ($transaction->status !== Status::PENDING) {
+            throw new Exception('Transaction not pending.');
+        }
+
         $destination = $transaction->destination;
         $sender = SidoohAccounts::find($transaction->account_id)['phone'];
 
