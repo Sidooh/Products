@@ -60,12 +60,7 @@ class TransactionRepository
         };
 
         $paymentData = new PaymentDTO(
-            $t->account_id,
-            $t->amount,
-            $t->description,
-            $t->destination,
-            $paymentMethod,
-            $debitAccount
+            $t->account_id, $t->amount, $t->description, $t->destination, $paymentMethod, $debitAccount
         );
 
         if (is_int($t->product_id)) {
@@ -232,7 +227,7 @@ class TransactionRepository
 
             EarningAccount::accountId($transaction->account_id)->withdrawal()->first()->decrement(
                 'self_amount',
-                $transaction->amount
+                (int) $transaction->amount + SidoohPayments::getWithdrawalCharge($transaction->amount)
             );
 
             $transaction->status = Status::FAILED;
