@@ -220,7 +220,7 @@ class TransactionRepository
         SidoohNotify::notify([$account['phone']], $message, EventType::WITHDRAWAL_PAYMENT);
     }
 
-    public static function handleFailedWithdrawal(Transaction $transaction, Request $savings): void
+    public static function handleFailedWithdrawal(Transaction $transaction): void
     {
         // TODO: wrap in transaction
         $transaction->savingsTransaction->update(['status' => Status::FAILED]);
