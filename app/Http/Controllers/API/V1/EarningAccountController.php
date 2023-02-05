@@ -10,6 +10,9 @@ use Illuminate\Http\Request;
 
 class EarningAccountController extends Controller
 {
+    /**
+     * @throws \Illuminate\Auth\AuthenticationException
+     */
     public function index(Request $request): JsonResponse
     {
         $relations = explode(',', $request->query('with'));
@@ -29,6 +32,9 @@ class EarningAccountController extends Controller
         return $this->successResponse($earningAccounts);
     }
 
+    /**
+     * @throws \Exception
+     */
     public function show(Request $request, EarningAccount $earningAccount): JsonResponse
     {
         $relations = explode(',', $request->query('with'));

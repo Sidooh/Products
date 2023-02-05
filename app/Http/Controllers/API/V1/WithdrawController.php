@@ -39,7 +39,7 @@ class WithdrawController extends Controller
         }
 
         [$creditAccounts, $debitAccounts] = $earningAccounts
-            ->partition(fn ($a) => $a->type !== EarningAccountType::WITHDRAWALS->name);
+            ->partition(fn ($a) => $a->type !== EarningAccountType::WITHDRAWALS);
 
         $totalEarned = $creditAccounts->reduce(fn ($total, $account) => $total + $account->balance);
         $totalWithdrawn = $debitAccounts->reduce(fn ($total, $account) => $total + $account->balance);

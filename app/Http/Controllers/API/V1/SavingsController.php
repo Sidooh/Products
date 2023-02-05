@@ -34,7 +34,7 @@ class SavingsController extends Controller
         }
 
         if ($request->status === Status::FAILED->value) {
-            TransactionRepository::handleFailedWithdrawal($transaction, $request);
+            TransactionRepository::handleFailedWithdrawal($transaction);
         }
 
         if ($request->status === Status::COMPLETED->value) {
