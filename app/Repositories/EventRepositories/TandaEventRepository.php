@@ -73,7 +73,7 @@ class TandaEventRepository
             return;
         }
 
-        if ($transaction->status !== Status::PENDING) {
+        if ($transaction->status != Status::PENDING) {
             SidoohNotify::notify(
                 admin_contacts(),
                 "ERROR:TANDA REQUEST\nTransaction $transaction is not pending. Confirm!!!",
@@ -196,7 +196,7 @@ class TandaEventRepository
         // Update Transaction
         $transaction = Transaction::find($tandaRequest->relation_id);
 
-        if ($transaction->status !== Status::PENDING) {
+        if ($transaction->status != Status::PENDING) {
             SidoohNotify::notify(
                 admin_contacts(),
                 "ERROR:TANDA REQUEST\nTransaction $transaction is not pending. Confirm!!!",
