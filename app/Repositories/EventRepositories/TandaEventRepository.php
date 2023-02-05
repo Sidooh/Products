@@ -66,7 +66,7 @@ class TandaEventRepository
         if ($transaction->status == Status::COMPLETED->value) {
             SidoohNotify::notify(
                 admin_contacts(),
-                "ERROR:TANDA REQUEST\nTransaction $transaction seems to have been completed already. Confirm!!!",
+                "ERROR:TANDA REQUEST\nTransaction $transaction->id seems to have been completed already. Confirm!!!",
                 EventType::ERROR_ALERT
             );
 
@@ -76,7 +76,7 @@ class TandaEventRepository
         if ($transaction->status != Status::PENDING->value) {
             SidoohNotify::notify(
                 admin_contacts(),
-                "ERROR:TANDA REQUEST\nTransaction $transaction is not pending. Confirm!!!",
+                "ERROR:TANDA REQUEST\nTransaction $transaction->id is not pending. Confirm!!!",
                 EventType::ERROR_ALERT
             );
 
@@ -199,7 +199,7 @@ class TandaEventRepository
         if ($transaction->status != Status::PENDING->value) {
             SidoohNotify::notify(
                 admin_contacts(),
-                "ERROR:TANDA REQUEST\nTransaction $transaction is not pending. Confirm!!!",
+                "ERROR:TANDA REQUEST\nTransaction $transaction->id is not pending. Confirm!!!",
                 EventType::ERROR_ALERT
             );
 
