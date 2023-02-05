@@ -47,7 +47,7 @@ class TandaEventRepository
         return $provider;
     }
 
-    public static function requestSuccess(TandaRequest $tandaRequest)
+    public static function requestSuccess(TandaRequest $tandaRequest): void
     {
         // Update Transaction
         if ($tandaRequest->relation_id) {
