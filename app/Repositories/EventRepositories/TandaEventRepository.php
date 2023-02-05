@@ -73,6 +73,16 @@ class TandaEventRepository
             return;
         }
 
+        if ($transaction->status !== Status::PENDING) {
+            SidoohNotify::notify(
+                admin_contacts(),
+                "ERROR:TANDA REQUEST\nTransaction $transaction is not pending. Confirm!!!",
+                EventType::ERROR_ALERT
+            );
+
+            return;
+        }
+
         $provider = self::getProvider($tandaRequest, $transaction);
         // Handle for KPLC provider :: https://products-dashboard-zwwy5he2ia-uc.a.run.app/transactions/13159
 
@@ -185,6 +195,16 @@ class TandaEventRepository
     {
         // Update Transaction
         $transaction = Transaction::find($tandaRequest->relation_id);
+
+        if ($transaction->status !== Status::PENDING) {
+            SidoohNotify::notify(
+                admin_contacts(),
+                "ERROR:TANDA REQUEST\nTransaction $transaction is not pending. Confirm!!!",
+                EventType::ERROR_ALERT
+            );
+
+            return;
+        }
 
         $destination = $transaction->destination;
         $sender = SidoohAccounts::find($transaction->account_id)['phone'];
