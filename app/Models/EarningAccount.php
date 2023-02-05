@@ -35,7 +35,7 @@ class EarningAccount extends Model
 
     public function scopeWithdrawal(Builder $query): Builder
     {
-        return $query->whereType(EarningAccountType::WITHDRAWALS->name);
+        return $query->whereType(EarningAccountType::WITHDRAWALS);
     }
 
     public function scopeAccountId(Builder $query, int $accountId): Builder

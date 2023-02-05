@@ -2,10 +2,10 @@
 
 namespace App\Enums;
 
-enum EarningAccountType
+enum EarningAccountType: string
 {
-    case PURCHASES;
-    case SUBSCRIPTIONS;
-    case WITHDRAWALS;
-    case MERCHANT;
+    case PURCHASES = 'PURCHASES';
+    case SUBSCRIPTIONS = 'SUBSCRIPTIONS';
+    case WITHDRAWALS = 'WITHDRAWALS';
+    case MERCHANT = 'MERCHANT';
 }

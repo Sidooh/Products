@@ -107,7 +107,7 @@ class EarningRepository
                 //TODO: Is it possible to update in one statement? with the addition since we don't know the initial amount?
                 $earningAccount = EarningAccount::firstOrCreate([
                     'account_id' => $inviter['id'],
-                    'type'       => EarningAccountType::SUBSCRIPTIONS->name,
+                    'type'       => EarningAccountType::SUBSCRIPTIONS,
                 ]);
 
                 $earningAccount->invite_amount += $earningPerUser;
@@ -155,7 +155,7 @@ class EarningRepository
         //TODO: Is it possible to update in one statement? with the addition since we don't know the initial amount?
         $earningAccount = EarningAccount::firstOrCreate([
             'account_id' => $transaction->account_id,
-            'type'       => EarningAccountType::PURCHASES->name,
+            'type'       => EarningAccountType::PURCHASES,
         ]);
 
         $earningAccount->self_amount += $rootEarnings;
@@ -195,7 +195,7 @@ class EarningRepository
                 //TODO: Is it possible to update in one statement? with the addition since we don't know the initial amount?
                 $earningAccount = EarningAccount::firstOrCreate([
                     'account_id' => $inviter['id'],
-                    'type'       => EarningAccountType::PURCHASES->name,
+                    'type'       => EarningAccountType::PURCHASES,
                 ]);
 
                 $earningAccount->invite_amount += $userEarnings;
@@ -252,7 +252,7 @@ class EarningRepository
                     //TODO: Is it possible to update in one statement? with the addition since we don't know the initial amount?
                     $earningAccount = EarningAccount::firstOrCreate([
                         'account_id' => $inviter['id'],
-                        'type'       => EarningAccountType::PURCHASES->name,
+                        'type'       => EarningAccountType::PURCHASES,
                     ]);
 
                     $earningAccount->invite_amount += $userEarnings;
@@ -305,7 +305,7 @@ class EarningRepository
         //TODO: Is it possible to update in one statement? with the addition since we don't know the initial amount?
         $earningAccount = EarningAccount::firstOrCreate([
             'account_id' => $transaction->account_id,
-            'type'       => EarningAccountType::SUBSCRIPTIONS->name,
+            'type'       => EarningAccountType::SUBSCRIPTIONS,
         ]);
 
         $earningAccount->self_amount += $earningPerUser;
@@ -329,7 +329,7 @@ class EarningRepository
         //TODO: Is it possible to update in one statement? with the addition since we don't know the initial amount?
         $earningAccount = EarningAccount::firstOrCreate([
             'account_id' => $transaction->account_id,
-            'type'       => EarningAccountType::PURCHASES->name,
+            'type'       => EarningAccountType::PURCHASES,
         ]);
 
         $earningAccount->self_amount += $userEarnings;
