@@ -40,10 +40,10 @@ class ProductController extends Controller
             $message .= "\t - Kyanda Float: $kyandaFloatBalance\n";
         }
         if ($atBalance <= config('services.at.airtime.threshold')) {
-            $message .= "\t - At Airtime: $atBalance\n\n";
+            $message .= "\t - At Airtime: $atBalance\n";
         }
 
-        $message .= '#SRV:Products';
+        $message .= "\n#SRV:Products";
 
         if (str($message)->contains('-')) {
             SidoohNotify::notify(admin_contacts(), $message, EventType::STATUS_UPDATE);
