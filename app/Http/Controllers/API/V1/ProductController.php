@@ -45,7 +45,9 @@ class ProductController extends Controller
 
         $message .= '#SRV:Products';
 
-        SidoohNotify::notify(admin_contacts(), $message, EventType::STATUS_UPDATE);
+        if (str($message)->contains('-')) {
+            SidoohNotify::notify(admin_contacts(), $message, EventType::STATUS_UPDATE);
+        }
 
         return $this->successResponse([
             'balances'  => ['at' => $atBalance, 'tanda' => $tandaFloatBalance, 'kyanda' => $kyandaFloatBalance],
