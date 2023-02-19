@@ -139,7 +139,7 @@ class TransactionRepository
             $message = match ($payment->error_code) {
                 101       => 'You have insufficient balance for this transaction. Kindly top up your Mpesa and try again.',
                 102, 103       => 'Sorry! The mpesa payment request seems to have been cancelled or timed out. Please try again.',
-                default => 'Sorry! We failed to complete your transaction. No amount was deducted from your account. We apologize for the inconvenience. Please try again.',
+                default   => 'Sorry! We failed to complete your transaction. No amount was deducted from your account. We apologize for the inconvenience. Please try again.',
             };
         } elseif (ProductType::tryFrom($transaction->product_id) === ProductType::MERCHANT) {
             $destination = $transaction->destination;
