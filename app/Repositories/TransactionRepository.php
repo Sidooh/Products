@@ -23,6 +23,7 @@ use DB;
 use Error;
 use Exception;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
@@ -59,7 +60,12 @@ class TransactionRepository
         };
 
         $paymentData = new PaymentDTO(
-            $t->account_id, $t->amount, $t->description, $t->destination, $paymentMethod, $debitAccount
+            $t->account_id,
+            $t->amount,
+            $t->description,
+            $t->destination,
+            $paymentMethod,
+            $debitAccount
         );
 
         if (is_int($t->product_id)) {
@@ -79,25 +85,39 @@ class TransactionRepository
             default               => $paymentData->setDestination(PaymentMethod::FLOAT, 1)
         };
 
-        $p = SidoohPayments::requestPayment($paymentData);
+        try {
+            $p = SidoohPayments::requestPayment($paymentData);
 
-        $paymentData = [
-            'transaction_id' => $t->id,
-            'payment_id'     => $p['id'],
-            'amount'         => $p['amount'],
-            'type'           => $p['type'],
-            'subtype'        => $p['subtype'],
-            'status'         => $p['status'],
-            'extra'          => [
-                'debit_account' => $debitAccount,
-                ...($p['destination'] ?? []),
-            ],
-        ];
+            $paymentData = [
+                'transaction_id' => $t->id,
+                'payment_id'     => $p['id'],
+                'amount'         => $p['amount'],
+                'type'           => $p['type'],
+                'subtype'        => $p['subtype'],
+                'status'         => $p['status'],
+                'extra'          => [
+                    'debit_account' => $debitAccount,
+                    ...($p['destination'] ?? []),
+                ],
+            ];
 
-        Payment::create($paymentData);
+            Payment::create($paymentData);
 
-        if ($p && $data['method'] === PaymentMethod::VOUCHER && $t->product_id !== ProductType::MERCHANT) {
-            self::requestPurchase($t);
+            if ($p && $data['method'] === PaymentMethod::VOUCHER && $t->product_id !== ProductType::MERCHANT) {
+                self::requestPurchase($t);
+            }
+        } catch (HttpResponseException) {
+            if ($data['method'] === PaymentMethod::VOUCHER) {
+                $t->update(['status' => Status::FAILED]);
+
+                $phone = SidoohAccounts::find($t->account_id)['phone'];
+
+                SidoohNotify::notify(
+                    [$phone],
+                    'Sorry! We failed to complete your transaction. No amount was deducted from your account. We apologize for the inconvenience. Please try again.',
+                    EventType::PAYMENT_FAILURE
+                );
+            }
         }
     }
 
@@ -137,9 +157,9 @@ class TransactionRepository
 
         if (isset($payment->error_code)) {
             $message = match ($payment->error_code) {
-                101       => 'You have insufficient balance for this transaction. Kindly top up your Mpesa and try again.',
-                102, 103       => 'Sorry! The mpesa payment request seems to have been cancelled or timed out. Please try again.',
-                default   => 'Sorry! We failed to complete your transaction. No amount was deducted from your account. We apologize for the inconvenience. Please try again.',
+                101      => 'You have insufficient balance for this transaction. Kindly top up your Mpesa and try again.',
+                102, 103 => 'Sorry! The mpesa payment request seems to have been cancelled or timed out. Please try again.',
+                default  => 'Sorry! We failed to complete your transaction. No amount was deducted from your account. We apologize for the inconvenience. Please try again.',
             };
         } elseif (ProductType::tryFrom($transaction->product_id) === ProductType::MERCHANT) {
             $destination = $transaction->destination;

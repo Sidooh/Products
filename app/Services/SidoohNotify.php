@@ -16,7 +16,6 @@ class SidoohNotify extends SidoohService
 
         $url = config('services.sidooh.services.notify.url').'/notifications';
 
-//        dispatch(function () use ($message, $to, $eventType, $url) {
         try {
             $response = parent::fetch($url, 'POST', [
                 'channel'     => 'SMS',
@@ -39,6 +38,5 @@ class SidoohNotify extends SidoohService
                 'response' => ['err' => $e->getMessage()],
             ]);
         }
-//        })->afterResponse();
     }
 }

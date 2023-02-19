@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\DTOs\PaymentDTO;
-use App\Enums\PaymentMethod;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -34,21 +33,6 @@ class SidoohPayments extends SidoohService
         $endpoint = self::baseUrl().$paymentData->endpoint;
 
         return parent::fetch($endpoint, 'POST', (array) $paymentData);
-    }
-
-    /**
-     * @throws \Exception
-     */
-    public static function requestB2bPayment(array $transaction, PaymentMethod $method, string $debit_account, array $merchantDetails): ?array
-    {
-        Log::info('...[SRV - PAYMENTS]: Request B2B Payment...');
-
-        return parent::fetch(self::baseUrl().'/payments/b2b', 'POST', [
-            'transactions'  => [$transaction],
-            'payment_mode'  => $method->name,
-            'debit_account' => $debit_account,
-            ...$merchantDetails,
-        ]);
     }
 
     /**
