@@ -21,7 +21,7 @@ class ProductController extends Controller
         return $this->successResponse($discounts);
     }
 
-    public function checkProviderBalances(): JsonResponse
+    public function queryProviderBalances()
     {
         $tanda = TandaApi::balance();
         $kyanda = KyandaApi::balance();
@@ -31,29 +31,20 @@ class ProductController extends Controller
         $kyandaFloatBalance = $kyanda['Account_Bal'];
         $atBalance = (float) ltrim($AT['data']->UserData->balance, 'KES');
 
-        $message = "! System Balances Below Threshold:\n";
+        $message = "Provider Balances:\n";
 
-        if ($tandaFloatBalance <= config('services.tanda.float.threshold')) {
+        $tandaIsBelowThresh = $tandaFloatBalance <= config('services.tanda.float.threshold');
+        $kyandaIsBelowThresh = $kyandaFloatBalance <= config('services.kyanda.float.threshold');
+        $ATAirtimeIsBelowThresh = $atBalance <= config('services.at.airtime.threshold');
+
+        if ($tandaIsBelowThresh || $kyandaIsBelowThresh || $ATAirtimeIsBelowThresh) {
             $message .= "\t - Tanda Float: $tandaFloatBalance\n";
-        }
-        if ($kyandaFloatBalance <= config('services.kyanda.float.threshold')) {
             $message .= "\t - Kyanda Float: $kyandaFloatBalance\n";
-        }
-        if ($atBalance <= config('services.at.airtime.threshold')) {
-            $message .= "\t - At Airtime: $atBalance\n";
-        }
+//            $message .= "\t - At Airtime: $atBalance\n";
 
-        $message .= "\n#SRV:Products";
+            $message .= "\n#SRV:Products";
 
-        if (str($message)->contains('-')) {
             SidoohNotify::notify(admin_contacts(), $message, EventType::STATUS_UPDATE);
         }
-
-        return $this->successResponse([
-            'balances'  => ['at' => $atBalance, 'tanda' => $tandaFloatBalance, 'kyanda' => $kyandaFloatBalance],
-            'at'        => $AT,
-            'tanda'     => $tanda,
-            'kyanda'    => $kyanda,
-        ]);
     }
 }

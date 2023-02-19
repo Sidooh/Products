@@ -38,7 +38,7 @@ Route::prefix('/v1')->group(function() {
         Route::post('/invest', [CashbackController::class, 'invest']);
     });
 
-    Route::get('/providers/check-balances', [ProductController::class, 'checkProviderBalances']);
+    Route::get('/providers/check-balances', [ProductController::class, 'queryProviderBalances']);
 });
 
 Route::prefix('/sidooh')->group(function() {
