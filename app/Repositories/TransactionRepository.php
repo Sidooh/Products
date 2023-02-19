@@ -6,7 +6,6 @@ use App\DTOs\PaymentDTO;
 use App\Enums\EarningAccountType;
 use App\Enums\EventType;
 use App\Enums\PaymentMethod;
-use App\Enums\PaymentSubtype;
 use App\Enums\ProductType;
 use App\Enums\Status;
 use App\Helpers\Product\Purchase;
@@ -136,9 +135,10 @@ class TransactionRepository
         $transaction->status = Status::FAILED;
         $transaction->save();
 
-        if ($payment->subtype === PaymentSubtype::STK->name && isset($payment->code)) {
-            $message = match ($payment->code) {
-                1       => 'You have insufficient Mpesa Balance for this transaction. Kindly top up your Mpesa and try again.',
+        if (isset($payment->error_code)) {
+            $message = match ($payment->error_code) {
+                101       => 'You have insufficient balance for this transaction. Kindly top up your Mpesa and try again.',
+                102       => 'Sorry! The mpesa payment request seems to have been cancelled. Please try again.',
                 default => 'Sorry! We failed to complete your transaction. No amount was deducted from your account. We apologize for the inconvenience. Please try again.',
             };
         } elseif (ProductType::tryFrom($transaction->product_id) === ProductType::MERCHANT) {
