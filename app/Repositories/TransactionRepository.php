@@ -6,7 +6,6 @@ use App\DTOs\PaymentDTO;
 use App\Enums\EarningAccountType;
 use App\Enums\EventType;
 use App\Enums\PaymentMethod;
-use App\Enums\PaymentSubtype;
 use App\Enums\ProductType;
 use App\Enums\Status;
 use App\Helpers\Product\Purchase;
@@ -20,10 +19,10 @@ use App\Services\SidoohNotify;
 use App\Services\SidoohPayments;
 use App\Services\SidoohSavings;
 use App\Traits\ApiResponse;
+use DB;
 use Error;
 use Exception;
 use Illuminate\Auth\AuthenticationException;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
@@ -60,12 +59,7 @@ class TransactionRepository
         };
 
         $paymentData = new PaymentDTO(
-            $t->account_id,
-            $t->amount,
-            $t->description,
-            $t->destination,
-            $paymentMethod,
-            $debitAccount
+            $t->account_id, $t->amount, $t->description, $t->destination, $paymentMethod, $debitAccount
         );
 
         if (is_int($t->product_id)) {
@@ -141,9 +135,10 @@ class TransactionRepository
         $transaction->status = Status::FAILED;
         $transaction->save();
 
-        if ($payment->subtype === PaymentSubtype::STK->name && isset($payment->code)) {
-            $message = match ($payment->code) {
-                1       => 'You have insufficient Mpesa Balance for this transaction. Kindly top up your Mpesa and try again.',
+        if (isset($payment->error_code)) {
+            $message = match ($payment->error_code) {
+                101       => 'You have insufficient balance for this transaction. Kindly top up your Mpesa and try again.',
+                102, 103       => 'Sorry! The mpesa payment request seems to have been cancelled or timed out. Please try again.',
                 default => 'Sorry! We failed to complete your transaction. No amount was deducted from your account. We apologize for the inconvenience. Please try again.',
             };
         } elseif (ProductType::tryFrom($transaction->product_id) === ProductType::MERCHANT) {
@@ -205,12 +200,13 @@ class TransactionRepository
             'extra'          => $response['extra'],
         ]);
 
-        //TODO: Fix for new users.
+        $charge = SidoohPayments::getWithdrawalCharge($transaction->amount);
+
         $acc = EarningAccount::firstOrCreate([
-            'type'       => EarningAccountType::WITHDRAWALS->name,
+            'type'       => EarningAccountType::WITHDRAWALS,
             'account_id' => $transaction->account_id,
         ]);
-        $acc->increment('self_amount', $transaction->amount);
+        $acc->increment('self_amount', (int) $transaction->amount + $charge);
 
         $tagline = config('services.sidooh.tagline');
         $message = "Your withdrawal request has been received. Please be patient as we review it.\n\n$tagline";
@@ -220,20 +216,24 @@ class TransactionRepository
         SidoohNotify::notify([$account['phone']], $message, EventType::WITHDRAWAL_PAYMENT);
     }
 
-    public static function handleFailedWithdrawal(Transaction $transaction, Request $savings): void
+    /**
+     * @throws \Exception
+     * @throws \Throwable
+     */
+    public static function handleFailedWithdrawal(Transaction $transaction): void
     {
-        // TODO: wrap in transaction
-        $transaction->savingsTransaction->update(['status' => Status::FAILED]);
+        DB::transaction(function() use ($transaction) {
+            $transaction->savingsTransaction->update(['status' => Status::FAILED]);
 
-        EarningAccount::accountId($transaction->account_id)->withdrawal()->first()->decrement(
-            'self_amount',
-            $transaction->amount
-        );
+            EarningAccount::accountId($transaction->account_id)->withdrawal()->first()->decrement(
+                'self_amount',
+                (int) $transaction->amount + SidoohPayments::getWithdrawalCharge($transaction->amount)
+            );
 
-        $transaction->status = Status::FAILED;
-        $transaction->save();
+            $transaction->status = Status::FAILED;
+            $transaction->save();
+        });
 
-//        $message = 'Hi, we failed to complete your withdrawal request. No amount was deducted from your account. We apologize for the inconvenience. Please try again.';
         $message = "Hi, we have refunded Ksh$transaction->amount to your earnings because we could not complete your withdrawal request. We apologize for the inconvenience. Please try again.";
 
         $account = SidoohAccounts::find($transaction->account_id);

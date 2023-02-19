@@ -30,20 +30,6 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
-    'at'       => [
-        'key'      => 'a828e15f1db322b77d7f57787ea3d390d06f3e5ab6e9254fe80044afaf4b0d82',
-        'username' => 'sandbox',
-        'phone'    => null,
-        'env'      => 'development',
-        'airtime'  => [
-            'key'      => '89770c2faea7f33dce6ca5605a0cd7b9e810a999af8ea0c051a5e504d2380928',
-            'username' => 'sidooh_airtime',
-        ],
-        'ussd'     => [
-            'code' => '*384*99#',
-        ],
-    ],
-
     'sidooh'   => [
         'jwt_key'            => env('JWT_KEY'),
         'earnings'           => [
@@ -81,6 +67,22 @@ return [
         ],
         'admin_contacts'     => env('ADMIN_CONTACTS', '254110039317,254714611696,254711414987'),
         'country_code'       => env('COUNTRY_CODE', 'KE'),
+    ],
+
+    'at'       => [
+        'key'      => 'a828e15f1db322b77d7f57787ea3d390d06f3e5ab6e9254fe80044afaf4b0d82',
+        'username' => 'sandbox',
+        'phone'    => null,
+        'env'      => 'development',
+        'airtime'  => [
+            'key'       => '89770c2faea7f33dce6ca5605a0cd7b9e810a999af8ea0c051a5e504d2380928',
+            'username'  => 'sidooh_airtime',
+
+            'threshold' => env('AT_AIRTIME_THRESHOLD', 5000),
+        ],
+        'ussd'     => [
+            'code' => '*384*99#',
+        ],
     ],
 
     'tanda'    => [
@@ -129,6 +131,9 @@ return [
                 'type'  => '$',
                 'value' => 5,
             ],
+        ],
+        'float'     => [
+            'threshold' => env('TANDA_FLOAT_THRESHOLD', 10000),
         ],
     ],
 
@@ -186,6 +191,9 @@ return [
                 'type'  => '$',
                 'value' => 5,
             ],
+        ],
+        'float'     => [
+            'threshold' => env('KYANDA_FLOAT_THRESHOLD', 10000),
         ],
     ],
 ];

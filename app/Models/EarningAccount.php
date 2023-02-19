@@ -22,6 +22,10 @@ class EarningAccount extends Model
         'type',
     ];
 
+    protected $casts = [
+        'type' => EarningAccountType::class,
+    ];
+
     protected function balance(): Attribute
     {
         return Attribute::make(
@@ -31,7 +35,7 @@ class EarningAccount extends Model
 
     public function scopeWithdrawal(Builder $query): Builder
     {
-        return $query->whereType(EarningAccountType::WITHDRAWALS->name);
+        return $query->whereType(EarningAccountType::WITHDRAWALS);
     }
 
     public function scopeAccountId(Builder $query, int $accountId): Builder

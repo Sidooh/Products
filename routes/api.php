@@ -37,6 +37,8 @@ Route::prefix('/v1')->group(function() {
     Route::prefix('/cashbacks')->group(function() {
         Route::post('/invest', [CashbackController::class, 'invest']);
     });
+
+    Route::get('/providers/check-balances', [ProductController::class, 'queryProviderBalances']);
 });
 
 Route::prefix('/sidooh')->group(function() {
@@ -123,6 +125,4 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function() {
 
     // Utilities
     Route::get('/earnings/rates', [ProductController::class, 'getEarningRates']);
-
-    Route::get('/service-providers/balance', [ProductController::class, 'getServiceProviderBalance']);
 });

@@ -147,7 +147,10 @@ namespace App\Models{
      * @method static Builder|Cashback whereType($value)
      * @method static Builder|Cashback whereUpdatedAt($value)
      *
+     * @property \App\Enums\Status $status
      * @property-read \App\Models\Transaction $transaction
+     *
+     * @method static \Illuminate\Database\Eloquent\Builder|Cashback whereStatus($value)
      */
     class IdeHelperCashback
     {
@@ -188,7 +191,7 @@ namespace App\Models{
      * App\Models\EarningAccount
      *
      * @property int $id
-     * @property string $type
+     * @property \App\Enums\EarningAccountType $type
      * @property string $self_amount
      * @property string $invite_amount
      * @property int $account_id
@@ -446,43 +449,43 @@ namespace App\Models{
     /**
      * App\Models\Transaction
      *
-     * @property int                        $id
-     * @property string                     $initiator
-     * @property string                     $type
-     * @property string                     $amount
-     * @property string                     $status
-     * @property string|null                $destination
-     * @property string                     $description
-     * @property int                        $account_id
-     * @property Carbon|null                $created_at
-     * @property Carbon|null                $updated_at
-     * @property-read ATAirtimeRequest|null $atAirtimeRequest
-     * @property-read KyandaRequest|null    $kyandaTransaction
-     * @property-read TandaRequest|null     $tandaRequest
-     *
-     * @method static TransactionFactory factory(...$parameters)
-     * @method static Builder|Transaction newModelQuery()
-     * @method static Builder|Transaction newQuery()
-     * @method static Builder|Transaction query()
-     * @method static Builder|Transaction whereAccountId($value)
-     * @method static Builder|Transaction whereAmount($value)
-     * @method static Builder|Transaction whereCreatedAt($value)
-     * @method static Builder|Transaction whereDescription($value)
-     * @method static Builder|Transaction whereDestination($value)
-     * @method static Builder|Transaction whereId($value)
-     * @method static Builder|Transaction whereInitiator($value)
-     * @method static Builder|Transaction whereStatus($value)
-     * @method static Builder|Transaction whereType($value)
-     * @method static Builder|Transaction whereUpdatedAt($value)
-     *
+     * @property int $id
+     * @property string $initiator
+     * @property \App\Enums\TransactionType $type
+     * @property string $amount
+     * @property string $status
+     * @property string $description
+     * @property string|null $destination
+     * @property int $account_id
      * @property int $product_id
+     * @property \Illuminate\Support\Carbon|null $created_at
+     * @property \Illuminate\Support\Carbon|null $updated_at
+     * @property-read \App\Models\ATAirtimeRequest|null $atAirtimeRequest
      * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Cashback[] $cashbacks
      * @property-read int|null $cashbacks_count
+     * @property-read \Nabcellent\Kyanda\Models\KyandaRequest|null $kyandaTransaction
      * @property-read \App\Models\Payment|null $payment
      * @property-read \App\Models\Product $product
      * @property-read \App\Models\SavingsTransaction|null $savingsTransaction
+     * @property-read \DrH\Tanda\Models\TandaRequest|null $tandaRequest
      *
+     * @method static \Database\Factories\TransactionFactory factory(...$parameters)
+     * @method static \Illuminate\Database\Eloquent\Builder|Transaction newModelQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder|Transaction newQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder|Transaction query()
+     * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereAccountId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereAmount($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereCreatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereDescription($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereDestination($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereInitiator($value)
      * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereProductId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereStatus($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereType($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereUpdatedAt($value)
+     *
+     * @mixin \Eloquent
      */
     class IdeHelperTransaction
     {
