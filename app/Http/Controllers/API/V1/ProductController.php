@@ -40,7 +40,7 @@ class ProductController extends Controller
         if ($tandaIsBelowThresh || $kyandaIsBelowThresh || $ATAirtimeIsBelowThresh) {
             $message .= "\t - Tanda Float: $tandaFloatBalance\n";
             $message .= "\t - Kyanda Float: $kyandaFloatBalance\n";
-//            $message .= "\t - At Airtime: $atBalance\n";
+            $message .= "\t - At Airtime: $atBalance\n";
 
             $message .= "\n#SRV:Products";
 
