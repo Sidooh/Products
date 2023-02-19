@@ -5,11 +5,23 @@ namespace App\Helpers\Kyanda;
 use App\Models\Transaction;
 use Illuminate\Support\Facades\Log;
 use Nabcellent\Kyanda\Exceptions\KyandaException;
+use Nabcellent\Kyanda\Facades\Account;
 use Nabcellent\Kyanda\Facades\Utility;
 use Nabcellent\Kyanda\Models\KyandaRequest;
 
 class KyandaApi
 {
+    public static function balance()
+    {
+        Log::info('...[KYANDA-API]: Balance...');
+
+        try {
+            return Account::balance();
+        } catch (KyandaException $e) {
+            Log::error('KyandaError: '.$e->getMessage());
+        }
+    }
+
     public static function airtime(Transaction $transaction, int $phone): bool|KyandaRequest|array
     {
         Log::info('--- --- --- --- ---   ...[KYANDA-API]: Disburse Airtime...   --- --- --- --- ---');
