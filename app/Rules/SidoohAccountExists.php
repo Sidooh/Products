@@ -3,20 +3,18 @@
 namespace App\Rules;
 
 use App\Services\SidoohAccounts;
+use Closure;
 use Exception;
-use Illuminate\Contracts\Validation\InvokableRule;
+use Illuminate\Contracts\Validation\ValidationRule;
 
-class SidoohAccountExists implements InvokableRule
+class SidoohAccountExists implements ValidationRule
 {
     /**
      * Run the validation rule.
      *
-     * @param  string  $attribute
-     * @param  mixed  $value
-     * @param \Closure(string): \Illuminate\Translation\PotentiallyTranslatedString $fail
-     * @return void
+     * @param  \Closure(string): \Illuminate\Translation\PotentiallyTranslatedString  $fail
      */
-    public function __invoke($attribute, $value, $fail): void
+    public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         try {
             $account = SidoohAccounts::find($value);
@@ -24,7 +22,7 @@ class SidoohAccountExists implements InvokableRule
             if (! isset($account['id'])) {
                 $fail('The :attribute must be a valid Sidooh account.');
             }
-        } catch (Exception $e) {
+        } catch (Exception) {
             $fail('The :attribute must be a valid Sidooh account.');
         }
     }

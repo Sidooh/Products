@@ -3,20 +3,18 @@
 namespace App\Rules;
 
 use App\Services\SidoohPayments;
+use Closure;
 use Exception;
-use Illuminate\Contracts\Validation\InvokableRule;
+use Illuminate\Contracts\Validation\ValidationRule;
 
-class SidoohVoucherExists implements InvokableRule
+class SidoohVoucherExists implements ValidationRule
 {
     /**
      * Run the validation rule.
      *
-     * @param  string  $attribute
-     * @param  mixed  $value
-     * @param \Closure(string): \Illuminate\Translation\PotentiallyTranslatedString $fail
-     * @return void
+     * @param  \Closure(string): \Illuminate\Translation\PotentiallyTranslatedString  $fail
      */
-    public function __invoke($attribute, $value, $fail): void
+    public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         try {
             $voucher = SidoohPayments::findVoucher($value);
