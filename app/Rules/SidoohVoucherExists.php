@@ -13,8 +13,7 @@ class SidoohVoucherExists implements InvokableRule
      *
      * @param  string  $attribute
      * @param  mixed  $value
-     * @param \Closure(string): \Illuminate\Translation\PotentiallyTranslatedString $fail
-     * @return void
+     * @param  \Closure(string): \Illuminate\Translation\PotentiallyTranslatedString  $fail
      */
     public function __invoke($attribute, $value, $fail): void
     {
