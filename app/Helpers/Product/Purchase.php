@@ -22,7 +22,6 @@ use function config;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Propaganistas\LaravelPhone\PhoneNumber;
 use Throwable;
 
 class Purchase
@@ -57,7 +56,7 @@ class Purchase
             exit;
         }
 
-        $phone = PhoneNumber::make($this->transaction->destination, 'KE')->formatE164();
+        $phone = phone($this->transaction->destination, 'KE')->formatE164();
 
         match (config('services.sidooh.utilities_provider')) {
             'AT'     => AfricasTalkingApi::airtime($this->transaction, $phone),
