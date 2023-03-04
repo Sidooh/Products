@@ -16,7 +16,6 @@ use Illuminate\Support\Facades\Log;
 use Nabcellent\Kyanda\Library\Providers;
 use Nabcellent\Kyanda\Models\KyandaRequest;
 use Nabcellent\Kyanda\Models\KyandaTransaction;
-use Propaganistas\LaravelPhone\PhoneNumber;
 
 class KyandaEventRepository
 {
@@ -113,7 +112,7 @@ class KyandaEventRepository
 //                Update Earnings
                 TransactionSuccessEvent::dispatch($transaction, $totalEarnings);
 
-                $phone = ltrim(PhoneNumber::make($destination, 'KE')->formatE164(), '+');
+                $phone = ltrim(phone($destination, 'KE')->formatE164(), '+');
 
 //                Send SMS
                 if ($phone != $sender) {
