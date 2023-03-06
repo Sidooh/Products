@@ -6,7 +6,6 @@ use App\Enums\Initiator;
 use App\Enums\PaymentMethod;
 use App\Rules\SidoohAccountExists;
 use App\Rules\SidoohVoucherExists;
-use Illuminate\Contracts\Validation\InvokableRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
@@ -15,8 +14,6 @@ class VoucherRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @return bool
      */
     public function authorize(): bool
     {
@@ -25,8 +22,6 @@ class VoucherRequest extends FormRequest
 
     /**
      * Get the validation rules that apply to the request.
-     *
-     * @return array
      */
     public function rules(): array
     {
@@ -48,7 +43,7 @@ class VoucherRequest extends FormRequest
         ];
     }
 
-    public function sourceAccountRule(): InvokableRule|string
+    public function sourceAccountRule(): SidoohVoucherExists|string
     {
         $countryCode = config('services.sidooh.country_code');
 
