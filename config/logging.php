@@ -90,7 +90,7 @@ return [
         'papertrail' => [
             'driver'       => 'monolog',
             'level'        => env('LOG_LEVEL', 'debug'),
-            'handler'      => env('LOG_PAPERTRAIL_HANDLER', SyslogUdpHandler::class),
+            'handler'      => SyslogUdpHandler::class,
             'handler_with' => [
                 'host' => env('PAPERTRAIL_URL'),
                 'port' => env('PAPERTRAIL_PORT'),
