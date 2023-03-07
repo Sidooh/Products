@@ -90,7 +90,7 @@ return [
         'papertrail' => [
             'driver'       => 'monolog',
             'level'        => env('LOG_LEVEL', 'debug'),
-            'handler'      => SyslogUdpHandler::class,
+            'handler'      => env('LOG_PAPERTRAIL_HANDLER', SyslogUdpHandler::class),
             'handler_with' => [
                 'host' => env('PAPERTRAIL_URL'),
                 'port' => env('PAPERTRAIL_PORT'),
@@ -132,5 +132,4 @@ return [
             'bubble' => true, // Whether the messages that are handled can bubble up the stack or not
         ],
     ],
-
 ];
