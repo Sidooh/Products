@@ -20,7 +20,6 @@ use Exception;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Log;
-use Propaganistas\LaravelPhone\PhoneNumber;
 
 class TandaEventRepository
 {
@@ -131,7 +130,7 @@ class TandaEventRepository
             case Providers::TELKOM:
                 //  Get Points Earned
                 $userEarnings = EarningRepository::getPointsEarned($transaction, $totalEarnings);
-                $phone = ltrim(PhoneNumber::make($destination, 'KE')->formatE164(), '+');
+                $phone = ltrim(phone($destination, 'KE')->formatE164(), '+');
                 $eventType = EventType::AIRTIME_PURCHASE;
 
                 //  Send SMS
