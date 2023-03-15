@@ -107,4 +107,13 @@ class SidoohPayments extends SidoohService
             return parent::fetch(self::baseUrl()."/charges/withdrawal/$amount");
         });
     }
+
+    public static function getPaybillCharge(int $amount): int
+    {
+        Log::info('...[SRV - PAYMENTS]: Get Paybill Charge...', [$amount]);
+
+        return Cache::remember("paybill_charge_$amount", (24 * 60 * 60), function() use ($amount) {
+            return parent::fetch(self::baseUrl()."/charges/paybill/$amount");
+        });
+    }
 }

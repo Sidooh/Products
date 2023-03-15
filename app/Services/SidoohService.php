@@ -17,7 +17,7 @@ class SidoohService
     {
         $token = Cache::remember('auth_token', (60 * 14), fn () => self::authenticate());
 
-        return Http::timeout(10)->withToken($token)->acceptJson();
+        return Http::timeout(20)->withToken($token)->acceptJson();
     }
 
     /**

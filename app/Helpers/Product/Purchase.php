@@ -8,6 +8,7 @@ use App\Enums\PaymentSubtype;
 use App\Enums\Status;
 use App\Events\SubscriptionPurchaseFailedEvent;
 use App\Events\SubscriptionPurchaseSuccessEvent;
+use App\Events\TransactionSuccessEvent;
 use App\Events\VoucherPurchaseEvent;
 use App\Helpers\AfricasTalking\AfricasTalkingApi;
 use App\Helpers\Kyanda\KyandaApi;
@@ -136,7 +137,7 @@ class Purchase
     {
         Log::info('...[INTERNAL - PRODUCT]: Merchant...');
 
-        Transaction::updateStatus($this->transaction, Status::COMPLETED);
+        $this->transaction->update(['status' => Status::COMPLETED]);
 
         $account = SidoohAccounts::find($this->transaction->account_id);
 
@@ -166,5 +167,7 @@ class Purchase
         $message = "You have made a payment to Merchant $destination of $amount from your Sidooh account on $date using $method.$vtext";
 
         SidoohNotify::notify([$sender], $message, $eventType);
+
+        TransactionSuccessEvent::dispatch($this->transaction, $this->transaction->charge);
     }
 }

@@ -60,12 +60,7 @@ class TransactionRepository
         };
 
         $paymentData = new PaymentDTO(
-            $t->account_id,
-            $t->amount,
-            $t->description,
-            $t->destination,
-            $paymentMethod,
-            $debitAccount
+            $t->account_id, $t->amount, $t->description, $t->destination, $paymentMethod, $debitAccount
         );
 
         if (is_int($t->product_id)) {
@@ -91,7 +86,7 @@ class TransactionRepository
             $paymentData = [
                 'transaction_id' => $t->id,
                 'payment_id'     => $p['id'],
-                'amount'         => $p['amount'],
+                'amount'         => $p['amount'] + $p['charge'],
                 'type'           => $p['type'],
                 'subtype'        => $p['subtype'],
                 'status'         => $p['status'],
@@ -213,20 +208,18 @@ class TransactionRepository
         SavingsTransaction::create([
             'transaction_id' => $transaction->id,
             'savings_id'     => $response['id'],
-            'amount'         => $response['amount'],
+            'amount'         => $transaction->fee,
             'description'    => $response['description'],
             'type'           => $response['type'],
             'status'         => $response['status'],
             'extra'          => $response['extra'],
         ]);
 
-        $charge = SidoohPayments::getWithdrawalCharge($transaction->amount);
-
         $acc = EarningAccount::firstOrCreate([
             'type'       => EarningAccountType::WITHDRAWALS,
             'account_id' => $transaction->account_id,
         ]);
-        $acc->increment('self_amount', (int) $transaction->amount + $charge);
+        $acc->increment('self_amount', $transaction->fee);
 
         $tagline = config('services.sidooh.tagline');
         $message = "Your withdrawal request has been received. Please be patient as we review it.\n\n$tagline";
@@ -247,14 +240,14 @@ class TransactionRepository
 
             EarningAccount::accountId($transaction->account_id)->withdrawal()->first()->decrement(
                 'self_amount',
-                (int) $transaction->amount + SidoohPayments::getWithdrawalCharge($transaction->amount)
+                $transaction->fee
             );
 
             $transaction->status = Status::FAILED;
             $transaction->save();
         });
 
-        $message = "Hi, we have refunded Ksh$transaction->amount to your earnings because we could not complete your withdrawal request. We apologize for the inconvenience. Please try again.";
+        $message = "Hi, we have refunded Ksh$transaction->fee to your earnings because we could not complete your withdrawal request. We apologize for the inconvenience. Please try again.";
 
         $account = SidoohAccounts::find($transaction->account_id);
 

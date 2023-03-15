@@ -41,8 +41,10 @@ namespace App\Models{
      * @property-read int|null $airtime_responses_count
      * @property-read Transaction|null $transaction
      * @property-read \App\Models\ATAirtimeResponse|null $response
-     * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ATAirtimeResponse[] $responses
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ATAirtimeResponse> $responses
      * @property-read int|null $responses_count
+     *
+     * @mixin \Eloquent
      */
     class IdeHelperATAirtimeRequest
     {
@@ -87,7 +89,9 @@ namespace App\Models{
      * @property int $at_airtime_request_id
      * @property-read \App\Models\ATAirtimeRequest|null $request
      *
-     * @method static \Illuminate\Database\Eloquent\Builder|ATAirtimeResponse whereAtAirtimeRequestId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ATAirtimeResponse whereAtAirtimeRequestId($value)
+     *
+     * @mixin \Eloquent
      */
     class IdeHelperATAirtimeResponse
     {
@@ -106,17 +110,19 @@ namespace App\Models{
      * @property \Illuminate\Support\Carbon|null $created_at
      * @property \Illuminate\Support\Carbon|null $updated_at
      *
-     * @method static \Database\Factories\AirtimeAccountFactory factory(...$parameters)
-     * @method static \Illuminate\Database\Eloquent\Builder|AirtimeAccount newModelQuery()
-     * @method static \Illuminate\Database\Eloquent\Builder|AirtimeAccount newQuery()
-     * @method static \Illuminate\Database\Eloquent\Builder|AirtimeAccount query()
-     * @method static \Illuminate\Database\Eloquent\Builder|AirtimeAccount whereAccountId($value)
-     * @method static \Illuminate\Database\Eloquent\Builder|AirtimeAccount whereAccountNumber($value)
-     * @method static \Illuminate\Database\Eloquent\Builder|AirtimeAccount whereCreatedAt($value)
-     * @method static \Illuminate\Database\Eloquent\Builder|AirtimeAccount whereId($value)
-     * @method static \Illuminate\Database\Eloquent\Builder|AirtimeAccount wherePriority($value)
-     * @method static \Illuminate\Database\Eloquent\Builder|AirtimeAccount whereProvider($value)
-     * @method static \Illuminate\Database\Eloquent\Builder|AirtimeAccount whereUpdatedAt($value)
+     * @method static \Database\Factories\AirtimeAccountFactory factory($count = null, $state = [])
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\AirtimeAccount newModelQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\AirtimeAccount newQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\AirtimeAccount query()
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\AirtimeAccount whereAccountId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\AirtimeAccount whereAccountNumber($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\AirtimeAccount whereCreatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\AirtimeAccount whereId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\AirtimeAccount wherePriority($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\AirtimeAccount whereProvider($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\AirtimeAccount whereUpdatedAt($value)
+     *
+     * @mixin \Eloquent
      */
     class IdeHelperAirtimeAccount
     {
@@ -150,7 +156,9 @@ namespace App\Models{
      * @property \App\Enums\Status $status
      * @property-read \App\Models\Transaction $transaction
      *
-     * @method static \Illuminate\Database\Eloquent\Builder|Cashback whereStatus($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Cashback whereStatus($value)
+     *
+     * @mixin \Eloquent
      */
     class IdeHelperCashback
     {
@@ -180,6 +188,8 @@ namespace App\Models{
      * @method static Builder|Commission whereTransactionId($value)
      * @method static Builder|Commission whereType($value)
      * @method static Builder|Commission whereUpdatedAt($value)
+     *
+     * @mixin \Eloquent
      */
     class IdeHelperCommission
     {
@@ -198,19 +208,21 @@ namespace App\Models{
      * @property \Illuminate\Support\Carbon|null $created_at
      * @property \Illuminate\Support\Carbon|null $updated_at
      *
-     * @method static \Illuminate\Database\Eloquent\Builder|EarningAccount accountId(int $accountId)
-     * @method static \Database\Factories\EarningAccountFactory factory(...$parameters)
-     * @method static \Illuminate\Database\Eloquent\Builder|EarningAccount newModelQuery()
-     * @method static \Illuminate\Database\Eloquent\Builder|EarningAccount newQuery()
-     * @method static \Illuminate\Database\Eloquent\Builder|EarningAccount query()
-     * @method static \Illuminate\Database\Eloquent\Builder|EarningAccount whereAccountId($value)
-     * @method static \Illuminate\Database\Eloquent\Builder|EarningAccount whereCreatedAt($value)
-     * @method static \Illuminate\Database\Eloquent\Builder|EarningAccount whereId($value)
-     * @method static \Illuminate\Database\Eloquent\Builder|EarningAccount whereInviteAmount($value)
-     * @method static \Illuminate\Database\Eloquent\Builder|EarningAccount whereSelfAmount($value)
-     * @method static \Illuminate\Database\Eloquent\Builder|EarningAccount whereType($value)
-     * @method static \Illuminate\Database\Eloquent\Builder|EarningAccount whereUpdatedAt($value)
-     * @method static \Illuminate\Database\Eloquent\Builder|EarningAccount withdrawal()
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\EarningAccount accountId(int $accountId)
+     * @method static \Database\Factories\EarningAccountFactory factory($count = null, $state = [])
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\EarningAccount newModelQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\EarningAccount newQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\EarningAccount query()
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\EarningAccount whereAccountId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\EarningAccount whereCreatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\EarningAccount whereId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\EarningAccount whereInviteAmount($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\EarningAccount whereSelfAmount($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\EarningAccount whereType($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\EarningAccount whereUpdatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\EarningAccount withdrawal()
+     *
+     * @mixin \Eloquent
      */
     class IdeHelperEarningAccount
     {
@@ -242,6 +254,8 @@ namespace App\Models{
      * @method static \Illuminate\Database\Eloquent\Builder|Merchant whereId($value)
      * @method static \Illuminate\Database\Eloquent\Builder|Merchant whereName($value)
      * @method static \Illuminate\Database\Eloquent\Builder|Merchant whereUpdatedAt($value)
+     *
+     * @mixin \Eloquent
      */
     class IdeHelperMerchant
     {
@@ -260,16 +274,18 @@ namespace App\Models{
      * @property \Illuminate\Support\Carbon|null $created_at
      * @property \Illuminate\Support\Carbon|null $updated_at
      *
-     * @method static \Illuminate\Database\Eloquent\Builder|Notification newModelQuery()
-     * @method static \Illuminate\Database\Eloquent\Builder|Notification newQuery()
-     * @method static \Illuminate\Database\Eloquent\Builder|Notification query()
-     * @method static \Illuminate\Database\Eloquent\Builder|Notification whereCreatedAt($value)
-     * @method static \Illuminate\Database\Eloquent\Builder|Notification whereEvent($value)
-     * @method static \Illuminate\Database\Eloquent\Builder|Notification whereId($value)
-     * @method static \Illuminate\Database\Eloquent\Builder|Notification whereMessage($value)
-     * @method static \Illuminate\Database\Eloquent\Builder|Notification whereResponse($value)
-     * @method static \Illuminate\Database\Eloquent\Builder|Notification whereTo($value)
-     * @method static \Illuminate\Database\Eloquent\Builder|Notification whereUpdatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Notification newModelQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Notification newQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Notification query()
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Notification whereCreatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Notification whereEvent($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Notification whereId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Notification whereMessage($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Notification whereResponse($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Notification whereTo($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Notification whereUpdatedAt($value)
+     *
+     * @mixin \Eloquent
      */
     class IdeHelperNotification
     {
@@ -292,20 +308,22 @@ namespace App\Models{
      * @property \Illuminate\Support\Carbon|null $updated_at
      * @property-read \App\Models\Transaction $transaction
      *
-     * @method static \Database\Factories\PaymentFactory factory(...$parameters)
-     * @method static \Illuminate\Database\Eloquent\Builder|Payment newModelQuery()
-     * @method static \Illuminate\Database\Eloquent\Builder|Payment newQuery()
-     * @method static \Illuminate\Database\Eloquent\Builder|Payment query()
-     * @method static \Illuminate\Database\Eloquent\Builder|Payment whereAmount($value)
-     * @method static \Illuminate\Database\Eloquent\Builder|Payment whereCreatedAt($value)
-     * @method static \Illuminate\Database\Eloquent\Builder|Payment whereExtra($value)
-     * @method static \Illuminate\Database\Eloquent\Builder|Payment whereId($value)
-     * @method static \Illuminate\Database\Eloquent\Builder|Payment wherePaymentId($value)
-     * @method static \Illuminate\Database\Eloquent\Builder|Payment whereStatus($value)
-     * @method static \Illuminate\Database\Eloquent\Builder|Payment whereSubtype($value)
-     * @method static \Illuminate\Database\Eloquent\Builder|Payment whereTransactionId($value)
-     * @method static \Illuminate\Database\Eloquent\Builder|Payment whereType($value)
-     * @method static \Illuminate\Database\Eloquent\Builder|Payment whereUpdatedAt($value)
+     * @method static \Database\Factories\PaymentFactory factory($count = null, $state = [])
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Payment newModelQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Payment newQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Payment query()
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Payment whereAmount($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Payment whereCreatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Payment whereExtra($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Payment whereId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Payment wherePaymentId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Payment whereStatus($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Payment whereSubtype($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Payment whereTransactionId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Payment whereType($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Payment whereUpdatedAt($value)
+     *
+     * @mixin \Eloquent
      */
     class IdeHelperPayment
     {
@@ -320,17 +338,19 @@ namespace App\Models{
      * @property string $name
      * @property \Illuminate\Support\Carbon|null $created_at
      * @property \Illuminate\Support\Carbon|null $updated_at
-     * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Transaction[] $transaction
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Transaction> $transaction
      * @property-read int|null $transaction_count
      *
-     * @method static \Database\Factories\ProductFactory factory(...$parameters)
-     * @method static \Illuminate\Database\Eloquent\Builder|Product newModelQuery()
-     * @method static \Illuminate\Database\Eloquent\Builder|Product newQuery()
-     * @method static \Illuminate\Database\Eloquent\Builder|Product query()
-     * @method static \Illuminate\Database\Eloquent\Builder|Product whereCreatedAt($value)
-     * @method static \Illuminate\Database\Eloquent\Builder|Product whereId($value)
-     * @method static \Illuminate\Database\Eloquent\Builder|Product whereName($value)
-     * @method static \Illuminate\Database\Eloquent\Builder|Product whereUpdatedAt($value)
+     * @method static \Database\Factories\ProductFactory factory($count = null, $state = [])
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Product newModelQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Product newQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Product query()
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Product whereCreatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Product whereId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Product whereName($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Product whereUpdatedAt($value)
+     *
+     * @mixin \Eloquent
      */
     class IdeHelperProduct
     {
@@ -353,19 +373,21 @@ namespace App\Models{
      * @property \Illuminate\Support\Carbon|null $updated_at
      * @property-read \App\Models\Transaction $transaction
      *
-     * @method static \Illuminate\Database\Eloquent\Builder|SavingsTransaction newModelQuery()
-     * @method static \Illuminate\Database\Eloquent\Builder|SavingsTransaction newQuery()
-     * @method static \Illuminate\Database\Eloquent\Builder|SavingsTransaction query()
-     * @method static \Illuminate\Database\Eloquent\Builder|SavingsTransaction whereAmount($value)
-     * @method static \Illuminate\Database\Eloquent\Builder|SavingsTransaction whereCreatedAt($value)
-     * @method static \Illuminate\Database\Eloquent\Builder|SavingsTransaction whereDescription($value)
-     * @method static \Illuminate\Database\Eloquent\Builder|SavingsTransaction whereExtra($value)
-     * @method static \Illuminate\Database\Eloquent\Builder|SavingsTransaction whereId($value)
-     * @method static \Illuminate\Database\Eloquent\Builder|SavingsTransaction whereSavingsId($value)
-     * @method static \Illuminate\Database\Eloquent\Builder|SavingsTransaction whereStatus($value)
-     * @method static \Illuminate\Database\Eloquent\Builder|SavingsTransaction whereTransactionId($value)
-     * @method static \Illuminate\Database\Eloquent\Builder|SavingsTransaction whereType($value)
-     * @method static \Illuminate\Database\Eloquent\Builder|SavingsTransaction whereUpdatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\SavingsTransaction newModelQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\SavingsTransaction newQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\SavingsTransaction query()
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\SavingsTransaction whereAmount($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\SavingsTransaction whereCreatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\SavingsTransaction whereDescription($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\SavingsTransaction whereExtra($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\SavingsTransaction whereId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\SavingsTransaction whereSavingsId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\SavingsTransaction whereStatus($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\SavingsTransaction whereTransactionId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\SavingsTransaction whereType($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\SavingsTransaction whereUpdatedAt($value)
+     *
+     * @mixin \Eloquent
      */
     class IdeHelperSavingsTransaction
     {
@@ -400,8 +422,10 @@ namespace App\Models{
      * @method static Builder|Subscription whereStatus($value)
      * @method static Builder|Subscription whereSubscriptionTypeId($value)
      * @method static Builder|Subscription whereUpdatedAt($value)
-     * @method static \Illuminate\Database\Eloquent\Builder|Subscription includePostExpiry()
-     * @method static \Illuminate\Database\Eloquent\Builder|Subscription includePreExpiry()
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Subscription includePostExpiry()
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Subscription includePreExpiry()
+     *
+     * @mixin \Eloquent
      */
     class IdeHelperSubscription
     {
@@ -438,7 +462,9 @@ namespace App\Models{
      *
      * @property string $period
      *
-     * @method static \Illuminate\Database\Eloquent\Builder|SubscriptionType wherePeriod($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\SubscriptionType wherePeriod($value)
+     *
+     * @mixin \Eloquent
      */
     class IdeHelperSubscriptionType
     {
@@ -453,6 +479,7 @@ namespace App\Models{
      * @property string $initiator
      * @property \App\Enums\TransactionType $type
      * @property string $amount
+     * @property int $charge
      * @property string $status
      * @property string $description
      * @property string|null $destination
@@ -461,29 +488,28 @@ namespace App\Models{
      * @property \Illuminate\Support\Carbon|null $created_at
      * @property \Illuminate\Support\Carbon|null $updated_at
      * @property-read \App\Models\ATAirtimeRequest|null $atAirtimeRequest
-     * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Cashback[] $cashbacks
-     * @property-read int|null $cashbacks_count
      * @property-read \Nabcellent\Kyanda\Models\KyandaRequest|null $kyandaTransaction
      * @property-read \App\Models\Payment|null $payment
      * @property-read \App\Models\Product $product
      * @property-read \App\Models\SavingsTransaction|null $savingsTransaction
      * @property-read \DrH\Tanda\Models\TandaRequest|null $tandaRequest
      *
-     * @method static \Database\Factories\TransactionFactory factory(...$parameters)
-     * @method static \Illuminate\Database\Eloquent\Builder|Transaction newModelQuery()
-     * @method static \Illuminate\Database\Eloquent\Builder|Transaction newQuery()
-     * @method static \Illuminate\Database\Eloquent\Builder|Transaction query()
-     * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereAccountId($value)
-     * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereAmount($value)
-     * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereCreatedAt($value)
-     * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereDescription($value)
-     * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereDestination($value)
-     * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereId($value)
-     * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereInitiator($value)
-     * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereProductId($value)
-     * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereStatus($value)
-     * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereType($value)
-     * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereUpdatedAt($value)
+     * @method static \Database\Factories\TransactionFactory factory($count = null, $state = [])
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Transaction newModelQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Transaction newQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Transaction query()
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Transaction whereAccountId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Transaction whereAmount($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Transaction whereCharge($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Transaction whereCreatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Transaction whereDescription($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Transaction whereDestination($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Transaction whereId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Transaction whereInitiator($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Transaction whereProductId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Transaction whereStatus($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Transaction whereType($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Transaction whereUpdatedAt($value)
      *
      * @mixin \Eloquent
      */
@@ -504,17 +530,19 @@ namespace App\Models{
      * @property \Illuminate\Support\Carbon|null $created_at
      * @property \Illuminate\Support\Carbon|null $updated_at
      *
-     * @method static \Database\Factories\UtilityAccountFactory factory(...$parameters)
-     * @method static \Illuminate\Database\Eloquent\Builder|UtilityAccount newModelQuery()
-     * @method static \Illuminate\Database\Eloquent\Builder|UtilityAccount newQuery()
-     * @method static \Illuminate\Database\Eloquent\Builder|UtilityAccount query()
-     * @method static \Illuminate\Database\Eloquent\Builder|UtilityAccount whereAccountId($value)
-     * @method static \Illuminate\Database\Eloquent\Builder|UtilityAccount whereAccountNumber($value)
-     * @method static \Illuminate\Database\Eloquent\Builder|UtilityAccount whereCreatedAt($value)
-     * @method static \Illuminate\Database\Eloquent\Builder|UtilityAccount whereId($value)
-     * @method static \Illuminate\Database\Eloquent\Builder|UtilityAccount wherePriority($value)
-     * @method static \Illuminate\Database\Eloquent\Builder|UtilityAccount whereProvider($value)
-     * @method static \Illuminate\Database\Eloquent\Builder|UtilityAccount whereUpdatedAt($value)
+     * @method static \Database\Factories\UtilityAccountFactory factory($count = null, $state = [])
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\UtilityAccount newModelQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\UtilityAccount newQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\UtilityAccount query()
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\UtilityAccount whereAccountId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\UtilityAccount whereAccountNumber($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\UtilityAccount whereCreatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\UtilityAccount whereId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\UtilityAccount wherePriority($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\UtilityAccount whereProvider($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\UtilityAccount whereUpdatedAt($value)
+     *
+     * @mixin \Eloquent
      */
     class IdeHelperUtilityAccount
     {
