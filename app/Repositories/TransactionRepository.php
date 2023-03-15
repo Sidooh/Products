@@ -213,7 +213,7 @@ class TransactionRepository
         SavingsTransaction::create([
             'transaction_id' => $transaction->id,
             'savings_id'     => $response['id'],
-            'amount'         => $transaction->fee,
+            'amount'         => $transaction->totalAmount,
             'description'    => $response['description'],
             'type'           => $response['type'],
             'status'         => $response['status'],
@@ -224,7 +224,7 @@ class TransactionRepository
             'type'       => EarningAccountType::WITHDRAWALS,
             'account_id' => $transaction->account_id,
         ]);
-        $acc->increment('self_amount', $transaction->fee);
+        $acc->increment('self_amount', $transaction->totalAmount);
 
         $tagline = config('services.sidooh.tagline');
         $message = "Your withdrawal request has been received. Please be patient as we review it.\n\n$tagline";
@@ -245,14 +245,14 @@ class TransactionRepository
 
             EarningAccount::accountId($transaction->account_id)->withdrawal()->first()->decrement(
                 'self_amount',
-                $transaction->fee
+                $transaction->totalAmount
             );
 
             $transaction->status = Status::FAILED;
             $transaction->save();
         });
 
-        $message = "Hi, we have refunded Ksh$transaction->fee to your earnings because we could not complete your withdrawal request. We apologize for the inconvenience. Please try again.";
+        $message = "Hi, we have refunded Ksh$transaction->amount to your earnings because we could not complete your withdrawal request. We apologize for the inconvenience. Please try again.";
 
         $account = SidoohAccounts::find($transaction->account_id);
 

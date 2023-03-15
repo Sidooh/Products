@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\DTOs\PaymentDTO;
+use Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -112,8 +113,10 @@ class SidoohPayments extends SidoohService
     {
         Log::info('...[SRV - PAYMENTS]: Get Paybill Charge...', [$amount]);
 
-        return Cache::remember("paybill_charge_$amount", (24 * 60 * 60), function() use ($amount) {
-            return parent::fetch(self::baseUrl()."/charges/paybill/$amount");
+        $charges = Cache::remember('paybill_charges', (24 * 60 * 60), function() {
+            return parent::fetch(self::baseUrl().'/charges/paybill');
         });
+
+        return Arr::first($charges, fn ($ch) => $ch['max'] > $amount && $ch['min'] <= $amount);
     }
 }

@@ -75,7 +75,7 @@ class Transaction extends Model
     /**
      * Accessors & Mutators
      */
-    protected function fee(): Attribute
+    protected function totalAmount(): Attribute
     {
         return Attribute::get(fn (mixed $value, array $attributes) => $attributes['amount'] + $attributes['charge']);
     }
