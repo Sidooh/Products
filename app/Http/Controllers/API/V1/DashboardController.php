@@ -7,9 +7,12 @@ use App\Enums\Period;
 use App\Enums\ProductType;
 use App\Enums\Status;
 use App\Enums\TransactionType;
+use App\Helpers\AfricasTalking\AfricasTalkingApi;
 use App\Helpers\ChartAid;
+use App\Helpers\Tanda\TandaApi;
 use App\Http\Controllers\Controller;
 use App\Models\Transaction;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -62,10 +65,8 @@ class DashboardController extends Controller
         $fetch = function(array $whereBetween, int $freqCount = null) use ($chartAid) {
             $cacheKey = 'transactions_'.implode('_', $whereBetween);
             $transactions = Cache::remember($cacheKey, 60 * 60, function() use ($whereBetween) {
-                return Transaction::select(['status', 'created_at', 'amount'])->whereBetween(
-                    'created_at',
-                    $whereBetween
-                )->get();
+                return Transaction::select(['status', 'created_at', 'amount'])
+                                  ->whereBetween('created_at', $whereBetween)->get();
             });
 
             $transform = function($transactions, $key) use ($freqCount, $chartAid) {
@@ -81,7 +82,7 @@ class DashboardController extends Controller
 
         $todayHrs = LocalCarbon::now()->diffInHours(LocalCarbon::now()->startOfDay());
 
-        return response()->json([
+        return $this->successResponse([
             'today'     => $fetch([
                 LocalCarbon::today()->startOfDay()->utc(),
                 LocalCarbon::today()->endOfDay()->utc(),
@@ -90,6 +91,26 @@ class DashboardController extends Controller
                 LocalCarbon::yesterday()->startOfDay()->utc(),
                 LocalCarbon::yesterday()->endOfDay()->utc(),
             ]),
+        ]);
+    }
+
+    public function getProviderBalances(): JsonResponse
+    {
+        try {
+            $tandaFloatBalance = TandaApi::balance()[0]->balances[0]->available;
+        } catch (Exception) {
+            $tandaFloatBalance = null;
+        }
+
+        try {
+            $ATAirtimeBalance = (float) ltrim(AfricasTalkingApi::balance()['data']->UserData->balance, 'KES');
+        } catch (Exception) {
+            $ATAirtimeBalance = null;
+        }
+
+        return $this->successResponse([
+            'tanda_float_balance' => $tandaFloatBalance,
+            'at_airtime_balance'  => $ATAirtimeBalance,
         ]);
     }
 }
