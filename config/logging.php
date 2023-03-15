@@ -50,9 +50,12 @@ return [
 
     'channels' => [
         'gcp' => [
-            'driver'    => 'stack',
-            'channels'  => ['syslog'],
+            'driver'    => 'monolog',
+            'handler'   => StreamHandler::class,
             'formatter' => GoogleCloudLoggingFormatter::class,
+            'with' => [
+                'stream' => 'php://stderr',
+            ],
         ],
 
         'stack' => [
