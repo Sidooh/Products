@@ -60,7 +60,12 @@ class TransactionRepository
         };
 
         $paymentData = new PaymentDTO(
-            $t->account_id, $t->amount, $t->description, $t->destination, $paymentMethod, $debitAccount
+            $t->account_id,
+            $t->amount,
+            $t->description,
+            $t->destination,
+            $paymentMethod,
+            $debitAccount
         );
 
         if (is_int($t->product_id)) {
