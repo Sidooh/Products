@@ -16,6 +16,10 @@ use Illuminate\Support\Facades\Log;
 
 class MerchantController extends Controller
 {
+    /**
+     * @throws \Illuminate\Auth\AuthenticationException
+     * @throws \Throwable
+     */
     public function __invoke(MerchantRequest $request): JsonResponse
     {
         Log::info('...[CTRL - MERCHANT]: Process Merchant Request...', $request->all());
@@ -36,9 +40,9 @@ class MerchantController extends Controller
         ];
         $data = [
             'method'          => $request->has('method') ? PaymentMethod::from($request->input('method')) : PaymentMethod::MPESA,
-            'merchant_type'   => MerchantType::from($request->merchant_type),
-            'business_number' => $request->business_number,
-            'account_number'  => $request->account_number,
+            'merchant_type'   => $request->enum('merchant_type', MerchantType::class),
+            'business_number' => $request->integer('business_number'),
+            'account_number'  => $request->integer('account_number'),
         ];
 
         $transaction = TransactionRepository::createTransaction($transactionData, $data);
