@@ -137,8 +137,6 @@ class Purchase
     {
         Log::info('...[INTERNAL - PRODUCT]: Merchant...');
 
-        $this->transaction->update(['status' => Status::COMPLETED]);
-
         $account = SidoohAccounts::find($this->transaction->account_id);
 
         $destination = $this->transaction->destination;
