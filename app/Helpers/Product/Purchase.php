@@ -137,6 +137,8 @@ class Purchase
     {
         Log::info('...[INTERNAL - PRODUCT]: Merchant...');
 
+        TransactionSuccessEvent::dispatch($this->transaction, $this->transaction->charge);
+
         $account = SidoohAccounts::find($this->transaction->account_id);
 
         $destination = $this->transaction->destination;
@@ -165,7 +167,5 @@ class Purchase
         $message = "You have made a payment to Merchant $destination of $amount from your Sidooh account on $date using $method.$vtext";
 
         SidoohNotify::notify([$sender], $message, $eventType);
-
-        TransactionSuccessEvent::dispatch($this->transaction, $this->transaction->charge);
     }
 }

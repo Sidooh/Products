@@ -60,12 +60,7 @@ class TransactionRepository
         };
 
         $paymentData = new PaymentDTO(
-            $t->account_id,
-            $t->amount,
-            $t->description,
-            $t->destination,
-            $paymentMethod,
-            $debitAccount
+            $t->account_id, $t->amount, $t->description, $t->destination, $paymentMethod, $debitAccount
         );
 
         if (is_int($t->product_id)) {
@@ -213,7 +208,7 @@ class TransactionRepository
         SavingsTransaction::create([
             'transaction_id' => $transaction->id,
             'savings_id'     => $response['id'],
-            'amount'         => $transaction->totalAmount,
+            'amount'         => $response['amount'],
             'description'    => $response['description'],
             'type'           => $response['type'],
             'status'         => $response['status'],
@@ -224,7 +219,7 @@ class TransactionRepository
             'type'       => EarningAccountType::WITHDRAWALS,
             'account_id' => $transaction->account_id,
         ]);
-        $acc->increment('self_amount', $transaction->totalAmount);
+        $acc->increment('self_amount', $response['amount'] + $response['charge']);
 
         $tagline = config('services.sidooh.tagline');
         $message = "Your withdrawal request has been received. Please be patient as we review it.\n\n$tagline";
