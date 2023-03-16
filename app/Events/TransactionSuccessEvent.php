@@ -15,9 +15,6 @@ class TransactionSuccessEvent
 
     /**
      * Create a new event instance.
-     *
-     * @param  Transaction  $transaction
-     * @param  float  $totalEarned
      */
     public function __construct(public Transaction $transaction, public float $totalEarned)
     {
