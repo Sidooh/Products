@@ -9,6 +9,7 @@ use App\Enums\Status;
 use App\Enums\TransactionType;
 use App\Helpers\AfricasTalking\AfricasTalkingApi;
 use App\Helpers\ChartAid;
+use App\Helpers\Kyanda\KyandaApi;
 use App\Helpers\Tanda\TandaApi;
 use App\Http\Controllers\Controller;
 use App\Models\Transaction;
@@ -109,14 +110,15 @@ class DashboardController extends Controller
         }
 
         try {
-            $kyandaFloatBalance = (float) ltrim(AfricasTalkingApi::balance()['data']->UserData->balance, 'KES');
+            $kyandaFloatBalance = KyandaApi::balance()['Account_Bal'];
         } catch (Exception) {
-            $ATAirtimeBalance = null;
+            $kyandaFloatBalance = null;
         }
 
         return $this->successResponse([
-            'tanda_float_balance' => $tandaFloatBalance,
-            'at_airtime_balance'  => $ATAirtimeBalance,
+            'tanda_float_balance'  => $tandaFloatBalance,
+            'kyanda_float_balance' => $kyandaFloatBalance,
+            'at_airtime_balance'   => $ATAirtimeBalance,
         ]);
     }
 }
