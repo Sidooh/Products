@@ -108,6 +108,12 @@ class DashboardController extends Controller
             $ATAirtimeBalance = null;
         }
 
+        try {
+            $kyandaFloatBalance = (float) ltrim(AfricasTalkingApi::balance()['data']->UserData->balance, 'KES');
+        } catch (Exception) {
+            $ATAirtimeBalance = null;
+        }
+
         return $this->successResponse([
             'tanda_float_balance' => $tandaFloatBalance,
             'at_airtime_balance'  => $ATAirtimeBalance,
