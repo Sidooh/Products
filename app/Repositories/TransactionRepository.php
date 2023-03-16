@@ -208,7 +208,7 @@ class TransactionRepository
         SavingsTransaction::create([
             'transaction_id' => $transaction->id,
             'savings_id'     => $response['id'],
-            'amount'         => $response['amount'],
+            'amount'         => $response['amount'] * $response['charge'],
             'description'    => $response['description'],
             'type'           => $response['type'],
             'status'         => $response['status'],
