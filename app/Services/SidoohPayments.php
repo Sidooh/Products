@@ -10,6 +10,11 @@ use Illuminate\Support\Facades\Log;
 
 class SidoohPayments extends SidoohService
 {
+    public static function baseUrl()
+    {
+        return config('services.sidooh.services.payments.url');
+    }
+
     public static function getAll(): array
     {
         Log::info('...[SRV - PAYMENTS]: Get All...');
@@ -17,11 +22,6 @@ class SidoohPayments extends SidoohService
         $url = self::baseUrl().'/payments';
 
         return Cache::remember('all_payments', (60 * 60 * 24), fn () => parent::fetch($url));
-    }
-
-    public static function baseUrl()
-    {
-        return config('services.sidooh.services.payments.url');
     }
 
     /**

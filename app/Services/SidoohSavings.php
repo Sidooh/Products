@@ -50,7 +50,7 @@ class SidoohSavings extends SidoohService
     {
         Log::info('...[SRV - SAVINGS]: Get Withdrawal Charge...', [$amount]);
 
-        return Cache::remember("withdrawal_charge_$amount", (24 * 60 * 60), function() use ($amount) {
+        return Cache::remember("withdrawal_charge_$amount", (3600 * 24 * 90), function() use ($amount) {
             return parent::fetch(self::baseUrl()."/charges/withdrawal/$amount");
         });
     }
