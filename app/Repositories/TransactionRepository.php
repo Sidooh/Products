@@ -60,12 +60,7 @@ class TransactionRepository
         };
 
         $paymentData = new PaymentDTO(
-            $t->account_id,
-            $t->amount,
-            $t->description,
-            $t->destination,
-            $paymentMethod,
-            $debitAccount
+            $t->account_id, $t->amount, $t->description, $t->destination, $paymentMethod, $debitAccount
         );
 
         if (is_int($t->product_id)) {
@@ -92,6 +87,7 @@ class TransactionRepository
                 'transaction_id' => $t->id,
                 'payment_id'     => $p['id'],
                 'amount'         => $p['amount'],
+                'charge'         => $p['charge'],
                 'type'           => $p['type'],
                 'subtype'        => $p['subtype'],
                 'status'         => $p['status'],
@@ -214,19 +210,21 @@ class TransactionRepository
             'transaction_id' => $transaction->id,
             'savings_id'     => $response['id'],
             'amount'         => $response['amount'],
+            'charge'         => $response['charge'],
             'description'    => $response['description'],
             'type'           => $response['type'],
             'status'         => $response['status'],
             'extra'          => $response['extra'],
         ]);
 
-        $charge = SidoohPayments::getWithdrawalCharge($transaction->amount);
-
         $acc = EarningAccount::firstOrCreate([
             'type'       => EarningAccountType::WITHDRAWALS,
             'account_id' => $transaction->account_id,
         ]);
-        $acc->increment('self_amount', (int) $transaction->amount + $charge);
+        $acc->update([
+            'self_amount'   => $acc->self_amount + $response['amount'],
+            'invite_amount' => $acc->invite_amount + $response['charge'],
+        ]);
 
         $tagline = config('services.sidooh.tagline');
         $message = "Your withdrawal request has been received. Please be patient as we review it.\n\n$tagline";
@@ -245,10 +243,11 @@ class TransactionRepository
         DB::transaction(function() use ($transaction) {
             $transaction->savingsTransaction->update(['status' => Status::FAILED]);
 
-            EarningAccount::accountId($transaction->account_id)->withdrawal()->first()->decrement(
-                'self_amount',
-                (int) $transaction->amount + SidoohPayments::getWithdrawalCharge($transaction->amount)
-            );
+            $acc = EarningAccount::accountId($transaction->account_id)->withdrawal()->first();
+            $acc->update([
+                'self_amount'   => $acc->self_amount - $transaction->amount,
+                'invite_amount' => $acc->invite_amount - $transaction->savingsTransaction->charge,
+            ]);
 
             $transaction->status = Status::FAILED;
             $transaction->save();

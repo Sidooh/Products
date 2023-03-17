@@ -8,6 +8,7 @@ use App\Enums\PaymentSubtype;
 use App\Enums\Status;
 use App\Events\SubscriptionPurchaseFailedEvent;
 use App\Events\SubscriptionPurchaseSuccessEvent;
+use App\Events\TransactionSuccessEvent;
 use App\Events\VoucherPurchaseEvent;
 use App\Helpers\AfricasTalking\AfricasTalkingApi;
 use App\Helpers\Kyanda\KyandaApi;
@@ -136,7 +137,7 @@ class Purchase
     {
         Log::info('...[INTERNAL - PRODUCT]: Merchant...');
 
-        Transaction::updateStatus($this->transaction, Status::COMPLETED);
+        TransactionSuccessEvent::dispatch($this->transaction, $this->transaction->charge);
 
         $account = SidoohAccounts::find($this->transaction->account_id);
 

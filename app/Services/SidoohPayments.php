@@ -3,12 +3,18 @@
 namespace App\Services;
 
 use App\DTOs\PaymentDTO;
+use Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 class SidoohPayments extends SidoohService
 {
+    public static function baseUrl()
+    {
+        return config('services.sidooh.services.payments.url');
+    }
+
     public static function getAll(): array
     {
         Log::info('...[SRV - PAYMENTS]: Get All...');
@@ -16,11 +22,6 @@ class SidoohPayments extends SidoohService
         $url = self::baseUrl().'/payments';
 
         return Cache::remember('all_payments', (60 * 60 * 24), fn () => parent::fetch($url));
-    }
-
-    public static function baseUrl()
-    {
-        return config('services.sidooh.services.payments.url');
     }
 
     /**
@@ -99,12 +100,14 @@ class SidoohPayments extends SidoohService
         return 1;
     }
 
-    public static function getWithdrawalCharge(int $amount): int
+    public static function getPaybillCharge(int $amount): int
     {
-        Log::info('...[SRV - PAYMENTS]: Get Withdrawal Charge...', [$amount]);
+        Log::info('...[SRV - PAYMENTS]: Get Paybill Charge...', [$amount]);
 
-        return Cache::remember("withdrawal_charge_$amount", (24 * 60 * 60), function() use ($amount) {
-            return parent::fetch(self::baseUrl()."/charges/withdrawal/$amount");
+        $charges = Cache::remember('paybill_charges', (3600 * 24 * 90), function() {
+            return parent::fetch(self::baseUrl().'/charges/paybill');
         });
+
+        return Arr::first($charges, fn ($ch) => $ch['max'] >= $amount && $ch['min'] <= $amount);
     }
 }
