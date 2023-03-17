@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Enums\PaymentMethod;
 use App\Models\Transaction;
+use Arr;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
@@ -50,8 +51,10 @@ class SidoohSavings extends SidoohService
     {
         Log::info('...[SRV - SAVINGS]: Get Withdrawal Charge...', [$amount]);
 
-        return Cache::remember("withdrawal_charge_$amount", (3600 * 24 * 90), function() use ($amount) {
-            return parent::fetch(self::baseUrl()."/charges/withdrawal/$amount");
+        $charges = Cache::remember('withdrawal_charges', (3600 * 24 * 30), function() {
+            return parent::fetch(self::baseUrl().'/charges/withdrawal');
         });
+
+        return Arr::first($charges, fn ($ch) => $ch['max'] >= $amount && $ch['min'] <= $amount);
     }
 }

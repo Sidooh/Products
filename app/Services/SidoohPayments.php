@@ -104,10 +104,10 @@ class SidoohPayments extends SidoohService
     {
         Log::info('...[SRV - PAYMENTS]: Get Paybill Charge...', [$amount]);
 
-        $charges = Cache::remember('paybill_charges', (24 * 60 * 60), function() {
+        $charges = Cache::remember('paybill_charges', (3600 * 24 * 90), function() {
             return parent::fetch(self::baseUrl().'/charges/paybill');
         });
 
-        return Arr::first($charges, fn ($ch) => $ch['max'] > $amount && $ch['min'] <= $amount);
+        return Arr::first($charges, fn ($ch) => $ch['max'] >= $amount && $ch['min'] <= $amount);
     }
 }
