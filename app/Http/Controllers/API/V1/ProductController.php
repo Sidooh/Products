@@ -8,6 +8,7 @@ use App\Helpers\Kyanda\KyandaApi;
 use App\Helpers\Tanda\TandaApi;
 use App\Http\Controllers\Controller;
 use App\Services\SidoohNotify;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use function mb_strtolower;
 
@@ -23,24 +24,37 @@ class ProductController extends Controller
 
     public function queryProviderBalances()
     {
-        $tanda = TandaApi::balance();
-        $kyanda = KyandaApi::balance();
-        $AT = AfricasTalkingApi::balance();
-
-        $tandaFloatBalance = $tanda[0]->balances[0]->available;
-        $kyandaFloatBalance = $kyanda['Account_Bal'];
-        $atBalance = (float) ltrim($AT['data']->UserData->balance, 'KES');
-
         $message = "Provider Balances:\n";
 
-        $tandaIsBelowThresh = $tandaFloatBalance <= config('services.tanda.float.threshold');
-        $kyandaIsBelowThresh = $kyandaFloatBalance <= config('services.kyanda.float.threshold');
-        $ATAirtimeIsBelowThresh = $atBalance <= config('services.at.airtime.threshold');
+        try {
+            $tanda = TandaApi::balance();
+            $tandaFloatBalance = $tanda[0]->balances[0]->available;
+            $tandaIsBelowThresh = $tandaFloatBalance <= config('services.tanda.float.threshold');
+        } catch (Exception) {
+            $tandaIsBelowThresh = true;
+            $tandaFloatBalance = 'Error';
+        }
+        try {
+            $kyanda = KyandaApi::balance();
+            $kyandaFloatBalance = $kyanda['Account_Bal'];
+            $kyandaIsBelowThresh = $kyandaFloatBalance <= config('services.kyanda.float.threshold');
+        } catch (Exception) {
+            $kyandaIsBelowThresh = true;
+            $kyandaFloatBalance = 'Error';
+        }
+        try {
+            $AT = AfricasTalkingApi::balance();
+            $ATAirtimeBalance = (float) ltrim($AT['data']->UserData->balance, 'KES');
+            $ATAirtimeIsBelowThresh = $ATAirtimeBalance <= config('services.at.airtime.threshold');
+        } catch (Exception) {
+            $ATAirtimeIsBelowThresh = true;
+            $ATAirtimeBalance = 'Error';
+        }
 
         if ($tandaIsBelowThresh || $kyandaIsBelowThresh || $ATAirtimeIsBelowThresh) {
             $message .= "\t - Tanda Float: $tandaFloatBalance\n";
             $message .= "\t - Kyanda Float: $kyandaFloatBalance\n";
-            $message .= "\t - At Airtime: $atBalance\n";
+            $message .= "\t - At Airtime: $ATAirtimeBalance\n";
 
             $message .= "\n#SRV:Products";
 
