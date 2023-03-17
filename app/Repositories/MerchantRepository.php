@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Enums\Description;
+use App\Enums\MerchantType;
 use App\Enums\ProductType;
 use App\Enums\TransactionType;
 use App\Models\Transaction;
@@ -18,13 +19,16 @@ class MerchantRepository
     public function transact(array $request, array $data): Transaction
     {
         $account = SidoohAccounts::find($request['account_id']);
-        $charge = SidoohPayments::getPaybillCharge($request['amount']);
+
+        if ($request['merchant_type'] === MerchantType::MPESA_PAY_BILL) {
+            $charge = SidoohPayments::getPaybillCharge($request['amount']);
+        }
 
         $transactionData = [
             'destination' => $request['business_number'].(isset($request['account_number']) ? ' - '.$request['account_number'] : ''),
             'initiator'   => $request['initiator'],
             'amount'      => $request['amount'],
-            'charge'      => $charge,
+            'charge'      => $charge ?? 0,
             'type'        => TransactionType::PAYMENT,
             'description' => Description::MERCHANT_PAYMENT,
             'account_id'  => $request['account_id'],

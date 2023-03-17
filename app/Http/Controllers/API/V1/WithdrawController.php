@@ -12,7 +12,7 @@ use App\Http\Requests\EarningRequest;
 use App\Models\EarningAccount;
 use App\Repositories\TransactionRepository;
 use App\Services\SidoohAccounts;
-use App\Services\SidoohPayments;
+use App\Services\SidoohSavings;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
@@ -50,7 +50,7 @@ class WithdrawController extends Controller
             return $this->errorResponse('Earning balance is insufficient');
         }
 
-        $charge = SidoohPayments::getWithdrawalCharge($data['amount']);
+        $charge = SidoohSavings::getWithdrawalCharge($data['amount']);
 
         $transaction = [
             'initiator'   => $data['initiator'],

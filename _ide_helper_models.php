@@ -299,6 +299,7 @@ namespace App\Models{
      * @property int $id
      * @property int $payment_id
      * @property string $amount
+     * @property int $charge
      * @property string $type
      * @property string $subtype
      * @property string $status
@@ -313,6 +314,7 @@ namespace App\Models{
      * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Payment newQuery()
      * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Payment query()
      * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Payment whereAmount($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Payment whereCharge($value)
      * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Payment whereCreatedAt($value)
      * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Payment whereExtra($value)
      * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Payment whereId($value)
@@ -364,6 +366,7 @@ namespace App\Models{
      * @property int $id
      * @property int $savings_id
      * @property string $amount
+     * @property int $charge
      * @property string $description
      * @property string $type
      * @property string $status
@@ -377,6 +380,7 @@ namespace App\Models{
      * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\SavingsTransaction newQuery()
      * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\SavingsTransaction query()
      * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\SavingsTransaction whereAmount($value)
+     * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\SavingsTransaction whereCharge($value)
      * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\SavingsTransaction whereCreatedAt($value)
      * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\SavingsTransaction whereDescription($value)
      * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\SavingsTransaction whereExtra($value)

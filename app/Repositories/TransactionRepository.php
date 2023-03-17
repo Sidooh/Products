@@ -86,7 +86,8 @@ class TransactionRepository
             $paymentData = [
                 'transaction_id' => $t->id,
                 'payment_id'     => $p['id'],
-                'amount'         => $p['amount'] + $p['charge'],
+                'amount'         => $p['amount'],
+                'charge'         => $p['charge'],
                 'type'           => $p['type'],
                 'subtype'        => $p['subtype'],
                 'status'         => $p['status'],
@@ -208,7 +209,8 @@ class TransactionRepository
         SavingsTransaction::create([
             'transaction_id' => $transaction->id,
             'savings_id'     => $response['id'],
-            'amount'         => $response['amount'] * $response['charge'],
+            'amount'         => $response['amount'],
+            'charge'         => $response['charge'],
             'description'    => $response['description'],
             'type'           => $response['type'],
             'status'         => $response['status'],
@@ -219,7 +221,10 @@ class TransactionRepository
             'type'       => EarningAccountType::WITHDRAWALS,
             'account_id' => $transaction->account_id,
         ]);
-        $acc->increment('self_amount', $response['amount'] + $response['charge']);
+        $acc->update([
+            'self_amount'   => $acc->self_amount + $response['amount'],
+            'invite_amount' => $acc->invite_amount + $response['charge'],
+        ]);
 
         $tagline = config('services.sidooh.tagline');
         $message = "Your withdrawal request has been received. Please be patient as we review it.\n\n$tagline";
@@ -238,10 +243,11 @@ class TransactionRepository
         DB::transaction(function() use ($transaction) {
             $transaction->savingsTransaction->update(['status' => Status::FAILED]);
 
-            EarningAccount::accountId($transaction->account_id)->withdrawal()->first()->decrement(
-                'self_amount',
-                $transaction->totalAmount
-            );
+            $acc = EarningAccount::accountId($transaction->account_id)->withdrawal()->first();
+            $acc->update([
+                'self_amount'   => $acc->self_amount - $transaction->amount,
+                'invite_amount' => $acc->invite_amount - $transaction->savingsTransaction->charge,
+            ]);
 
             $transaction->status = Status::FAILED;
             $transaction->save();
