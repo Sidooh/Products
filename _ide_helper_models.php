@@ -496,7 +496,6 @@ namespace App\Models{
      * @property-read \App\Models\Payment|null $payment
      * @property-read \App\Models\Product $product
      * @property-read \App\Models\SavingsTransaction|null $savingsTransaction
-     * @property-read \DrH\Tanda\Models\TandaRequest|null $tandaRequest
      * @property-read \Illuminate\Database\Eloquent\Collection<int, \DrH\Tanda\Models\TandaRequest> $tandaRequests
      * @property-read int|null $tanda_requests_count
      *

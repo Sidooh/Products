@@ -50,8 +50,8 @@ class Purchase
      */
     public function airtime(): void
     {
-//        TODO: Notify admins of possible duplicate
-        if ($this->transaction->atAirtimeRequest || $this->transaction->kyandaTransaction || $this->transaction->tandaRequests->isNotEmpty()) {
+        $hasCompletedTandaRequest = $this->transaction->tandaRequests->firstWhere('status', '000000');
+        if ($this->transaction->atAirtimeRequest || $this->transaction->kyandaTransaction || $hasCompletedTandaRequest) {
             SidoohNotify::notify(admin_contacts(), "ERROR:AIRTIME\n{$this->transaction->id}\nPossible duplicate airtime request... Confirm!!!", EventType::ERROR_ALERT);
             Log::error('Possible duplicate airtime request... Confirm!!!');
             exit;
