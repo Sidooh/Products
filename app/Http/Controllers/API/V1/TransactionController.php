@@ -280,11 +280,11 @@ class TransactionController extends Controller
         // Check request
         // TODO: Handle for all other SPs - and future SPs possibilities
         if ($transaction->tandaRequests->isNotEmpty()) {
-            if ($transaction->tandaRequests->every(fn ($r) => $r->status === '000000')) {
+            if ($transaction->tandaRequests->every(fn ($r) => $r->status == 000000)) {
                 return $this->errorResponse('There is a problem with this transaction - Request. Contact Support.');
             }
 
-            TandaEventHelper::fireTandaEvent($transaction->tandaRequests->firstWhere('status', '<>', '000000'));
+            TandaEventHelper::fireTandaEvent($transaction->tandaRequests->firstWhere('status', '!=', '000000'));
         } else {
             $transaction->updateStatus(Status::FAILED);
         }
