@@ -19,11 +19,11 @@ use App\Models\Transaction;
 use App\Services\SidoohAccounts;
 use App\Services\SidoohNotify;
 use App\Services\SidoohPayments;
-use function config;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Throwable;
+use function config;
 
 class Purchase
 {
@@ -164,7 +164,7 @@ class Purchase
             }
         }
 
-        $message = "You have made a payment to Merchant $destination of $amount from your Sidooh account on $date using $method.$vtext";
+        $message = "You have made a payment to Merchant $destination of $amount from your Sidooh account on $date using $method. You have received {$this->transaction->charge} points.$vtext";
 
         SidoohNotify::notify([$sender], $message, $eventType);
     }
