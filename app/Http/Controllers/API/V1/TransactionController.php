@@ -93,7 +93,7 @@ class TransactionController extends Controller
 
         // Check transaction is PENDING ...
         if ($transaction->status !== Status::PENDING->name) {
-            return ! $transaction->tandaRequest ? $this->errorResponse(
+            return $transaction->tandaRequests->isEmpty() ? $this->errorResponse(
                 'There is a problem with this transaction. Contact Support.'
             ) : $this->successResponse($transaction);
         }
@@ -200,7 +200,9 @@ class TransactionController extends Controller
         }
 
         // Check request
-        if ($transaction->tandaRequest && $transaction->tandaRequest?->status != 500000) {
+        if ($transaction->tandaRequests->isNotEmpty() && $transaction->tandaRequests->every(function($r) {
+            return $r->status != 500000;
+        })) {
             return $this->errorResponse('There is a problem with this transaction - Request. Contact Support.');
         }
 
@@ -226,7 +228,7 @@ class TransactionController extends Controller
         }
 
         // Check request
-        if ($transaction->tandaRequest) {
+        if ($transaction->tandaRequests->isNotEmpty()) {
             return $this->errorResponse('There is a problem with this transaction - Request. Contact Support.');
         }
 
@@ -250,12 +252,12 @@ class TransactionController extends Controller
 
         // Check request
         // TODO: Handle for all other SPs - and future SPs possibilities
-        if ($transaction->tandaRequest) {
-            if ($transaction->tandaRequest->status !== '000000') {
+        if ($transaction->tandaRequests->isNotEmpty()) {
+            if ($transaction->tandaRequests->every(fn ($r) => $r->status !== '000000')) {
                 return $this->errorResponse('There is a problem with this transaction - Request. Contact Support.');
             }
 
-            Transaction::updateStatus($transaction, Status::COMPLETED);
+            $transaction->updateStatus(Status::COMPLETED);
         } else {
             return $this->errorResponse('There is a problem with this transaction - Request. Contact Support.');
         }
@@ -277,14 +279,14 @@ class TransactionController extends Controller
 
         // Check request
         // TODO: Handle for all other SPs - and future SPs possibilities
-        if ($transaction->tandaRequest) {
-            if ($transaction->tandaRequest->status === 000000) {
+        if ($transaction->tandaRequests->isNotEmpty()) {
+            if ($transaction->tandaRequests->every(fn ($r) => $r->status === '000000')) {
                 return $this->errorResponse('There is a problem with this transaction - Request. Contact Support.');
             }
 
-            TandaEventHelper::fireTandaEvent($transaction->tandaRequest);
+            TandaEventHelper::fireTandaEvent($transaction->tandaRequests->firstWhere('status', '<>', '000000'));
         } else {
-            Transaction::updateStatus($transaction, Status::FAILED);
+            $transaction->updateStatus(Status::FAILED);
         }
 
         return $this->successResponse($transaction->refresh());

@@ -60,11 +60,11 @@ class KyandaEventRepository
     /**
      * @throws Exception
      */
-    public static function transactionSuccess(KyandaTransaction $kyandaTransaction)
+    public static function transactionSuccess(KyandaTransaction $kyandaTransaction): void
     {
-//                Update Transaction
+        // Update Transaction
         $transaction = Transaction::find($kyandaTransaction->request->relation_id);
-        Transaction::updateStatus($transaction, Status::COMPLETED);
+        $transaction->updateStatus(Status::COMPLETED);
 
         $method = $transaction->payment->subtype;
 
@@ -75,10 +75,10 @@ class KyandaEventRepository
 
         if ($method === 'VOUCHER') {
             $bal = 'Ksh'.number_format($voucher['balance'], 2);
-            $vtext = " New Voucher balance is $bal.";
+            $vText = " New Voucher balance is $bal.";
         } else {
             $method = 'MPESA';
-            $vtext = '';
+            $vText = '';
         }
 
         $code = config('services.at.ussd.code');
@@ -204,7 +204,7 @@ class KyandaEventRepository
     public static function transactionFailed(KyandaTransaction $kyandaTransaction)
     {
         $transaction = Transaction::find($kyandaTransaction->request->relation_id);
-        Transaction::updateStatus($transaction, Status::FAILED);
+        $transaction->updateStatus(Status::FAILED);
 
         $destination = $kyandaTransaction->destination;
         $sender = SidoohAccounts::findPhone($transaction->account_id);

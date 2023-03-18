@@ -167,7 +167,7 @@ class TandaApiTest extends TestCase
 
         $this->createSampleTandaRequest($tx, 'b2eda99c-5c32-4a5a-a28e-7a9497d131fa');
 
-        $this->assertModelExists($tx->tandaRequest);
+        $this->assertModelExists($tx->tandaRequests->first());
 
         $this->mockSuccessResponse();
 
@@ -187,7 +187,7 @@ class TandaApiTest extends TestCase
 
         $this->createSampleTandaRequest($tx, '2dc0a2c8-d616-4650-b105-15eaa1adcba3', false);
 
-        $this->assertModelExists($tx->tandaRequest);
+        $this->assertModelExists($tx->tandaRequests->first());
 
         $this->mockFailedResponse();
 
@@ -206,7 +206,7 @@ class TandaApiTest extends TestCase
         // 3. Pending transaction // no TandaReq
         $tx = $this->createSampleTransaction();
 
-        $this->assertNull($tx->tandaRequest);
+        $this->assertNull($tx->tandaRequests->first());
 
         $this->mockSuccessResponse();
 
@@ -220,7 +220,7 @@ class TandaApiTest extends TestCase
         Event::assertListening(TandaRequestSuccessEvent::class, TandaRequestSuccess::class);
 
         $tx->refresh();
-        $this->assertModelExists($tx->tandaRequest);
+        $this->assertModelExists($tx->tandaRequests->first());
     }
 
     public function test_query_status_mismatch_tx_amount()
@@ -228,7 +228,7 @@ class TandaApiTest extends TestCase
         // 4. Mismatch transaction // no TandaReq
         $tx = $this->createSampleTransaction(200);
 
-        $this->assertNull($tx->tandaRequest);
+        $this->assertNull($tx->tandaRequests->first());
 
         $this->mockSuccessResponse();
 
@@ -239,7 +239,7 @@ class TandaApiTest extends TestCase
         Event::assertNotDispatched(TandaRequestFailed::class);
 
         $tx->refresh();
-        $this->assertNull($tx->tandaRequest);
+        $this->assertNull($tx->tandaRequests->first());
     }
 
     public function test_query_status_mismatch_tx_destination()
@@ -247,7 +247,7 @@ class TandaApiTest extends TestCase
         // 4. Mismatch transaction // no TandaReq
         $tx = $this->createSampleTransaction(destination: '12');
 
-        $this->assertNull($tx->tandaRequest);
+        $this->assertNull($tx->tandaRequests->first());
 
         $this->mockSuccessResponse();
 
@@ -258,6 +258,6 @@ class TandaApiTest extends TestCase
         Event::assertNotDispatched(TandaRequestFailed::class);
 
         $tx->refresh();
-        $this->assertNull($tx->tandaRequest);
+        $this->assertNull($tx->tandaRequests->first());
     }
 }

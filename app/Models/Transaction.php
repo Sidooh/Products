@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Log;
 use Nabcellent\Kyanda\Models\KyandaRequest;
@@ -67,6 +68,11 @@ class Transaction extends Model
         return $this->hasOne(TandaRequest::class, 'relation_id');
     }
 
+    public function tandaRequests(): HasMany
+    {
+        return $this->hasMany(TandaRequest::class, 'relation_id');
+    }
+
     public function savingsTransaction(): HasOne
     {
         return $this->hasOne(SavingsTransaction::class);
@@ -80,16 +86,12 @@ class Transaction extends Model
         return Attribute::get(fn (mixed $value, array $attributes) => $attributes['amount'] + $attributes['charge']);
     }
 
-    /**
-     * Methods
-     */
-    public static function updateStatus(self $transaction, Status $status = Status::PENDING)
+    public function updateStatus(Status $status)
     {
         Log::info('...[MDL - TRANSACTION]: Update Status...', [
             'status' => $status->value,
         ]);
 
-        $transaction->status = $status;
-        $transaction->save();
+        $this->update(['status' => $status]);
     }
 }

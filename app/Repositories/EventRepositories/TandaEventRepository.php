@@ -11,6 +11,7 @@ use App\Events\TransactionSuccessEvent;
 use App\Models\Transaction;
 use App\Repositories\EarningRepository;
 use App\Repositories\ProductRepository;
+use App\Repositories\TransactionRepository;
 use App\Services\SidoohAccounts;
 use App\Services\SidoohNotify;
 use App\Services\SidoohPayments;
@@ -189,11 +190,18 @@ class TandaEventRepository
 
     /**
      * @throws RequestException|AuthenticationException|Exception
+     * @throws \Throwable
      */
     public static function requestFailed(TandaRequest $tandaRequest): void
     {
         // Update Transaction
         $transaction = Transaction::find($tandaRequest->relation_id);
+
+        if ($transaction->tandaRequests->containsOneItem()) {
+            TransactionRepository::requestPurchase($transaction);
+
+            return;
+        }
 
         if ($transaction->status != Status::PENDING->value) {
             SidoohNotify::notify(
@@ -233,7 +241,6 @@ class TandaEventRepository
         };
 
         SidoohNotify::notify([$sender], $message, $event);
-
         SidoohNotify::notify(admin_contacts(), "ERR:TANDA\n$transaction->id\n$sender\n$tandaRequest->message", $event);
     }
 }
