@@ -132,7 +132,7 @@ class EarningRepository
             // TODO: Can we have bulk notify endpoint?
             foreach ($notifications as $notification) {
                 $message = 'Congratulations! ';
-                $message .= "One of your ripple invites at level ${notification['level']} has recently subscribed as a Sidooh Agent.\n\n";
+                $message .= "One of your ripple invites at level {$notification['level']} has recently subscribed as a Sidooh Agent.\n\n";
                 $message .= config('services.sidooh.tagline');
 
                 SidoohNotify::notify([$notification['phone']], $message, EventType::SUBSCRIPTION_PAYMENT);
