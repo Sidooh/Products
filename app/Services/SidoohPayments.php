@@ -108,6 +108,6 @@ class SidoohPayments extends SidoohService
             return parent::fetch(self::baseUrl().'/charges/paybill');
         });
 
-        return Arr::first($charges, fn ($ch) => $ch['max'] >= $amount && $ch['min'] <= $amount);
+        return Arr::first($charges, fn ($ch) => $ch['max'] >= $amount && $ch['min'] <= $amount, ['charge' => 0])['charge'];
     }
 }
