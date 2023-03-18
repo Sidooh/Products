@@ -19,11 +19,11 @@ use App\Models\Transaction;
 use App\Services\SidoohAccounts;
 use App\Services\SidoohNotify;
 use App\Services\SidoohPayments;
+use function config;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Throwable;
-use function config;
 
 class Purchase
 {
@@ -50,8 +50,8 @@ class Purchase
      */
     public function airtime(): void
     {
-//        TODO: Notify admins of possible duplicate
-        if ($this->transaction->atAirtimeRequest || $this->transaction->kyandaTransaction || $this->transaction->tandaRequest) {
+        $hasCompletedTandaRequest = $this->transaction->tandaRequests->firstWhere('status', '000000');
+        if ($this->transaction->atAirtimeRequest || $this->transaction->kyandaTransaction || $hasCompletedTandaRequest) {
             SidoohNotify::notify(admin_contacts(), "ERROR:AIRTIME\n{$this->transaction->id}\nPossible duplicate airtime request... Confirm!!!", EventType::ERROR_ALERT);
             Log::error('Possible duplicate airtime request... Confirm!!!');
             exit;

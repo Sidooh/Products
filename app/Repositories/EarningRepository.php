@@ -318,7 +318,6 @@ class EarningRepository
 
         $earningAccount->self_amount += $earning;
         $earningAccount->save();
-
     }
 
     private static function computeSubscriptionEarningsForSelf(Transaction $transaction, float $earningPerUser): void

@@ -76,7 +76,7 @@ class TandaApi
 
         $response = Utility::requestStatus($requestId);
 
-        if (is_null($transaction->tandaRequest)) {
+        if ($transaction->tandaRequests->isEmpty()) {
             [
                 'accountNumber' => $destination,
                 'amount'        => $amount
