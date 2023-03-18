@@ -119,7 +119,7 @@ return [
     |
     */
 
-    'include_helpers' => true,
+    'include_helpers' => false,
 
     'helper_files' => [
         base_path().'/app/Helpers/helpers.php',
