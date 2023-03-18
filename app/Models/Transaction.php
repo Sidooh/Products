@@ -63,11 +63,6 @@ class Transaction extends Model
         return $this->hasOne(KyandaRequest::class, 'relation_id');
     }
 
-    public function tandaRequest(): HasOne
-    {
-        return $this->hasOne(TandaRequest::class, 'relation_id');
-    }
-
     public function tandaRequests(): HasMany
     {
         return $this->hasMany(TandaRequest::class, 'relation_id');
