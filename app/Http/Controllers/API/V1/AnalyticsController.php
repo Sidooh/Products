@@ -14,4 +14,13 @@ class AnalyticsController extends Controller
 
         return $this->successResponse($sla);
     }
+
+    public function telcoTransactions()
+    {
+        $transactions = Transaction::selectRaw("status, DATE_FORMAT(created_at, '%Y%m%d%H') as date, SUM(amount) as amount")
+                                   ->groupBy('date', 'status')->orderByDesc('date')
+                                   ->get();
+
+        return $this->successResponse($transactions);
+    }
 }
