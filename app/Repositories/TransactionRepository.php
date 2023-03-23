@@ -55,7 +55,7 @@ class TransactionRepository
         $paymentMethod = $data['method'];
 
         $debitAccount = $data['debit_account'] ?? match ($paymentMethod) {
-            PaymentMethod::MPESA => $account['phone'],
+            PaymentMethod::MPESA   => $account['phone'],
             PaymentMethod::VOUCHER => SidoohPayments::findSidoohVoucherIdForAccount($account['id'])
         };
 
@@ -130,12 +130,12 @@ class TransactionRepository
             }
 
             match ($transaction->product_id) {
-                ProductType::AIRTIME => $purchase->airtime(),
-                ProductType::UTILITY => $purchase->utility(),
+                ProductType::AIRTIME      => $purchase->airtime(),
+                ProductType::UTILITY      => $purchase->utility(),
                 ProductType::SUBSCRIPTION => $purchase->subscription(),
-                ProductType::VOUCHER => $purchase->voucher(),
-                ProductType::MERCHANT => $purchase->merchant(),
-                default => throw new Exception('Invalid product purchase!'),
+                ProductType::VOUCHER      => $purchase->voucher(),
+                ProductType::MERCHANT     => $purchase->merchant(),
+                default                   => throw new Exception('Invalid product purchase!'),
             };
         } catch (Exception $err) {
             Log::error($err);
@@ -176,8 +176,9 @@ class TransactionRepository
     {
         $transaction->payment->update(['status' => Status::COMPLETED]);
 
-        if ($transaction->charge != $transaction->payment->charge)
+        if ($transaction->charge != $transaction->payment->charge) {
             $transaction->update(['charge' => $transaction->payment->charge]);
+        }
 
         TransactionRepository::requestPurchase($transaction);
     }
@@ -243,7 +244,7 @@ class TransactionRepository
      */
     public static function handleFailedWithdrawal(Transaction $transaction): void
     {
-        DB::transaction(function () use ($transaction) {
+        DB::transaction(function() use ($transaction) {
             $transaction->savingsTransaction->update(['status' => Status::FAILED]);
 
             $acc = EarningAccount::accountId($transaction->account_id)->withdrawal()->first();
@@ -310,8 +311,8 @@ class TransactionRepository
         $transaction->status = Status::REFUNDED;
         $transaction->save();
 
-        $amount = 'Ksh' . number_format($amount, 2);
-        $balance = 'Ksh' . number_format($voucher['balance']);
+        $amount = 'Ksh'.number_format($amount, 2);
+        $balance = 'Ksh'.number_format($voucher['balance']);
 
         $message = match ($transaction->product_id) {
             ProductType::AIRTIME->value => "Hi, we have added $amount to your voucher account because we could not complete your $amount airtime purchase for $destination on $date. New voucher balance is $balance. Use it in your next purchase.",

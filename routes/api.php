@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\API\V1\AccountController;
 use App\Http\Controllers\API\V1\AirtimeController;
+use App\Http\Controllers\API\V1\AnalyticsController;
 use App\Http\Controllers\API\V1\CashbackController;
 use App\Http\Controllers\API\V1\DashboardController;
 use App\Http\Controllers\API\V1\EarningAccountController;
@@ -93,7 +94,7 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function() {
 
     Route::prefix('/earning-accounts')->group(function() {
         Route::get('/', [EarningAccountController::class, 'index']);
-        Route::get('/{earning_account}', [EarningAccountController::class, 'show']);
+        Route::get('/{account}', [EarningAccountController::class, 'show']);
     });
 
     Route::prefix('/cashbacks')->group(function() {
@@ -117,13 +118,19 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function() {
         });
     });
 
+    // Utilities
+    Route::get('/earnings/rates', [ProductController::class, 'getEarningRates']);
+
     //  DASHBOARD ROUTES
     Route::prefix('/dashboard')->group(function() {
         Route::get('/', [DashboardController::class, 'index']);
-        Route::get('/revenue-chart', [DashboardController::class, 'revenueChart']);
+        Route::get('/chart', [DashboardController::class, 'revenueChart']);
         Route::get('/providers/balances', [DashboardController::class, 'getProviderBalances']);
     });
 
-    // Utilities
-    Route::get('/earnings/rates', [ProductController::class, 'getEarningRates']);
+    //  ANALYTICS ROUTES
+    Route::prefix('/analytics')->group(function() {
+        Route::get('/transactions', [AnalyticsController::class, 'index']);
+        Route::get('/sla', [AnalyticsController::class, 'sla']);
+    });
 });
