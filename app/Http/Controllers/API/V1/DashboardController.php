@@ -23,21 +23,22 @@ class DashboardController extends Controller
     public function index(): JsonResponse
     {
         $totalTransactions = Cache::remember('total_transactions', 60 * 60 * 24, fn () => Transaction::count());
-        $totalTransactionsToday = Cache::remember(
-            'total_transactions_today', 60 * 60, fn () => Transaction::whereDate('created_at', Carbon::today())->count()
-        );
+        $totalTransactionsToday = Cache::remember('total_transactions_today',
+            60 * 60,
+            fn () => Transaction::whereDate('created_at', Carbon::today())->count());
 
         $totalRevenue = Cache::remember('total_revenue', 60 * 60 * 24, function() {
-            return Transaction::whereStatus(Status::COMPLETED)->whereType(TransactionType::PAYMENT)->whereNot(
-                'product_id',
-                ProductType::VOUCHER
-            )->sum('amount');
+            return Transaction::whereStatus(Status::COMPLETED)
+                              ->whereType(TransactionType::PAYMENT)
+                              ->whereNot('product_id', ProductType::VOUCHER)
+                              ->sum('amount');
         });
         $totalRevenueToday = Cache::remember('total_revenue_today', 60 * 60, function() {
-            return Transaction::whereStatus(Status::COMPLETED)->whereType(TransactionType::PAYMENT)->whereNot(
-                'product_id',
-                ProductType::VOUCHER
-            )->whereDate('created_at', Carbon::today())->sum('amount');
+            return Transaction::whereStatus(Status::COMPLETED)
+                              ->whereType(TransactionType::PAYMENT)
+                              ->whereNot('product_id', ProductType::VOUCHER)
+                              ->whereDate('created_at', Carbon::today())
+                              ->sum('amount');
         });
 
         return $this->successResponse([
@@ -49,10 +50,12 @@ class DashboardController extends Controller
         ]);
     }
 
-    public function revenueChart(): JsonResponse
+    public function getChartData(): JsonResponse
     {
         $transactions = Transaction::selectRaw("status, DATE_FORMAT(created_at, '%Y%m%d%H') as date, SUM(amount) as amount")
-                                   ->groupBy('date', 'status')->orderByDesc('date')
+                                   ->whereType(TransactionType::PAYMENT)
+                                   ->groupBy('date', 'status')
+                                   ->orderByDesc('date')
                                    ->get();
 
         return $this->successResponse($transactions);

@@ -124,13 +124,18 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function() {
     //  DASHBOARD ROUTES
     Route::prefix('/dashboard')->group(function() {
         Route::get('/', [DashboardController::class, 'index']);
-        Route::get('/chart', [DashboardController::class, 'revenueChart']);
+        Route::get('/chart', [DashboardController::class, 'getChartData']);
         Route::get('/providers/balances', [DashboardController::class, 'getProviderBalances']);
     });
 
     //  ANALYTICS ROUTES
     Route::prefix('/analytics')->group(function() {
-        Route::get('/transactions', [AnalyticsController::class, 'index']);
         Route::get('/sla', [AnalyticsController::class, 'sla']);
+        Route::get('/transactions', [AnalyticsController::class, 'transactions']);
+        Route::get('/revenue', [AnalyticsController::class, 'revenue']);
+        Route::get('/telco-transactions', [AnalyticsController::class, 'transactionsByTelco']);
+        Route::get('/telco-revenue', [AnalyticsController::class, 'revenueByTelco']);
+        Route::get('/product-transactions', [AnalyticsController::class, 'transactionsByProduct']);
+        Route::get('/product-revenue', [AnalyticsController::class, 'revenueByProduct']);
     });
 });
