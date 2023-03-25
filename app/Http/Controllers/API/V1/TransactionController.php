@@ -74,7 +74,7 @@ class TransactionController extends Controller
 
         if (in_array('tanda_request', $relations)) {
             $transaction->load(
-                'tandaRequest:request_id,relation_id,receipt_number,amount,provider,destination,message,status,last_modified,created_at,updated_at'
+                'tandaRequests:request_id,relation_id,receipt_number,amount,provider,destination,message,status,last_modified,created_at,updated_at'
             );
         }
 
@@ -107,7 +107,7 @@ class TransactionController extends Controller
         TransactionRepository::checkRequestStatus($transaction, $request->request_id);
 
         // return response
-        $transaction->refresh()->load('tandaRequest');
+        $transaction->refresh()->load('tandaRequests');
 
         return $this->successResponse($transaction);
     }
