@@ -68,6 +68,11 @@ class Transaction extends Model
         return $this->hasMany(TandaRequest::class, 'relation_id');
     }
 
+    public function latestTandaRequest(): HasOne
+    {
+        return $this->tandaRequests()->one()->latestOfMany();
+    }
+
     public function savingsTransaction(): HasOne
     {
         return $this->hasOne(SavingsTransaction::class);

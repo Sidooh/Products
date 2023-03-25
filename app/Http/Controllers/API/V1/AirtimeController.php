@@ -41,7 +41,8 @@ class AirtimeController extends Controller
         ];
 
         $data = [
-            'method' => $request->has('method') ? PaymentMethod::from($request->input('method'))
+            'method' => $request->has('method')
+                ? PaymentMethod::from($request->input('method'))
                 : PaymentMethod::MPESA,
         ];
 
