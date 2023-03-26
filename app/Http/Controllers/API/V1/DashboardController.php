@@ -54,9 +54,15 @@ class DashboardController extends Controller
     {
         $transactions = Transaction::selectRaw("status, DATE_FORMAT(created_at, '%Y%m%d%H') as date, SUM(amount) as amount")
                                    ->whereType(TransactionType::PAYMENT)
+                                   ->whereDate('created_at', '>=', Carbon::yesterday())
                                    ->groupBy('date', 'status')
                                    ->orderByDesc('date')
-                                   ->get();
+                                   ->get()
+                                   ->groupBy(function($tx) {
+                                       $dateIsToday = Carbon::createFromFormat('YmdH', $tx->date)->isToday();
+
+                                       return $dateIsToday ? 'TODAY' : 'YESTERDAY';
+                                   });
 
         return $this->successResponse($transactions);
     }
