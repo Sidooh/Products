@@ -37,11 +37,25 @@ class TransactionRepository
      * @throws AuthenticationException
      * @throws Throwable
      */
-    public static function createTransaction(array $transactionData, $data): Transaction
+    public static function createTransaction(array $data, $extra): Transaction
     {
-        $transaction = Transaction::create($transactionData);
+        $attributes = [
+            'account_id'  => $data['account_id'],
+            'product_id'  => $data['product_id'],
+            'initiator'   => $data['initiator'],
+            'type'        => $data['type'],
+            'amount'      => $data['amount'],
+            'destination' => $data['destination'],
+            'description' => $data['description'],
+        ];
 
-        self::initiatePayment($transaction, $transactionData['account'], $data);
+        if (isset($data['charge'])) {
+            $attributes['charge'] = $data['charge'];
+        }
+
+        $transaction = Transaction::create($attributes);
+
+        self::initiatePayment($transaction, $data['account'], $extra);
 
         return $transaction;
     }
