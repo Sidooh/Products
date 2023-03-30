@@ -111,12 +111,12 @@ class SidoohPayments extends SidoohService
         return Arr::first($charges, fn ($ch) => $ch['max'] >= $amount && $ch['min'] <= $amount, ['charge' => 0])['charge'];
     }
 
-    public static function getTillCharge(int $amount): int
+    public static function getBuyGoodsCharge(int $amount): int
     {
-        Log::info('...[SRV - PAYMENTS]: Get Till Charge...', [$amount]);
+        Log::info('...[SRV - PAYMENTS]: Get Buy Goods Charge...', [$amount]);
 
-        $charges = Cache::remember('till_charges', (3600 * 24 * 90), function() {
-            return parent::fetch(self::baseUrl().'/charges/till');
+        $charges = Cache::remember('buy_goods_charges', (3600 * 24 * 90), function() {
+            return parent::fetch(self::baseUrl().'/charges/buy-goods');
         });
 
         return Arr::first($charges, fn ($ch) => $ch['max'] >= $amount && $ch['min'] <= $amount, ['charge' => 0])['charge'];
