@@ -164,7 +164,10 @@ class Purchase
             }
         }
 
-        $message = "You have made a payment to Merchant $destination of $amount from your Sidooh account on $date using $method. You have received {$this->transaction->charge} points.$vtext";
+        $message = "{$this->transaction->payment->extra['mpesa_code']} Confirmed. ";
+        $message .= "You have made a payment to Merchant $destination of $amount ";
+        $message .= "from your Sidooh account on $date using $method. ";
+        $message .= "You have received {$this->transaction->charge} points.$vtext";
 
         SidoohNotify::notify([$sender], $message, $eventType);
     }

@@ -30,7 +30,7 @@ class PaymentDTO
             $this->paybill_number = $businessNumber;
             $this->account_number = $account;
         } else {
-            $this->till_number = $businessNumber;
+            $this->buy_goods_number = $businessNumber;
         }
     }
 
