@@ -24,13 +24,18 @@ class MerchantController extends Controller
     {
         Log::info('...[CTRL - MERCHANT]: Process Merchant Request...', $request->all());
 
-        $transaction = $this->repo->transact($request->validated(), [
+        $data = [
             'method'          => $request->has('method') ? $request->enum('method', PaymentMethod::class) : PaymentMethod::MPESA,
             'merchant_type'   => $request->enum('merchant_type', MerchantType::class),
             'business_number' => $request->integer('business_number'),
             'account_number'  => $request->string('account_number'),
-            'debit_account'  => $request->integer('debit_account', null),
-        ]);
+        ];
+
+        if ($request->has('debit_account')) {
+            $data['debit_account'] = $request->input('debit_account');
+        }
+
+        $transaction = $this->repo->transact($request->validated(), $data);
 
         return $this->successResponse($transaction, 'Merchant Request Successful!');
     }
