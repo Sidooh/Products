@@ -21,7 +21,7 @@ class MerchantRepository
         $account = SidoohAccounts::find($request['account_id']);
 
         if ($request['merchant_type'] === MerchantType::MPESA_PAY_BILL->value) {
-            $charge = SidoohPayments::getPaybillCharge($request['amount']);
+            $charge = SidoohPayments::getPayBillCharge($request['amount']);
         } else {
             $charge = SidoohPayments::getBuyGoodsCharge($request['amount']);
         }
