@@ -33,6 +33,11 @@ class PaymentsController extends Controller
             return response()->json(['status' => true]);
         }
 
+        if ($request->has('mpesa_code')) {
+            $transaction->payment->extra['mpesa_code'] = $request->string('mpesa_code');
+            $transaction->payment->update(['extra' => $transaction->payment->extra]);
+        }
+
         dispatch(function() use ($transaction, $request) {
             if ($request->status === Status::FAILED->value) {
                 TransactionRepository::handleFailedPayment($transaction, $request);
