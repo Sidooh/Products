@@ -28,7 +28,8 @@ class MerchantController extends Controller
             'method'          => $request->has('method') ? $request->enum('method', PaymentMethod::class) : PaymentMethod::MPESA,
             'merchant_type'   => $request->enum('merchant_type', MerchantType::class),
             'business_number' => $request->integer('business_number'),
-            'account_number'  => $request->string('account_number')->trim(),
+            'account_number'  => $request->string('account_number'),
+            'debit_account'  => $request->string('debit_account'),
         ]);
 
         return $this->successResponse($transaction, 'Merchant Request Successful!');
