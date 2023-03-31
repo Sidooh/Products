@@ -51,17 +51,13 @@ class SidoohPayments extends SidoohService
      */
     public static function findVoucher(int $voucherId, bool $bypassCache = false): ?array
     {
-        $cacheKey = 'vouchers.'.$voucherId;
-        $ttl = (60 * 60 * 24);
+        $cacheKey = "vouchers.$voucherId";
 
         if ($bypassCache) {
-            $voucher = parent::fetch(self::baseUrl()."/vouchers/$voucherId");
-            Cache::put($cacheKey, $voucher, $ttl);
-
-            return $voucher;
+            Cache::forget($cacheKey);
         }
 
-        return Cache::remember($cacheKey, $ttl, function() use ($voucherId) {
+        return Cache::remember($cacheKey, (60 * 60 * 24), function() use ($voucherId) {
             return parent::fetch(self::baseUrl()."/vouchers/$voucherId");
         });
     }

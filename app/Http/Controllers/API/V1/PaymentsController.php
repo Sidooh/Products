@@ -34,8 +34,12 @@ class PaymentsController extends Controller
         }
 
         if ($request->has('mpesa_code')) {
-            $transaction->payment->extra['mpesa_code'] = $request->string('mpesa_code');
-            $transaction->payment->update(['extra' => $transaction->payment->extra]);
+            $transaction->payment->update([
+                'extra' => [
+                    ...$transaction->payment->extra,
+                    'mpesa_code' => $request->string('mpesa_code'),
+                ],
+            ]);
         }
 
         dispatch(function() use ($transaction, $request) {
