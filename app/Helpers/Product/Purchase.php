@@ -164,10 +164,12 @@ class Purchase
             }
         }
 
+        $saved = 'Ksh'.number_format($this->transaction->charge, 2);
+
         $message = "{$this->transaction->payment->extra['mpesa_code']} Confirmed. ";
         $message .= "You have made a payment to Merchant $destination of $amount ";
         $message .= "from your Sidooh account on $date using $method. ";
-        $message .= "You have received {$this->transaction->charge} points.$vtext";
+        $message .= "You have saved $saved.$vtext";
 
         SidoohNotify::notify([$sender], $message, $eventType);
     }
