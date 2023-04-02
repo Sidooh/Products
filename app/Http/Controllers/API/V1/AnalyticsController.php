@@ -56,7 +56,7 @@ class AnalyticsController extends Controller
                               ->groupBy('date', 'destination', 'status')
                               ->orderByDesc('date')
                               ->get()
-                              ->groupBy(fn ($tx) => getTelcoFromPhone($tx->destination));
+                              ->groupBy(fn ($tx) => getTelcoFromPhone($tx->destination) ?? 'UNKNOWN');
         });
 
         return $this->successResponse($data);
@@ -71,7 +71,7 @@ class AnalyticsController extends Controller
                               ->groupBy('date', 'destination', 'status')
                               ->orderByDesc('date')
                               ->get()
-                              ->groupBy(fn ($tx) => getTelcoFromPhone($tx->destination));
+                              ->groupBy(fn ($tx) => getTelcoFromPhone($tx->destination) ?? 'UNKNOWN');
         });
 
         return $this->successResponse($data);
