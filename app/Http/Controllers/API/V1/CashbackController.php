@@ -99,12 +99,12 @@ class CashbackController extends Controller
                 if (count($completed) > 0) {
                     $message .= 'Processed earnings for ' . count($completed) . "  accounts\n";
 
-                    $builder->whereIn('cashbacks.account_id', array_keys($completed))->update(['status' => Status::COMPLETED]);
+                    $builder->whereIn('cashbacks.account_id', array_keys($completed))->update(['cashbacks.status' => Status::COMPLETED]);
                 }
                 if (count($failed) > 0) {
                     $message .= 'Failed for ' . count($failed) . ' accounts';
 
-                    $builder->whereIn('cashbacks.account_id', array_keys($failed))->update(['status' => Status::FAILED]);
+                    $builder->whereIn('cashbacks.account_id', array_keys($failed))->update(['cashbacks.status' => Status::FAILED]);
                 }
             } catch (Exception $e) {
                 // Notify failure
