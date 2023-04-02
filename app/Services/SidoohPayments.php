@@ -3,12 +3,18 @@
 namespace App\Services;
 
 use App\DTOs\PaymentDTO;
+use Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 class SidoohPayments extends SidoohService
 {
+    public static function baseUrl()
+    {
+        return config('services.sidooh.services.payments.url');
+    }
+
     public static function getAll(): array
     {
         Log::info('...[SRV - PAYMENTS]: Get All...');
@@ -16,11 +22,6 @@ class SidoohPayments extends SidoohService
         $url = self::baseUrl().'/payments';
 
         return Cache::remember('all_payments', (60 * 60 * 24), fn () => parent::fetch($url));
-    }
-
-    public static function baseUrl()
-    {
-        return config('services.sidooh.services.payments.url');
     }
 
     /**
@@ -50,17 +51,13 @@ class SidoohPayments extends SidoohService
      */
     public static function findVoucher(int $voucherId, bool $bypassCache = false): ?array
     {
-        $cacheKey = 'vouchers.'.$voucherId;
-        $ttl = (60 * 60 * 24);
+        $cacheKey = "vouchers.$voucherId";
 
         if ($bypassCache) {
-            $voucher = parent::fetch(self::baseUrl()."/vouchers/$voucherId");
-            Cache::put($cacheKey, $voucher, $ttl);
-
-            return $voucher;
+            Cache::forget($cacheKey);
         }
 
-        return Cache::remember($cacheKey, $ttl, function() use ($voucherId) {
+        return Cache::remember($cacheKey, (60 * 60 * 24), function() use ($voucherId) {
             return parent::fetch(self::baseUrl()."/vouchers/$voucherId");
         });
     }
@@ -91,7 +88,7 @@ class SidoohPayments extends SidoohService
             ]);
         }
 
-        return $sidoohVoucher['id']; // TODO: don't use magic numbers
+        return $sidoohVoucher['id'];
     }
 
     private static function getSidoohVoucherType(): int
@@ -99,12 +96,25 @@ class SidoohPayments extends SidoohService
         return 1;
     }
 
-    public static function getWithdrawalCharge(int $amount): int
+    public static function getPayBillCharge(int $amount): int
     {
-        Log::info('...[SRV - PAYMENTS]: Get Withdrawal Charge...', [$amount]);
+        Log::info('...[SRV - PAYMENTS]: Get PayBill Charge...', [$amount]);
 
-        return Cache::remember("withdrawal_charge_$amount", (24 * 60 * 60), function() use ($amount) {
-            return parent::fetch(self::baseUrl()."/charges/withdrawal/$amount");
+        $charges = Cache::remember('pay_bill_charges', (3600 * 24 * 90), function() {
+            return parent::fetch(self::baseUrl().'/charges/pay-bill');
         });
+
+        return Arr::first($charges, fn ($ch) => $ch['max'] >= $amount && $ch['min'] <= $amount, ['charge' => 0])['charge'];
+    }
+
+    public static function getBuyGoodsCharge(int $amount): int
+    {
+        Log::info('...[SRV - PAYMENTS]: Get Buy Goods Charge...', [$amount]);
+
+        $charges = Cache::remember('buy_goods_charges', (3600 * 24 * 90), function() {
+            return parent::fetch(self::baseUrl().'/charges/buy-goods');
+        });
+
+        return Arr::first($charges, fn ($ch) => $ch['max'] >= $amount && $ch['min'] <= $amount, ['charge' => 0])['charge'];
     }
 }

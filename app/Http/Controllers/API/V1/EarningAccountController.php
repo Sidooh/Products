@@ -35,14 +35,16 @@ class EarningAccountController extends Controller
     /**
      * @throws \Exception
      */
-    public function show(Request $request, EarningAccount $earningAccount): JsonResponse
+    public function show(Request $request, int $accountId): JsonResponse
     {
         $relations = explode(',', $request->query('with'));
 
-        if (in_array('account', $relations) && $earningAccount->account_id) {
-            $earningAccount->account = SidoohAccounts::find($earningAccount->account_id);
+        $data['earning_accounts'] = EarningAccount::whereAccountId($accountId)->get();
+
+        if (in_array('account', $relations)) {
+            $data['account'] = SidoohAccounts::find($accountId);
         }
 
-        return $this->successResponse($earningAccount);
+        return $this->successResponse($data);
     }
 }

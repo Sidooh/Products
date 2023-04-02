@@ -19,6 +19,7 @@ class Payment extends Model
         'payment_id',
         'type',
         'amount',
+        'charge',
         'subtype',
         'extra',
     ];

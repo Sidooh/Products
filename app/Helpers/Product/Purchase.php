@@ -8,6 +8,7 @@ use App\Enums\PaymentSubtype;
 use App\Enums\Status;
 use App\Events\SubscriptionPurchaseFailedEvent;
 use App\Events\SubscriptionPurchaseSuccessEvent;
+use App\Events\TransactionSuccessEvent;
 use App\Events\VoucherPurchaseEvent;
 use App\Helpers\AfricasTalking\AfricasTalkingApi;
 use App\Helpers\Kyanda\KyandaApi;
@@ -49,8 +50,8 @@ class Purchase
      */
     public function airtime(): void
     {
-//        TODO: Notify admins of possible duplicate
-        if ($this->transaction->atAirtimeRequest || $this->transaction->kyandaTransaction || $this->transaction->tandaRequest) {
+        $hasCompletedTandaRequest = $this->transaction->tandaRequests->firstWhere('status', '000000');
+        if ($this->transaction->atAirtimeRequest || $this->transaction->kyandaTransaction || $hasCompletedTandaRequest) {
             SidoohNotify::notify(admin_contacts(), "ERROR:AIRTIME\n{$this->transaction->id}\nPossible duplicate airtime request... Confirm!!!", EventType::ERROR_ALERT);
             Log::error('Possible duplicate airtime request... Confirm!!!');
             exit;
@@ -136,7 +137,7 @@ class Purchase
     {
         Log::info('...[INTERNAL - PRODUCT]: Merchant...');
 
-        Transaction::updateStatus($this->transaction, Status::COMPLETED);
+        TransactionSuccessEvent::dispatch($this->transaction, $this->transaction->charge);
 
         $account = SidoohAccounts::find($this->transaction->account_id);
 
@@ -163,7 +164,12 @@ class Purchase
             }
         }
 
-        $message = "You have made a payment to Merchant $destination of $amount from your Sidooh account on $date using $method.$vtext";
+        $saved = 'Ksh'.number_format($this->transaction->charge, 2);
+
+        $message = "{$this->transaction->payment->extra['mpesa_code']} Confirmed. ";
+        $message .= "You have made a payment to Merchant $destination of $amount ";
+        $message .= "from your Sidooh account on $date using $method. ";
+        $message .= "You have saved $saved.$vtext";
 
         SidoohNotify::notify([$sender], $message, $eventType);
     }

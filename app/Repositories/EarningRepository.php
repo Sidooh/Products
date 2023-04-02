@@ -45,6 +45,12 @@ class EarningRepository
                 return;
             }
 
+            if ($transaction->product_id == ProductType::MERCHANT) {
+                self::computeMerchantEarnings($transaction, $earnings);
+
+                return;
+            }
+
             $hasActiveSubscription = Subscription::active($transaction->account_id);
 
             if ($hasActiveSubscription) {
@@ -126,7 +132,7 @@ class EarningRepository
             // TODO: Can we have bulk notify endpoint?
             foreach ($notifications as $notification) {
                 $message = 'Congratulations! ';
-                $message .= "One of your ripple invites at level ${notification['level']} has recently subscribed as a Sidooh Agent.\n\n";
+                $message .= "One of your ripple invites at level {$notification['level']} has recently subscribed as a Sidooh Agent.\n\n";
                 $message .= config('services.sidooh.tagline');
 
                 SidoohNotify::notify([$notification['phone']], $message, EventType::SUBSCRIPTION_PAYMENT);
@@ -289,6 +295,29 @@ class EarningRepository
 
             Cashback::insert($systemEarnings);
         }
+    }
+
+    private static function computeMerchantEarnings(Transaction $transaction, float $earning): void
+    {
+        Log::info('...[REP - EARNING]: Compute Merchant Earnings...');
+
+        // Create Earning Transaction
+        Cashback::create([
+            'account_id'     => $transaction->account_id,
+            'transaction_id' => $transaction->id,
+            'amount'         => $earning,
+            'type'           => EarningCategory::SELF_EARNING->value,
+        ]);
+
+        // Update Earning Account
+        //TODO: Is it possible to update in one statement? with the addition since we don't know the initial amount?
+        $earningAccount = EarningAccount::firstOrCreate([
+            'account_id' => $transaction->account_id,
+            'type'       => EarningAccountType::MERCHANT,
+        ]);
+
+        $earningAccount->self_amount += $earning;
+        $earningAccount->save();
     }
 
     private static function computeSubscriptionEarningsForSelf(Transaction $transaction, float $earningPerUser): void

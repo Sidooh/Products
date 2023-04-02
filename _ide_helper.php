@@ -20167,7 +20167,6 @@ namespace Illuminate\Support\Facades {
 }
 
 namespace Illuminate\Support {
-
     class Arr
     {
     }
@@ -20182,49 +20181,47 @@ namespace Illuminate\Support {
 }
 
 namespace App\Facades {
-
-        class LocalCarbon
+    class LocalCarbon
+    {
+        /**
+         * @static
+         */
+        public static function init()
         {
-            /**
-             * @static
-             */
-            public static function init()
-            {
-                /** @var \App\Helpers\LocalCarbon $instance */
-                return $instance->init();
-            }
+            /** @var \App\Helpers\LocalCarbon $instance */
+            return $instance->init();
+        }
 
-            /**
-             * @static
-             */
-            public static function today()
-            {
-                /** @var \App\Helpers\LocalCarbon $instance */
-                return $instance->today();
-            }
+        /**
+         * @static
+         */
+        public static function today()
+        {
+            /** @var \App\Helpers\LocalCarbon $instance */
+            return $instance->today();
+        }
 
-            /**
-             * @static
-             */
-            public static function yesterday()
-            {
-                /** @var \App\Helpers\LocalCarbon $instance */
-                return $instance->yesterday();
-            }
+        /**
+         * @static
+         */
+        public static function yesterday()
+        {
+            /** @var \App\Helpers\LocalCarbon $instance */
+            return $instance->yesterday();
+        }
 
-            /**
-             * @static
-             */
-            public static function now()
-            {
-                /** @var \App\Helpers\LocalCarbon $instance */
-                return $instance->now();
-            }
+        /**
+         * @static
+         */
+        public static function now()
+        {
+            /** @var \App\Helpers\LocalCarbon $instance */
+            return $instance->now();
         }
     }
+}
 
 namespace Clockwork\Support\Laravel {
-
     class Facade
     {
         /**
@@ -21061,7 +21058,6 @@ namespace Spatie\LaravelIgnition\Facades {
 }
 
 namespace Illuminate\Http {
-
     class Request
     {
         /**
@@ -21129,7 +21125,6 @@ namespace Illuminate\Http {
 }
 
 namespace Illuminate\Validation {
-
     class Rule
     {
         /**
