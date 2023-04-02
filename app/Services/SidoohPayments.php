@@ -51,17 +51,13 @@ class SidoohPayments extends SidoohService
      */
     public static function findVoucher(int $voucherId, bool $bypassCache = false): ?array
     {
-        $cacheKey = 'vouchers.'.$voucherId;
-        $ttl = (60 * 60 * 24);
+        $cacheKey = "vouchers.$voucherId";
 
         if ($bypassCache) {
-            $voucher = parent::fetch(self::baseUrl()."/vouchers/$voucherId");
-            Cache::put($cacheKey, $voucher, $ttl);
-
-            return $voucher;
+            Cache::forget($cacheKey);
         }
 
-        return Cache::remember($cacheKey, $ttl, function() use ($voucherId) {
+        return Cache::remember($cacheKey, (60 * 60 * 24), function() use ($voucherId) {
             return parent::fetch(self::baseUrl()."/vouchers/$voucherId");
         });
     }
@@ -92,7 +88,7 @@ class SidoohPayments extends SidoohService
             ]);
         }
 
-        return $sidoohVoucher['id']; // TODO: don't use magic numbers
+        return $sidoohVoucher['id'];
     }
 
     private static function getSidoohVoucherType(): int
@@ -100,12 +96,23 @@ class SidoohPayments extends SidoohService
         return 1;
     }
 
-    public static function getPaybillCharge(int $amount): int
+    public static function getPayBillCharge(int $amount): int
     {
-        Log::info('...[SRV - PAYMENTS]: Get Paybill Charge...', [$amount]);
+        Log::info('...[SRV - PAYMENTS]: Get PayBill Charge...', [$amount]);
 
-        $charges = Cache::remember('paybill_charges', (3600 * 24 * 90), function() {
-            return parent::fetch(self::baseUrl().'/charges/paybill');
+        $charges = Cache::remember('pay_bill_charges', (3600 * 24 * 90), function() {
+            return parent::fetch(self::baseUrl().'/charges/pay-bill');
+        });
+
+        return Arr::first($charges, fn ($ch) => $ch['max'] >= $amount && $ch['min'] <= $amount, ['charge' => 0])['charge'];
+    }
+
+    public static function getBuyGoodsCharge(int $amount): int
+    {
+        Log::info('...[SRV - PAYMENTS]: Get Buy Goods Charge...', [$amount]);
+
+        $charges = Cache::remember('buy_goods_charges', (3600 * 24 * 90), function() {
+            return parent::fetch(self::baseUrl().'/charges/buy-goods');
         });
 
         return Arr::first($charges, fn ($ch) => $ch['max'] >= $amount && $ch['min'] <= $amount, ['charge' => 0])['charge'];

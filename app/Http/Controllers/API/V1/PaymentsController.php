@@ -39,6 +39,15 @@ class PaymentsController extends Controller
             }
 
             if ($request->status === Status::COMPLETED->value) {
+                if ($request->has('mpesa_code')) {
+                    $transaction->payment->update([
+                        'extra' => [
+                            ...$transaction->payment->extra,
+                            'mpesa_code' => $request->string('mpesa_code'),
+                        ],
+                    ]);
+                }
+
                 TransactionRepository::handleCompletedPayment($transaction);
             }
         })->afterResponse();
