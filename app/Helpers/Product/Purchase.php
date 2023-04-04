@@ -19,11 +19,11 @@ use App\Models\Transaction;
 use App\Services\SidoohAccounts;
 use App\Services\SidoohNotify;
 use App\Services\SidoohPayments;
-use function config;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Throwable;
+use function config;
 
 class Purchase
 {
@@ -166,9 +166,12 @@ class Purchase
 
         $saved = 'Ksh'.number_format($this->transaction->charge, 2);
 
-        $message = "{$this->transaction->payment->extra['mpesa_code']} Confirmed. ";
-        $message .= "You have made a payment to Merchant $destination of $amount ";
-        $message .= "from your Sidooh account on $date using $method. ";
+        $paymentCode = $this->transaction->payment->extra['mpesa_code'];
+        $merchantName = $this->transaction->payment->extra['mpesa_merchant'] ?? "Merchant $destination";
+
+        $message = "$paymentCode Confirmed. ";
+        $message .= "You have made a payment of $amount to $merchantName ";
+        $message .= "on $date using $method. ";
         $message .= "You have saved $saved.$vtext";
 
         SidoohNotify::notify([$sender], $message, $eventType);
