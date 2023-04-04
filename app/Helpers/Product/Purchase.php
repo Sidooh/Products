@@ -3,6 +3,7 @@
 namespace App\Helpers\Product;
 
 use App\Enums\EventType;
+use App\Enums\MerchantType;
 use App\Enums\PaymentMethod;
 use App\Enums\PaymentSubtype;
 use App\Enums\Status;
@@ -148,6 +149,8 @@ class Purchase
         $date = $this->transaction->created_at->timezone('Africa/Nairobi')->format(config('settings.sms_date_time_format'));
         $eventType = EventType::MERCHANT_PAYMENT;
 
+        $extra = $this->transaction->payment->extra;
+
         if ($this->transaction->payment->subtype === PaymentMethod::VOUCHER->name) {
             $method = PaymentMethod::VOUCHER->name;
 
@@ -158,7 +161,6 @@ class Purchase
             $method = $this->transaction->payment->type;
             $vtext = '';
 
-            $extra = $this->transaction->payment->extra;
             if (isset($extra['debit_account']) && $account['phone'] !== $extra['debit_account']) {
                 $method = 'OTHER '.$method;
             }
@@ -167,8 +169,11 @@ class Purchase
         $saved = 'Ksh'.number_format($this->transaction->charge, 2);
 
         $paymentCode = $this->transaction->payment->extra['mpesa_code'];
-        $merchantName = $this->transaction->payment->extra['mpesa_merchant'] ?: "Merchant $destination";
-        $merchantAccount = $this->transaction->payment->extra['mpesa_account'] ? "for {$this->transaction->payment->extra['mpesa_account']} ": "";
+
+        [$merchantName, $merchantAccount] = match (MerchantType::from($this->transaction->payment->extra['merchant_type'])) {
+            MerchantType::MPESA_BUY_GOODS => [$destination, ""],
+            MerchantType::MPESA_PAY_BILL => [$extra['mpesa_merchant'], "for {$extra['mpesa_account']} "]
+        };
 
         $message = "$paymentCode Confirmed. ";
         $message .= "You have made a payment of $amount to $merchantName $merchantAccount";
