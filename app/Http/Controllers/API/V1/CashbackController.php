@@ -64,14 +64,14 @@ class CashbackController extends Controller
         $date = $request->filled('date') ? Carbon::createFromFormat('d-m-Y', $request->input('date')) : new Carbon;
 
         $builder = Cashback::select('cashbacks.account_id')
-            ->selectRaw("
+            ->selectRaw('
                     SUM(CASE
                             WHEN t.product_id != 6 THEN cashbacks.amount
                         END) as amount,
                     SUM(CASE
                         WHEN t.product_id = 6 THEN cashbacks.amount
                     END) as merchant_amount
-                    "
+                    '
             )
             ->leftJoin('transactions as t', 't.id', '=', 'cashbacks.transaction_id')
             ->whereNotNull('cashbacks.account_id')
@@ -79,13 +79,12 @@ class CashbackController extends Controller
             ->whereDate('cashbacks.created_at', $date->format('Y-m-d'))
             ->groupBy('cashbacks.account_id');
 
-        $savings = $builder->get()->map(fn(Cashback $cashback) => [
+        $savings = $builder->get()->map(fn (Cashback $cashback) => [
             'account_id'      => $cashback->account_id,
             'current_amount'  => round($cashback->amount * .2, 4),
             'locked_amount'   => round($cashback->amount * .8, 4),
             'merchant_amount' => round($cashback->merchant_amount, 4),
         ]);
-
 
         $message = "STATUS:SAVINGS\n\n";
 
@@ -97,12 +96,12 @@ class CashbackController extends Controller
                 $failed = $responses['failed'];
 
                 if (count($completed) > 0) {
-                    $message .= 'Processed earnings for ' . count($completed) . "  accounts\n";
+                    $message .= 'Processed earnings for '.count($completed)."  accounts\n";
 
                     $builder->whereIn('cashbacks.account_id', array_keys($completed))->update(['cashbacks.status' => Status::COMPLETED]);
                 }
                 if (count($failed) > 0) {
-                    $message .= 'Failed for ' . count($failed) . ' accounts';
+                    $message .= 'Failed for '.count($failed).' accounts';
 
                     $builder->whereIn('cashbacks.account_id', array_keys($failed))->update(['cashbacks.status' => Status::FAILED]);
                 }

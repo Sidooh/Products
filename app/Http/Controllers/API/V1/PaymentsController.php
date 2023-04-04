@@ -44,6 +44,8 @@ class PaymentsController extends Controller
                         'extra' => [
                             ...$transaction->payment->extra,
                             'mpesa_code' => $request->string('mpesa_code'),
+                            'mpesa_merchant' => $request->string('mpesa_merchant'),
+                            'mpesa_account' => $request->string('mpesa_account'),
                         ],
                     ]);
                 }
