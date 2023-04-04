@@ -168,9 +168,10 @@ class Purchase
 
         $paymentCode = $this->transaction->payment->extra['mpesa_code'];
         $merchantName = $this->transaction->payment->extra['mpesa_merchant'] ?: "Merchant $destination";
+        $merchantAccount = $this->transaction->payment->extra['mpesa_account'] ? "for {$this->transaction->payment->extra['mpesa_account']} ": "";
 
         $message = "$paymentCode Confirmed. ";
-        $message .= "You have made a payment of $amount to $merchantName ";
+        $message .= "You have made a payment of $amount to $merchantName $merchantAccount";
         $message .= "on $date using $method. ";
         $message .= "You have saved $saved.$vtext";
 
