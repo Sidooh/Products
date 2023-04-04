@@ -167,7 +167,7 @@ class Purchase
         $saved = 'Ksh'.number_format($this->transaction->charge, 2);
 
         $paymentCode = $this->transaction->payment->extra['mpesa_code'];
-        $merchantName = $this->transaction->payment->extra['mpesa_merchant'] ?? "Merchant $destination";
+        $merchantName = $this->transaction->payment->extra['mpesa_merchant'] ?: "Merchant $destination";
 
         $message = "$paymentCode Confirmed. ";
         $message .= "You have made a payment of $amount to $merchantName ";
