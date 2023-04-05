@@ -30,6 +30,7 @@ class TransactionController extends Controller
         $transactions = Transaction::select([
             'id',
             'amount',
+            'charge',
             'status',
             'destination',
             'description',
