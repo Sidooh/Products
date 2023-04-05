@@ -3,20 +3,45 @@
 namespace App\Http\Controllers\API\V1;
 
 use App\Enums\ProductType;
+use App\Enums\Status;
 use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
+use App\Models\Payment;
+use App\Models\SavingsTransaction;
 use App\Models\Transaction;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cache;
 
 class AnalyticsController extends Controller
 {
-    public function sla(): JsonResponse
+    public function transactionsSLA(): JsonResponse
     {
-        $sla = Cache::remember('sla', (3600 * 24 * 7), function() {
+        $sla = Cache::remember('transactions_sla', (3600 * 24 * 7), function() {
             return Transaction::selectRaw('YEAR(created_at) as year, status, count(*) as count')
                               ->groupByRaw('year, status')
                               ->get();
+        });
+
+        return $this->successResponse($sla);
+    }
+
+    public function productsSLA(): JsonResponse
+    {
+        $sla = Cache::remember('products_sla', (3600 * 24 * 7), function() {
+            $tandaTransactions = Transaction::whereHas('tandaRequests')->get();
+            $completedTandaTransactions = $tandaTransactions->where('status', Status::COMPLETED)->count();
+
+            $payments = Payment::get();
+            $completedPayments = $payments->where('status', Status::COMPLETED)->count();
+
+            $savingsTransactions = SavingsTransaction::get();
+            $completedSavingsTransactions = $savingsTransactions->where('status', Status::COMPLETED)->count();
+
+            return [
+                'tanda'    => ($completedTandaTransactions / ($tandaTransactions->count() ?: 1)) * 100,
+                'payments' => ($completedPayments / ($payments->count() ?: 1)) * 100,
+                'savings'  => ($completedSavingsTransactions / ($savingsTransactions->count() ?: 1)) * 100,
+            ];
         });
 
         return $this->successResponse($sla);
