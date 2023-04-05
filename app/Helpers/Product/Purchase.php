@@ -20,11 +20,11 @@ use App\Models\Transaction;
 use App\Services\SidoohAccounts;
 use App\Services\SidoohNotify;
 use App\Services\SidoohPayments;
+use function config;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Throwable;
-use function config;
 
 class Purchase
 {
@@ -171,8 +171,8 @@ class Purchase
         $paymentCode = $this->transaction->payment->extra['mpesa_code'];
 
         [$merchantName, $merchantAccount] = match (MerchantType::from($this->transaction->payment->extra['merchant_type'])) {
-            MerchantType::MPESA_BUY_GOODS => [$destination, ""],
-            MerchantType::MPESA_PAY_BILL => [$extra['mpesa_merchant'], "for {$extra['mpesa_account']} "]
+            MerchantType::MPESA_BUY_GOODS => [$destination, ''],
+            MerchantType::MPESA_PAY_BILL  => [$extra['mpesa_merchant'], "for {$extra['mpesa_account']} "]
         };
 
         $message = "$paymentCode Confirmed. ";

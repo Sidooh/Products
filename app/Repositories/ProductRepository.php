@@ -6,6 +6,7 @@ use App\Enums\ProductType;
 use App\Models\AirtimeAccount;
 use App\Models\UtilityAccount;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Nabcellent\Kyanda\Library\Providers;
 
@@ -33,6 +34,12 @@ class ProductRepository
 
         if ($exists) {
             return null;
+        }
+
+        if ($product === ProductType::AIRTIME) {
+            Cache::forget("airtime_accounts_{$account['id']}");
+        } elseif ($product === ProductType::UTILITY) {
+            Cache::forget("utility_accounts_{$account['id']}");
         }
 
         return $model->create([

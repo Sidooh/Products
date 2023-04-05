@@ -16,6 +16,7 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class AccountController extends Controller
@@ -57,7 +58,6 @@ class AccountController extends Controller
 //            $totalRevenue30d += $t->created_at->isCurrentMonth() ? $t->amount : 0;
         }
 
-        // TODO: Remove voucher and use vouchers instead
         try {
             $vouchers = SidoohPayments::findVouchersByAccount($accountId);
         } catch (Exception) {
@@ -95,33 +95,35 @@ class AccountController extends Controller
     // TODO: Use repo pattern for this and utilities?
     public function airtimeAccounts(Request $request, int $accountId): JsonResponse
     {
-        // TODO: Add caching for this and remember to unset when sync is performed after purchase
-        $accounts = AirtimeAccount::select(['id', 'provider', 'account_number'])->whereAccountId($accountId);
+        $accounts = Cache::rememberForever("airtime_accounts_$accountId", function() use ($accountId, $request) {
+            $accounts = AirtimeAccount::select(['id', 'provider', 'account_number'])->whereAccountId($accountId);
 
-        if ($request->exists('limit')) {
-            $accounts = $accounts->limit($request->input('limit'));
-        }
+            if ($request->filled('limit')) {
+                $accounts = $accounts->limit($request->integer('limit'));
+            }
 
-        $accounts = $accounts->latest()->get();
+            return $accounts->latest()->get();
+        });
 
         return $this->successResponse($accounts);
     }
 
     public function utilityAccounts(Request $request, int $accountId): JsonResponse
     {
-        // TODO: Add caching for this and remember to unset when sync is performed after purchase
-        $accounts = UtilityAccount::select(['id', 'provider', 'account_number'])->whereAccountId($accountId);
+        $accounts = Cache::rememberForever("utility_accounts_$accountId", function() use ($request, $accountId) {
+            $accounts = UtilityAccount::select(['id', 'provider', 'account_number'])->whereAccountId($accountId);
 
-        if ($request->exists('limit')) {
-            $accounts = $accounts->limit($request->input('limit'));
-        }
+            if ($request->filled('limit')) {
+                $accounts = $accounts->limit($request->integer('limit'));
+            }
 
-        $accounts = $accounts->latest()->get();
+            return $accounts->latest()->get();
+        });
 
         return $this->successResponse($accounts);
     }
 
-    public function currentSubscription(Request $request, int $accountId): JsonResponse
+    public function currentSubscription(int $accountId): JsonResponse
     {
         // TODO: Handle for subscription not found first or fail?
         $subscription = Subscription::whereAccountId($accountId)->latest()->firstOrFail();
