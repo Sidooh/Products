@@ -69,7 +69,7 @@ class TransactionController extends Controller
         }
 
         if (in_array('payment', $relations)) {
-            $transaction->load('payment:id,payment_id,transaction_id,amount,type,subtype,status,created_at,updated_at');
+            $transaction->load('payment:id,payment_id,transaction_id,amount,charge,type,subtype,status,created_at,updated_at');
         }
 
         if (in_array('tanda_request', $relations)) {
