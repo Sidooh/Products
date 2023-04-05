@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\V1;
 
 use App\Enums\ProductType;
+use App\Enums\Status;
 use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
 use App\Models\Transaction;
@@ -15,6 +16,7 @@ class AnalyticsController extends Controller
     {
         $sla = Cache::remember('sla', (60 * 60), function() {
             return Transaction::selectRaw('YEAR(created_at) as year, status, count(*) as count')
+                              ->whereIn('status', [Status::COMPLETED, Status::FAILED, Status::REFUNDED])
                               ->groupByRaw('year, status')
                               ->get();
         });
