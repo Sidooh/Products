@@ -5,19 +5,39 @@ namespace App\Http\Controllers\API\V1;
 use App\Enums\ProductType;
 use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
+use App\Models\Payment;
+use App\Models\SavingsTransaction;
 use App\Models\Transaction;
+use DrH\Tanda\Models\TandaRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cache;
 
 class AnalyticsController extends Controller
 {
-    public function sla(): JsonResponse
+    public function transactionsSLA(): JsonResponse
     {
-        $sla = Cache::remember('sla', (3600 * 24 * 7), function() {
+        $sla = Cache::remember('transactions_sla', (3600 * 24 * 7), function() {
             return Transaction::selectRaw('YEAR(created_at) as year, status, count(*) as count')
                               ->groupByRaw('year, status')
                               ->get();
         });
+
+        return $this->successResponse($sla);
+    }
+
+    public function productsSLA(): JsonResponse
+    {
+        $sla = Cache::remember('products_sla', (3600 * 24 * 7), fn () => [
+            'tanda'    => TandaRequest::selectRaw('ROUND(COUNT(status)/COUNT(*) * 100) sla')
+                                      ->fromRaw("(SELECT CASE WHEN status = '000000' THEN 1 END status FROM tanda_requests) tanda_requests")
+                                      ->value('sla'),
+            'payments' => Payment::selectRaw('ROUND(COUNT(status)/COUNT(*) * 100) sla')
+                                 ->fromRaw("(SELECT CASE WHEN status = 'COMPLETED' THEN 1 END status FROM payments) payments")
+                                 ->value('sla'),
+            'savings'  => SavingsTransaction::selectRaw('ROUND(COUNT(status)/COUNT(*) * 100) sla')
+                                            ->fromRaw("(SELECT CASE WHEN status = 'COMPLETED' THEN 1 END status FROM savings_transactions) savings_transactions")
+                                            ->value('sla'),
+        ]);
 
         return $this->successResponse($sla);
     }

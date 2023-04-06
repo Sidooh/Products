@@ -130,7 +130,10 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function() {
 
     //  ANALYTICS ROUTES
     Route::prefix('/analytics')->group(function() {
-        Route::get('/sla', [AnalyticsController::class, 'sla']);
+        Route::prefix('/sla')->group(function() {
+            Route::get('/transactions', [AnalyticsController::class, 'transactionsSLA']);
+            Route::get('/products', [AnalyticsController::class, 'productsSLA']);
+        });
         Route::get('/transactions', [AnalyticsController::class, 'transactions']);
         Route::get('/revenue', [AnalyticsController::class, 'revenue']);
         Route::get('/telco-transactions', [AnalyticsController::class, 'transactionsByTelco']);
