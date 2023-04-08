@@ -239,7 +239,7 @@ class TransactionRepository
             'transaction_id' => $transaction->id,
             'savings_id'     => $response['id'],
             'amount'         => $response['amount'],
-            'charge'         => $response['charge'],
+            'charge'         => $response['charge'] ?? $transaction->charge,
             'description'    => $response['description'],
             'type'           => $response['type'],
             'status'         => $response['status'],
