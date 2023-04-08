@@ -203,7 +203,18 @@ class TransactionRepository
      */
     public static function createWithdrawalTransaction(array $transactionData, $data): Transaction
     {
-        $transaction = Transaction::create($transactionData);
+        $attributes = [
+            'account_id'  => $transactionData['account_id'],
+            'product_id'  => $transactionData['product_id'],
+            'initiator'   => $transactionData['initiator'],
+            'type'        => $transactionData['type'],
+            'amount'      => $transactionData['amount'],
+            'destination' => $transactionData['destination'],
+            'description' => $transactionData['description'],
+            'charge' => $transactionData['charge'],
+        ];
+
+        $transaction = Transaction::create($attributes);
 
         self::initiateSavingsWithdrawal($transaction, $data);
 
