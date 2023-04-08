@@ -45,12 +45,12 @@ class WithdrawController extends Controller
         $totalEarned = $creditAccounts->reduce(fn ($total, $account) => $total + $account->balance);
         $totalWithdrawn = $debitAccounts->reduce(fn ($total, $account) => $total + $account->balance);
 
-        // 20% for current account and 50 for charges
-        if (.2 * ($totalEarned - $totalWithdrawn) - 50 < $data['amount']) {
+        $charge = SidoohSavings::getWithdrawalCharge($data['amount']);
+
+        // 20% for current account and charges
+        if (.2 * ($totalEarned - $totalWithdrawn) - $charge < $data['amount']) {
             return $this->errorResponse('Earning balance is insufficient');
         }
-
-        $charge = SidoohSavings::getWithdrawalCharge($data['amount']);
 
         $transaction = [
             'initiator'   => $data['initiator'],
