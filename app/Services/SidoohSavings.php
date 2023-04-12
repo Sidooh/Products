@@ -55,6 +55,6 @@ class SidoohSavings extends SidoohService
             return parent::fetch(self::baseUrl().'/charges/withdrawal');
         });
 
-        return Arr::first($charges, fn ($ch) => $ch['max'] >= $amount && $ch['min'] <= $amount);
+        return Arr::first($charges, fn ($ch) => $ch['max'] >= $amount && $ch['min'] <= $amount)['charge'];
     }
 }

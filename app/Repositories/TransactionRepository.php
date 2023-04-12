@@ -203,7 +203,18 @@ class TransactionRepository
      */
     public static function createWithdrawalTransaction(array $transactionData, $data): Transaction
     {
-        $transaction = Transaction::create($transactionData);
+        $attributes = [
+            'account_id'  => $transactionData['account_id'],
+            'product_id'  => $transactionData['product_id'],
+            'initiator'   => $transactionData['initiator'],
+            'type'        => $transactionData['type'],
+            'amount'      => $transactionData['amount'],
+            'destination' => $transactionData['destination'],
+            'description' => $transactionData['description'],
+            'charge' => $transactionData['charge'],
+        ];
+
+        $transaction = Transaction::create($attributes);
 
         self::initiateSavingsWithdrawal($transaction, $data);
 
@@ -224,11 +235,13 @@ class TransactionRepository
             throw new Error('Something went wrong, please try again later.');
         }
 
+        $charge = $response['charge'] ?? $transaction->charge;
+
         SavingsTransaction::create([
             'transaction_id' => $transaction->id,
             'savings_id'     => $response['id'],
             'amount'         => $response['amount'],
-            'charge'         => $response['charge'],
+            'charge'         => $charge,
             'description'    => $response['description'],
             'type'           => $response['type'],
             'status'         => $response['status'],
@@ -241,7 +254,7 @@ class TransactionRepository
         ]);
         $acc->update([
             'self_amount'   => $acc->self_amount + $response['amount'],
-            'invite_amount' => $acc->invite_amount + $response['charge'],
+            'invite_amount' => $acc->invite_amount + $charge,
         ]);
 
         $tagline = config('services.sidooh.tagline');
