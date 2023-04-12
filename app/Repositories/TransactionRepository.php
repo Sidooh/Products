@@ -211,7 +211,7 @@ class TransactionRepository
             'amount'      => $transactionData['amount'],
             'destination' => $transactionData['destination'],
             'description' => $transactionData['description'],
-            'charge' => $transactionData['charge'],
+            'charge'      => $transactionData['charge'],
         ];
 
         $transaction = Transaction::create($attributes);

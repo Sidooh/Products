@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Cache;
 
 class AnalyticsController extends Controller
 {
-    public function transactionsSLO(): JsonResponse
+    public function transactionsSLOs(): JsonResponse
     {
         $slo = Cache::remember('transactions_slo', (3600 * 24 * 7), function() {
             return Transaction::selectRaw('YEAR(created_at) as year, status, count(*) as count')
@@ -25,7 +25,7 @@ class AnalyticsController extends Controller
         return $this->successResponse($slo);
     }
 
-    public function productsSLO(): JsonResponse
+    public function productsSLOs(): JsonResponse
     {
         $SLOs = Cache::remember('products_slo', (3600 * 24 * 7), fn () => [
             'tanda'    => TandaRequest::selectRaw('ROUND(COUNT(status)/COUNT(*) * 100) slo')
