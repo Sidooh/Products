@@ -14,32 +14,32 @@ use Illuminate\Support\Facades\Cache;
 
 class AnalyticsController extends Controller
 {
-    public function transactionsSLA(): JsonResponse
+    public function transactionsSLO(): JsonResponse
     {
-        $sla = Cache::remember('transactions_sla', (3600 * 24 * 7), function() {
+        $slo = Cache::remember('transactions_slo', (3600 * 24 * 7), function() {
             return Transaction::selectRaw('YEAR(created_at) as year, status, count(*) as count')
                               ->groupByRaw('year, status')
                               ->get();
         });
 
-        return $this->successResponse($sla);
+        return $this->successResponse($slo);
     }
 
-    public function productsSLA(): JsonResponse
+    public function productsSLO(): JsonResponse
     {
-        $sla = Cache::remember('products_sla', (3600 * 24 * 7), fn () => [
-            'tanda'    => TandaRequest::selectRaw('ROUND(COUNT(status)/COUNT(*) * 100) sla')
-                                      ->fromRaw("(SELECT CASE WHEN status = '000000' THEN 1 END status FROM tanda_requests) tanda_requests")
-                                      ->value('sla'),
-            'payments' => Payment::selectRaw('ROUND(COUNT(status)/COUNT(*) * 100) sla')
+        $SLOs = Cache::remember('products_slo', (3600 * 24 * 7), fn () => [
+            'tanda'    => TandaRequest::selectRaw('ROUND(COUNT(status)/COUNT(*) * 100) slo')
+                                      ->fromRaw("(SELECT CASE WHEN status = '000000' THEN 1 END status FROM tanda_requests WHERE created_at > ?) tanda_requests", now()->subYear())
+                                      ->value('slo'),
+            'payments' => Payment::selectRaw('ROUND(COUNT(status)/COUNT(*) * 100) slo')
                                  ->fromRaw("(SELECT CASE WHEN status = 'COMPLETED' THEN 1 END status FROM payments) payments")
-                                 ->value('sla'),
-            'savings'  => SavingsTransaction::selectRaw('ROUND(COUNT(status)/COUNT(*) * 100) sla')
+                                 ->value('slo'),
+            'savings'  => SavingsTransaction::selectRaw('ROUND(COUNT(status)/COUNT(*) * 100) slo')
                                             ->fromRaw("(SELECT CASE WHEN status = 'COMPLETED' THEN 1 END status FROM savings_transactions) savings_transactions")
-                                            ->value('sla'),
+                                            ->value('slo'),
         ]);
 
-        return $this->successResponse($sla);
+        return $this->successResponse($SLOs);
     }
 
     public function transactions(): JsonResponse
