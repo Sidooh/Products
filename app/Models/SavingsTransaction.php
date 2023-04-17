@@ -19,6 +19,7 @@ class SavingsTransaction extends Model
         'reference',
         'type',
         'amount',
+        'charge',
         'status',
         'description',
         'extra',
