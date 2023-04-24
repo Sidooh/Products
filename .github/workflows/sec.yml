@@ -1,3 +1,9 @@
+name: Security Checker
+
+on:
+  pull_request:
+  push:
+
 steps:
   - uses: actions/checkout@v2
   - uses: symfonycorp/security-checker-action@v4
