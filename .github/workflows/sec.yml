@@ -1,0 +1,8 @@
+steps:
+  - uses: actions/checkout@v2
+  - uses: symfonycorp/security-checker-action@v4
+    with:
+      disable-exit-code: 1
+    id: security-check
+  - name: Display the vulnerabilities as JSON
+    run: echo ${{ steps.security-check.outputs.vulns }}
