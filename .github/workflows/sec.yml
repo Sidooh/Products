@@ -1,8 +1,9 @@
 name: Security Checker
 
 on:
-  pull_request:
   push:
+    branches:
+      - develop
 
 steps:
   - uses: actions/checkout@v2
