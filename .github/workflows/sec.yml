@@ -7,6 +7,9 @@ on:
 
 jobs:
   check:
+
+    runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v2
       - uses: symfonycorp/security-checker-action@v4
