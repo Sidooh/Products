@@ -123,16 +123,17 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function() {
 
     //  DASHBOARD ROUTES
     Route::prefix('/dashboard')->group(function() {
-        Route::get('/', [DashboardController::class, 'index']);
+        Route::get('/summaries', [DashboardController::class, 'summaries']);
         Route::get('/chart', [DashboardController::class, 'getChartData']);
         Route::get('/providers/balances', [DashboardController::class, 'getProviderBalances']);
     });
 
     //  ANALYTICS ROUTES
     Route::prefix('/analytics')->group(function() {
-        Route::prefix('/slos')->group(function() {
-            Route::get('/transactions', [AnalyticsController::class, 'transactionsSLOs']);
-            Route::get('/products', [AnalyticsController::class, 'productsSLOs']);
+        Route::prefix('/slo')->group(function() {
+            Route::get('/transactions', [AnalyticsController::class, 'transactionsSLO']);
+            Route::get('/products', [AnalyticsController::class, 'productsSLO']);
+            Route::get('/vendors', [AnalyticsController::class, 'vendorsSLO']);
         });
         Route::get('/transactions', [AnalyticsController::class, 'transactions']);
         Route::get('/revenue', [AnalyticsController::class, 'revenue']);

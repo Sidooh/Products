@@ -12,6 +12,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Transaction;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 
@@ -20,25 +21,31 @@ class DashboardController extends Controller
     /**
      * @throws \Illuminate\Auth\AuthenticationException
      */
-    public function index(): JsonResponse
+    public function summaries(Request $request): JsonResponse
     {
+        if ($request->filled('bypass_cache')) {
+            $request->string('bypass_cache')->explode(',')->each(fn ($k) => Cache::forget($k));
+        }
+
         $totalTransactions = Cache::remember('total_transactions', 60 * 60 * 24, fn () => Transaction::count());
-        $totalTransactionsToday = Cache::remember('total_transactions_today',
+        $totalTransactionsToday = Cache::remember(
+            'total_transactions_today',
             60 * 60,
-            fn () => Transaction::whereDate('created_at', Carbon::today())->count());
+            fn () => Transaction::whereDate('created_at', Carbon::today())->count()
+        );
 
         $totalRevenue = Cache::remember('total_revenue', 60 * 60 * 24, function() {
             return Transaction::whereStatus(Status::COMPLETED)
-                              ->whereType(TransactionType::PAYMENT)
-                              ->whereNot('product_id', ProductType::VOUCHER)
-                              ->sum('amount');
+                ->whereType(TransactionType::PAYMENT)
+                ->whereNot('product_id', ProductType::VOUCHER)
+                ->sum('amount');
         });
         $totalRevenueToday = Cache::remember('total_revenue_today', 60 * 60, function() {
             return Transaction::whereStatus(Status::COMPLETED)
-                              ->whereType(TransactionType::PAYMENT)
-                              ->whereNot('product_id', ProductType::VOUCHER)
-                              ->whereDate('created_at', Carbon::today())
-                              ->sum('amount');
+                ->whereType(TransactionType::PAYMENT)
+                ->whereNot('product_id', ProductType::VOUCHER)
+                ->whereDate('created_at', Carbon::today())
+                ->sum('amount');
         });
 
         return $this->successResponse([
@@ -50,39 +57,53 @@ class DashboardController extends Controller
         ]);
     }
 
-    public function getChartData(): JsonResponse
+    public function getChartData(Request $request): JsonResponse
     {
-        $transactions = Transaction::selectRaw("status, DATE_FORMAT(created_at, '%Y%m%d%H') as date, SUM(amount) as amount")
-                                   ->whereType(TransactionType::PAYMENT)
-                                   ->whereDate('created_at', '>=', Carbon::yesterday())
-                                   ->groupBy('date', 'status')
-                                   ->orderByDesc('date')
-                                   ->get()
-                                   ->groupBy(function($tx) {
-                                       $dateIsToday = Carbon::createFromFormat('YmdH', $tx->date)->isToday();
+        if ($request->filled('bypass_cache')) {
+            Cache::forget('dashboard_chart_data');
+        }
 
-                                       return $dateIsToday ? 'TODAY' : 'YESTERDAY';
-                                   });
+        return $this->successResponse(Cache::remember('dashboard_chart_data', (3600 * 3), function() {
+            return Transaction::selectRaw("status, DATE_FORMAT(created_at, '%Y%m%d%H') as date, SUM(amount) as amount")
+                ->whereType(TransactionType::PAYMENT)
+                ->whereDate('created_at', '>=', Carbon::yesterday())
+                ->groupBy('date', 'status')
+                ->orderByDesc('date')
+                ->get()
+                ->groupBy(function($tx) {
+                    $dateIsToday = Carbon::createFromFormat('YmdH', $tx->date)->isToday();
 
-        return $this->successResponse($transactions);
+                    return $dateIsToday ? 'TODAY' : 'YESTERDAY';
+                });
+        }));
     }
 
-    public function getProviderBalances(): JsonResponse
+    public function getProviderBalances(Request $request): JsonResponse
     {
+        if ($request->filled('bypass_cache')) {
+            $request->string('bypass_cache')->explode(',')->each(fn ($k) => Cache::forget($k));
+        }
+
         try {
-            $tandaFloatBalance = TandaApi::balance()[0]->balances[0]->available;
+            $tandaFloatBalance = Cache::remember('tanda_float_balance', (3600), function() {
+                return TandaApi::balance()[0]->balances[0]->available;
+            });
         } catch (Exception) {
             $tandaFloatBalance = null;
         }
 
         try {
-            $ATAirtimeBalance = (float) ltrim(AfricasTalkingApi::balance()['data']->UserData->balance, 'KES');
+            $ATAirtimeBalance = Cache::rememberForever('at_airtime_balance', function() {
+                return (float) ltrim(AfricasTalkingApi::balance()['data']->UserData->balance, 'KES');
+            });
         } catch (Exception) {
             $ATAirtimeBalance = null;
         }
 
         try {
-            $kyandaFloatBalance = KyandaApi::balance()['Account_Bal'];
+            $kyandaFloatBalance = Cache::rememberForever('kyanda_float_balance', function() {
+                return KyandaApi::balance()['Account_Bal'];
+            });
         } catch (Exception) {
             $kyandaFloatBalance = null;
         }
