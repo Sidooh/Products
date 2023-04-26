@@ -124,6 +124,7 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function() {
     //  DASHBOARD ROUTES
     Route::prefix('/dashboard')->group(function() {
         Route::get('/summaries', [DashboardController::class, 'summaries']);
+        Route::get('/transactions', [DashboardController::class, 'transactions']);
         Route::get('/chart', [DashboardController::class, 'getChartData']);
         Route::get('/providers/balances', [DashboardController::class, 'getProviderBalances']);
     });

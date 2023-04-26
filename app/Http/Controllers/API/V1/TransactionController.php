@@ -38,13 +38,7 @@ class TransactionController extends Controller
             'product_id',
             'created_at',
             'updated_at',
-        ])->with('product:id,name');
-
-        if ($request->has('status') && $status = Status::tryFrom($request->status)) {
-            $transactions->whereStatus($status);
-        }
-
-        $transactions = $transactions->latest()->limit(100)->get();
+        ])->with('product:id,name')->latest()->limit(500)->get();
 
         // TODO: pagination will not work with the process below - review fix for it
         if (in_array('account', $relations)) {

@@ -11,6 +11,7 @@ use App\Helpers\Tanda\TandaApi;
 use App\Http\Controllers\Controller;
 use App\Models\Transaction;
 use Exception;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -36,16 +37,16 @@ class DashboardController extends Controller
 
         $totalRevenue = Cache::remember('total_revenue', 60 * 60 * 24, function() {
             return Transaction::whereStatus(Status::COMPLETED)
-                ->whereType(TransactionType::PAYMENT)
-                ->whereNot('product_id', ProductType::VOUCHER)
-                ->sum('amount');
+                              ->whereType(TransactionType::PAYMENT)
+                              ->whereNot('product_id', ProductType::VOUCHER)
+                              ->sum('amount');
         });
         $totalRevenueToday = Cache::remember('total_revenue_today', 60 * 60, function() {
             return Transaction::whereStatus(Status::COMPLETED)
-                ->whereType(TransactionType::PAYMENT)
-                ->whereNot('product_id', ProductType::VOUCHER)
-                ->whereDate('created_at', Carbon::today())
-                ->sum('amount');
+                              ->whereType(TransactionType::PAYMENT)
+                              ->whereNot('product_id', ProductType::VOUCHER)
+                              ->whereDate('created_at', Carbon::today())
+                              ->sum('amount');
         });
 
         return $this->successResponse([
@@ -65,17 +66,53 @@ class DashboardController extends Controller
 
         return $this->successResponse(Cache::remember('dashboard_chart_data', (3600 * 3), function() {
             return Transaction::selectRaw("status, DATE_FORMAT(created_at, '%Y%m%d%H') as date, SUM(amount) as amount")
-                ->whereType(TransactionType::PAYMENT)
-                ->whereDate('created_at', '>=', Carbon::yesterday())
-                ->groupBy('date', 'status')
-                ->orderByDesc('date')
-                ->get()
-                ->groupBy(function($tx) {
-                    $dateIsToday = Carbon::createFromFormat('YmdH', $tx->date)->isToday();
+                              ->whereType(TransactionType::PAYMENT)
+                              ->whereDate('created_at', '>=', Carbon::yesterday())
+                              ->groupBy('date', 'status')
+                              ->orderByDesc('date')
+                              ->get()
+                              ->groupBy(function($tx) {
+                                  $dateIsToday = Carbon::createFromFormat('YmdH', $tx->date)->isToday();
 
-                    return $dateIsToday ? 'TODAY' : 'YESTERDAY';
-                });
+                                  return $dateIsToday ? 'TODAY' : 'YESTERDAY';
+                              });
         }));
+    }
+
+    /**
+     * @throws AuthenticationException
+     */
+    public function transactions(Request $request): JsonResponse
+    {
+        // TODO: Review using laravel query builder // or build our own params
+        $relations = explode(',', $request->query('with'));
+        $columns = [
+            'id',
+            'amount',
+            'charge',
+            'status',
+            'destination',
+            'description',
+            'account_id',
+            'product_id',
+            'created_at',
+            'updated_at',
+        ];
+
+        $pending = Transaction::select($columns)->with('product:id,name')->whereStatus(Status::PENDING)->get();
+        $recent = Transaction::select($columns)->with('product:id,name')->whereNot('status', Status::PENDING)->latest()
+                             ->limit(100)->get();
+
+        // TODO: pagination will not work with the process below - review fix for it
+        if (in_array('account', $relations)) {
+            $pending = withRelation('account', $pending, 'account_id', 'id');
+            $recent = withRelation('account', $recent, 'account_id', 'id');
+        }
+
+        return $this->successResponse([
+            'pending' => $pending,
+            'recent'  => $recent,
+        ]);
     }
 
     public function getProviderBalances(Request $request): JsonResponse
