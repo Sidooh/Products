@@ -1,4 +1,4 @@
-e<?php
+<?php
 
 use Monolog\Formatter\GoogleCloudLoggingFormatter;
 use Monolog\Handler\NullHandler;
