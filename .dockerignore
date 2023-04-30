@@ -19,5 +19,5 @@ cloud_sql_proxy
 
 /docker/etc
 /.run
-Dockerfile*
+Dockerfile.old
 /.git
