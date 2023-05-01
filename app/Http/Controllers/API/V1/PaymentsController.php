@@ -39,7 +39,7 @@ class PaymentsController extends Controller
         Log::info('...[CTRL - PAYMENT]: passes 2...');
 
 
-        dispatch(function() use ($transaction, $request) {
+//        dispatch(function() use ($transaction, $request) {
             if ($request->status === Status::FAILED->value) {
                 TransactionRepository::handleFailedPayment($transaction, $request);
             }
@@ -58,7 +58,7 @@ class PaymentsController extends Controller
 
                 TransactionRepository::handleCompletedPayment($transaction);
             }
-        })->afterResponse();
+//        })->afterResponse();
 
         return response()->json(['status' => true]);
     }
