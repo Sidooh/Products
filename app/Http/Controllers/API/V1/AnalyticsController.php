@@ -17,7 +17,7 @@ class AnalyticsController extends Controller
 {
     public function transactionsSLO(Request $request): JsonResponse
     {
-        if ($request->query('bypass_cache') === 'true') {
+        if ($request->boolean('bypass_cache')) {
             Cache::forget('transactions_slo');
         }
 
@@ -32,7 +32,7 @@ class AnalyticsController extends Controller
 
     public function productsSLO(Request $request): JsonResponse
     {
-        if ($request->query('bypass_cache') === 'true') {
+        if ($request->boolean('bypass_cache')) {
             Cache::forget('products_slo');
         }
 
@@ -52,7 +52,7 @@ class AnalyticsController extends Controller
 
     public function vendorsSLO(Request $request): JsonResponse
     {
-        if ($request->query('bypass_cache') === 'true') {
+        if ($request->boolean('bypass_cache')) {
             Cache::forget('vendors_slo');
         }
 
@@ -74,7 +74,7 @@ class AnalyticsController extends Controller
 
     public function transactions(Request $request): JsonResponse
     {
-        if ($request->query('bypass_cache') === 'true') {
+        if ($request->boolean('bypass_cache')) {
             Cache::forget('transactions_count_analytics');
         }
 
@@ -91,7 +91,7 @@ class AnalyticsController extends Controller
 
     public function revenue(Request $request): JsonResponse
     {
-        if ($request->query('bypass_cache') === 'true') {
+        if ($request->boolean('bypass_cache')) {
             Cache::forget('revenue_count_analytics');
         }
 
@@ -110,7 +110,7 @@ class AnalyticsController extends Controller
 
     public function transactionsByTelco(Request $request): JsonResponse
     {
-        if ($request->query('bypass_cache') === 'true') {
+        if ($request->boolean('bypass_cache')) {
             Cache::forget('transactions_by_Telco');
         }
 
@@ -129,7 +129,7 @@ class AnalyticsController extends Controller
 
     public function revenueByTelco(Request $request): JsonResponse
     {
-        if ($request->query('bypass_cache') === 'true') {
+        if ($request->boolean('bypass_cache')) {
             Cache::forget('revenue_by_Telco');
         }
 
@@ -149,7 +149,7 @@ class AnalyticsController extends Controller
 
     public function transactionsByProduct(Request $request): JsonResponse
     {
-        if ($request->query('bypass_cache') === 'true') {
+        if ($request->boolean('bypass_cache')) {
             Cache::forget('transactions_by_Product');
         }
 
@@ -167,7 +167,7 @@ class AnalyticsController extends Controller
 
     public function revenueByProduct(Request $request): JsonResponse
     {
-        if ($request->query('bypass_cache') === 'true') {
+        if ($request->boolean('bypass_cache')) {
             Cache::forget('revenue_by_Product');
         }
 
