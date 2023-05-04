@@ -18,9 +18,13 @@ class CashbackFactory extends Factory
         return [
             'account_id' => fn(array $attributes) => match ($attributes['type']) {
                 EarningCategory::SYSTEM => null,
-                default                 => $this->faker->randomElement([45, 46, 12, 47, 44]),
+                default                 => $this->faker->numberBetween(1, 9),
             },
-            'transaction_id' => Transaction::factory(state: [
+            'transaction_id' => fn(array $attrs) => Transaction::factory(state: [
+                'account_id' => match ($attrs['type']) {
+                    EarningCategory::SYSTEM => $this->faker->numberBetween(1, 9),
+                    default                 => $attrs['account_id'],
+                },
                 'product_id' => $this->faker->randomElement([
                     ProductType::AIRTIME,
                     ProductType::UTILITY,

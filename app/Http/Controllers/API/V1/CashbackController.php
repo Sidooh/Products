@@ -39,7 +39,8 @@ class CashbackController extends Controller
             'account_id',
             'transaction_id',
             'updated_at',
-        ])->latest()->limit($perPage)->offset($perPage * ($page - 1))->get();
+        ])->with('transaction:id,description,amount')
+            ->latest()->limit($perPage)->offset($perPage * ($page - 1))->get();
 
         if ($relations->contains('account')) {
             $cashbacks = withRelation('account', $cashbacks, 'account_id', 'id');

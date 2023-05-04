@@ -19,6 +19,6 @@ class TransactionSeeder extends Seeder
         Payment::truncate();
         Schema::enableForeignKeyConstraints();
 
-        Transaction::factory(300)->hasPayment()->create();
+        Transaction::factory(100)->hasPayment()->create();
     }
 }

@@ -12,6 +12,8 @@ class CashbackSeeder extends Seeder
      */
     public function run(): void
     {
+        Cashback::truncate();
+
         Cashback::factory(50)->create();
     }
 }
