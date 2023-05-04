@@ -11,6 +11,7 @@ use App\Http\Requests\ProductRequest;
 use App\Models\UtilityAccount;
 use App\Repositories\TransactionRepository;
 use App\Services\SidoohAccounts;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -37,8 +38,8 @@ class UtilityController extends Controller
         ];
 
         $data = [
-            'provider'        => $data['provider'],
-            'method'          => $request->has('method') ? PaymentMethod::from($request->input('method')) : PaymentMethod::MPESA,
+            'provider' => $data['provider'],
+            'method'   => $request->has('method') ? PaymentMethod::from($request->input('method')) : PaymentMethod::MPESA,
         ];
 
         if ($request->has('debit_account')) {
@@ -50,16 +51,27 @@ class UtilityController extends Controller
         return $this->successResponse($transaction, 'Utility Request Successful!');
     }
 
+    /**
+     * @throws AuthenticationException
+     */
     public function accounts(Request $request): JsonResponse
     {
-        $relations = explode(',', $request->query('with'));
+        $request->validate([
+            'page'      => 'nullable|integer|min:1',
+            'page_size' => 'nullable|integer|digits_between:10,1000',
+        ]);
+
+        $relations = $request->string('with')->explode(',');
+        $perPage = $request->integer('page_size', 100);
+        $page = $request->integer('page', 1);
+
         $accounts = UtilityAccount::select(['id', 'provider', 'priority', 'account_id', 'account_number', 'created_at'])
             ->latest()->get();
 
-        if (in_array('account', $relations)) {
+        if ($relations->contains('account')) {
             $accounts = withRelation('account', $accounts, 'account_id', 'id');
         }
 
-        return $this->successResponse($accounts);
+        return $this->successResponse(paginate($accounts, UtilityAccount::count(), $perPage, $page));
     }
 }

@@ -30,19 +30,19 @@ use Illuminate\Support\Facades\Route;
 */
 
 // TODO: Research on how to secure or throttle unsecured callback endpoints
-Route::prefix('/v1')->group(function() {
-    Route::prefix('/subscriptions')->group(function() {
+Route::prefix('/v1')->group(function () {
+    Route::prefix('/subscriptions')->group(function () {
         Route::post('/check-expiry', [SubscriptionController::class, 'checkExpiry']);
     });
 
-    Route::prefix('/cashbacks')->group(function() {
+    Route::prefix('/cashbacks')->group(function () {
         Route::post('/invest', [CashbackController::class, 'invest']);
     });
 
     Route::post('/providers/check-balances', [ProductController::class, 'queryProviderBalances']);
 });
 
-Route::prefix('/sidooh')->group(function() {
+Route::prefix('/sidooh')->group(function () {
     // Payments service callback
     Route::post('/payments/callback', [PaymentsController::class, 'processCallback']);
 
@@ -57,8 +57,8 @@ Route::post('/airtime/status/callback', [AirtimeController::class, 'airtimeStatu
 // V1 API
 //=========================================================================================================
 
-Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function() {
-    Route::prefix('/products')->group(function() {
+Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function () {
+    Route::prefix('/products')->group(function () {
         Route::post('/airtime', AirtimeController::class);
         Route::post('/utility', UtilityController::class);
         Route::post('/withdraw', WithdrawController::class);
@@ -67,10 +67,10 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function() {
         Route::post('/subscription', SubscriptionController::class);
     });
 
-    Route::prefix('/transactions')->group(function() {
+    Route::prefix('/transactions')->group(function () {
         Route::get('/', [TransactionController::class, 'index']);
 
-        Route::prefix('/{transaction}')->group(function() {
+        Route::prefix('/{transaction}')->group(function () {
             Route::get('/', [TransactionController::class, 'show']);
 
             Route::post('/check-payment', [TransactionController::class, 'checkPayment']);
@@ -82,31 +82,28 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function() {
         });
     });
 
-    Route::prefix('/subscription-types')->group(function() {
+    Route::prefix('/subscription-types')->group(function () {
         Route::get('/', [SubscriptionTypeController::class, 'index']);
         Route::get('/default', [SubscriptionTypeController::class, 'defaultSubscriptionType']);
     });
 
-    Route::prefix('/subscriptions')->group(function() {
+    Route::prefix('/subscriptions')->group(function () {
         Route::get('/{subscription}', [SubscriptionController::class, 'show']);
         Route::get('/', [SubscriptionController::class, 'index']);
     });
 
-    Route::prefix('/earning-accounts')->group(function() {
+    Route::prefix('/earning-accounts')->group(function () {
         Route::get('/', [EarningAccountController::class, 'index']);
         Route::get('/{account}', [EarningAccountController::class, 'show']);
     });
 
-    Route::prefix('/cashbacks')->group(function() {
+    Route::prefix('/cashbacks')->group(function () {
         Route::get('/', [CashbackController::class, 'index']);
         Route::get('/{cashback}', [CashbackController::class, 'show']);
     });
 
-    Route::get('/airtime/accounts', [AirtimeController::class, 'accounts']);
-    Route::get('/utility/accounts', [UtilityController::class, 'accounts']);
-
-    Route::prefix('/accounts')->group(function() {
-        Route::prefix('/{accountId}')->group(function() {
+    Route::prefix('/accounts')->group(function () {
+        Route::prefix('/{accountId}')->group(function () {
             Route::get('/details', [AccountController::class, 'show']);
 
             Route::get('/airtime-accounts', [AccountController::class, 'airtimeAccounts']);
@@ -122,7 +119,7 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function() {
     Route::get('/earnings/rates', [ProductController::class, 'getEarningRates']);
 
     //  DASHBOARD ROUTES
-    Route::prefix('/dashboard')->group(function() {
+    Route::prefix('/dashboard')->group(function () {
         Route::get('/summaries', [DashboardController::class, 'summaries']);
         Route::get('/transactions', [DashboardController::class, 'transactions']);
         Route::get('/chart', [DashboardController::class, 'getChartData']);
@@ -130,8 +127,8 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function() {
     });
 
     //  ANALYTICS ROUTES
-    Route::prefix('/analytics')->group(function() {
-        Route::prefix('/slo')->group(function() {
+    Route::prefix('/analytics')->group(function () {
+        Route::prefix('/slo')->group(function () {
             Route::get('/transactions', [AnalyticsController::class, 'transactionsSLO']);
             Route::get('/products', [AnalyticsController::class, 'productsSLO']);
             Route::get('/vendors', [AnalyticsController::class, 'vendorsSLO']);
@@ -143,4 +140,7 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function() {
         Route::get('/product-transactions', [AnalyticsController::class, 'transactionsByProduct']);
         Route::get('/product-revenue', [AnalyticsController::class, 'revenueByProduct']);
     });
+
+    Route::get('/airtime/accounts', [AirtimeController::class, 'accounts']);
+    Route::get('/utility/accounts', [UtilityController::class, 'accounts']);
 });
