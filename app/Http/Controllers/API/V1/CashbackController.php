@@ -22,7 +22,15 @@ class CashbackController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $relations = explode(',', $request->query('with'));
+        $request->validate([
+            'page'      => 'nullable|integer|min:1',
+            'page_size' => 'nullable|integer|digits_between:10,1000',
+        ]);
+
+        $relations = $request->string('with')->explode(',');
+        $perPage = $request->integer('page_size', 100);
+        $page = $request->integer('page', 1);
+
         $cashbacks = Cashback::select([
             'id',
             'amount',
@@ -31,13 +39,13 @@ class CashbackController extends Controller
             'account_id',
             'transaction_id',
             'updated_at',
-        ])->latest()->with('transaction:id,description,amount')->limit(100)->get();
+        ])->latest()->limit($perPage)->offset($perPage * ($page - 1))->get();
 
-        if (in_array('account', $relations)) {
+        if ($relations->contains('account')) {
             $cashbacks = withRelation('account', $cashbacks, 'account_id', 'id');
         }
 
-        return $this->successResponse($cashbacks);
+        return $this->successResponse(paginate($cashbacks, Cashback::count(), $perPage, $page));
     }
 
     /**
@@ -79,7 +87,7 @@ class CashbackController extends Controller
             ->whereDate('cashbacks.created_at', $date->format('Y-m-d'))
             ->groupBy('cashbacks.account_id');
 
-        $savings = $builder->get()->map(fn (Cashback $cashback) => [
+        $savings = $builder->get()->map(fn(Cashback $cashback) => [
             'account_id'      => $cashback->account_id,
             'current_amount'  => round($cashback->amount * .2, 4),
             'locked_amount'   => round($cashback->amount * .8, 4),

@@ -25,8 +25,16 @@ class TransactionController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
+        $request->validate([
+            'page'      => 'nullable|integer|min:1',
+            'page_size' => 'nullable|integer|digits_between:10,1000',
+        ]);
+
         // TODO: Review using laravel query builder // or build our own params
-        $relations = explode(',', $request->query('with'));
+        $relations = $request->string('with')->explode(',');
+        $perPage = $request->integer('page_size', 100);
+        $page = $request->integer('page', 1);
+
         $transactions = Transaction::select([
             'id',
             'amount',
@@ -38,14 +46,13 @@ class TransactionController extends Controller
             'product_id',
             'created_at',
             'updated_at',
-        ])->with('product:id,name')->latest()->limit(500)->get();
+        ])->with('product:id,name')->latest()->limit($perPage)->offset($perPage * ($page - 1))->get();
 
-        // TODO: pagination will not work with the process below - review fix for it
-        if (in_array('account', $relations)) {
+        if ($relations->contains('account')) {
             $transactions = withRelation('account', $transactions, 'account_id', 'id');
         }
 
-        return $this->successResponse($transactions);
+        return $this->successResponse(paginate($transactions, Transaction::count(), $perPage, $page));
     }
 
     /**
@@ -195,7 +202,7 @@ class TransactionController extends Controller
         }
 
         // Check request
-        if ($transaction->tandaRequests->isNotEmpty() && $transaction->tandaRequests->every(function($r) {
+        if ($transaction->tandaRequests->isNotEmpty() && $transaction->tandaRequests->every(function ($r) {
             return $r->status != 500000;
         })) {
             return $this->errorResponse('There is a problem with this transaction - Request. Contact Support.');
@@ -248,7 +255,7 @@ class TransactionController extends Controller
         // Check request
         // TODO: Handle for all other SPs - and future SPs possibilities
         if ($transaction->tandaRequests->isNotEmpty()) {
-            if ($transaction->tandaRequests->every(fn ($r) => $r->status !== '000000')) {
+            if ($transaction->tandaRequests->every(fn($r) => $r->status !== '000000')) {
                 return $this->errorResponse('There is a problem with this transaction - Request. Contact Support.');
             }
 
@@ -275,7 +282,7 @@ class TransactionController extends Controller
         // Check request
         // TODO: Handle for all other SPs - and future SPs possibilities
         if ($transaction->tandaRequests->isNotEmpty()) {
-            if ($transaction->tandaRequests->every(fn ($r) => $r->status == 000000)) {
+            if ($transaction->tandaRequests->every(fn($r) => $r->status == 000000)) {
                 return $this->errorResponse('There is a problem with this transaction - Request. Contact Support.');
             }
 

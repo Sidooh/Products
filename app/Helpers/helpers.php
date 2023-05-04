@@ -10,6 +10,7 @@ use App\Services\SidoohPayments;
 use DrH\Tanda\Library\Providers;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Log;
 use JetBrains\PhpStorm\NoReturn;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
@@ -99,6 +100,13 @@ if (! function_exists('withRelation')) {
 
             return $record;
         });
+    }
+}
+
+if (! function_exists('paginate')) {
+    function paginate($items, $total, $perPage, $currentPage): LengthAwarePaginator
+    {
+        return new LengthAwarePaginator($items, $total, $perPage, $currentPage);
     }
 }
 

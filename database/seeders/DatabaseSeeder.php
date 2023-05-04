@@ -8,10 +8,8 @@ class DatabaseSeeder extends Seeder
 {
     /**
      * Seed the application's database.
-     *
-     * @return void
      */
-    public function run()
+    public function run(): void
     {
         /*DB::table("users")->insert([
             "id"                => 7,
@@ -30,12 +28,12 @@ class DatabaseSeeder extends Seeder
         ]);*/
 
         $this->call([
-            SubscriptionTypeSeeder::class,
-            ProductSeeder::class,
-            EarningAccountSeeder::class,
+            //            SubscriptionTypeSeeder::class,
+            //            ProductSeeder::class,
+            //            EarningAccountSeeder::class,
             //            CashbackSeeder::class,
-            //            EnterpriseSeeder::class,
-            //            TransactionSeeder::class
+            //                        CashbackSeeder::class,
+            //            TransactionSeeder::class,
         ]);
     }
 }

@@ -2,22 +2,23 @@
 
 namespace Database\Seeders;
 
+use App\Models\Payment;
 use App\Models\Transaction;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Schema;
 
 class TransactionSeeder extends Seeder
 {
     /**
      * Run the database seeds.
-     *
-     * @return void
      */
     public function run(): void
     {
-        //        Schema::disableForeignKeyConstraints();
-//        Estate::truncate();
-//        Schema::enableForeignKeyConstraints();
+        Schema::disableForeignKeyConstraints();
+        Transaction::truncate();
+        Payment::truncate();
+        Schema::enableForeignKeyConstraints();
 
-        Transaction::factory(5)->hasPayment()->create();
+        Transaction::factory(300)->hasPayment()->create();
     }
 }

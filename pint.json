@@ -3,11 +3,12 @@
     "rules": {
         "binary_operator_spaces": {
             "operators": {
-                "=>": "align"
+                "=>": "align_single_space_minimal",
+                "===": "align_single_space_minimal"
             }
         },
         "function_declaration": {
-            "closure_function_spacing": "none"
+            "closure_fn_spacing": "none"
         }
     }
 }
