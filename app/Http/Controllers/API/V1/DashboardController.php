@@ -25,23 +25,23 @@ class DashboardController extends Controller
     public function summaries(Request $request): JsonResponse
     {
         if ($request->filled('bypass_cache')) {
-            $request->string('bypass_cache')->explode(',')->each(fn ($k) => Cache::forget($k));
+            $request->string('bypass_cache')->explode(',')->each(fn($k) => Cache::forget($k));
         }
 
-        $totalTransactions = Cache::remember('total_transactions_count', 60 * 60 * 24, fn () => Transaction::count());
+        $totalTransactions = Cache::remember('total_transactions_count', 60 * 60 * 24, fn() => Transaction::count());
         $totalTransactionsToday = Cache::remember(
             'total_transactions_count_today',
             60 * 60,
-            fn () => Transaction::whereDate('created_at', Carbon::today())->count()
+            fn() => Transaction::whereDate('created_at', Carbon::today())->count()
         );
 
-        $totalRevenue = Cache::remember('total_revenue_amount', 60 * 60 * 24, function() {
+        $totalRevenue = Cache::remember('total_revenue_amount', 60 * 60 * 24, function () {
             return Transaction::whereStatus(Status::COMPLETED)
                 ->whereType(TransactionType::PAYMENT)
                 ->whereNot('product_id', ProductType::VOUCHER)
                 ->sum('amount');
         });
-        $totalRevenueToday = Cache::remember('total_revenue_amount_today', 60 * 60, function() {
+        $totalRevenueToday = Cache::remember('total_revenue_amount_today', 60 * 60, function () {
             return Transaction::whereStatus(Status::COMPLETED)
                 ->whereType(TransactionType::PAYMENT)
                 ->whereNot('product_id', ProductType::VOUCHER)
@@ -64,14 +64,14 @@ class DashboardController extends Controller
             Cache::forget('dashboard_chart_data');
         }
 
-        return $this->successResponse(Cache::remember('dashboard_chart_data', (3600 * 3), function() {
+        return $this->successResponse(Cache::remember('dashboard_chart_data', (3600 * 3), function () {
             return Transaction::selectRaw("status, DATE_FORMAT(created_at, '%Y%m%d%H') as date, SUM(amount) as amount")
                 ->whereType(TransactionType::PAYMENT)
                 ->whereDate('created_at', '>=', Carbon::yesterday())
                 ->groupBy('date', 'status')
                 ->orderByDesc('date')
                 ->get()
-                ->groupBy(function($tx) {
+                ->groupBy(function ($tx) {
                     $dateIsToday = Carbon::createFromFormat('YmdH', $tx->date)->isToday();
 
                     return $dateIsToday ? 'TODAY' : 'YESTERDAY';
@@ -117,14 +117,14 @@ class DashboardController extends Controller
 
     public function getProviderBalances(Request $request): JsonResponse
     {
-        $request->whenFilled('bypass_cache', function($val) {
-            foreach (explode('bypass_cache', $val) as $k) {
+        $request->whenFilled('bypass_cache', function ($val) {
+            foreach (explode(',', $val) as $k) {
                 Cache::forget($k);
             }
         });
 
         try {
-            $tandaFloatBalance = Cache::remember('tanda_float_balance', (3600), function() {
+            $tandaFloatBalance = Cache::remember('tanda_float_balance', (3600), function () {
                 return TandaApi::balance()[0]->balances[0]->available;
             });
         } catch (Exception) {
@@ -132,7 +132,7 @@ class DashboardController extends Controller
         }
 
         try {
-            $ATAirtimeBalance = Cache::rememberForever('at_airtime_balance', function() {
+            $ATAirtimeBalance = Cache::rememberForever('at_airtime_balance', function () {
                 return (float) ltrim(AfricasTalkingApi::balance()['data']->UserData->balance, 'KES');
             });
         } catch (Exception) {
@@ -140,7 +140,7 @@ class DashboardController extends Controller
         }
 
         try {
-            $kyandaFloatBalance = Cache::rememberForever('kyanda_float_balance', function() {
+            $kyandaFloatBalance = Cache::rememberForever('kyanda_float_balance', function () {
                 return KyandaApi::balance()['Account_Bal'];
             });
         } catch (Exception) {
