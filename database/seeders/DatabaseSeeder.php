@@ -34,6 +34,7 @@ class DatabaseSeeder extends Seeder
             //            CashbackSeeder::class,
             //                        CashbackSeeder::class,
             //            TransactionSeeder::class,
+            //            SubscriptionSeeder::class,
         ]);
     }
 }

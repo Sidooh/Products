@@ -27,7 +27,7 @@ class TransactionController extends Controller
     {
         $request->validate([
             'page'      => 'nullable|integer|min:1',
-            'page_size' => 'nullable|integer|digits_between:10,1000',
+            'page_size' => 'nullable|integer|between:10,1000',
         ]);
 
         // TODO: Review using laravel query builder // or build our own params
