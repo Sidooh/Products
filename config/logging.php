@@ -1,5 +1,6 @@
 <?php
 
+use Monolog\Formatter\GoogleCloudLoggingFormatter;
 use Monolog\Handler\NullHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SyslogUdpHandler;
@@ -48,9 +49,15 @@ return [
     */
 
     'channels' => [
-        'gcp' => [
-            'driver'            => 'stack',
-            'channels'          => ['stderr'],
+        'gcp'        => [
+            'level'             => env('LOG_LEVEL', 'debug'),
+            'driver'            => 'monolog',
+            'ignore_exceptions' => false,
+            'handler'           => StreamHandler::class,
+            'formatter'         => GoogleCloudLoggingFormatter::class,
+            'with'              => [
+                'stream' => 'php://stderr',
+            ],
         ],
 
         'stack' => [
