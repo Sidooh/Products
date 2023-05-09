@@ -25,28 +25,28 @@ class DashboardController extends Controller
     public function summaries(Request $request): JsonResponse
     {
         if ($request->filled('bypass_cache')) {
-            $request->string('bypass_cache')->explode(',')->each(fn ($k) => Cache::forget($k));
+            $request->string('bypass_cache')->explode(',')->each(fn($k) => Cache::forget($k));
         }
 
-        $totalTransactions = Cache::remember('total_transactions', 60 * 60 * 24, fn () => Transaction::count());
+        $totalTransactions = Cache::remember('total_transactions_count', 60 * 60 * 24, fn() => Transaction::count());
         $totalTransactionsToday = Cache::remember(
-            'total_transactions_today',
+            'total_transactions_count_today',
             60 * 60,
-            fn () => Transaction::whereDate('created_at', Carbon::today())->count()
+            fn() => Transaction::whereDate('created_at', Carbon::today())->count()
         );
 
         $totalRevenue = Cache::remember('total_revenue', 60 * 60 * 24, function() {
             return Transaction::whereStatus(Status::COMPLETED)
-                              ->whereType(TransactionType::PAYMENT)
-                              ->whereNot('product_id', ProductType::VOUCHER)
-                              ->sum('amount');
+                ->whereType(TransactionType::PAYMENT)
+                ->whereNot('product_id', ProductType::VOUCHER)
+                ->sum('amount');
         });
         $totalRevenueToday = Cache::remember('total_revenue_today', 60 * 60, function() {
             return Transaction::whereStatus(Status::COMPLETED)
-                              ->whereType(TransactionType::PAYMENT)
-                              ->whereNot('product_id', ProductType::VOUCHER)
-                              ->whereDate('created_at', Carbon::today())
-                              ->sum('amount');
+                ->whereType(TransactionType::PAYMENT)
+                ->whereNot('product_id', ProductType::VOUCHER)
+                ->whereDate('created_at', Carbon::today())
+                ->sum('amount');
         });
 
         return $this->successResponse([
@@ -60,32 +60,30 @@ class DashboardController extends Controller
 
     public function getChartData(Request $request): JsonResponse
     {
-        if ($request->filled('bypass_cache')) {
+        if ($request->boolean('bypass_cache')) {
             Cache::forget('dashboard_chart_data');
         }
 
         return $this->successResponse(Cache::remember('dashboard_chart_data', (3600 * 3), function() {
             return Transaction::selectRaw("status, DATE_FORMAT(created_at, '%Y%m%d%H') as date, SUM(amount) as amount")
-                              ->whereType(TransactionType::PAYMENT)
-                              ->whereDate('created_at', '>=', Carbon::yesterday())
-                              ->groupBy('date', 'status')
-                              ->orderByDesc('date')
-                              ->get()
-                              ->groupBy(function($tx) {
-                                  $dateIsToday = Carbon::createFromFormat('YmdH', $tx->date)->isToday();
+                ->whereType(TransactionType::PAYMENT)
+                ->whereDate('created_at', '>=', Carbon::yesterday())
+                ->groupBy('date', 'status')
+                ->orderByDesc('date')
+                ->get()
+                ->groupBy(function($tx) {
+                    $dateIsToday = Carbon::createFromFormat('YmdH', $tx->date)->isToday();
 
-                                  return $dateIsToday ? 'TODAY' : 'YESTERDAY';
-                              });
+                    return $dateIsToday ? 'TODAY' : 'YESTERDAY';
+                });
         }));
     }
 
     /**
      * @throws AuthenticationException
      */
-    public function transactions(Request $request): JsonResponse
+    public function transactions(): JsonResponse
     {
-        // TODO: Review using laravel query builder // or build our own params
-        $relations = explode(',', $request->query('with'));
         $columns = [
             'id',
             'amount',
@@ -101,25 +99,21 @@ class DashboardController extends Controller
 
         $pending = Transaction::select($columns)->with('product:id,name')->whereStatus(Status::PENDING)->get();
         $recent = Transaction::select($columns)->with('product:id,name')->whereNot('status', Status::PENDING)->latest()
-                             ->limit(100)->get();
-
-        // TODO: pagination will not work with the process below - review fix for it
-        if (in_array('account', $relations)) {
-            $pending = withRelation('account', $pending, 'account_id', 'id');
-            $recent = withRelation('account', $recent, 'account_id', 'id');
-        }
+            ->limit(100)->get();
 
         return $this->successResponse([
-            'pending' => $pending,
-            'recent'  => $recent,
+            'pending' => withRelation('account', $pending, 'account_id', 'id'),
+            'recent'  => withRelation('account', $recent, 'account_id', 'id'),
         ]);
     }
 
     public function getProviderBalances(Request $request): JsonResponse
     {
-        if ($request->filled('bypass_cache')) {
-            $request->string('bypass_cache')->explode(',')->each(fn ($k) => Cache::forget($k));
-        }
+        $request->whenFilled('bypass_cache', function($val) {
+            foreach (explode(',', $val) as $k) {
+                Cache::forget($k);
+            }
+        });
 
         try {
             $tandaFloatBalance = Cache::remember('tanda_float_balance', (3600), function() {

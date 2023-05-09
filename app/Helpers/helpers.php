@@ -8,6 +8,9 @@ use App\Models\Transaction;
 use App\Services\SidoohAccounts;
 use App\Services\SidoohPayments;
 use DrH\Tanda\Library\Providers;
+use Illuminate\Auth\AuthenticationException;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Log;
 use JetBrains\PhpStorm\NoReturn;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
@@ -78,23 +81,32 @@ function getProviderFromTransaction(Transaction $transaction): string
 
 if (! function_exists('withRelation')) {
     /**
-     * @throws \Illuminate\Auth\AuthenticationException
+     * @throws AuthenticationException
      */
-    function withRelation($relation, $parentRecords, $parentKey, $childKey)
+    function withRelation(string $relation, Collection|array $parentRecords, $parentKey, $childKey)
     {
-        $childRecords = match ($relation) {
+        $childRecords = collect(match ($relation) {
             'account' => SidoohAccounts::getAll(),
             'payment' => SidoohPayments::getAll(),
             default   => throw new BadRequestException('Invalid relation!')
-        };
+        });
 
-        $childRecords = collect($childRecords);
+        if (is_array($parentRecords)) {
+            $parentRecords = collect($parentRecords);
+        }
 
         return $parentRecords->transform(function($record) use ($parentKey, $relation, $childKey, $childRecords) {
             $record[$relation] = $childRecords->firstWhere($childKey, $record[$parentKey]);
 
             return $record;
         });
+    }
+}
+
+if (! function_exists('paginate')) {
+    function paginate($items, $total, $perPage, $currentPage): LengthAwarePaginator
+    {
+        return new LengthAwarePaginator($items, $total, $perPage, $currentPage);
     }
 }
 
@@ -107,7 +119,7 @@ if (! function_exists('admin_contacts')) {
 
 if (! function_exists('credit_voucher')) {
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     function credit_voucher(Transaction $transaction): ?array
     {

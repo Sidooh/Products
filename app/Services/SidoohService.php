@@ -15,7 +15,7 @@ class SidoohService
     // TODO: implement Sidooh Services LIB for php, to be used in Prod/Pay
     public static function http(): PendingRequest
     {
-        $token = Cache::remember('auth_token', (60 * 14), fn () => self::authenticate());
+        $token = Cache::remember('auth_token', (60 * 14), fn() => self::authenticate());
 
         return Http::timeout(10)->withToken($token)->acceptJson();
     }
@@ -44,7 +44,7 @@ class SidoohService
     /**
      * @throws Exception
      */
-    public static function fetch(string $url, string $method = 'GET', array $data = [])
+    public static function fetch(string $url, string $method = 'GET', array $data = [], bool $log = true)
     {
         Log::info('...[SRV - SIDOOH]: REQ...', [
             'url'    => $url,
@@ -59,7 +59,7 @@ class SidoohService
             $response = self::http()->send($method, $url, $options)->throw()->json();
             $latency = round((microtime(true) - $t) * 1000, 2);
 
-            Log::info('...[SRV - SIDOOH]: RES... '.$latency.'ms', [$response]);
+            Log::info('...[SRV - SIDOOH]: RES... '.$latency.'ms', $log ? (is_array($response) ? $response : [$response]) : []);
 
             return $response['data'];
         } catch (Exception|RequestException $err) {
