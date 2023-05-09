@@ -9,15 +9,14 @@ class TransactionSeeder extends Seeder
 {
     /**
      * Run the database seeds.
-     *
-     * @return void
      */
     public function run(): void
     {
-        //        Schema::disableForeignKeyConstraints();
-//        Estate::truncate();
+//        Schema::disableForeignKeyConstraints();
+//        Transaction::truncate();
+//        Payment::truncate();
 //        Schema::enableForeignKeyConstraints();
 
-        Transaction::factory(5)->hasPayment()->create();
+        Transaction::factory(100)->hasPayment()->create();
     }
 }

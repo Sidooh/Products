@@ -49,7 +49,7 @@ return [
     */
 
     'channels' => [
-        'gcp'        => [
+        'gcp' => [
             'level'             => env('LOG_LEVEL', 'debug'),
             'driver'            => 'monolog',
             'ignore_exceptions' => false,

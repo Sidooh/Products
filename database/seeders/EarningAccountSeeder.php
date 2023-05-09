@@ -41,5 +41,6 @@ class EarningAccountSeeder extends Seeder
 //        }
 
         EarningAccount::insert($accounts);
+//        EarningAccount::factory(100)->create();
     }
 }

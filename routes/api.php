@@ -102,9 +102,6 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function() {
         Route::get('/{cashback}', [CashbackController::class, 'show']);
     });
 
-    Route::get('/airtime/accounts', [AirtimeController::class, 'accounts']);
-    Route::get('/utility/accounts', [UtilityController::class, 'accounts']);
-
     Route::prefix('/accounts')->group(function() {
         Route::prefix('/{accountId}')->group(function() {
             Route::get('/details', [AccountController::class, 'show']);
@@ -143,4 +140,7 @@ Route::middleware('auth.jwt')->prefix('/v1')->name('api.')->group(function() {
         Route::get('/product-transactions', [AnalyticsController::class, 'transactionsByProduct']);
         Route::get('/product-revenue', [AnalyticsController::class, 'revenueByProduct']);
     });
+
+    Route::get('/airtime/accounts', [AirtimeController::class, 'accounts']);
+    Route::get('/utility/accounts', [UtilityController::class, 'accounts']);
 });

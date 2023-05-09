@@ -22,7 +22,7 @@ class ProductController extends Controller
         return $this->successResponse($discounts);
     }
 
-    public function queryProviderBalances()
+    public function queryProviderBalances(): void
     {
         $message = "Provider Balances:\n";
 
