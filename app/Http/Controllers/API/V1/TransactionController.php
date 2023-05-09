@@ -31,7 +31,6 @@ class TransactionController extends Controller
         ]);
 
         // TODO: Review using laravel query builder // or build our own params
-        $relations = $request->string('with')->explode(',');
         $perPage = $request->integer('page_size', 100);
         $page = $request->integer('page', 1);
 
@@ -48,7 +47,7 @@ class TransactionController extends Controller
             'updated_at',
         ])->with('product:id,name')->latest()->limit($perPage)->offset($perPage * ($page - 1))->get();
 
-        if ($relations->contains('account')) {
+        if ($request->string('with')->contains('account')) {
             $transactions = withRelation('account', $transactions, 'account_id', 'id');
         }
 
@@ -202,7 +201,7 @@ class TransactionController extends Controller
         }
 
         // Check request
-        if ($transaction->tandaRequests->isNotEmpty() && $transaction->tandaRequests->every(function ($r) {
+        if ($transaction->tandaRequests->isNotEmpty() && $transaction->tandaRequests->every(function($r) {
             return $r->status != 500000;
         })) {
             return $this->errorResponse('There is a problem with this transaction - Request. Contact Support.');

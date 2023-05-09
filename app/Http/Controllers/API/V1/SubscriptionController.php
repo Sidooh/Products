@@ -76,7 +76,6 @@ class SubscriptionController extends Controller
             'page_size' => 'nullable|integer|between:10,1000',
         ]);
 
-        $relations = $request->string('with')->explode(',');
         $perPage = $request->integer('page_size', 100);
         $page = $request->integer('page', 1);
 
@@ -90,7 +89,7 @@ class SubscriptionController extends Controller
             'created_at',
         ])->latest()->with('subscriptionType:id,title,price,duration,active,period')->limit(1000)->get();
 
-        if ($relations->contains('account')) {
+        if ($request->string('with')->contains('account')) {
             $subscriptions = withRelation('account', $subscriptions, 'account_id', 'id');
         }
 

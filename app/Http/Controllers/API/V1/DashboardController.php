@@ -35,13 +35,13 @@ class DashboardController extends Controller
             fn() => Transaction::whereDate('created_at', Carbon::today())->count()
         );
 
-        $totalRevenue = Cache::remember('total_revenue_amount', 60 * 60 * 24, function () {
+        $totalRevenue = Cache::remember('total_revenue', 60 * 60 * 24, function() {
             return Transaction::whereStatus(Status::COMPLETED)
                 ->whereType(TransactionType::PAYMENT)
                 ->whereNot('product_id', ProductType::VOUCHER)
                 ->sum('amount');
         });
-        $totalRevenueToday = Cache::remember('total_revenue_amount_today', 60 * 60, function () {
+        $totalRevenueToday = Cache::remember('total_revenue_today', 60 * 60, function() {
             return Transaction::whereStatus(Status::COMPLETED)
                 ->whereType(TransactionType::PAYMENT)
                 ->whereNot('product_id', ProductType::VOUCHER)
@@ -64,14 +64,14 @@ class DashboardController extends Controller
             Cache::forget('dashboard_chart_data');
         }
 
-        return $this->successResponse(Cache::remember('dashboard_chart_data', (3600 * 3), function () {
+        return $this->successResponse(Cache::remember('dashboard_chart_data', (3600 * 3), function() {
             return Transaction::selectRaw("status, DATE_FORMAT(created_at, '%Y%m%d%H') as date, SUM(amount) as amount")
                 ->whereType(TransactionType::PAYMENT)
                 ->whereDate('created_at', '>=', Carbon::yesterday())
                 ->groupBy('date', 'status')
                 ->orderByDesc('date')
                 ->get()
-                ->groupBy(function ($tx) {
+                ->groupBy(function($tx) {
                     $dateIsToday = Carbon::createFromFormat('YmdH', $tx->date)->isToday();
 
                     return $dateIsToday ? 'TODAY' : 'YESTERDAY';
@@ -82,10 +82,8 @@ class DashboardController extends Controller
     /**
      * @throws AuthenticationException
      */
-    public function transactions(Request $request): JsonResponse
+    public function transactions(): JsonResponse
     {
-        // TODO: Review using laravel query builder // or build our own params
-        $relations = explode(',', $request->query('with'));
         $columns = [
             'id',
             'amount',
@@ -103,28 +101,22 @@ class DashboardController extends Controller
         $recent = Transaction::select($columns)->with('product:id,name')->whereNot('status', Status::PENDING)->latest()
             ->limit(100)->get();
 
-        // TODO: pagination will not work with the process below - review fix for it
-        if (in_array('account', $relations)) {
-            $pending = withRelation('account', $pending, 'account_id', 'id');
-            $recent = withRelation('account', $recent, 'account_id', 'id');
-        }
-
         return $this->successResponse([
-            'pending' => $pending,
-            'recent'  => $recent,
+            'pending' => withRelation('account', $pending, 'account_id', 'id'),
+            'recent'  => withRelation('account', $recent, 'account_id', 'id'),
         ]);
     }
 
     public function getProviderBalances(Request $request): JsonResponse
     {
-        $request->whenFilled('bypass_cache', function ($val) {
+        $request->whenFilled('bypass_cache', function($val) {
             foreach (explode(',', $val) as $k) {
                 Cache::forget($k);
             }
         });
 
         try {
-            $tandaFloatBalance = Cache::remember('tanda_float_balance', (3600), function () {
+            $tandaFloatBalance = Cache::remember('tanda_float_balance', (3600), function() {
                 return TandaApi::balance()[0]->balances[0]->available;
             });
         } catch (Exception) {
@@ -132,7 +124,7 @@ class DashboardController extends Controller
         }
 
         try {
-            $ATAirtimeBalance = Cache::rememberForever('at_airtime_balance', function () {
+            $ATAirtimeBalance = Cache::rememberForever('at_airtime_balance', function() {
                 return (float) ltrim(AfricasTalkingApi::balance()['data']->UserData->balance, 'KES');
             });
         } catch (Exception) {
@@ -140,7 +132,7 @@ class DashboardController extends Controller
         }
 
         try {
-            $kyandaFloatBalance = Cache::rememberForever('kyanda_float_balance', function () {
+            $kyandaFloatBalance = Cache::rememberForever('kyanda_float_balance', function() {
                 return KyandaApi::balance()['Account_Bal'];
             });
         } catch (Exception) {

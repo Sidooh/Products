@@ -12,7 +12,7 @@ class SubscriptionSeeder extends Seeder
      */
     public function run(): void
     {
-        Subscription::truncate();
+//        Subscription::truncate();
 
         Subscription::factory(50)->create();
     }

@@ -61,14 +61,13 @@ class UtilityController extends Controller
             'page_size' => 'nullable|integer|between:10,1000',
         ]);
 
-        $relations = $request->string('with')->explode(',');
         $perPage = $request->integer('page_size', 100);
         $page = $request->integer('page', 1);
 
         $accounts = UtilityAccount::select(['id', 'provider', 'priority', 'account_id', 'account_number', 'created_at'])
             ->latest()->get();
 
-        if ($relations->contains('account')) {
+        if ($request->string('with')->contains('account')) {
             $accounts = withRelation('account', $accounts, 'account_id', 'id');
         }
 

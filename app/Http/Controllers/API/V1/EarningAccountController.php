@@ -20,7 +20,6 @@ class EarningAccountController extends Controller
             'page_size' => 'nullable|integer|between:10,1000',
         ]);
 
-        $relations = $request->string('with')->explode(',');
         $perPage = $request->integer('page_size', 100);
         $page = $request->integer('page', 1);
 
@@ -33,7 +32,7 @@ class EarningAccountController extends Controller
             'updated_at',
         ])->latest()->limit($perPage)->offset($perPage * ($page - 1))->get();
 
-        if ($relations->contains('account')) {
+        if ($request->string('with')->contains('account')) {
             $earningAccounts = withRelation('account', $earningAccounts, 'account_id', 'id');
         }
 

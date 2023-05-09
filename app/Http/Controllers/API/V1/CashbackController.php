@@ -27,7 +27,6 @@ class CashbackController extends Controller
             'page_size' => 'nullable|integer|between:10,1000',
         ]);
 
-        $relations = $request->string('with')->explode(',');
         $perPage = $request->integer('page_size', 100);
         $page = $request->integer('page', 1);
 
@@ -42,7 +41,7 @@ class CashbackController extends Controller
         ])->with('transaction:id,description,amount')
             ->latest()->limit($perPage)->offset($perPage * ($page - 1))->get();
 
-        if ($relations->contains('account')) {
+        if ($request->string('with')->contains('account')) {
             $cashbacks = withRelation('account', $cashbacks, 'account_id', 'id');
         }
 
