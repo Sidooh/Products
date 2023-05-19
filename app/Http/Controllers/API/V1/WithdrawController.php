@@ -48,9 +48,10 @@ class WithdrawController extends Controller
         $charge = SidoohSavings::getWithdrawalCharge($data['amount']);
 
         // 20% for current account and charges
-        if (.2 * ($totalEarned - $totalWithdrawn) - $charge < $data['amount']) {
-            return $this->errorResponse('Earning balance is insufficient');
-        }
+//        TODO: Add savings check here, whether we can withdraw amount from current account
+//        if (.2 * ($totalEarned - $totalWithdrawn) - $charge < $data['amount']) {
+//            return $this->errorResponse('Earning balance is insufficient');
+//        }
 
         $transaction = [
             'initiator'   => $data['initiator'],
