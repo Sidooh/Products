@@ -52,7 +52,7 @@ class SubscriptionController extends Controller
         ];
 
         $data = [
-            'method'          => $request->has('method') ? PaymentMethod::from($request->input('method'))
+            'method' => $request->has('method') ? PaymentMethod::from($request->input('method'))
                 : PaymentMethod::MPESA,
         ];
 
@@ -71,7 +71,13 @@ class SubscriptionController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $relations = explode(',', $request->query('with'));
+        $request->validate([
+            'page'      => 'nullable|integer|min:1',
+            'page_size' => 'nullable|integer|between:10,1000',
+        ]);
+
+        $perPage = $request->integer('page_size', 100);
+        $page = $request->integer('page', 1);
 
         $subscriptions = Subscription::select([
             'id',
@@ -83,11 +89,11 @@ class SubscriptionController extends Controller
             'created_at',
         ])->latest()->with('subscriptionType:id,title,price,duration,active,period')->limit(1000)->get();
 
-        if (in_array('account', $relations)) {
+        if ($request->string('with')->contains('account')) {
             $subscriptions = withRelation('account', $subscriptions, 'account_id', 'id');
         }
 
-        return $this->successResponse($subscriptions);
+        return $this->successResponse(paginate($subscriptions, Subscription::count(), $perPage, $page));
     }
 
     public function show(Request $request, Subscription $subscription): JsonResponse

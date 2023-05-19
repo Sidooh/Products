@@ -9,11 +9,9 @@ class CashbackSeeder extends Seeder
 {
     /**
      * Run the database seeds.
-     *
-     * @return void
      */
     public function run(): void
     {
-        Cashback::factory(10)->create();
+        Cashback::factory(50)->create();
     }
 }

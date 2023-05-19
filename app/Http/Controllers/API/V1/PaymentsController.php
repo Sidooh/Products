@@ -27,7 +27,7 @@ class PaymentsController extends Controller
             $query->wherePaymentId($request->id);
         })->whereStatus(Status::PENDING)->first();
 
-        if (!$transaction) {
+        if (! $transaction) {
             Log::critical('Error processing payment callback - no transaction');
 
             return response()->json(['status' => true]);
