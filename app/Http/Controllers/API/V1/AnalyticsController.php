@@ -11,6 +11,7 @@ use App\Models\Transaction;
 use DrH\Tanda\Models\TandaRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 
 class AnalyticsController extends Controller
@@ -21,7 +22,7 @@ class AnalyticsController extends Controller
             Cache::forget('transactions_slo');
         }
 
-        $slo = Cache::remember('transactions_slo', (3600 * 24 * 7), function() {
+        $slo = Cache::remember('transactions_slo', (3600 * 24 * 7), function () {
             return Transaction::selectRaw('YEAR(created_at) as year, status, count(*) as count')
                 ->groupByRaw('year, status')
                 ->get();
@@ -36,7 +37,7 @@ class AnalyticsController extends Controller
             Cache::forget('products_slo');
         }
 
-        $SLO = Cache::remember('products_slo', (3600 * 24 * 7), function() {
+        $SLO = Cache::remember('products_slo', (3600 * 24 * 7), function () {
             return Transaction::selectRaw('product_id, year, COUNT(status)/COUNT(*) * 100 slo')
                 ->fromRaw("(SELECT product_id, YEAR(created_at) as year, CASE WHEN status = 'COMPLETED' THEN 1 END status FROM transactions) transactions")
                 ->groupBy('year', 'product_id')
@@ -57,14 +58,14 @@ class AnalyticsController extends Controller
         }
 
         $SLO = Cache::remember('vendors_slo', (3600 * 24 * 7), fn() => [
-            'tanda' => TandaRequest::selectRaw('COUNT(status)/COUNT(*) * 100 slo')
+            'tanda'    => TandaRequest::selectRaw('COUNT(status)/COUNT(*) * 100 slo')
                 ->fromRaw("(SELECT CASE WHEN status = '000000' THEN 1 END status FROM tanda_requests WHERE created_at > ?) tanda_requests",
                     now()->subYear())
                 ->value('slo'),
             'payments' => Payment::selectRaw('COUNT(status)/COUNT(*) * 100 slo')
                 ->fromRaw("(SELECT CASE WHEN status = 'COMPLETED' THEN 1 END status FROM payments) payments")
                 ->value('slo'),
-            'savings' => SavingsTransaction::selectRaw('COUNT(status)/COUNT(*) * 100 slo')
+            'savings'  => SavingsTransaction::selectRaw('COUNT(status)/COUNT(*) * 100 slo')
                 ->fromRaw("(SELECT CASE WHEN status = 'COMPLETED' THEN 1 END status FROM savings_transactions) savings_transactions")
                 ->value('slo'),
         ]);
@@ -74,11 +75,53 @@ class AnalyticsController extends Controller
 
     public function transactions(Request $request): JsonResponse
     {
+        $request->validate([
+            'type'       => 'nullable|string|in:summary,transactional',
+            'days'       => 'nullable|integer|between:1,30',
+            'accounts'   => 'nullable|array',
+            'accounts.*' => 'integer'
+        ]);
+
+        $type = $request->string('type', 'summary');
+
+        if ($type == 'transactional') {
+            $days = $request->integer('days', 7);
+            $accounts = $request->get('accounts', []);
+
+            $query = Transaction::select([
+                'id',
+                'amount',
+//                'charge',
+                'status',
+//                'destination',
+                'description',
+                'account_id',
+//                'product_id',
+                'created_at',
+//                'updated_at',
+            ])
+                ->where('created_at', '>', Carbon::now()->subDays($days));
+//                ->with('product:id,name')
+//                ->latest()
+
+            if (!empty($accounts)) {
+                $query->whereIn('account_id', $accounts);
+            }
+
+            $transactions = $query->get();
+
+            if (!empty($accounts)) {
+                $transactions = $transactions->groupBy->account_id;
+            }
+
+            return $this->successResponse($transactions);
+        }
+
         if ($request->boolean('bypass_cache')) {
             Cache::forget('transactions_count_analytics');
         }
 
-        $data = Cache::remember('transactions_count_analytics', (3600 * 24), function() {
+        $data = Cache::remember('transactions_count_analytics', (3600 * 24), function () {
             return Transaction::selectRaw("status, DATE_FORMAT(created_at, '%Y%m%d%H') as date, COUNT(*) as count")
                 ->whereDate('created_at', '>', now()->subYear())
                 ->groupBy('date', 'status')
@@ -95,7 +138,7 @@ class AnalyticsController extends Controller
             Cache::forget('revenue_count_analytics');
         }
 
-        $data = Cache::remember('revenue_count_analytics', (3600 * 24), function() {
+        $data = Cache::remember('revenue_count_analytics', (3600 * 24), function () {
             return Transaction::selectRaw("status, DATE_FORMAT(created_at, '%Y%m%d%H') as date, SUM(amount) as amount")
                 ->whereType(TransactionType::PAYMENT)
                 ->whereNot('product_id', ProductType::VOUCHER)
@@ -114,14 +157,14 @@ class AnalyticsController extends Controller
             Cache::forget('transactions_by_Telco');
         }
 
-        $data = Cache::remember('transactions_by_Telco', (3600 * 24), function() {
+        $data = Cache::remember('transactions_by_Telco', (3600 * 24), function () {
             return Transaction::selectRaw("destination, status, DATE_FORMAT(created_at, '%Y%m%d%H') as date, COUNT(*) as count")
                 ->whereProductId(ProductType::AIRTIME)
                 ->whereDate('created_at', '>', now()->subYear())
                 ->groupBy('date', 'destination', 'status')
                 ->orderByDesc('date')
                 ->get()
-                ->groupBy(fn($tx) => getTelcoFromPhone((int) $tx->destination) ?? 'UNKNOWN');
+                ->groupBy(fn($tx) => getTelcoFromPhone((int)$tx->destination) ?? 'UNKNOWN');
         });
 
         return $this->successResponse($data);
@@ -133,7 +176,7 @@ class AnalyticsController extends Controller
             Cache::forget('revenue_by_Telco');
         }
 
-        $data = Cache::remember('revenue_by_Telco', (3600 * 24), function() {
+        $data = Cache::remember('revenue_by_Telco', (3600 * 24), function () {
             return Transaction::selectRaw("destination, status, DATE_FORMAT(created_at, '%Y%m%d%H') as date, SUM(amount) as amount")
                 ->whereProductId(ProductType::AIRTIME)
                 ->whereType(TransactionType::PAYMENT)
@@ -141,7 +184,7 @@ class AnalyticsController extends Controller
                 ->groupBy('date', 'destination', 'status')
                 ->orderByDesc('date')
                 ->get()
-                ->groupBy(fn($tx) => getTelcoFromPhone((int) $tx->destination) ?? 'UNKNOWN');
+                ->groupBy(fn($tx) => getTelcoFromPhone((int)$tx->destination) ?? 'UNKNOWN');
         });
 
         return $this->successResponse($data);
@@ -153,7 +196,7 @@ class AnalyticsController extends Controller
             Cache::forget('transactions_by_Product');
         }
 
-        $data = Cache::remember('transactions_by_Product', (3600 * 24), function() {
+        $data = Cache::remember('transactions_by_Product', (3600 * 24), function () {
             return Transaction::selectRaw("product_id, status, DATE_FORMAT(created_at, '%Y%m%d%H') as date, COUNT(*) as count")
                 ->whereDate('created_at', '>', now()->subYear())
                 ->groupBy('date', 'product_id', 'status')
@@ -171,7 +214,7 @@ class AnalyticsController extends Controller
             Cache::forget('revenue_by_Product');
         }
 
-        $data = Cache::remember('revenue_by_Product', (3600 * 24), function() {
+        $data = Cache::remember('revenue_by_Product', (3600 * 24), function () {
             return Transaction::selectRaw("product_id, status, DATE_FORMAT(created_at, '%Y%m%d%H') as date, SUM(amount) as amount")
                 ->whereType(TransactionType::PAYMENT)
                 ->whereNotIn('product_id', [

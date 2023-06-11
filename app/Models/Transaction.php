@@ -35,6 +35,7 @@ class Transaction extends Model
 
     protected $casts = [
         'type' => TransactionType::class,
+        'amount' => 'float',
     ];
 
     /**
