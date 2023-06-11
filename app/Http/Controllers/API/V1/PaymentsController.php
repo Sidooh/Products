@@ -4,8 +4,10 @@ namespace App\Http\Controllers\API\V1;
 
 use App\Enums\Status;
 use App\Http\Controllers\Controller;
+use App\Models\Payment;
 use App\Models\Transaction;
 use App\Repositories\TransactionRepository;
+use App\Services\SidoohPayments;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -27,7 +29,7 @@ class PaymentsController extends Controller
             $query->wherePaymentId($request->id);
         })->whereStatus(Status::PENDING)->first();
 
-        if (! $transaction) {
+        if (!$transaction) {
             Log::critical('Error processing payment callback - no transaction');
 
             return response()->json(['status' => true]);
@@ -51,6 +53,28 @@ class PaymentsController extends Controller
 
             TransactionRepository::handleCompletedPayment($transaction);
         }
+
+        return response()->json(['status' => true]);
+    }
+
+
+    public function queryPaymentsStatus(): JsonResponse
+    {
+        $pendingPayments = Payment::pending()->with('transaction')->get();
+
+        $pendingPayments->each(function (Payment $model) {
+            $payment = SidoohPayments::find($model->payment_id);
+
+            if ($payment) {
+
+                if ($payment['status'] === Status::COMPLETED->name) {
+                    TransactionRepository::handleCompletedPayment($model->transaction);
+                } elseif ($payment['status'] === Status::FAILED->name) {
+                    TransactionRepository::handleFailedPayment($model->transaction, (object)$payment);
+                }
+
+            }
+        });
 
         return response()->json(['status' => true]);
     }

@@ -35,6 +35,9 @@ Route::prefix('/v1')->group(function() {
         Route::post('/check-expiry', [SubscriptionController::class, 'checkExpiry']);
     });
 
+    Route::middleware('throttle:5,60')
+        ->get('payments/status/query', [PaymentsController::class, 'queryPaymentsStatus']);
+
     Route::prefix('/cashbacks')->group(function() {
         Route::post('/invest', [CashbackController::class, 'invest']);
     });
