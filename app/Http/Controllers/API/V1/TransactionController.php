@@ -153,7 +153,7 @@ class TransactionController extends Controller
             }
 
             $debitAccount = match (PaymentSubtype::from($payment['subtype'])) {
-                PaymentSubtype::STK     => $payment['provider']['phone'],
+                PaymentSubtype::STK     => $payment['provider']['phone'] ?? $payment['provider']['phone_number'],
                 PaymentSubtype::VOUCHER => $payment['provider']['id'],
                 default                 => throw new Exception('Unable to trace debit account.')
             };
