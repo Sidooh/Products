@@ -34,27 +34,27 @@ class ProductController extends Controller
             $tandaIsBelowThresh = true;
             $tandaFloatBalance = 'Error';
         }
-        try {
+        /*try {
             $kyanda = KyandaApi::balance();
             $kyandaFloatBalance = $kyanda['Account_Bal'];
             $kyandaIsBelowThresh = $kyandaFloatBalance <= config('services.kyanda.float.threshold');
         } catch (Exception) {
             $kyandaIsBelowThresh = true;
             $kyandaFloatBalance = 'Error';
-        }
-        try {
+        }*/
+        /*try {
             $AT = AfricasTalkingApi::balance();
             $ATAirtimeBalance = (float) ltrim($AT['data']->UserData->balance, 'KES');
             $ATAirtimeIsBelowThresh = $ATAirtimeBalance <= config('services.at.airtime.threshold');
         } catch (Exception) {
             $ATAirtimeIsBelowThresh = true;
             $ATAirtimeBalance = 'Error';
-        }
+        }*/
 
-        if ($tandaIsBelowThresh || $kyandaIsBelowThresh || $ATAirtimeIsBelowThresh) {
+        if ($tandaIsBelowThresh) {
             $message .= "\t - Tanda Float: $tandaFloatBalance\n";
-            $message .= "\t - Kyanda Float: $kyandaFloatBalance\n";
-            $message .= "\t - At Airtime: $ATAirtimeBalance\n";
+//            $message .= "\t - Kyanda Float: $kyandaFloatBalance\n";
+//            $message .= "\t - At Airtime: $ATAirtimeBalance\n";
 
             $message .= "\n#SRV:Products";
 
