@@ -5,6 +5,6 @@ namespace App\Enums;
 enum Initiator: string
 {
     case CONSUMER = 'CONSUMER';
-    case AGENT = 'AGENT';
+    case MERCHANT = 'MERCHANT';
     case ENTERPRISE = 'ENTERPRISE';
 }
